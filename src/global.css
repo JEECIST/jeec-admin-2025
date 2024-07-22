@@ -1,0 +1,17 @@
+*, *::before, *::after {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+}
+
+:root {
+  color: rgba(54, 54, 54, 0.87);
+  background-color: #f6f6f6;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
