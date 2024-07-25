@@ -1,23 +1,25 @@
 import { defineStore } from "pinia";
-import accessListJSON from "./accessList.json";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
-    name: "whatever",
-    role: "webdev",
+    name: "user name",
+    role: "team",
+    loggedIn: true,
     accessList: {
       dashboard: true,
-      admin: false,
-      companies: false,
+      activities: true,
+      admin: true,
+      business: true,
+      claimprizes: false,
+      qrcodes: true,
       speakers: false,
       sponsors: false,
-      studentapp: false,
-      website: false,
+      studentapp: true,
     },
   }),
   actions: {
     getAccess() {
-      this.accessList = JSON.parse(JSON.stringify(accessListJSON))[this.role];
+      // do axios shit here
     },
   },
 });

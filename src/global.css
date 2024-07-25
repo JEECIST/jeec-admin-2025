@@ -7,8 +7,22 @@
 }
 
 :root {
-  color: rgba(54, 54, 54, 0.87);
-  background-color: #f6f6f6;
+  --c-bg-light: #ffffff;
+  --c-ft-dark: #1a1a1a;
+  --c-ft: #4f4f4f;
+  --c-ft-semi-light: #8a8a8a;
+  --c-ft-light: #a7a7a7;
+  --c-accent: #ddf0ff;
+  --c-select: #509CDB;
+  
+  --font-family: 'Kumbh Sans', sans-serif;
+
+  --header-height: 100px;
+
+
+  background-color: var(--c-bg-light);
+  color: var(--c-ft);
+  font-family: var(--font-family);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

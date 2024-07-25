@@ -1,15 +1,16 @@
 <template>
   <div class="app">
-    <TheNav></TheNav>
-    <TheHeader></TheHeader>
+    <TheNav class="nav"></TheNav>
+    <TheHeader class="header"></TheHeader>
     <main>
-      <router-view/>
+      <router-view :key="$route.fullPath"/>
     </main>
   </div>
 </template>
 
 <script setup>
 import TheNav from './global-components/TheNav.vue';
+import TheHeader from './global-components/TheHeader.vue';
 import { useUserStore } from './stores/user';
 
 useUserStore().getAccess();
@@ -18,10 +19,26 @@ useUserStore().getAccess();
 
 <style scoped>
 .app {
-  display: flex;
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  grid-template-rows: min-content 1fr;
+  grid-template-areas: 
+    'nav header'
+    'nav main';
 }
 
 main {
-  /* border: 10px solid red; */
+  height: calc(100dvh - var(--header-height));
+  grid-area: main;
+}
+
+.nav {
+  grid-area: nav;
+  position: sticky;
+  top: 0;
+}
+
+.header {
+  grid-area: header;
 }
 </style>

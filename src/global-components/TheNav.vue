@@ -7,10 +7,9 @@
       <ul>
         <template v-for="(value, key) in accessList">
           <li v-if="value">
-            <router-link class="nav-link" :to="key">{{ key }}</router-link>
+            <router-link class="nav-link" :to="({ name: key })">{{ key }}</router-link>
           </li>
         </template>
-        
       </ul>
     </nav>
   </aside>
@@ -31,7 +30,7 @@ const accessList = computed(() => userStore.accessList);
 .sidenav {
   height: 100dvh;
   background-color: #152259;
-  width: clamp(250px, 20dvw, 350px);
+  width: 300px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -50,5 +49,9 @@ const accessList = computed(() => userStore.accessList);
 .logo > img {
   width: 100%;
   height: 100%;
+}
+
+@media screen and (max-width: 1000px) {
+  
 }
 </style>
