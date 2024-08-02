@@ -11,7 +11,7 @@ const routes = [
     component: Dashboard,
     meta: { 
       title: "Dashboard",
-      children: ["activities", "admin", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp"],
+      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams"],
     },
   },
   {
@@ -30,6 +30,14 @@ const routes = [
         name: "activitytypes",
         meta: { title: "Activity Types" },
         component: () => import("../pages/Activities/ActivityTypes.vue"),
+        children: [
+          {
+            path: "locations",
+            name: "locations",
+            meta: { title:"Locations" },
+            component: () => import("../pages/Activities/ActivitiesTypesLocations.vue"),
+          }
+        ]
       },
     ],
   },
@@ -38,9 +46,15 @@ const routes = [
     name: "admin",
     component: () => import("../global-components/TheDashboard.vue"),
     meta: {
-      title: "Admin Dashboard",
-      children: ["events", "teamusers"],
+      title: "Admin",
+      children: ["accounting", "events", "teamusers"],
     },
+  },
+  {
+    path: "/admin/accounting",
+    name: "accounting",
+    meta: { title: "Accounting" },
+    component: () => import("../pages/Admin/AdminAccounting.vue"),
   },
   {
     path: "/admin/events",
@@ -62,11 +76,17 @@ const routes = [
     ],
   },
   {
+    path: "/bills",
+    name: "bills",
+    meta: { title: "Bills", children: false },
+    component: () => import("../pages/Bills/Bills.vue")
+  },
+  {
     path: "/business",
     name: "business",
     component: () => import("../global-components/TheDashboard.vue"),
     meta: {
-      title: "Business Dashboard",
+      title: "Business",
       children: ["meals", "companies"],
     },
   },
@@ -113,6 +133,11 @@ const routes = [
         meta: { title: "Speaker Types" },
         component: () => import("../pages/Speakers/SpeakerTypes.vue"),
       },
+      {
+        path: "bills/:externalid",
+        meta: { title: "Speaker Bills" },
+        component: () => import("../pages/Speakers/SpeakerBills.vue")
+      }
     ],
   },
   {
@@ -126,6 +151,11 @@ const routes = [
         meta: { title: "Sponsor Tiers" },
         component: () => import("../pages/Sponsors/SponsorsTiers.vue"),
       },
+      {
+        path: "bills/:externalid",
+        meta: { title: "Sponsor Bills" },
+        component: () => import("../pages/Sponsors/SponsorBills.vue")
+      }
     ],
   },
   {
@@ -133,7 +163,7 @@ const routes = [
     name: "studentapp",
     component: Dashboard,
     meta: {
-      title: "Student App", children: ["points", "prizes", "students"]
+      title: "Student App", children: ["points", "prizes", "squads", "students"]
     },
   },
   {
@@ -149,6 +179,12 @@ const routes = [
     component: () => import("../pages/StudentApp/StudentAppStudents.vue"),
   },
   {
+    path: "/student-app/squads",
+    name: "squads",
+    meta: { title: "Squads" },
+    component: () => import("../pages/StudentApp/StudentAppSquads.vue"),
+  },
+  {
     path: "/student-app/prizes",
     name: "prizes",
     meta: { title: "Prizes" },
@@ -159,6 +195,19 @@ const routes = [
         meta: { title: "Prize Types" },
         component: () =>
           import("../pages/StudentApp/StudentAppPrizeTypes.vue"),
+      },
+    ],
+  },
+  {
+    path: "/teams",
+    name: "teams",
+    component: () => import("../pages/Teams/Teams.vue"),
+    meta: { title: "Teams", children: false },
+    children: [
+      {
+        path: "members/:externalid",
+        meta: { title: "Team Members" },
+        component: () => import("../pages/Teams/TeamMembers.vue"),
       },
     ],
   },
