@@ -12,7 +12,9 @@
         :toShow="tablePref"
         :searchInput="message"
         :buttons="tableButtons" 
-        @onBan="banCallback(user)"
+        @onRowSelect="selectCallback"
+        @onBan="banCallback"
+        @onHiEvent="console.log('hi')"
       ></TheTable>
     </div>
     <div class="right-popup-placeholder"></div>
@@ -26,120 +28,135 @@ import { ref } from 'vue';
 const message = ref();
 
 function banCallback(user) {
-  console.log(typeof user);
+  console.log("banned " + user.name + "..... nah");
+}
+
+function selectCallback(row) {
+  console.log(row)
 }
 
 const datab = [
   {
-    User: "Deco",
-    Role: "Webdev",
-    Name: "André Santos the Feeble",
-    Day: "123"
+    user: "Deco",
+    role: "Webdev",
+    name: "André Santos the Feeble",
+    day: "123"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos"
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos"
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos",
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos",
   },
   {
-    User: "Deco",
-    Role: "Webdev",
-    Name: "André Santos the Feeble",
-    Day: "123"
+    user: "Deco",
+    role: "Webdev",
+    name: "André Santos the Feeble",
+    day: "123"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos"
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos"
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos",
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos",
   },
   {
-    User: "Deco",
-    Role: "Webdev",
-    Name: "André Santos the Feeble",
-    Day: "123"
+    user: "Deco",
+    role: "Webdev",
+    name: "André Santos the Feeble",
+    day: "123"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos"
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos"
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos",
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos",
   },
   {
-    User: "Deco",
-    Role: "Webdev",
-    Name: "André Santos the Feeble",
-    Day: "123"
+    user: "Deco",
+    role: "Webdev",
+    name: "André Santos the Feeble",
+    day: "123"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos"
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos"
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos",
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos",
   },
   {
-    User: "Deco",
-    Role: "Webdev",
-    Name: "André Santos the Feeble",
-    Day: "123"
+    user: "Deco",
+    role: "Webdev",
+    name: "André Santos the Feeble",
+    day: "123"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos"
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos"
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos"
   },
   {
-    User: "DD",
-    Role: "Webdev",
-    Name: "André Santos",
+    user: "DD",
+    role: "Webdev",
+    name: "André Santos",
   },
 ];
 
-const tablePref = ["User", "Name"];
+const tablePref = ["user", "name"];
 
-const tableButtons = ["Ban", "Hi"];
+const tableButtons = [
+  {
+    name: "Ban",
+    icon: false,
+    eventName: "onBan",
+  },
+  {
+    name: "Hi",
+    icon: false,
+    eventName: "onHiEvent",
+  }
+];
 
 </script>
 
@@ -210,7 +227,7 @@ form > input::placeholder {
   position: sticky;
   top: 0;
   right: 0;
-  width: 400px;
+  width: 500px;
   border-radius: 30px;
   background-color: var(--c-accent);
   height: 100%;

@@ -6,16 +6,19 @@
           <template v-for="(value, key) in props.data[0]">
             <th v-if="toShow.indexOf(key) != -1">{{ key }}</th>
           </template>
-          <th class="button" v-for="button in props.buttons">{{ button }}</th>
+          <th class="button" v-for="button in props.buttons">{{ button.name }}</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="row in rows" @click="selectRow">
+        <tr v-for="row in rows" @click="selectRow($event, row)">
           <template v-for="(value, key) in row">
             <td v-if="toShow.indexOf(key) != -1">{{ value }}</td>
           </template>
           <td class="button" v-for="button in props.buttons">
-            <button @click="$emit('on' + button, row)">{{ button }}</button>
+            <button v-if="!button.icon" @click="$emit(button.eventName, row)">{{ button.name }}</button>
+            <button v-else @click="$emit(button.eventName, row)">
+              <img :src="button.icon" alt="">
+            </button>
           </td>
         </tr>
       </tbody>
@@ -35,7 +38,7 @@ const props = defineProps({
     type: Array[String],
     required: true
   },
-  buttons: Array[String],
+  buttons: Array[Object],
   searchInput: String,
   isSelectable: {
     type: Boolean,
@@ -43,13 +46,13 @@ const props = defineProps({
   }
 });
 
-defineEmits(['onRowSelect']);
+const emit = defineEmits(['onRowSelect']);
 
 
 const isAnySelected = ref(false);
 const whichIsSelected = ref();
 
-function selectRow(e) {
+function selectRow(e, row) {
   if (!props.isSelectable)
     return
 
@@ -62,6 +65,8 @@ function selectRow(e) {
   whichIsSelected.value = e.target.parentElement;
   whichIsSelected.value.classList.add("selected");
   isAnySelected.value = true;
+
+  emit('onRowSelect', row)
 }
 
 
@@ -90,10 +95,19 @@ const rows = computed(() => {
 
 table {
   border-spacing: 0;
+  border-collapse: collapse;
   width: 100%;
 }
+
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
 th {
   text-align: left;
+  text-transform: capitalize;
   color: var(--c-ft-dark);
 }
 
@@ -115,6 +129,7 @@ tbody > tr:hover {
 
 tr.selected {
   background-color: var(--c-select);
+  color: white;
 }
 
 tbody > tr.selected:hover {
