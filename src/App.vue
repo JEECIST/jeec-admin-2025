@@ -28,7 +28,6 @@ useUserStore().getAccess();
 }
 
 main {
-  height: calc(100dvh - var(--header-height));
   grid-area: main;
 }
 
@@ -36,9 +35,11 @@ main {
   grid-area: nav;
   position: sticky;
   top: 0;
+  z-index: 3;
 }
 
 .header {
   grid-area: header;
+  z-index: 2;
 }
 </style>

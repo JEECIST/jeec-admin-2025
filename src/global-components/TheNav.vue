@@ -1,13 +1,13 @@
 <template>
   <aside class="sidenav">
-    <a class="logo" @click="router.push({name: 'dashboard'})">
+    <a class="logo" @click="Router.push({name: 'dashboard'})">
       <img src="../assets/brain.svg" alt="brain logo">
     </a>
     <nav>
       <ul>
         <li>
-          <router-link class="nav-link" activeClass="selected" :to="({ name: route.name })">
-            <img :src="'/src/assets/pages/' + route.name + '.svg'" aria-hidden="true"><span>{{ route.meta.title }}</span>
+          <router-link class="nav-link" activeClass="selected" :to="({ name: dashboardRoute.name })">
+            <img :src="'/src/assets/pages/' + dashboardRoute.name + '.svg'" aria-hidden="true"><span>{{ dashboardRoute.meta.title }}</span>
           </router-link>
         </li>
         <template v-for="route in routes">
@@ -15,6 +15,11 @@
             <router-link class="nav-link" activeClass="selected" :to="({ name: route.name })">
               <img :src="'/src/assets/pages/' + route.name + '.svg'" aria-hidden="true"><span>{{ route.meta.title }}</span>
             </router-link>
+            <ul class="child-routes" v-if="parentRoute.name === route.name && Route.meta.children !== false">
+              <li v-for="child in childRoutes">
+                <router-link class="nav-link" activeClass="selected" :to="({ name: child.name })">{{ child.meta.title }}</router-link>
+              </li>
+            </ul>
           </li>
         </template>
       </ul>
@@ -24,18 +29,33 @@
 
 <script setup>
 import { computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '../stores/user';
 
 const userStore = useUserStore();
-const router = useRouter();
-const route = router.getRoutes().find(rte => rte.name === "dashboard");
+const Router = useRouter();
+const Route = useRoute();
+const dashboardRoute = Router.getRoutes().find(rte => rte.name === "dashboard");
 
 const routes = computed(() => {
   let arr = [];
 
-  route.meta.children.forEach(child => {
-    arr.push(router.getRoutes().find(x => x.name === child))
+  dashboardRoute.meta.children.forEach(child => {
+    arr.push(Router.getRoutes().find(x => x.name === child))
+  });
+
+  return arr
+})
+
+const parentRoute = computed(() => {
+  return Router.getRoutes().find(rte => rte.path === ('/' + Route.path.split('/')[1]))
+})
+
+const childRoutes = computed(() => {
+  let arr = [];
+
+  parentRoute.value.meta.children.forEach(child => {
+    arr.push(Router.getRoutes().find(x => x.name === child))
   });
 
   return arr
@@ -67,14 +87,15 @@ const routes = computed(() => {
   height: 100%;
 }
 
-nav {
+.sidenav > nav {
   width: 100%;
   font-size: 1.2rem;
   font-weight: 500;
   padding: 0 3ch;
+  overflow: auto;
 }
 
-nav > ul {
+.sidenav ul {
   list-style-type: none;
 }
 
@@ -100,6 +121,15 @@ nav > ul {
 .nav-link > img {
   height: 1.3em;
   aspect-ratio: 1;
+}
+
+.child-routes {
+  padding-left: 3ch;
+}
+
+.child-routes .nav-link {
+  font-size: 0.85em;
+  padding: 0.4rem 2ch;
 }
 
 @media screen and (max-width: 1000px) {

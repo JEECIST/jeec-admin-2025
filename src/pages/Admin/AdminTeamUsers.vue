@@ -164,7 +164,7 @@ const tableButtons = [
 .wrapper {
   display: flex;
   position: relative;
-  height: 100%;
+  height: calc(100dvh - var(--header-height));
   padding: 5ch 3ch 3ch 3ch;
   overflow-y: hidden;
 }

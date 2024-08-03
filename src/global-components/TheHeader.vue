@@ -31,6 +31,8 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: 0 3ch;
+  position: sticky;
+  top: 0;
 }
 
 .user {
