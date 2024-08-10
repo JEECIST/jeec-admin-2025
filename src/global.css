@@ -18,6 +18,7 @@
   --font-family: 'Kumbh Sans', sans-serif;
 
   --header-height: 100px;
+  --sidenav-width: 300px;
 
 
   background-color: var(--c-bg-light);

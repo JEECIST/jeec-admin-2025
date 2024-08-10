@@ -44,7 +44,9 @@ function isAccessible(route) {
 }
 
 .dashnav > a {
-  flex-basis: calc(50% - 1rem);
+  flex-basis: calc(50% - 0.75rem);
+  flex-grow: 1;
+  min-width: fit-content;
   text-decoration: none;
   color: var(--c-ft);
   background-color: var(--c-accent);

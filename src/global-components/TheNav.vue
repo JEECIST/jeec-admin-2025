@@ -6,6 +6,7 @@
     <nav>
       <ul>
         <li>
+          <button class="nav-link" @click="Router.go(-1)"><img src="/src/assets/back.svg" aria-hidden="true"><span>Back</span></button>
           <router-link class="nav-link" activeClass="selected" :to="({ name: dashboardRoute.name })">
             <img :src="'/src/assets/pages/' + dashboardRoute.name + '.svg'" aria-hidden="true"><span>{{ dashboardRoute.meta.title }}</span>
           </router-link>
@@ -15,7 +16,7 @@
             <router-link class="nav-link" activeClass="selected" :to="({ name: route.name })">
               <img :src="'/src/assets/pages/' + route.name + '.svg'" aria-hidden="true"><span>{{ route.meta.title }}</span>
             </router-link>
-            <ul class="child-routes" v-if="parentRoute.name === route.name && Route.meta.children !== false">
+            <ul class="child-routes" v-if="parentRoute.name === route.name && parentRoute.meta.children !== false">
               <li v-for="child in childRoutes">
                 <router-link class="nav-link" activeClass="selected" :to="({ name: child.name })">{{ child.meta.title }}</router-link>
               </li>
@@ -66,7 +67,7 @@ const childRoutes = computed(() => {
 .sidenav {
   height: 100dvh;
   background-color: #152259;
-  width: 300px;
+  width: var(--sidenav-width);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -108,6 +109,13 @@ const childRoutes = computed(() => {
   padding: 0.6rem 2ch;
   border-radius: 4px;
   margin-bottom: 0.2rem;
+  background: none;
+  border: none;
+  width: 100%;
+  font-size: 1em;
+  font-family: var(--font-family);
+  font-weight: 500;
+  cursor: pointer;
 }
 
 .nav-link.selected {
@@ -130,9 +138,5 @@ const childRoutes = computed(() => {
 .child-routes .nav-link {
   font-size: 0.85em;
   padding: 0.4rem 2ch;
-}
-
-@media screen and (max-width: 1000px) {
-  
 }
 </style>
