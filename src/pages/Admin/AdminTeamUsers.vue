@@ -42,8 +42,9 @@
               </select>
             </div>
             <div class="modal-actions">
-              <button class="btnCancel"  @click="showAddUserModal = false">Cancel</button>
-              <button type="submit" class="btn-primary">Add</button>
+              <button type="submit" class="btn-primary">Add</button>                
+              <button class="btnCancel"  @click=closeModal()>Cancel</button>
+              
             </div>
           </form>
         </div>
@@ -67,7 +68,7 @@ function selectCallback(row) {
 }
 
 function addUser() {
-  datab.push({ user: newUser.value.username, role: newUser.value.role, name: newUser.value.username });
+  datab.value.push({ user: newUser.value.username, role: newUser.value.role, name: newUser.value.username });
   closeModal();
 }
 
@@ -76,7 +77,7 @@ function closeModal() {
   newUser.value = { username: '', role: '' }; // Reset form fields
 }
 
-const datab = [
+const datab = ref([
   {
     user: "Deco",
     role: "Webdev",
@@ -93,7 +94,7 @@ const datab = [
     role: "Webdev",
     name: "André Santos"
   },
-];
+]);
 
 const tablePref = ["user", "name"];
 
@@ -270,7 +271,7 @@ form > button {
 .popup, .formRole label, .formUsername label {
   display: block;
   margin-bottom: 0.5rem;
-  font-size: 1rem;
+  font-size: 1rem;  
   font-weight: 500;
 
 }
