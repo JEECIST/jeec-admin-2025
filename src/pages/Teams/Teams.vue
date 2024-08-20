@@ -12,24 +12,28 @@
           v-model="searchQuery" 
         />
       </div>
+
       <div class="evento">
-        <div class="title">
-          <select v-model="selectedEvent" id="event" @change="handleEventChange">
-            <option v-for="event in events" :key="event.id" :value="event.name"> 
-              {{ event.name }}
-            </option>
-          </select>
-        </div>
+        <select v-model="selectedEvent" id="event" @change="handleEventChange">
+          <option v-for="event in events" :key="event.id" :value="event.name"> 
+            {{ event.name }}
+          </option>
+        </select>
       </div>
-      <div class="add-team">
-        <button class="button">Add Team</button>
-      </div>
+      <button class="add-team">Add Team</button>
     </div>
-    <div>
-      <div v-if="filteredTeams.length === 0" class="form">
-        <label class="title">No teams found</label>
-      </div>
+
+    <div v-if="filteredTeams.length === 0" class="form">
+      <label class="no-teams">No teams found</label>
     </div>
+
+    <TheTable
+      :data="filteredTeams"
+      :toShow="tableHeaders"
+      :buttons="tableButtons"
+      :searchInput="searchQuery"
+      @onRowSelect="selectTeam"
+    />
   </div>
 </template>
 
@@ -41,12 +45,13 @@ export default {
     return {
       selectedEvent: 'Select an event',
       searchQuery: '',
-      events: [  /*mal-feito*/
-        { id: 1, name: 'Evento 1' },
-        { id: 2, name: 'Evento 2' },
-        { id: 3, name: 'Evento 3' },
+      events: [
+        { id: 1, name: '-' },
+        { id: 2, name: 'Evento 1' },
+        { id: 3, name: 'Evento 2' },
+        { id: 4, name: 'Evento 3' },
       ],
-      teams: [  /*mal-feito*/
+      teams: [
         { id: 1, name: 'Team 1' },
         { id: 2, name: 'Team 2' },
         { id: 3, name: 'Team 3' },
@@ -70,28 +75,30 @@ export default {
 
 <style scoped>
 .teams {
-  width: 100%;
-  max-width: 1200px;
-  margin: auto;
+  display: flex;
+  flex-direction: column;
+  width: calc(200dvh - var(--sidebar-width));
   background: #FFFFFF;
-  padding: 50px;
-  max-height: 101dvh;
+  height: calc(100vh - var(--header-height));
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 49px 3ch 3ch 3ch;
 }
 
 .headerteams {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: space-between; 
   margin-bottom: 20px;
 }
 
 .searchteam {
+  display: flex;
   position: relative;
-  width: 638px;
+  width: 100%;
   height: 49px;
   background-color: #EBF6FF;
-  border-radius: 4px;
-  padding: 16px, 20px, 16px, 16px;
+  border-radius: 10px;
+  margin-right: 10px;
 }
 
 .searchicon {
@@ -104,79 +111,64 @@ export default {
   color: #8A8A8A;
 }
 
-.searchbar{
+.searchbar {
   width: 100%;
-  height: 49px;
-  padding: 16px 20px 16px 40px;
+  height: 100%;
+  padding-left: 40px;
   border: none;
-  font-family: 'Kumbh Sans', sans-serif;
-  font-size: 14px; 
-  font-weight: 500;
-  line-height: 17.36px; 
   background-color: #EBF6FF;
+  border-radius: 10px;
   outline: none;
 }
 
 .evento {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  border: none;
-  border-radius: 4px;
-}
-
-.title {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-left: 10px;
-  font-family: 'Kumbh Sans', sans-serif;
-  font-size: 14px; 
-  font-weight: 500;
-  line-height: 17.36px; 
-} 
-
-.evento-lable{
-  flex-direction: column;
 }
 
 .evento select {
   width: 100%; 
   height: 49px; 
   border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 5px;
+  border-radius: 10px;
   font-size: 14px;
+  outline: none;
+  padding: 1.5rem;
+  margin-right: 10px;
+  padding-left: 1.5rem;
 }
 
 .add-team {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.button {
   height: 49px;
   font-size: 1rem;
   font-weight: 600;
   border: none;
   background-color: var(--c-select);
   border-radius: 10px;
-  color: var(--c-bg-light);
-  cursor: pointer;
+  color: white;
   padding: 0.5ch 3ch;
-  margin-left: 10px;
+  cursor: pointer;
+  outline: none;
 }
 
 .form {
   display: flex;
   justify-content: center;
-  background-color: var(--c-accent);
-  margin: auto ;
   align-items: center;
-  height: calc( 74dvh - var(--header-height));
-  overflow-y: hidden;
+  background-color: var(--c-accent);
+  height: 100%;
+  overflow: hidden;
   position: relative;
-  padding: 5ch 3ch 3ch 3ch;
+  border-radius: 10px;
+  flex-grow: 1;
 }
 
+.no-teams {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--c-text);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
 </style>
