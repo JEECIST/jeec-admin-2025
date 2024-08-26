@@ -4,7 +4,7 @@
       <thead>
         <tr>
           <template v-for="(value, key) in props.data[0]">
-            <th v-if="toShow.indexOf(key) != -1">{{ key }}</th>
+            <th v-if="key in toShow">{{ toShow[key] }}</th>
           </template>
           <th class="button" v-for="button in props.buttons">{{ button.name }}</th>
         </tr>
@@ -12,7 +12,7 @@
       <tbody>
         <tr v-for="row in rows" @click="selectRow($event, row)">
           <template v-for="(value, key) in row">
-            <td v-if="toShow.indexOf(key) != -1">{{ value }}</td>
+            <td v-if="key in toShow">{{ value }}</td>
           </template>
           <td class="button" v-for="button in props.buttons">
             <button v-if="!button.icon" @click="$emit(button.eventName, row)">{{ button.name }}</button>
@@ -35,7 +35,7 @@ const props = defineProps({
     required: true
   },
   toShow: {
-    type: Array[String],
+    type: Object,
     required: true
   },
   buttons: Array[Object],

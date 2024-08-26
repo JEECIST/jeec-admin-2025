@@ -143,7 +143,10 @@ const datab = [
   },
 ];
 
-const tablePref = ["user", "name"];
+const tablePref = {
+  user: "User",
+  name: "First Name"
+};
 
 const tableButtons = [
   {
