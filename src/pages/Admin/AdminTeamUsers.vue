@@ -9,7 +9,7 @@
       </form>
       <TheTable
         :data="datab"
-        :toShow="tablePref"
+        :tableHeaders="tablePref"
         :searchInput="message"
         :buttons="tableButtons" 
         @onRowSelect="selectCallback"

@@ -29,7 +29,7 @@
 
     <TheTable
       :data="filteredTeams"
-      :toShow="tableHeaders"
+      :tableHeaders="tableHeaders"
       :buttons="tableButtons"
       :searchInput="searchQuery"
       @onRowSelect="selectTeam"
