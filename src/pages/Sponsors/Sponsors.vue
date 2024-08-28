@@ -28,12 +28,15 @@
       </svg>
     </button>
     </div>
-    
+    <div class="table-container">
+      
+    </div>
       
   </div>
 </template>
 
 <script setup>
+import TheTable from '../../global-components/TheTable.vue';
 </script>
 
 <style scoped>
@@ -53,7 +56,7 @@
   display: flex;
   align-content: center;
   position: relative;
-  width: 40vw;
+  width: 20vw;
   height: 3vw; 
   background-color: #EBF6FF; 
   border-radius: 1vh; 
@@ -139,6 +142,7 @@
   color: #FFFFFF;
   background-color: var(--c-select);
   padding: 0.2vw 1vw;
+  flex-grow: 0.5;
 }
 
 .chevron-icon {
