@@ -19,7 +19,7 @@
           <option value="all">All</option>
           <option value="JEEC 23/24">JEEC 23/24</option>
           <option value="JEEC 24/25">JEEC 24/25</option>
-        </select>
+        </select>   
       </div>
       <button class="button-add-sponsor">Add Sponsor</button>
       <button class="button-sponsor-tiers">Sponsor Tiers
@@ -30,7 +30,6 @@
       </div>
       <div class="table-container">
         <TheTable 
-          v-if="tableData && tableData.length > 0"
           :data="tableData"
           :tableHeaders="headers"
           :buttons="tableButtons"
@@ -39,14 +38,18 @@
           @onRowSelect="handleRowSelect"
           class="table"
         />
-        <div class="nosponsors" v-else>No Sponsors Found</div>
+        <div class="nosponsors" v-if="!tableData && tableData.length == 0">No Sponsors Found</div>
       </div>
     </div>
 
     <div v-if="selectedRow" class="sponsor-card">
       <div class="sponsor-card-header">
-        <h1>{{ selectedRow.name }}</h1>
-        <img :src=selectedRow.logo alt="sponsor logo" />
+        <h1 class="card-tier">{{ selectedRow.tier }}</h1>
+        <img class='sponsor-logo' :src=selectedRow.logo alt="sponsor logo" />
+        <div class="card-title">
+          <p class="card-name">{{ selectedRow.name }}</p>
+          <p class="card-subtitle">Sponsor</p>
+        </div>
         <div class="card-buttons">
           <button @click="editRow(selectedRow)" class="icon-button">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="icon" width="16" height="16">
@@ -81,8 +84,19 @@
         
       </div>
       <div class="sponsor-card-body">
-        <p>Tier: {{ selectedRow.tier }}</p>
-        <p>JEEC Responsible: {{ selectedRow.jeecresponsible }}</p>
+        <div class="card-paragraph">
+          <h1>JEEC Responsible</h1>
+          <p>{{ selectedRow.jeecresponsible }}</p>
+        </div>
+        <div class="card-paragraph">
+          <h1>Description</h1>
+          <p>{{ selectedRow.description }}</p>
+        </div>
+        <div class="card-paragraph">
+          <h1>Event</h1>
+          <p>{{ selectedRow.event }}</p>
+        </div>
+        
       </div>
     </div>
   </div>
@@ -95,9 +109,9 @@ import TheTable from '../../global-components/TheTable.vue';
 
 // Example data to be displayed in the table
 const tableData = ref([
-  { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:'./assets/Galp.png' },
-  { id: 2, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: './assets/Galp.png' },
-  { id: 3, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: './assets/Galp.png'},
+  { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio', event: 'JEEC 23/24' },
+  { id: 2, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', event: 'JEEC 23/24' },
+  { id: 3, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', event: 'JEEC 23/24'},
 ]);
 
 // Headers to map the data keys to table headers
@@ -141,20 +155,20 @@ const eventselected = ref('');
   align-items: flex-start;
   width: 100%;
   height: 100%;
-  padding: 2vw 2vw;
+  padding: 3vh 2vw;
 }
 
 .sponsor-card{
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  padding: 2vh 2vw;
-  height: 75vh;
+  padding: 3vh 2.5vw;
+  max-height: max-content;
   width: 25vw;
   background-color: var(--c-accent);
   border-radius: 2vh;
-  margin-left: 2vw;
+  gap:1.8vh;
 }
 
 .sponsor-card-header {
@@ -164,6 +178,36 @@ const eventselected = ref('');
   align-items: center;
   width: 100%;
   padding: 0.5vw 1vw;
+  gap:1vw;
+}
+
+.card-tier{
+  text-transform: uppercase;
+  font-size: 1.7vw;
+}
+
+.sponsor-logo {
+  width: 11vw;
+  height: 11vw;
+}
+
+.card-title{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width:fit-content;
+}
+
+.card-name{
+  font-weight: 800;
+  color: var(--c-ft-dark);
+  font-size:1.5vw;
+}
+
+.card-subtitle{
+  color: var(--c-ft-semi-light);
+  font-size:1.1vw;
 }
 
 .card-buttons {
@@ -175,10 +219,27 @@ const eventselected = ref('');
   gap: 1vw;
 }
 
-.sponsors-table {
+.sponsor-card-body{
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  gap: 1.5vh;
+}
+.sponsor-card-body h1{
+  color: var(--c-ft-dark);
+  font-size: 0.9vw;
+  font-weight: 700;
+}
+.sponsor-card-body p{
+  font-size: 0.8vw;
+}
+
+.sponsors-table {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
   width: 100%;
 }
@@ -212,7 +273,7 @@ const eventselected = ref('');
   flex-direction: row;
   justify-content: space-between;
   align-items: end;
-  padding: 2vh 2vw; 
+  padding: 0vh 2vw; 
   gap: 1vw;
   color: #8A8A8A;
 }
@@ -270,7 +331,7 @@ const eventselected = ref('');
   border-radius: 0.7vh;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
-  padding: 1vh 1vw;
+  padding: 0.5vh 0.5vw;
   font-size: 0.8vw;
   color: #8A8A8A;
   background-color: #FFFFFF;
@@ -317,8 +378,12 @@ const eventselected = ref('');
   border: none;
   border-radius: 20%;
   cursor: pointer;
+  align-content: space-between;
   width:  2vw;
   height: 2vw;
+  display:flex;
+  justify-content: center;
+  padding: 1%;
 }
 .icon {
   width: 1.5vw;
