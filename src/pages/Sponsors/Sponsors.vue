@@ -21,8 +21,8 @@
           <option value="JEEC 24/25">JEEC 24/25</option>
         </select>   
       </div>
-      <button class="button-add-sponsor">Add Sponsor</button>
-      <button class="button-sponsor-tiers">Sponsor Tiers
+      <button class="button-add-sponsor" @click="toogleadd">Add Sponsor</button>
+      <button class="button-sponsor-tiers" @click="toogleTiers">Sponsor Tiers
         <svg xmlns="http://www.w3.org/2000/svg" class="chevron-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
@@ -38,7 +38,7 @@
           @onRowSelect="handleRowSelect"
           class="table"
         />
-        <div class="nosponsors" v-if="!tableData && tableData.length == 0">No Sponsors Found</div>
+        <div class="nosponsors" v-if="tableData.length == 0">No Sponsors Found</div>
       </div>
     </div>
 
@@ -99,6 +99,8 @@
         
       </div>
     </div>
+
+    <AddSponsor v-if="isaddsponsor" @close="toogleadd"/>
   </div>
   
 </template>
@@ -106,6 +108,7 @@
 <script setup>
 import { ref } from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
+import AddSponsor from './AddSponsor.vue';
 
 // Example data to be displayed in the table
 const tableData = ref([
@@ -140,6 +143,21 @@ function editRow(row) {
 
 function deleteRow(row) {
   console.log('Delete button clicked for row:', row);
+}
+
+const issponsorstier= ref(false);
+const isaddsponsor= ref(false);
+
+function toogleTiers()
+{
+  issponsorstier.value = !issponsorstier.value
+  console.log(issponsorstier.value)
+}
+
+function toogleadd()
+{
+  isaddsponsor.value= !isaddsponsor.value
+  console.log(isaddsponsor.value)
 }
 
 const eventselected = ref('');
@@ -349,6 +367,7 @@ const eventselected = ref('');
   color: #FFFFFF;
   background-color: var(--c-select);
   padding: 0.2vw 1vw;
+  cursor: pointer;
 }
 
 .button-sponsor-tiers {
@@ -366,6 +385,7 @@ const eventselected = ref('');
   color: #FFFFFF;
   background-color: var(--c-select);
   padding: 0.2vw 1vw;
+  cursor: pointer;
 }
 
 .chevron-icon {
