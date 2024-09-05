@@ -31,10 +31,60 @@
           <textarea class="description" v-model="description"></textarea>
           </div>
         </div>
-        <div class="logo">
-          <label for="logo">Logo</label>
+        <div class="form-columns">
+          <div class="logo">
+            <label for="logo">Logo</label>
+              <div class="blue-square">
+                <p>
+                  No logo selected yet
+                </p>
+              </div>
+              <button class="button-add-logo" >Add New Logo</button>
+          </div>
+          <div class="second-column">
+            <div class="form-line">
+              <div class="inputjeec">
+                <label for="jeecresponsible">JEEC Responsible</label>
+                <select class="selection-box-jeec">
+                  <option value="all">All</option>
+                  <option value="Maria">Maria</option>
+                  <option value="Francisca">Francisca</option>
+                </select>
+              </div>
+            </div>
+          
+            <div class="form-line">
+              <div class="radio-label">
+                <label for="show">Show in Website</label>
+                <div class="radio">
+                  <input type="radio" id="yes" name="show" value="Yes"/>
+                  <label for="yes">Yes</label>
+
+                  <input type="radio" id="no" name="show" value="No"/>
+                  <label for="no">No</label>
+                </div>
+              </div>
+            
+
+              <div class="inputtier">
+                <label for="Tier">Tier</label>
+                <select class="selection-box-tier">
+                  <option value="Gold">Gold</option>
+                  <option value="Bronze">Bronze</option>
+                  <option value="Sliver">Silver</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-line">
+              <div class="button">
+                <button class="button-add-sponsor">Add</button>
+              </div>
+            </div>
+          </div>
           
         </div>
+        
       </form>
     </div>
   </div>
@@ -49,7 +99,7 @@ emit('close');
 }
 </script>
 
-<style>
+<style scoped>
 .backdrop{
   top:0;
   position: fixed;
@@ -64,14 +114,15 @@ emit('close');
   flex-direction: column;
   width: 70vw;
   padding: 4vw;
-  margin: 10vw auto;
+  max-height: 95%;
+  margin: 3vh auto;
   border-radius: 3vw;
   background-color: #ffff;
   font-size: 0.8vw;
   color: var(--text-color);
   font-family: var(--font-family);
   z-index: 3;
-  gap:4vh;
+  gap:3vh;
 }
 
 .header{
@@ -100,22 +151,56 @@ emit('close');
   display: flex;
   flex-direction: column;
   margin-right:5vw;
-  gap: 4vh;
+  gap: 3vw;
 }
 
 .form-line{
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  gap: 1vw;
+  width: 100%;
+}
+
+
+.radio{
+  display: flex;
+  flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  font-size: 1vw;
+  gap: 1vw;
+  width: 20vw;
+}
+
+.radio-label{
+  display: flex;
+  flex-direction: column;
+  gap:1vw;
+}
+
+input[type="radio"] {
+    /* Adjust size directly using viewport width without calc */
+    transform: scale(1 + 0.02 * (1vw)); /* Adjust size based on viewport width */
+    margin: 1vw; /* Margin based on viewport width */
+  }
+
+.form-columns{
+  display: flex;
+  flex-direction: row;
   gap: 3vw;
-  width: 100%;
+}
+
+.second-column{
+  display:flex;
+  flex-direction: column;
+  gap: 4vh;
 }
 
 .inputname{
   display: flex;
   flex-direction: column;
-  width: 40vw;
+  width: 45vw;
   gap:1vh;
 }
 
@@ -124,8 +209,8 @@ emit('close');
   padding: 0.5vh 1vw 0.5vh 1vw;
   border: 1px solid #8A8A8A;
   border-radius: 1vh;
-  outline-color: var(--c-select);
-  color: #8A8A8A;
+  outline-color: var(--c-ft-semi-light);
+  color: var(--c-ft-semi-light);
   font-family: 'Kumbh Sans', sans-serif;
   font-size: 1vw;
   font-weight: 500;
@@ -141,15 +226,15 @@ emit('close');
 }
 
 .selection-box {
-  width: 10vw;
+  width: 11vw;
   height: 3vw; 
-  border: 1px solid #8A8A8A;
+  border: 1px solid var(--c-ft-semi-light);
   border-radius: 0.7vh;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
   padding: 0.5vh 0.5vw;
   font-size: 0.8vw;
-  color: #8A8A8A;
+  color: var(--c-ft-semi-light);
   background-color: #FFFFFF;
   flex-grow: 1;
 }
@@ -157,7 +242,7 @@ emit('close');
 .inputdescription{
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 77vw;
   gap:1vh;
 }
 
@@ -166,14 +251,110 @@ emit('close');
   padding: 0.5vh 1vw 0.5vh 1vw;
   border: 1px solid #8A8A8A;
   border-radius: 1vh;
-  outline-color: var(--c-select);
-  color: #8A8A8A;
+  outline-color: var(--c-ft-semi-light);
+  color: var(--c-ft-semi-light);
   font-family: 'Kumbh Sans', sans-serif;
   font-size: 1vw;
   font-weight: 500;
   line-height: 2.67vh;
   flex-grow: 3;
 }
+
+.logo{
+  display: flex;
+  flex-direction: column;
+  gap:1vh;
+  align-content: center;
+}
+
+.blue-square{
+  display: flex;
+  width: 10vw;
+  height: 10vw;
+  background-color: var(--c-accent);
+  border-radius: 1vh;
+  justify-content: center;
+}
+.blue-square p{
+  align-self: center;
+  font-weight: 500;
+  color:var(--c-ft-semi-light);
+}
+
+.button-add-logo {
+  max-width: 8vw;
+  height: 2.5vw; 
+  border: none;
+  border-radius: 0.7vh;
+  outline-color: var(--c-select);
+  font-family: 'Kumbh Sans', sans-serif;
+  font-size: 0.8vw;
+  font-weight: 500;
+  color: #FFFFFF;
+  background-color: var(--c-select);
+  padding: 0.2vw 1vw;
+  cursor: pointer;
+}
+
+.selection-box-jeec {
+  width: 44.5vw;
+  height: 3vw; 
+  border: 1px solid var(--c-ft-semi-light);
+  border-radius: 0.7vh;
+  outline-color: var(--c-select);
+  font-family: 'Kumbh Sans', sans-serif;
+  padding: 0.5vh 0.5vw;
+  font-size: 0.8vw;
+  color: var(--c-ft-semi-light);
+  background-color: #FFFFFF;
+  flex-grow: 1;
+}
+
+.inputjeec{
+  display: flex;
+  flex-direction: column;
+  gap:1vh;
+}
+
+.inputtier{
+  display: flex;
+  flex-direction: column;
+  gap:1vh;
+}
+
+.selection-box-tier {
+  width: 25vw;
+  height: 3vw; 
+  border: 1px solid var(--c-ft-semi-light);
+  border-radius: 0.7vh;
+  outline-color: var(--c-select);
+  font-family: 'Kumbh Sans', sans-serif;
+  padding: 0.5vh 0.5vw;
+  font-size: 0.8vw;
+  color: var(--c-ft-semi-light);
+  background-color: #FFFFFF;
+}
+
+.button-add-sponsor {
+
+  width: 9vw;
+  height: 3vw; 
+  border: none;
+  border-radius: 0.7vh;
+  outline-color: #152259;
+  font-family: 'Kumbh Sans', sans-serif;
+  font-size: 1vw;
+  font-weight: 500;
+  color: #FFFFFF;
+  background-color: #152259;
+  padding: 0.2vw 1vw;
+  cursor: pointer;
+}
+
+.button{
+  margin-left:38vw;
+}
+  
 
 
 </style>
