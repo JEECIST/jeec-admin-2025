@@ -9,7 +9,7 @@
       </form>
       <TheTable
         :data="datab"
-        :toShow="tablePref"
+        :tableHeaders="tablePref"
         :searchInput="message"
         :buttons="tableButtons" 
         @onRowSelect="selectCallback"
@@ -143,7 +143,10 @@ const datab = [
   },
 ];
 
-const tablePref = ["user", "name"];
+const tablePref = {
+  user: "User",
+  name: "First Name"
+};
 
 const tableButtons = [
   {

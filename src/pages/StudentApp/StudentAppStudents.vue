@@ -18,7 +18,7 @@
       <div :class="['students-table-container', { 'full-width': !selectedStudent }]">
         <TheTable
           :data="filteredStudents"
-          :toShow="tableHeaders"
+          :tableHeaders="tableHeaders"
           :buttons="tableButtons"
           :searchInput="searchQuery"
           @onRowSelect="selectStudent"
