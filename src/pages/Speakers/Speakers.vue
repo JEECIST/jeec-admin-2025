@@ -1,7 +1,15 @@
+<script setup>
+import SpeakersPage from './SpeakersPage.vue';
+</script>
+
 <template>
-  <div>
-    <h2>ola</h2>
+  <div class="speakers">
+    <SpeakersPage></SpeakersPage>
   </div>
 </template>
 
-<script setup></script>
+<style scoped>
+.speakers {
+  position: relative;
+}
+</style>
