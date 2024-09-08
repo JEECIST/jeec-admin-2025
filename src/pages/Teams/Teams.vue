@@ -1,6 +1,6 @@
 <template>
   <div class="teams">
-    <div class="headerteams">
+    <div :class="{'headerteams': true, 'headerteams-shrink': showPopup}">
       <div class="searchteam">
         <svg xmlns="http://www.w3.org/2000/svg" class="searchicon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10.5 17a6.5 6.5 0 100-13 6.5 6.5 0 000 13z" />
@@ -23,17 +23,33 @@
       <button class="add-team">Add Team</button>
     </div>
 
+    <div class="content-container">
+      <div :class="{'table-wrapper': true, 'table-wrapper-shrink': showPopup}">
+        <TheTable
+          :data="filteredTeams"
+          :toShow="['name','event','priority','members']"
+          :searchInput="searchQuery"
+          @onRowSelect="selectTeam"
+        ></TheTable>
+      </div>
+
+      <div v-if="showPopup" class="right-popup-placeholder">
+        <div class="right-popup">
+          <button class="closeX" @click="showPopup = false">&times;</button>
+          <div class="popup-content">
+            <h2 class="titulo">Team Details</h2>
+            <p class="inf">Team Name: {{ selectedTeam.name }}</p>
+            <p class="inf">Event: {{ selectedTeam.event }}</p>
+            <p class="inf">Priority: {{ selectedTeam.priority }}</p>
+            <p class="inf">Members: {{ selectedTeam.members }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div v-if="filteredTeams.length === 0" class="form">
       <label class="no-teams">No teams found</label>
     </div>
-
-    <TheTable
-      :data="filteredTeams"
-      :tableHeaders="tableHeaders"
-      :buttons="tableButtons"
-      :searchInput="searchQuery"
-      @onRowSelect="selectTeam"
-    />
   </div>
 </template>
 
@@ -41,21 +57,26 @@
 import TheTable from '../../global-components/TheTable.vue';
 
 export default {
+  name: 'Teams',
+  components: {
+    TheTable,
+  },
   data() {
     return {
       selectedEvent: 'Select an event',
       searchQuery: '',
-      events: [
-        { id: 1, name: '-' },
-        { id: 2, name: 'Evento 1' },
-        { id: 3, name: 'Evento 2' },
-        { id: 4, name: 'Evento 3' },
-      ],
       teams: [
-        { id: 1, name: 'Team 1' },
-        { id: 2, name: 'Team 2' },
-        { id: 3, name: 'Team 3' },
+        { id: 1, name: 'Team 1', event: 'Evento 1', priority: 'High', members: '3' },
+        { id: 2, name: 'Team 2', event: 'Evento 2', priority: 'Medium', members: '5' },
+        { id: 3, name: 'Team 3', event: 'Evento 3', priority: 'Low', members: '2' },
       ],
+      events: [
+        { id: 1, name: 'Evento 1' },
+        { id: 2, name: 'Evento 2' },
+        { id: 3, name: 'Evento 3' },
+      ],
+      showPopup: false,
+      selectedTeam: {},
     };
   },
   computed: {
@@ -68,6 +89,10 @@ export default {
   methods: {
     handleEventChange() {
       console.log(this.selectedEvent);
+    },
+    selectTeam(row) {
+      this.selectedTeam = row;
+      this.showPopup = true;
     },
   },
 };
@@ -89,6 +114,11 @@ export default {
   display: flex;
   justify-content: space-between; 
   margin-bottom: 20px;
+  transition: width 0.3s ease;
+}
+
+.headerteams-shrink {
+  width: calc(100% - 320px); /* 300px popup + 20px margem */
 }
 
 .searchteam {
@@ -150,20 +180,57 @@ export default {
   outline: none;
 }
 
+.content-container {
+  display: flex;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+.table-wrapper {
+  flex-grow: 1;
+  transition: flex-grow 0.3s ease;
+}
+
+.table-wrapper-shrink {
+  flex-grow: 0.7;
+  width: calc(100% - 320px);
+}
+
+.right-popup-placeholder {
+  width: 300px;
+  margin-left: 20px;
+  border-radius: 10px;
+  background-color: var(--c-accent);
+  height: calc(100% + 70px);
+  margin-top: -70px; /*conteiners errados*/
+}
+
+.right-popup {
+  padding: 20px;
+  position: relative;
+}
+
+.popup-content {
+  padding: 20px;
+  border-radius: 10px;
+}
+
 .form {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   background-color: var(--c-accent);
-  height: 100%;
+  height: calc(100% + 49px);
   overflow: hidden;
   position: relative;
   border-radius: 10px;
   flex-grow: 1;
+  margin-top: -40px; /*conteiners errados*/
 }
 
 .no-teams {
   position: absolute;
+  height: 49px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -171,4 +238,30 @@ export default {
   font-size: 1.5rem;
   font-weight: 600;
 }
+
+.titulo {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--c-text);
+  margin-bottom: 20px;
+}
+
+.inf {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--c-text);
+}
+
+.closeX {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--c-text);
+}
+
 </style>
