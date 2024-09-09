@@ -195,7 +195,7 @@ form > input::placeholder {
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    margin-top: 5vh;
+    margin-top: 10vh;
 }
 
 .speaker-photo {
