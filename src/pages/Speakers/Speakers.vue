@@ -369,7 +369,7 @@ const tablePref = {
 
 form {
   display: flex;
-  width: 1000px;
+  width: 60%;
   background-color: var(--c-accent);
   height: 50px;
   line-height: 50px;
@@ -522,7 +522,7 @@ select {
     font-weight: 500;
     font-size: small;
     flex-grow: 1;
-    min-width: 80px;
+    width: 10%;
 }
 
 .topbar {
@@ -536,6 +536,7 @@ select {
     flex-direction: column;
     gap: 5px;
     position: relative;
+    width: 10%;
 }
 
 .imsosickofdivs > label {

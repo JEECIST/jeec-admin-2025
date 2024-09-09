@@ -38,12 +38,10 @@ const datab = [
 ];
 
 const tablePref = {
-  id: "ID",
   name: "Name",
-  type: "Type",
-  company: "Company",
-  country: "Country",
-  responsible: "JEEC Responsible",
+  priority: "Priority",
+  speakersnum: "# Speakers",
+  meal: "Included Meal"
 };
 
 </script>
