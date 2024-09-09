@@ -4,7 +4,8 @@ import { ref } from 'vue';
 
 const message = ref();
 
-function selectCallback(row) {
+function selectCallback
+(row) {
   console.log(row)
 }
 
@@ -84,27 +85,27 @@ const tablePref = {
         </div>
         <div id="info">
         <div class="row">
-        <div class="col">
+        <div class="col item1">
             <p>Priority</p>
             <p class="text2">3</p>           
         </div>
-        <div class="col">
+        <div class="col item2">
             <p># Speakers</p>
             <p class="text2">9</p>
         </div>
-        <div class="col">
+        <div class="col item3">
             <p>Show in Website</p>
             <p class="text2">Yes</p>
         </div>
-        <div class="col">
+        <div class="col item4">
             <p>Social Media</p>
             <p class="text2">Yes</p>
         </div>
-        <div class="col">
+        <div class="col item5">
             <p>Exclusive Video</p>
             <p class="text2">No</p>
         </div>
-        <div class="col">
+        <div class="col item6">
             <p>Exclusive Posts</p>
             <p class="text2">No</p>
         </div>
@@ -134,7 +135,7 @@ const tablePref = {
 
 form {
   display: flex;
-  width: 1000px;
+  width: 85%;
   background-color: var(--c-accent);
   height: 50px;
   line-height: 50px;
@@ -225,8 +226,12 @@ form > input::placeholder {
 
 .row {
     display: grid;
-    gap: 13px;
-}
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-gap: 30px;
+    width: 300px;
+    margin-left: 0px;
+  }
 
 .col {
     display: flex;
@@ -282,7 +287,7 @@ select {
     border-radius: 7px;
     align-items: center;
     height: 50px;
-    width: 200px;
+    width: 15%;
     font-weight: 500;
     font-size: small;
 }
