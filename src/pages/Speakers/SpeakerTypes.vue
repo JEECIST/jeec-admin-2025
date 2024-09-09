@@ -238,7 +238,7 @@ form > input::placeholder {
 }
 
 #info {
-    margin-left: 2vw;;
+    margin-left: 0vw;;
     display: flex;
     flex-direction: column;
     gap: 12px;

@@ -294,7 +294,6 @@ const tablePref = {
                 <option value="" disabled selected></option>
                 <option>hello</option>
                 <option>there</option>
-                <option>bigoptsoitlooksbetter</option>
             </select>
       </div>
      <button class="topbtn">Add Speaker</button>
@@ -430,7 +429,7 @@ form > input::placeholder {
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    margin-top: 5vh;
+    margin-top: 7vh;
 }
 
 .speaker-photo {
