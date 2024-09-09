@@ -35,7 +35,7 @@
 
       <div v-if="showPopup" class="right-popup-placeholder">
         <div class="right-popup">
-          <button class="closeX" @click="showPopup = false">&times;</button>
+          <button class="closeX" @click="closePopup">&times;</button>
           <div class="popup-content">
             <h2 class="titulo">Team Details</h2>
             <p class="inf">Team Name: {{ selectedTeam.name }}</p>
@@ -81,9 +81,13 @@ export default {
   },
   computed: {
     filteredTeams() {
-      return this.teams.filter(team => 
+      const filtered = this.teams.filter(team => 
         team.name.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
+      if (filtered.length === 0) {
+        this.closePopup();
+      }
+      return filtered;
     },
   },
   methods: {
@@ -93,6 +97,10 @@ export default {
     selectTeam(row) {
       this.selectedTeam = row;
       this.showPopup = true;
+    },
+    closePopup() {
+      this.showPopup = false;
+      this.selectedTeam = {}; // Deselect the team
     },
   },
 };
@@ -263,5 +271,4 @@ export default {
   cursor: pointer;
   color: var(--c-text);
 }
-
 </style>
