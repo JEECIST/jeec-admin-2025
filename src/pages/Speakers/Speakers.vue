@@ -1,6 +1,13 @@
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+function goToSpeakerTypes() {
+  router.push("/speakers/types");
+}
 
 const message = ref();
 
@@ -291,7 +298,7 @@ const tablePref = {
             </select>
       </div>
      <button class="topbtn">Add Speaker</button>
-     <button class="topbtn">Speaker Types   〉</button>
+     <button @click="goToSpeakerTypes" class="topbtn">Speaker Types 〉</button>
      </div>
       <TheTable
         :data="datab"
@@ -328,8 +335,7 @@ const tablePref = {
         <div class="row">
         <div class="col">
             <p>Country</p>
-            <p class="text2">Land of Opportunities</p>
-            
+            <p class="text2">Land of Opportunities</p>           
         </div>
         <div class="col">
             <p>Event</p>
@@ -371,6 +377,7 @@ form {
   gap: 1ch;
   padding-left: 1ch;
   border-radius: 10px;
+  flex-grow: 0.7;
 }
 
 form > label > img {
@@ -512,9 +519,10 @@ select {
     border-radius: 7px;
     align-items: center;
     height: 50px;
-    width: 200px;
     font-weight: 500;
     font-size: small;
+    flex-grow: 1;
+    min-width: 80px;
 }
 
 .topbar {
@@ -527,6 +535,11 @@ select {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    margin-top: -29px;
+    position: relative;
+}
+
+.imsosickofdivs > label {
+  position: absolute;
+  bottom: 100%;
 }
 </style>
