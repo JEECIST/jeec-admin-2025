@@ -27,7 +27,7 @@
       <div :class="{'table-wrapper': true, 'table-wrapper-shrink': showPopup}">
         <TheTable
           :data="filteredTeams"
-          :toShow="['name','event','priority','members']"
+          :tableHeaders="{ name: 'Name', event: 'Event', priority: 'Priority', members: 'Members' }"
           :searchInput="searchQuery"
           @onRowSelect="selectTeam"
         ></TheTable>
@@ -66,9 +66,9 @@ export default {
       selectedEvent: 'Select an event',
       searchQuery: '',
       teams: [
-        { id: 1, name: 'Team 1', event: 'Evento 1', priority: 'High', members: '3' },
-        { id: 2, name: 'Team 2', event: 'Evento 2', priority: 'Medium', members: '5' },
-        { id: 3, name: 'Team 3', event: 'Evento 3', priority: 'Low', members: '2' },
+        { id: 1, name: 'Team 1', event: 'Evento 1', priority: '100', members: '3' },
+        { id: 2, name: 'Team 2', event: 'Evento 2', priority: '100', members: '5' },
+        { id: 3, name: 'Team 3', event: 'Evento 3', priority: '100', members: '2' },
       ],
       events: [
         { id: 1, name: 'Evento 1' },
