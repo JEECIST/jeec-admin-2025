@@ -1,0 +1,159 @@
+<script>
+</script>
+
+<template>
+    <div class="popup-wrapper">
+        <h1>Add Speaker Type</h1>
+        <div class="flex-1">
+            <div class ="flex-1-row-4">
+                <div class="labels" id="name">
+                    <label for="name">Name</label>
+                    <input type="text" placeholder="" id="name">
+                </div>
+                <div class="labels" id="priority">
+                    <label for="priority">Priority</label>
+                    <input type="text" placeholder="" id="priority">
+                </div>
+            </div>
+            <div class ="flex-1-row-5">  
+                <div class="check" id="website">
+                    <label for="website">Show in Website</label>
+                    <div class="radios">
+                        <input type="radio" name="perfectpuppy" id="website">Yes
+                        <input type="radio" name="perfectpuppy" id="website">No
+                    </div>
+                </div>
+                <div class="check" id="socials">
+                    <label for="socials">Social Media</label>
+                    <div class="radios">
+                        <input type="radio" name="bigbear" id="socials">Yes
+                        <input type="radio" name="bigbear" id="socials">No
+                    </div>
+                </div>
+                <div class="check" id="video">
+                    <label for="video">Exclusive Video</label>
+                    <div class="radios">
+                        <input type="radio" name="dancingduck" id="video">Yes
+                        <input type="radio" name="dancingduck" id="video">No
+                    </div>
+                </div>
+            </div>
+                <div class ="flex-1-row-6">  
+                    <div class="check" id="post">
+                        <label for="post">Exclusive Posts</label>
+                        <div class="radios">
+                            <input type="radio" name="cutecat" id="post">Yes
+                            <input type="radio" name="cutecat" id="post">No
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <button class="add">Add</button>
+    </div>
+</template>
+
+<style scoped>
+.popup-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
+h1 {
+    color: #515151;
+}
+
+template {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 5vh;
+}
+
+.flex-1, h1 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 5vw;
+    margin-right: 15vw;
+    gap: 5vh;
+}
+
+.flex-1-row-4 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.flex-1-row-5, 
+.flex-1-row-6 {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    gap: 24vw;
+}
+
+input {
+    color: #515151;
+    border-style: solid;
+    border-width: thin;
+    border-radius: 5px;
+    outline: none;
+    height: 5vh;
+}
+
+.add {
+    background-color: #152259;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    margin-right: 5vw;
+    display: flex;
+    margin-left: auto;
+    width: 14vw;
+    height: 3.5vh;
+    align-items: center;
+    justify-content: center;
+    gap: 10vh;
+}
+
+.labels {
+    display: flex;
+    flex-direction: column;
+    color: #515151;
+    font-size: small;
+    height: 100%;
+}
+
+.labels > #name, 
+          #priority {
+    width: 37vw;
+}
+
+.radios {
+    display: flex;
+    justify-content: left;
+    gap: 1.3vw;
+    align-items: center;
+}
+
+radio {
+    display: flex;
+    flex-direction: row;
+}
+
+#socials, #website, #video, #posts {
+    display: flex;
+    flex-direction: column;
+}
+
+.check {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vh;
+    color: #515151;
+    font-size: small;
+}
+</style>
