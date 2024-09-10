@@ -1,47 +1,73 @@
 <template>
   <div class="teams">
-    <div :class="{'headerteams': true, 'headerteams-shrink': showPopup}">
-      <div class="searchteam">
-        <svg xmlns="http://www.w3.org/2000/svg" class="searchicon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10.5 17a6.5 6.5 0 100-13 6.5 6.5 0 000 13z" />
-        </svg>
-        <input 
-          type="text" 
-          placeholder="Search for a team" 
-          class="searchbar" 
-          v-model="searchQuery" 
-        />
+    <div class="wrapper">
+      <div class="header-wrapper">
+        <div :class="{'headerteams': true, 'headerteams-shrink': showPopup}">
+          <div class="searchteam">
+            <svg xmlns="http://www.w3.org/2000/svg" class="searchicon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10.5 17a6.5 6.5 0 100-13 6.5 6.5 0 000 13z" />
+            </svg>
+            <input 
+              type="text" 
+              placeholder="Search for a team" 
+              class="searchbar" 
+              v-model="searchQuery" 
+            />
+          </div>
+
+          <div class="evento">
+            <select v-model="selectedEvent" id="event" @change="handleEventChange">
+              <option v-for="event in events" :key="event.id" :value="event.name"> 
+                {{ event.name }}
+              </option>
+            </select>
+          </div>
+          <button class="add-team">Add Team</button>
+        </div>
       </div>
 
-      <div class="evento">
-        <select v-model="selectedEvent" id="event" @change="handleEventChange">
-          <option v-for="event in events" :key="event.id" :value="event.name"> 
-            {{ event.name }}
-          </option>
-        </select>
-      </div>
-      <button class="add-team">Add Team</button>
-    </div>
+      <div class="content-wrapper">
+        <div class="content-container">
+          <div :class="{'table-wrapper': true, 'table-wrapper-shrink': showPopup}">
+            <TheTable
+              :data="filteredTeams"
+              :tableHeaders="{ name: 'Name', event: 'Event', priority: 'Priority', members: 'Members' }"
+              :searchInput="searchQuery"
+              @onRowSelect="selectTeam"
+            ></TheTable>
+          </div>
 
-    <div class="content-container">
-      <div :class="{'table-wrapper': true, 'table-wrapper-shrink': showPopup}">
-        <TheTable
-          :data="filteredTeams"
-          :tableHeaders="{ name: 'Name', event: 'Event', priority: 'Priority', members: 'Members' }"
-          :searchInput="searchQuery"
-          @onRowSelect="selectTeam"
-        ></TheTable>
-      </div>
-
-      <div v-if="showPopup" class="right-popup-placeholder">
-        <div class="right-popup">
-          <button class="closeX" @click="closePopup">&times;</button>
-          <div class="popup-content">
-            <h2 class="titulo">Team Details</h2>
-            <p class="inf">Team Name: {{ selectedTeam.name }}</p>
-            <p class="inf">Event: {{ selectedTeam.event }}</p>
-            <p class="inf">Priority: {{ selectedTeam.priority }}</p>
-            <p class="inf">Members: {{ selectedTeam.members }}</p>
+          <div v-if="showPopup" class="right-popup-placeholder">
+            <div class="right-popup">
+              <h2 class="titulo">JEEC25</h2>
+              <button class="closeX" @click="closePopup">&times;</button>
+              <div class="popup-content">
+                <div class="fotobola"></div>
+                <h2 class="subtitulo">Webdev</h2>
+                <p class="sub-subtitulo">Team</p>
+                <div class="display">
+                  <button class="edit" @click="editButton">
+                    <img src="/home/code/jeec-admin-2025/src/assets/pencil.svg" alt="Edit" />
+                  </button>
+                  <button class="edit" @click="TeamMembers">
+                    <img src="/home/code/jeec-admin-2025/src/assets/linkedin.svg" alt="Team" />
+                  </button>
+                  <button class="edit" @click="Delete">
+                    <img src="/home/code/jeec-admin-2025/src/assets/trash.svg" alt="Team" />
+                  </button>
+                </div>
+                <p class="descricao">Description:</p>
+                <p class="inf1">a melhor e a que mais trabalha</p>
+                <div class="linha">
+                  <p class="direita">Priority:</p>
+                  <p class="direita">Members:</p>
+                </div>
+                <div class="linha">
+                  <p class="opaco">{{ selectedTeam.priority }}</p>
+                  <p class="opaco">{{ selectedTeam.members }}</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -77,6 +103,7 @@ export default {
       ],
       showPopup: false,
       selectedTeam: {},
+      editButton: {},
     };
   },
   computed: {
@@ -102,6 +129,13 @@ export default {
       this.showPopup = false;
       this.selectedTeam = {}; // Deselect the team
     },
+    editButton() {
+      this.editButton = true;
+      console.log(this.editButton);
+    },
+    TeamMembers() {
+      console.log('Team Members');
+    },
   },
 };
 </script>
@@ -118,6 +152,23 @@ export default {
   padding: 49px 3ch 3ch 3ch;
 }
 
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.header-wrapper {
+  flex: 0 0 auto;
+}
+
+.content-wrapper {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
 .headerteams {
   display: flex;
   justify-content: space-between; 
@@ -126,7 +177,7 @@ export default {
 }
 
 .headerteams-shrink {
-  width: calc(100% - 320px); /* 300px popup + 20px margem */
+  width: calc(100% - 320px); /* 300px for popup + 20px margin */
 }
 
 .searchteam {
@@ -210,17 +261,20 @@ export default {
   border-radius: 10px;
   background-color: var(--c-accent);
   height: calc(100% + 70px);
-  margin-top: -70px; /*conteiners errados*/
+  margin-top: -70px;
 }
 
 .right-popup {
   padding: 20px;
-  position: relative;
+  position: relative; /* Ensure the close button is positioned relative to the popup */
 }
 
 .popup-content {
   padding: 20px;
   border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .form {
@@ -233,7 +287,6 @@ export default {
   position: relative;
   border-radius: 10px;
   flex-grow: 1;
-  margin-top: -40px; /*conteiners errados*/
 }
 
 .no-teams {
@@ -252,13 +305,42 @@ export default {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--c-text);
-  margin-bottom: 20px;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.subtitulo {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--c-text);
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.sub-subtitulo {
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--c-text);
+  opacity: 0.5;
+  margin-bottom: 10px;
 }
 
 .inf {
   text-align: center;
   font-size: 1rem;
   color: var(--c-text);
+  display: space-between;
+  margin-top: 10px;
+  opacity: 0.5;
+}
+
+.inf1 {
+  width: 100%;
+  font-size: 0.8rem;
+  color: var(--c-text);
+  opacity: 0.5;
+  display: space-between;
 }
 
 .closeX {
@@ -271,4 +353,65 @@ export default {
   cursor: pointer;
   color: var(--c-text);
 }
+
+.edit {
+  width: 36px;
+  height: 36px;
+  background: #FFFFFF;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+}
+
+.fotobola {
+  width: 165px;
+  height: 165px;
+  background-color: #000000;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+
+.display {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.descricao {
+  width: 100%;
+  font-size: 1rem;
+  margin-top: 20px;
+  font-weight: bold;
+  color: var(--c-text);
+  margin-bottom: 5px;
+}
+
+.direita {
+  width: 100%;
+  font-size: 1rem;
+  color: var(--c-text);
+  margin-top: 10px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.opaco {
+  width: 100%;
+  font-size: 0.8rem;
+  color: var(--c-text);
+  margin-top: 5px;
+  opacity: 0.5;
+}
+
+.linha {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+}
+
 </style>
