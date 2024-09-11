@@ -1,6 +1,16 @@
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
 import { ref } from 'vue';
+import AddSpeakerTypePopup from './AddSpeakerTypePopup.vue';
+
+const isModalOpened = ref(false);
+
+const openModal = () => {
+  isModalOpened.value = true;
+};
+const closeModal = () => {
+  isModalOpened.value = false;
+};
 
 const message = ref();
 
@@ -56,7 +66,8 @@ const tablePref = {
           </label>
           <input v-model="message" placeholder="Search for a user">
         </form>
-      <button class="topbtn">Add Type</button>
+      <button class="topbtn" @click="openModal">Add Type</button>
+      <AddSpeakerTypePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerTypePopup>
      </div>
       <TheTable
         :data="datab"
@@ -288,6 +299,7 @@ select {
     width: 15%;
     font-weight: 500;
     font-size: small;
+    cursor: pointer;
 }
 
 .topbar {

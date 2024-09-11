@@ -2,6 +2,16 @@
 import TheTable from '../../global-components/TheTable.vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import AddSpeakerPopup from './AddSpeakerPopup.vue';
+
+const isModalOpened = ref(false);
+
+const openModal = () => {
+  isModalOpened.value = true;
+};
+const closeModal = () => {
+  isModalOpened.value = false;
+};
 
 const router = useRouter();
 
@@ -296,8 +306,9 @@ const tablePref = {
                 <option>there</option>
             </select>
       </div>
-     <button class="topbtn">Add Speaker</button>
+     <button class="topbtn" @click="openModal">Add Speaker</button>
      <button @click="goToSpeakerTypes" class="topbtn">Speaker Types 〉</button>
+     <AddSpeakerPopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerPopup>
      </div>
       <TheTable
         :data="datab"
@@ -522,6 +533,7 @@ select {
     font-size: small;
     flex-grow: 1;
     width: 10%;
+    cursor: pointer;
 }
 
 .topbar {
