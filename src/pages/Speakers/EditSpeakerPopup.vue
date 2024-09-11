@@ -14,7 +14,7 @@ const emit = defineEmits(["modal-close"]);
     <div v-if="isOpen" class="modal-mask">
         <div class="wrapper-wrapper">
         <div class="popup-wrapper" ref="target">
-            <h1>Add Speaker</h1>
+            <h1>Edit Speaker</h1>
             <div class="stuff-inside">
             <div class="flex-1">
                 <div class="flex-1-row-1">

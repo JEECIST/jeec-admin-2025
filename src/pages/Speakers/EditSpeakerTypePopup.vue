@@ -14,7 +14,7 @@ const emit = defineEmits(["modal-close"]);
         <div class="wrapper-wrapper">
             <div class="popup-wrapper">
                 <div class="ihatedivs">
-                    <h1>Add Speaker Type</h1>
+                    <h1>Edit Speaker Type</h1>
                     <div class="flex-1">
                         <div class ="flex-1-row-4">
                             <div class="labels" id="name">

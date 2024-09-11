@@ -2,6 +2,8 @@
 import TheTable from '../../global-components/TheTable.vue';
 import { ref } from 'vue';
 import AddSpeakerTypePopup from './AddSpeakerTypePopup.vue';
+import EditSpeakerTypePopup from './EditSpeakerTypePopup.vue';
+import ListSpeakerTypePopup from './ListSpeakerTypePopup.vue';
 
 const isModalOpened = ref(false);
 
@@ -11,6 +13,25 @@ const openModal = () => {
 const closeModal = () => {
   isModalOpened.value = false;
 };
+
+const isOtherModalOpened = ref(false);
+
+const openOtherModal = () => {
+  isOtherModalOpened.value = true;
+};
+const closeOtherModal = () => {
+  isOtherModalOpened.value = false;
+};
+
+const isAnotherModalOpened = ref(false);
+
+const openAnotherModal = () => {
+  isAnotherModalOpened.value = true;
+};
+const closeAnotherModal = () => {
+  isAnotherModalOpened.value = false;
+};
+
 
 const message = ref();
 
@@ -68,6 +89,8 @@ const tablePref = {
         </form>
       <button class="topbtn" @click="openModal">Add Type</button>
       <AddSpeakerTypePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerTypePopup>
+      <EditSpeakerTypePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerTypePopup>
+      <ListSpeakerTypePopup :isOpen="isAnotherModalOpened" @modal-close="closeAnotherModal"></ListSpeakerTypePopup>
      </div>
       <TheTable
         :data="datab"
@@ -82,15 +105,15 @@ const tablePref = {
         <h3 class="text1">Speaker Type</h3>
         <p class="text2 title">Speaker Type</p>
         <div class="btns-row">
-            <div class="btn">
+            <button class="btn" @click="openOtherModal">
                 <img src="../../assets/pencil.svg">
-            </div>
-            <div class="btn">
+            </button>
+            <button class="btn" @click="openAnotherModal">
                 <img src="../../assets/mic.svg">
-            </div>
-            <div class="btn">
+            </button>
+            <button class="btn">
                 <img src="../../assets/trash.svg">
-            </div>
+            </button>
         </div>
         <div id="info">
         <div class="row">
@@ -306,5 +329,11 @@ select {
     display: flex;
     flex-direction: row;
     gap: 15px;
+}
+
+button {
+  outline: none;
+  border: none;
+  cursor: pointer;
 }
 </style>

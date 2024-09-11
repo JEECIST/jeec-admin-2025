@@ -3,6 +3,7 @@ import TheTable from '../../global-components/TheTable.vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import AddSpeakerPopup from './AddSpeakerPopup.vue';
+import EditSpeakerPopup from './EditSpeakerPopup.vue';
 
 const isModalOpened = ref(false);
 
@@ -11,6 +12,15 @@ const openModal = () => {
 };
 const closeModal = () => {
   isModalOpened.value = false;
+};
+
+const isOtherModalOpened = ref(false);
+
+const openOtherModal = () => {
+  isOtherModalOpened.value = true;
+};
+const closeOtherModal = () => {
+  isOtherModalOpened.value = false;
 };
 
 const router = useRouter();
@@ -309,6 +319,7 @@ const tablePref = {
      <button class="topbtn" @click="openModal">Add Speaker</button>
      <button @click="goToSpeakerTypes" class="topbtn">Speaker Types 〉</button>
      <AddSpeakerPopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerPopup>
+     <EditSpeakerPopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerPopup>
      </div>
       <TheTable
         :data="datab"
@@ -324,18 +335,18 @@ const tablePref = {
         <h3 class="text1">Speaker Name</h3>
         <p class="text2 title">Speaker</p>
         <div class="btns-row">
-            <div class="btn">
+            <button class="btn" @click="openOtherModal">
                 <img src="../../assets/pencil.svg">
-            </div>
-            <div class="btn">
+            </button>
+            <button class="btn">
                 <img src="../../assets/sheet.svg">
-            </div>
-            <div class="btn">
+            </button>
+            <button class="btn">
                 <img src="../../assets/linkedin.svg">
-            </div>
-            <div class="btn">
+            </button>
+            <button class="btn">
                 <img src="../../assets/trash.svg">
-            </div>
+            </button>
         </div>
         <div id="info">
         <p>Company</p>
@@ -553,5 +564,11 @@ select {
 .imsosickofdivs > label {
   position: absolute;
   bottom: 100%;
+}
+
+button {
+  outline: none;
+  border: none;
+  cursor: pointer;
 }
 </style>
