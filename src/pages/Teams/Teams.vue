@@ -52,12 +52,12 @@
                   <button class="edit" @click="TeamMembers">
                     <img src="/home/code/jeec-admin-2025/src/assets/linkedin.svg" alt="Team" />
                   </button>
-                  <button class="edit" @click="Delete">
-                    <img src="/home/code/jeec-admin-2025/src/assets/trash.svg" alt="Team" />
+                  <button class="edit" @click="deleteTeam">
+                    <img src="/home/code/jeec-admin-2025/src/assets/trash.svg" alt="Delete" />
                   </button>
                 </div>
                 <p class="descricao">Description:</p>
-                <p class="inf1">a melhor e a que mais trabalha</p>
+                <p class="inf1">A melhor e a que mais trabalha</p>
                 <div class="linha">
                   <p class="direita">Priority:</p>
                   <p class="direita">Members:</p>
@@ -69,6 +69,25 @@
               </div>
             </div>
           </div>
+
+          <div v-if="showEditPopup" class="edit-popup">
+            <div class="edit-popup-content">
+              <h2>Edit Team</h2>
+              <form @submit.prevent="saveEdit">
+                <label for="name" class="editpopup">Name:</label>
+                <input type="text" v-model="editTeam.name" id="name" required />
+                <label for="event" class="editpopup">Event:</label>
+                <input type="text" v-model="editTeam.event" id="event" required />
+                <label for="priority" class="editpopup">Priority:</label>
+                <input type="text" v-model="editTeam.priority" id="priority" required />
+                <label for="members" class="editpopup">Members:</label>
+                <input type="text" v-model="editTeam.members" id="members" required />
+                <button type="submit" class="add-team">Save</button>
+                <button type="button" @click="closeEditPopup" class="add-team">Cancel</button>
+              </form>
+            </div>
+          </div>
+          <div v-if-click-outside="closeEditPopup"></div>
         </div>
       </div>
     </div>
@@ -102,19 +121,16 @@ export default {
         { id: 3, name: 'Evento 3' },
       ],
       showPopup: false,
+      showEditPopup: false,
       selectedTeam: {},
-      editButton: {},
+      editTeam: {},
     };
   },
   computed: {
     filteredTeams() {
-      const filtered = this.teams.filter(team => 
+      return this.teams.filter(team => 
         team.name.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
-      if (filtered.length === 0) {
-        this.closePopup();
-      }
-      return filtered;
     },
   },
   methods: {
@@ -127,11 +143,27 @@ export default {
     },
     closePopup() {
       this.showPopup = false;
-      this.selectedTeam = {}; // Deselect the team
+      this.selectedTeam = {};
     },
     editButton() {
-      this.editButton = true;
-      console.log(this.editButton);
+      this.editTeam = { ...this.selectedTeam };
+      this.showEditPopup = true;
+      this.showPopup = false;
+    },
+    saveEdit() {
+      const index = this.teams.findIndex(team => team.id === this.editTeam.id);
+      if (index !== -1) {
+        this.teams.splice(index, 1, this.editTeam);
+        this.selectedTeam = { ...this.editTeam }; 
+        this.showEditPopup = false;
+      }
+    },
+    closeEditPopup() {
+      this.showEditPopup = false;
+    },
+    deleteTeam() {
+      this.teams = this.teams.filter(team => team.id !== this.selectedTeam.id);
+      this.closePopup();
     },
     TeamMembers() {
       console.log('Team Members');
@@ -384,7 +416,7 @@ export default {
 .descricao {
   width: 100%;
   font-size: 1rem;
-  margin-top: 20px;
+  margin-top: 10px;
   font-weight: bold;
   color: var(--c-text);
   margin-bottom: 5px;
@@ -414,4 +446,50 @@ export default {
   gap: 40px;
 }
 
+.edit-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  border-radius: 10px;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.edit-popup-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-popup-content h2 {
+  margin-bottom: 20px;
+}
+
+.edit-popup-content form {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-popup-content form label {
+  margin-bottom: 5px;
+}
+
+.edit-popup-content form input {
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+.edit-popup-content form button {
+  margin-top: 10px;
+}
+
+.editpopup {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--c-text);
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
 </style>
