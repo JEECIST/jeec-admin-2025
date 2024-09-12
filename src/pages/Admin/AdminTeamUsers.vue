@@ -8,8 +8,11 @@
           </label>
           <input v-model="message" placeholder="Search for a user" />
         </div>
+        
         <button type="button" @click="showAddUserModal = true">Add User</button>
-        <button type="button" class = "arrowButton" @click="manageUserRoles">User Roles <span class = "chevron"> </span></button>
+        
+          <button v-if = "selectedRow" type="button" @click="manageUserRoles">User Roles <span class = "chevron"> </span></button>
+        
       </form>
       <TheTable
         :data="datab"
@@ -30,8 +33,8 @@
         <p class="cardUsername">{{ selectedRow.user }}</p>
         <p class="cardUseless">Team User</p>
         <div class="cardActions">
-          <button class="edit-button">✏️</button>
-          <button class="delete-button">🗑️</button>
+          <button class="edit-button"><img src="../../assets/edit_btn.png"></button>
+          <button class="delete-button"><img src="../../assets/delete_btn.png"></button>
         </div>
         <div class="cardInfo">
           <div class = "cardInfoMember"> 
@@ -160,7 +163,7 @@ form {
   gap: 1ch;
   padding-left: 1ch;
   border-radius: 6px;
-  width: 60%;
+  width: 100%;
 }
 
 .search_style > label > img {
@@ -198,8 +201,9 @@ form {
   color: var(--c-ft-semi-light);
 }
 
+
 form > button {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
   border: none;
   background-color: var(--c-select);
@@ -208,12 +212,14 @@ form > button {
   cursor: pointer;
   padding: 0px 15px;
   height: 100%;
+  width: 25%;
 }
+
 
 .chevron{
   display: inline-block;
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
   border-right: 2px solid white;
   border-bottom: 2px solid white;
   transform: rotate(-45deg);
@@ -278,12 +284,12 @@ form > button {
 .right-popup-placeholder .edit-button,
 .right-popup-placeholder .delete-button {
   background-color: #ffffff;
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 8px;
   padding: 8px;
   cursor: pointer;
   font-size: 1.2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
 }
 
 .right-popup-placeholder .edit-button:hover,
@@ -334,26 +340,32 @@ form > button {
   width: 50%;
   height: 70%;
   display: flex;
+  justify-content: flex-start;
   flex-direction: column;
   position: relative;
 }
 
 .popup_form {
+  
   display: flex;
+  height: 100%;
   flex-direction: column;
   gap: 10px;
 }
 
 .modal-actions {
-  margin-top: auto;
+  
   display: flex;
   justify-content: flex-end;
+  align-self: flex-end;
   padding-top: 1rem;
   gap: 20px;
+  width: 100%;
 }
 
 .modal h2 {
   margin-top: 0;
+  margin-bottom: 2%;
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -363,7 +375,9 @@ form > button {
 }
 
 .formRole {
+  
   justify-content: flex-start;
+  align-self: flex-start;
   width: 60%;
 }
 
@@ -372,7 +386,8 @@ form > button {
 .formRole label,
 .formUsername label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: -1rem;
+  padding: 0px;
   font-size: 1rem;
   font-weight: 500;
 }
@@ -393,6 +408,7 @@ form > button {
 /* Button Styling */
 .btnCancel,
 .btn-primary {
+  width: 15%;
   background-color: var(--c-select);
   color: white;
   border: none;
