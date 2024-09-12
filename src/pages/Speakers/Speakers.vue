@@ -5,6 +5,8 @@ import { useRouter } from 'vue-router';
 import AddSpeakerPopup from './AddSpeakerPopup.vue';
 import EditSpeakerPopup from './EditSpeakerPopup.vue';
 
+const popupShow = ref(false);
+
 const isModalOpened = ref(false);
 
 const openModal = () => {
@@ -33,6 +35,7 @@ const message = ref();
 
 function selectCallback(row) {
   console.log(row)
+  popupShow.value = true;
 }
 
 const datab = [
@@ -328,7 +331,7 @@ const tablePref = {
         @onRowSelect="selectCallback"
       ></TheTable>
     </div>
-    <div class="right-popup-placeholder">
+    <div class="right-popup-placeholder" v-show="popupShow">
         <div class="items">
         <h1>SPEAKER TYPE</h1>
         <div class="speaker-photo">Insert Speaker Photo</div>
