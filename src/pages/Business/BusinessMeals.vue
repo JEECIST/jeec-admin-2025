@@ -20,9 +20,8 @@
         <p class="cardUsername">{{ selectedRow.day }}</p>
         <p class="cardUseless">Meal </p>
         <div class="cardActions">
-          <button class="edit-button">✏️</button>
-          <button class="edit-button">🦍</button>
-          <button class="delete-button">🗑️</button>
+          <button type="button" @click="showEditMealModal = true" class="edit-button">✏️</button>
+          <button class="edit-button">🦍</button>   
         </div>
         <div class="cardInfo">
           <div class = "cardInfoMember"> 
@@ -40,6 +39,31 @@
     </div>
 
   </div>
+
+  <div v-if="showEditMealModal" class="modal-overlay">
+    <div class="modal">
+      <h2>Edit Day</h2>
+      <form class="popup_form" @submit.prevent="addUser">
+        <div class="formUsername">
+          <label for="username">Username</label>
+          <input v-model="newUser.username" id="username" required />
+        </div>
+        <div class="formRole">
+          <label for="role">Role</label>
+          <select v-model="newUser.role" id="role" required>
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
+            <option value="Viewer">Viewer</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn-primary">Add</button>
+          <button class="btnCancel" @click="closeModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 </template>
 
 <script setup>
@@ -47,7 +71,7 @@ import TheTable from '../../global-components/TheTable.vue';
 import { ref } from 'vue';
 
 const message = ref('');
-const showAddUserModal = ref(false);
+const showEditMealModal = ref(false);
 const newUser = ref({ username: '', role: '' });
 const selectedRow = ref(null);  // Track the selected row
 
@@ -320,8 +344,9 @@ form > button {
   width: 50%;
   height: 70%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   position: relative;
+  flex-wrap:wrap;
 }
 
 .popup_form {
@@ -342,6 +367,8 @@ form > button {
   margin-top: 0;
   font-size: 1.5rem;
   font-weight: 600;
+  width: 100%;
+  height: 10%;
 }
 
 .formUsername {
