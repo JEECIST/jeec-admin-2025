@@ -91,7 +91,9 @@ const tablePref = {
           <input v-model="message" placeholder="Search for a user">
         </form>
       <button class="topbtn" @click="openModal">Add Type</button>
-      <AddSpeakerTypePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerTypePopup>
+      <Transition name="fade" appear>
+        <AddSpeakerTypePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerTypePopup>
+      </Transition>
       <EditSpeakerTypePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerTypePopup>
       <ListSpeakerTypePopup :isOpen="isAnotherModalOpened" @modal-close="closeAnotherModal"></ListSpeakerTypePopup>
      </div>

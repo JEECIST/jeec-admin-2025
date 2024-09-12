@@ -25,6 +25,7 @@ const emit = defineEmits(["modal-close"]);
                     <div class="labels" id="event">
                         <label for="event">Event</label>
                         <select placeholder="Choose Event" id="event">
+                            <option value="null" disabled selected hidden></option>
                             <option>event test</option>
                         </select>
                     </div>
@@ -37,6 +38,7 @@ const emit = defineEmits(["modal-close"]);
                     <div class="labels" id="type">
                         <label for="type">Type</label>
                         <select placeholder="" id="type">
+                            <option value="null" disabled selected hidden></option>
                             <option>type test</option>
                         </select>
                     </div>
@@ -64,15 +66,15 @@ const emit = defineEmits(["modal-close"]);
                     </div>
                     <div class="labels" id="country">
                         <label for="country">Country</label>
-                        <input type="text" placeholder="Odivelas - Terra das Oportunidades" id="country">
+                        <input type="text" placeholder="" id="country">
                     </div>
                 </div>
             </div>
             <div class="flex-2">
                 <div class="labels" id="speakerdickpic">
-                    <label for="speakerdickpic">Speaker Dick Pic</label>
+                    <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
                     <p class="idk">
-                        Size too small please insert larger dick 🥺
+                        No picture selected yet<!-- Size too small please insert larger dick 🥺 -->
                     </p>
                     <button id="coolbutton">Add Dic Pic</button>
                 </div>
@@ -87,7 +89,7 @@ const emit = defineEmits(["modal-close"]);
                     <div class="labels" id="responsible">
                         <label for="responsible">JEEC Responsible</label>
                         <select id="responsible">
-                            <option value="0" disabled selected hidden>Select</option>
+                            <option value="0" disabled selected hidden></option>
                             <option value="1">LARA</option>
                             <option value="2">ZE</option>
                             <option value="3">EMO LARA</option>

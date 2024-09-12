@@ -10,9 +10,9 @@ const emit = defineEmits(["modal-close"]);
 
 const message = ref();
 
-function selectCallback
-(row) {
+function selectCallback(row) {
   console.log(row)
+  popupShow.value = true;
 }
 
 const datab = [
@@ -34,25 +34,11 @@ const datab = [
   {
     name: "Paulo Martins",
   },
-  {
-    name: "Paulo Martins",
-  },
-  {
-    name: "Paulo Martins",
-  },
-  {
-    name: "Paulo Martins",
-  },
-  {
-    name: "Paulo Martins",
-  },
-  {
-    name: "Paulo Martins",
-  },
-];
+
+]; 
 
 const tablePref = {
-
+  name: "",
 };
 
 </script>
@@ -63,14 +49,16 @@ const tablePref = {
             <div class="popup-wrapper">
                 <div class="ihatedivs">
                     <h1>Alumni Speakers</h1>
-                    <TheTable
+                    <div class="table-wrapper">
+                      <TheTable
                         :data="datab"
                         :tableHeaders="tablePref"
                         :searchInput="message"
                         @onRowSelect="selectCallback"
-                    ></TheTable>
+                      ></TheTable>
+                      <button class="add" @click.stop="emit('modal-close')">Close</button>
+                    </div>
                 </div>
-                <button class="add" @click.stop="emit('modal-close')">Close</button>
             </div>
         </div>
     </div>
@@ -105,6 +93,8 @@ const tablePref = {
     height: 100%;
     left: 0;
     top: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 h1 {
@@ -122,13 +112,29 @@ h1 {
     gap: 1.5vh;
 }
 
+.ihatedivs {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.table-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: 50vw;
+  margin-top: 4%;
+
+}
+
 .add {
     background-color: #152259;
     color: white;
     border-radius: 5px;
     border: none;
-    margin-right: 3vw;
-    margin-top: 13%;
+    margin-right: -2vw;
+    margin-top: 15%;
     margin-bottom: 2%;
     display: flex;
     margin-left: auto;
