@@ -16,7 +16,7 @@
       </form>
       <TheTable
         :data="datab"
-        :toShow="tablePref"
+        :tableHeaders="tablePref"
         :searchInput="message"
         :buttons="tableButtons"
         @onRowSelect="selectCallback"
@@ -118,7 +118,11 @@ const datab = ref([
   },
 ]);
 
-const tablePref = ["user", "name", "role"];
+const tablePref = {
+  user: "User",
+  name: "First Name", 
+  role: "Role"
+};
 
 function manageUserRoles() {
   console.log('User Roles button clicked');
