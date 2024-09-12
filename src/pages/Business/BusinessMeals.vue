@@ -1,6 +1,19 @@
 <template>
   <div class="wrapper">
     <div class="table">
+      <form>
+        <div class="search_style">
+          <label>
+            <img src="../../assets/search.svg">
+          </label>
+          <input v-model="message" placeholder="Search for a user" />
+        </div>
+        
+        <button type="button" @click="showAddUserModal = true">Add User</button>
+        
+          <button v-if = "selectedRow" type="button" @click="manageUserRoles">User Roles <span class = "chevron"> </span></button>
+        
+      </form>
       <TheTable
         :data="datab"
         :toShow="tablePref"
@@ -13,24 +26,25 @@
     <!-- Conditionally render the right popup placeholder -->
     <div v-if="selectedRow" class="right-popup-placeholder">
       <div class="header">
-        <p class="cardUsername">{{ selectedRow.weekday   }}</p>
+        <p class="cardUsername">{{ selectedRow.role }}</p>
       </div>
       
         <img src="../../assets/wrizz.jpg" alt="Profile Image" class="pfp">
-        <p class="cardUsername">{{ selectedRow.day }}</p>
-        <p class="cardUseless">Meal </p>
+        <p class="cardUsername">{{ selectedRow.user }}</p>
+        <p class="cardUseless">Team User</p>
         <div class="cardActions">
-          <button type="button" @click="showEditMealModal = true" class="edit-button">✏️</button>
-          <button class="edit-button">🦍</button>   
+          <button class="edit-button" type = "button" @click="showAddUserModal = true"><img src="../../assets/edit_btn.png"></button>
+          <button class="delete-button"><img src="../../assets/delete_btn.png"></button>
         </div>
         <div class="cardInfo">
           <div class = "cardInfoMember"> 
-            <p class="cardInfoLabel">Dises available</p>
+            <p class="cardInfoLabel">Member</p>
             <p class="cardInfoValue">{{ selectedRow.name }}</p>
           </div>
             
           <div class = "cardInfoMember"> 
-            <p>add plates here</p>
+            <p class="cardInfoLabel">PASSWORD</p>
+            <p> Placeholder for password from database</p>
           </div>
 
           
@@ -40,9 +54,10 @@
 
   </div>
 
-  <div v-if="showEditMealModal" class="modal-overlay">
+  <!-- Modal Popup -->
+  <div v-if="showAddUserModal" class="modal-overlay">
     <div class="modal">
-      <h2>Edit Day</h2>
+      <h2>Add Team User</h2>
       <form class="popup_form" @submit.prevent="addUser">
         <div class="formUsername">
           <label for="username">Username</label>
@@ -63,7 +78,6 @@
       </form>
     </div>
   </div>
-
 </template>
 
 <script setup>
@@ -71,7 +85,7 @@ import TheTable from '../../global-components/TheTable.vue';
 import { ref } from 'vue';
 
 const message = ref('');
-const showEditMealModal = ref(false);
+const showAddUserModal = ref(false);
 const newUser = ref({ username: '', role: '' });
 const selectedRow = ref(null);  // Track the selected row
 
@@ -85,6 +99,10 @@ function addUser() {
   closeModal();
 }
 
+function closeModal() {
+  showAddUserModal.value = false;
+  newUser.value = { username: '', role: '' };
+}
 
 const datab = ref([
 
@@ -127,7 +145,6 @@ const datab = ref([
 ]);
 
 const tablePref = ["day", "weekday", "RegistrationDay", "RegistrationWeekday", "RegistrationTime"];
-
 function manageUserRoles() {
   console.log('User Roles button clicked');
 }
@@ -171,7 +188,7 @@ form {
   gap: 1ch;
   padding-left: 1ch;
   border-radius: 6px;
-  width: 60%;
+  width: 100%;
 }
 
 .search_style > label > img {
@@ -209,8 +226,9 @@ form {
   color: var(--c-ft-semi-light);
 }
 
+
 form > button {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
   border: none;
   background-color: var(--c-select);
@@ -219,12 +237,14 @@ form > button {
   cursor: pointer;
   padding: 0px 15px;
   height: 100%;
+  width: 25%;
 }
+
 
 .chevron{
   display: inline-block;
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
   border-right: 2px solid white;
   border-bottom: 2px solid white;
   transform: rotate(-45deg);
@@ -289,11 +309,12 @@ form > button {
 .right-popup-placeholder .edit-button,
 .right-popup-placeholder .delete-button {
   background-color: #ffffff;
+  border: none;
   border-radius: 8px;
   padding: 8px;
   cursor: pointer;
   font-size: 1.2rem;
-  border:none;
+  
 }
 
 .right-popup-placeholder .edit-button:hover,
@@ -344,31 +365,34 @@ form > button {
   width: 50%;
   height: 70%;
   display: flex;
-  flex-direction: row;
+  justify-content: flex-start;
+  flex-direction: column;
   position: relative;
-  flex-wrap:wrap;
 }
 
 .popup_form {
+  
   display: flex;
+  height: 100%;
   flex-direction: column;
   gap: 10px;
 }
 
 .modal-actions {
-  margin-top: auto;
+  
   display: flex;
   justify-content: flex-end;
+  align-self: flex-end;
   padding-top: 1rem;
   gap: 20px;
+  width: 100%;
 }
 
 .modal h2 {
   margin-top: 0;
+  margin-bottom: 2%;
   font-size: 1.5rem;
   font-weight: 600;
-  width: 100%;
-  height: 10%;
 }
 
 .formUsername {
@@ -376,7 +400,9 @@ form > button {
 }
 
 .formRole {
+  
   justify-content: flex-start;
+  align-self: flex-start;
   width: 60%;
 }
 
@@ -385,7 +411,8 @@ form > button {
 .formRole label,
 .formUsername label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: -1rem;
+  padding: 0px;
   font-size: 1rem;
   font-weight: 500;
 }
@@ -406,6 +433,7 @@ form > button {
 /* Button Styling */
 .btnCancel,
 .btn-primary {
+  width: 15%;
   background-color: var(--c-select);
   color: white;
   border: none;
