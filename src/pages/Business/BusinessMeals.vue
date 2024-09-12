@@ -3,7 +3,7 @@
     <div class="table">
       <TheTable
         :data="datab"
-        :toShow="tablePref"
+        :tableHeaders="tablePref"
         :searchInput="message"
         :buttons="tableButtons"
         @onRowSelect="selectCallback"
@@ -14,7 +14,7 @@
     <div v-if="selectedRow" class="right-popup-placeholder">
       <div class="header">
         <p class="cardUsername">{{ selectedRow.weekday   }}</p>
-      </div>
+      </div>      
       
         <img src="../../assets/wrizz.jpg" alt="Profile Image" class="pfp">
         <p class="cardUsername">{{ selectedRow.day }}</p>
@@ -48,17 +48,12 @@ import { ref } from 'vue';
 
 const message = ref('');
 const showAddUserModal = ref(false);
-const newUser = ref({ username: '', role: '' });
+
 const selectedRow = ref(null);  // Track the selected row
 
 function selectCallback(row) {
   selectedRow.value = row;  // Set the selected row
   console.log('Selected Row:', row);
-}
-
-function addUser() {
-  datab.value.push({ user: newUser.value.username, role: newUser.value.role, name: newUser.value.username });
-  closeModal();
 }
 
 
@@ -67,42 +62,49 @@ const datab = ref([
   {
     day: "07/05/2025",
     weekday: "Monday",
-    RegistrationDay: "IDK",
-    RegistrationWeekday: "IDK",
-    RegistrationTime: "23:59"
+    registrationDay: "IDK",
+    registrationWeekday: "IDK",
+    registrationTime: "23:59"
   },
   {
     day: "08/05/2025",
     weekday: "Tuesday",
-    RegistrationDay: "IDK",
-    RegistrationWeekday: "IDK",
-    RegistrationTime: "23:59"
+    registrationDay: "IDK",
+    registrationWeekday: "IDK",
+    registrationTime: "23:59"
   },
   {
     day: "09/05/2025",
     weekday: "Wednesday",
-    RegistrationDay: "IDK",
-    RegistrationWeekday: "IDK",
-    RegistrationTime: "23:59"
+    registrationDay: "IDK",
+    registrationWeekday: "IDK",
+    registrationTime: "23:59"
   },
   {
     day: "10/05/2025",
     weekday: "Thursday",
-    RegistrationDay: "IDK",
-    RegistrationWeekday: "IDK",
-    RegistrationTime: "23:59"
+    registrationDay: "IDK",
+    registrationWeekday: "IDK",
+    registrationTime: "23:59"
   },
   {
     day: "11/05/2025",
     weekday: "Friday",
-    RegistrationDay: "IDK",
-    RegistrationWeekday: "IDK",
-    RegistrationTime: "23:59"
+    registrationDay: "IDK",
+    registrationWeekday: "IDK",
+    registrationTime: "23:59"
   },
 
 ]);
 
-const tablePref = ["day", "weekday", "RegistrationDay", "RegistrationWeekday", "RegistrationTime"];
+
+const tablePref = {
+  day: "Day",
+  weekday: "Weekday", 
+  registrationDay: "Registration Day",
+  registrationWeekday: "Registration Weekday",
+  registrationTime: "Registration Time"
+};
 
 function manageUserRoles() {
   console.log('User Roles button clicked');
