@@ -139,6 +139,7 @@ export default {
     },
     selectTeam(row) {
       this.selectedTeam = row;
+      console.log(row)
       this.showPopup = true;
     },
     closePopup() {
