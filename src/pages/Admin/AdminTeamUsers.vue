@@ -11,8 +11,7 @@
         
         <button type="button" @click="showAddUserModal = true">Add User</button>
         
-          <button v-if = "selectedRow" type="button" @click="manageUserRoles">User Roles <span class = "chevron"> </span></button>
-        
+        <button v-if = "selectedRow" type="button" @click="manageUserRoles">User Roles <span class = "chevron"> </span></button>
       </form>
       <TheTable
         :data="datab"
@@ -325,7 +324,7 @@ form > button {
 
 /* Modal styles */
 .modal-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -341,12 +340,14 @@ form > button {
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  width: 50%;
-  height: 70%;
+  max-width: 900px;
+  width: 100%;
+  min-height: 70%;
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
   position: relative;
+  flex: 1;          
 }
 
 .popup_form {
