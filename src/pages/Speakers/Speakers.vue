@@ -770,19 +770,6 @@ button {
   background-color: rgba(0, 0, 0, 0.425);
 }
 
-.description {
-  display: flex;
-  justify-content: center;
-  background-color: white;
-  width: 30vw;
-  height: 80%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  translate: -50% -50%;
-  border-radius: 15px;
-}
-
 .description-mobile {
   display: flex;
   justify-content: left;
@@ -796,7 +783,30 @@ button {
   border-radius: 15px;
 }
 
-.description, .description-mobile > p {
+.description-mobile > p {
+   display: flex;
+   align-items: center;
+   vertical-align: center;
+   justify-content: center;
+   padding: 3.5vw;
+   font-weight: 350;
+   color: (--c-ft-semi-light);
+}
+
+.description {
+  display: flex;
+  justify-content: center;
+  background-color: white;
+  width: 30vw;
+  height: 80%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  border-radius: 15px;
+}
+
+.description > p {
    display: flex;
    align-items: center;
    vertical-align: center;
