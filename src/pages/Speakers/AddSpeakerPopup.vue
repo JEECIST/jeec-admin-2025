@@ -7,11 +7,20 @@ const props = defineProps({
 
 const emit = defineEmits(["modal-close"]);
 
+function isMobile() {
+   if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+     return true;
+   }
+   else {
+    return false;
+   }
+}
 
 </script>
 
 <template>
     <div v-if="isOpen" class="modal-mask">
+      <div class="desktop" v-if="!isMobile()">
         <div class="wrapper-wrapper">
         <div class="popup-wrapper" ref="target">
             <h1>Add Speaker</h1>
@@ -76,7 +85,7 @@ const emit = defineEmits(["modal-close"]);
                     <p class="idk">
                         No picture selected yet<!-- Size too small please insert larger dick 🥺 -->
                     </p>
-                    <button id="coolbutton">Add Dic Pic</button>
+                    <button id="coolbutton">Add <!--Dic-->Pic</button>
                 </div>
                 <div class="labels" id="companylogo">
                     <label for="companylogo">Company Logo</label>
@@ -99,9 +108,110 @@ const emit = defineEmits(["modal-close"]);
                 </div>
             </div>
         </div>
+        <div class="btns">
             <button class="add" @click.stop="emit('modal-close')">Add</button>
+            <button class="add" @click.stop="emit('modal-close')">Close</button>
         </div>
         </div>
+        </div>
+      </div>
+
+
+      <div class="mobile" v-else>
+        <div class="mobile-wrapper-wrapper">
+        <div class="popup-wrapper" ref="target">
+            <h1>Add Speaker</h1>
+            <div class="stuff-inside">
+            <div class="flex-1">
+                <div class="flex-1-row-1">
+                    <div class="labels" id="name">
+                        <label for="name">Name</label>
+                        <input type="text" placeholder="" id="name">
+                    </div>
+                    <div class="labels" id="event">
+                        <label for="event">Event</label>
+                        <select placeholder="Choose Event" id="event">
+                            <option value="null" disabled selected hidden></option>
+                            <option>event test</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex-1-row-2">
+                    <div class="labels" id="linkedin">
+                        <label for="linkedin">LinkedIn</label>
+                        <input type="text" placeholder="" id="linkedin">
+                    </div>
+                    <div class="labels" id="type">
+                        <label for="type">Type</label>
+                        <select placeholder="" id="type">
+                            <option value="null" disabled selected hidden></option>
+                            <option>type test</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex-1-row-3">
+                    <div class="labels" id="biography">
+                        <label for="biography">Biography</label>
+                        <input type="text" placeholder="" id="biography">
+                    </div>
+                </div>
+                <div class="flex-1-row-4">
+                    <div class="labels" id="company">
+                        <label for="company">Company</label>
+                        <input type="text" placeholder="" id="company">
+                    </div>
+                    <div class="labels" id="position">
+                        <label for="position">Position</label>
+                        <input type="text" placeholder="" id="position">
+                    </div>
+                </div>
+                <div class="flex-1-row-5">
+                    <div class="labels" id="website">
+                        <label for="website">Company Website</label>
+                        <input type="text" placeholder="" id="website">
+                    </div>
+                    <div class="labels" id="country">
+                        <label for="country">Country</label>
+                        <input type="text" placeholder="" id="country">
+                    </div>
+                </div>
+            </div>
+            <div class="flex-2">
+                <div class="labels" id="speakerdickpic">
+                    <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
+                    <p class="idk">
+                        No picture selected yet<!-- Size too small please insert larger dick 🥺 -->
+                    </p>
+                    <button id="coolbutton">Add <!--Dic-->Pic</button>
+                </div>
+                <div class="labels" id="companylogo">
+                    <label for="companylogo">Company Logo</label>
+                    <p class="idk">
+                        No logo selected yet
+                    </p>
+                    <button id="coolbutton">Add New Logo</button>
+                </div>
+                <div class="irresponsible">
+                    <div class="labels" id="responsible">
+                        <label for="responsible">JEEC Responsible</label>
+                        <select id="responsible">
+                            <option value="0" disabled selected hidden></option>
+                            <option value="1">LARA</option>
+                            <option value="2">ZE</option>
+                            <option value="3">EMO LARA</option>
+                            <option value="4">AFONSO VILELA</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="btns">
+            <button class="add" @click.stop="emit('modal-close')">Add</button>
+            <button class="add" @click.stop="emit('modal-close')">Close</button>
+        </div>
+        </div>
+        </div>
+      </div>
     </div>
 </template>
 
@@ -114,6 +224,18 @@ const emit = defineEmits(["modal-close"]);
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.425);
+}
+
+.mobile-wrapper-wrapper {
+    display: flex;
+    justify-content: center;
+    background-color: white;
+    width: 94.5vw;
+    height: 95%;
+    position: absolute;
+    top: 50%;
+    left: 46.5%;
+    translate: -50% -50%;
 }
 
 .wrapper-wrapper {
@@ -145,14 +267,14 @@ h1 {
 
 }
 
-.flex-1-row-1,
+.mobile-wrapper-wrapper > .flex-1-row-1,
 .flex-1-row-2,
 .flex-1-row-3,
 .flex-1-row-4,
 .flex-1-row-5 {
     display: flex;
     flex-direction: row;
-    width: 48vw;
+    width: 50vw;
     justify-content: space-between;
 }
 
@@ -183,8 +305,8 @@ select {
     height: 100%;
 }
 
-.labels>#name {
-    width: 31.08vw;
+.mobile-wrapper-wrapper > .labels> #name {
+    width: 50.085vw;
 }
 
 .labels>#event {
@@ -270,5 +392,12 @@ p {
     justify-content: center;
     gap: 10vh;
     cursor: pointer;
+}
+
+.btns {
+    width: 15vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
 }
 </style>

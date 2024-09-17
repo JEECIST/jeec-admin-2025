@@ -34,6 +34,15 @@ const closeAnotherModal = () => {
   isAnotherModalOpened.value = false;
 };
 
+function isMobile() {
+   if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+     return true;
+   }
+   else {
+    return false;
+   }
+}
+
 
 const message = ref();
 
@@ -81,6 +90,7 @@ const tablePref = {
 </script>
 
 <template>
+<div class="desktop" v-if="!isMobile()">
 <div class="wrapper">
     <div class="table">
       <div class="topbar">
@@ -151,9 +161,95 @@ const tablePref = {
     </div>
 </div>
   </div>
+</div>
+
+
+
+<div class="mobile" v-else>
+  <div class="mobile-wrapper">
+    <div class="table">
+      <div class="mobile-topbar">
+        <form>
+          <label>
+            <img src="../../assets/search.svg">
+          </label>
+          <input v-model="message" placeholder="Search for a user">
+        </form>
+      <button class="mobile-topbtn" @click="openModal">Add Type</button>
+      <Transition name="fade" appear>
+        <AddSpeakerTypePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerTypePopup>
+      </Transition>
+      <EditSpeakerTypePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerTypePopup>
+      <ListSpeakerTypePopup :isOpen="isAnotherModalOpened" @modal-close="closeAnotherModal"></ListSpeakerTypePopup>
+      </div>
+      <div class="right-popup-placeholder-mobile" v-show="popupShow">
+        <div class="items">
+        <div class="speaker-photo">Insert Speaker Photo</div>
+        <h3 class="text1">Speaker Type</h3>
+        <p class="text2 title">Speaker Type</p>
+        <div class="btns-row">
+            <button class="btn" @click="openOtherModal">
+                <img src="../../assets/pencil.svg">
+            </button>
+            <button class="btn" @click="openAnotherModal">
+                <img src="../../assets/mic.svg">
+            </button>
+            <button class="btn">
+                <img src="../../assets/trash.svg">
+            </button>
+        </div>
+        <div id="info">
+        <div class="row">
+        <div class="col item1">
+            <p>Priority</p>
+            <p class="text2">3</p>           
+        </div>
+        <div class="col item2">
+            <p># Speakers</p>
+            <p class="text2">9</p>
+        </div>
+        <div class="col item3">
+            <p>Show in Website</p>
+            <p class="text2">Yes</p>
+        </div>
+        <div class="col item4">
+            <p>Social Media</p>
+            <p class="text2">Yes</p>
+        </div>
+        <div class="col item5">
+            <p>Exclusive Video</p>
+            <p class="text2">No</p>
+        </div>
+        <div class="col item6">
+            <p>Exclusive Posts</p>
+            <p class="text2">No</p>
+        </div>
+        </div>
+    </div>
+    </div>
+    </div>
+      <TheTable
+        :data="datab"
+        :tableHeaders="tablePref"
+        :searchInput="message"
+        @onRowSelect="selectCallback"
+      ></TheTable>
+    </div>
+  </div>
+</div>
 </template>
 
 <style scoped>
+.mobile-wrapper {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: calc(100dvh - var(--header-height));
+  padding: 3ch 1ch 1ch 1ch;
+  margin-right: -7vw;
+  overflow-x: hidden;
+}
+
 .wrapper {
   display: flex;
   position: relative;
@@ -168,6 +264,19 @@ const tablePref = {
   width: 100%;
   gap: 3ch;
   padding-right: 3ch;
+}
+
+
+.mobile-topbar > form {
+  display: flex;
+  width: 70%;
+  background-color: var(--c-accent);
+  height: 50px;
+  line-height: 50px;
+  align-items: center;
+  gap: 1ch;
+  padding-left: 1ch;
+  border-radius: 10px;
 }
 
 form {
@@ -225,6 +334,15 @@ form > input::placeholder {
   border-radius: 30px;
   background-color: var(--c-accent);
   height: 100%;
+}
+
+.right-popup-placeholder-mobile {
+  width: 94.5vw;
+  height: 93vh;
+  border-radius: 30px;
+  background-color: var(--c-accent);
+  margin-right: -0vw;
+
 }
 
 .items {
@@ -317,6 +435,19 @@ select {
     background-color: white;
 }
 
+.mobile-topbtn {
+    background-color: var(--c-select);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    align-items: center;
+    height: 50px;
+    width: 30%;
+    font-weight: 500;
+    font-size: small;
+    cursor: pointer;
+}
+
 .topbtn {
     background-color: var(--c-select);
     color: white;
@@ -330,7 +461,7 @@ select {
     cursor: pointer;
 }
 
-.topbar {
+.topbar, .mobile-topbar {
     display: flex;
     flex-direction: row;
     gap: 15px;

@@ -76,7 +76,7 @@ const emit = defineEmits(["modal-close"]);
                     <p class="idk">
                         No picture selected yet<!-- Size too small please insert larger dick 🥺 -->
                     </p>
-                    <button id="coolbutton">Add Dic Pic</button>
+                    <button id="coolbutton">Add <!--Dic-->Pic</button>
                 </div>
                 <div class="labels" id="companylogo">
                     <label for="companylogo">Company Logo</label>
