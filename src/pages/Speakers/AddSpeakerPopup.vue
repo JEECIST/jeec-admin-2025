@@ -110,7 +110,7 @@ function isMobile() {
         </div>
         <div class="btns">
             <button class="add" @click.stop="emit('modal-close')">Add</button>
-            <button class="add" @click.stop="emit('modal-close')">Close</button>
+            <button class="add" @click.stop="emit('modal-close')">Cancel</button>
         </div>
         </div>
         </div>
@@ -122,13 +122,13 @@ function isMobile() {
         <div class="popup-wrapper" ref="target">
             <h1>Add Speaker</h1>
             <div class="stuff-inside">
-            <div class="flex-1">
+            <div class="mobile-flex-1">
                 <div class="flex-1-row-1">
-                    <div class="labels" id="name">
+                    <div class="mobile-labels" id="name">
                         <label for="name">Name</label>
                         <input type="text" placeholder="" id="name">
                     </div>
-                    <div class="labels" id="event">
+                    <div class="mobile-labels" id="event">
                         <label for="event">Event</label>
                         <select placeholder="Choose Event" id="event">
                             <option value="null" disabled selected hidden></option>
@@ -137,11 +137,11 @@ function isMobile() {
                     </div>
                 </div>
                 <div class="flex-1-row-2">
-                    <div class="labels" id="linkedin">
+                    <div class="mobile-labels" id="linkedin">
                         <label for="linkedin">LinkedIn</label>
                         <input type="text" placeholder="" id="linkedin">
                     </div>
-                    <div class="labels" id="type">
+                    <div class="mobile-labels" id="type">
                         <label for="type">Type</label>
                         <select placeholder="" id="type">
                             <option value="null" disabled selected hidden></option>
@@ -150,33 +150,33 @@ function isMobile() {
                     </div>
                 </div>
                 <div class="flex-1-row-3">
-                    <div class="labels" id="biography">
+                    <div class="mobile-labels" id="biography">
                         <label for="biography">Biography</label>
                         <input type="text" placeholder="" id="biography">
                     </div>
                 </div>
                 <div class="flex-1-row-4">
-                    <div class="labels" id="company">
+                    <div class="mobile-labels" id="company">
                         <label for="company">Company</label>
                         <input type="text" placeholder="" id="company">
                     </div>
-                    <div class="labels" id="position">
+                    <div class="mobile-labels" id="position">
                         <label for="position">Position</label>
                         <input type="text" placeholder="" id="position">
                     </div>
                 </div>
                 <div class="flex-1-row-5">
-                    <div class="labels" id="website">
+                    <div class="mobile-labels" id="website">
                         <label for="website">Company Website</label>
                         <input type="text" placeholder="" id="website">
                     </div>
-                    <div class="labels" id="country">
+                    <div class="mobile-labels" id="country">
                         <label for="country">Country</label>
                         <input type="text" placeholder="" id="country">
                     </div>
                 </div>
             </div>
-            <div class="flex-2">
+            <div class="mobile-flex-2">
                 <div class="labels" id="speakerdickpic">
                     <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
                     <p class="idk">
@@ -205,9 +205,9 @@ function isMobile() {
                 </div>
             </div>
         </div>
-        <div class="btns">
-            <button class="add" @click.stop="emit('modal-close')">Add</button>
-            <button class="add" @click.stop="emit('modal-close')">Close</button>
+        <div class="mobile-btns">
+            <button class="mobile-add" @click.stop="emit('modal-close')">Add</button>
+            <button class="mobile-add" @click.stop="emit('modal-close')">Cancel</button>
         </div>
         </div>
         </div>
@@ -264,18 +264,52 @@ h1 {
     margin-left: 5%;
     margin-right: 15%;
     gap: 1.5vh;
-
 }
 
-.mobile-wrapper-wrapper > .flex-1-row-1,
+.flex-1-row-1,
 .flex-1-row-2,
 .flex-1-row-3,
 .flex-1-row-4,
 .flex-1-row-5 {
     display: flex;
     flex-direction: row;
-    width: 50vw;
+    width: 48vw;
     justify-content: space-between;
+}
+
+.mobile-flex-1 > .flex-1-row-1 {
+    display: flex;
+    flex-direction: row;
+    width: 80vw;
+    justify-content: left;
+    gap: 4vw;
+}
+
+.mobile-flex-1 > .flex-1-row-2,
+.flex-1-row-3,
+.flex-1-row-4,
+.flex-1-row-5 {
+    display: flex;
+    flex-direction: row;
+    width: 80vw;
+    justify-content: left;
+    gap: 20vw;
+}
+
+.mobile-flex-1 > .flex-1-row-5 {
+    display: flex;
+    flex-direction: row;
+    width: 80vw;
+    justify-content: left;
+    gap: 20vw;
+}
+
+.mobile-wrapper-wrapper > .flex-1-row-2, .flex-1-row-3, .flex-1-row-4, .flex-1-row-5 {
+    display: flex;
+    flex-direction: row;
+    width: 80vw;
+    justify-content: left;
+    gap: 4vw;
 }
 
 input {
@@ -297,6 +331,14 @@ select {
     height: 5vh;
 }
 
+.mobile-labels {
+    display: flex;
+    flex-direction: column;
+    color: #515151;
+    font-size: smaller;
+    height: 100%;
+}
+
 .labels {
     display: flex;
     flex-direction: column;
@@ -305,17 +347,49 @@ select {
     height: 100%;
 }
 
-.mobile-wrapper-wrapper > .labels> #name {
+.mobile-labels> #name {
     width: 50.085vw;
+}
+
+.mobile-labels > #event {
+    width: 26vw;
 }
 
 .labels>#event {
     width: 13.32vw;
 }
 
+.mobile-flex-1 > .labels>#event {
+    width: 60vw;
+}
+
+.mobile-labels > #biography {
+    height: 20vh;
+    width: 80vw;
+}
+
 #biography {
     height: 20vh;
     width: 48vw;
+}
+
+.mobile-labels > #company {
+    width:  38vw;
+}
+.mobile-labels > #position {
+    width: 38vw;
+}
+.mobile-labels > #website {
+    width: 38vw;
+}
+.mobile-labels > #country {
+    width: 38vw;
+}
+.mobile-labels > #linkedin {
+    width: 38vw;
+}
+.mobile-labels > #type {
+    width: 38vw;
 }
 
 .labels> #company,
@@ -327,7 +401,7 @@ select {
     width: 22vw;
 }
 
-.flex-2 {
+.flex-2, .mobile-flex-2 {
     display: flex;
     flex-direction: row;
     margin-right: 9vw;
@@ -338,14 +412,44 @@ select {
 
 }
 
+.mobile-flex-2 > #speakerdickpic {
+    width: 20vw;
+    height: 25vh;
+}
+
+.mobile-flex-2 > #companylogo {
+    width: 20vw;
+    height: 25vh;
+}
+
 #speakerdickpic,
 #companylogo {
     width: 12.60vw;
     height: 22vh;
 }
 
+.mobile-flex-2 > .irresponsible {
+    width: 15vw;
+}
+
 .irresponsible {
     width: 20.40vw;
+}
+
+.mobile-flex-2 > #coolbutton {
+    background-color: #509cdb;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 8.4vw;
+    height: 3.5vh;
+    margin-top: 1vh;
+    font-size: smaller;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    justify-content: center;
+    cursor: pointer;
 }
 
 #coolbutton {
@@ -385,7 +489,6 @@ p {
     margin-top: 2%;
     margin-bottom: 2%;
     display: flex;
-    margin-left: auto;
     width: 8.4vw;
     height: 3.5vh;
     align-items: center;
@@ -394,10 +497,46 @@ p {
     cursor: pointer;
 }
 
-.btns {
-    width: 15vw;
+.mobile-add {
+    background-color: #152259;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    margin-right: 3vw;
+    margin-top: 2%;
+    margin-bottom: 2%;
     display: flex;
-    flex-direction: row;
-    justify-content: left;
+    width: 16vw;
+    height: 3.5vh;
+    align-items: center;
+    justify-content: center;
+    gap: 10vh;
+    cursor: pointer;
 }
+
+.btns {
+    width: 60vw;
+    display: flex;
+    gap: 20px;
+    margin-top: 0vh;
+    justify-content: right;
+    gap: 0.1%;
+}
+.mobile-btns {
+    width: 80vw;
+    display: flex;
+    gap: 20px;
+    margin-top: 4vh;
+    justify-content: right;
+    gap: 0.1%;
+}
+
+.labels>#name {
+    width: 31.08vw;
+}
+
+.labels>#event {
+    width: 13.32vw;
+}
+
 </style>
