@@ -70,24 +70,25 @@
             </div>
           </div>
 
-          <div v-if="showEditPopup" class="edit-popup">
-            <div class="edit-popup-content">
-              <h2>Edit Team</h2>
-              <form @submit.prevent="saveEdit">
-                <label for="name" class="editpopup">Name:</label>
-                <input type="text" v-model="editTeam.name" id="name" required />
-                <label for="event" class="editpopup">Event:</label>
-                <input type="text" v-model="editTeam.event" id="event" required />
-                <label for="priority" class="editpopup">Priority:</label>
-                <input type="text" v-model="editTeam.priority" id="priority" required />
-                <label for="members" class="editpopup">Members:</label>
-                <input type="text" v-model="editTeam.members" id="members" required />
-                <button type="submit" class="add-team">Save</button>
-                <button type="button" @click="closeEditPopup" class="add-team">Cancel</button>
-              </form>
+          <div v-if="showEditPopup" class="overlay">
+            <div class="edit-popup">
+              <div class="edit-popup-content">
+                <h2>Edit Team</h2>
+                <form @submit.prevent="saveEdit">
+                  <label for="name" class="editpopup">Name:</label>
+                  <input type="text" v-model="editTeam.name" id="name" required />
+                  <label for="event" class="editpopup">Event:</label>
+                  <input type="text" v-model="editTeam.event" id="event" required />
+                  <label for="priority" class="editpopup">Priority:</label>
+                  <input type="text" v-model="editTeam.priority" id="priority" required />
+                  <label for="members" class="editpopup">Members:</label>
+                  <input type="text" v-model="editTeam.members" id="members" required />
+                  <button type="submit" class="add-team">Save</button>
+                  <button type="button" @click="closeEditPopup" class="add-team">Cancel</button>
+                </form>
+              </div>
             </div>
           </div>
-          <div v-if-click-outside="closeEditPopup"></div>
         </div>
       </div>
     </div>
@@ -139,23 +140,22 @@ export default {
     },
     selectTeam(row) {
       this.selectedTeam = row;
-      console.log(row)
       this.showPopup = true;
     },
     closePopup() {
       this.showPopup = false;
-      this.selectedTeam = {};
+      this.selectedTeam = {}; // Deselect the team
     },
     editButton() {
-      this.editTeam = { ...this.selectedTeam };
+      this.editTeam = { ...this.selectedTeam }; // Create a copy of the selected team for editing
       this.showEditPopup = true;
       this.showPopup = false;
     },
     saveEdit() {
       const index = this.teams.findIndex(team => team.id === this.editTeam.id);
       if (index !== -1) {
-        this.teams.splice(index, 1, this.editTeam);
-        this.selectedTeam = { ...this.editTeam }; 
+        this.teams.splice(index, 1, this.editTeam); // Update the team in the list
+        this.selectedTeam = { ...this.editTeam }; // Update the selected team
         this.showEditPopup = false;
       }
     },
@@ -447,14 +447,28 @@ export default {
   gap: 40px;
 }
 
-.edit-popup {
+.overlay {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  border-radius: 10px;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100000;
+}
+
+.edit-popup {
   background: white;
-  padding: 30px;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 50%;
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
 }
