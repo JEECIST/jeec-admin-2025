@@ -14,7 +14,7 @@
         <div class="form-line">
           <div class="inputname">
             <label for="name">Name</label>
-            <input type="text"/>
+            <input type="text" v-model="name"/>
           </div>
           <div class="event-filter">
             <label for="event">Event</label>
@@ -34,12 +34,15 @@
         <div class="form-columns">
           <div class="logo">
             <label for="logo">Logo</label>
-              <div class="blue-square">
-                <p>
-                  No logo selected yet
-                </p>
-              </div>
-              <button class="button-add-logo" >Add New Logo</button>
+            <div class="blue-square" v-if="logo">
+              <!-- Display the selected image -->
+              <img :src="logo" alt="Logo" class="logo-image" />
+            </div>
+            <div class="blue-square" v-else>
+              <!-- Display this text when no logo is selected -->
+              <p>No logo selected yet</p>
+            </div>
+            <input type="file" @change="onLogoSelected" class="button-add-logo" accept="image/*" />
           </div>
           <div class="second-column">
             <div class="form-line">
@@ -97,6 +100,10 @@ const emit = defineEmits(['close'])
 function closePopup() {
 emit('close');
 }
+
+const props = defineProps({
+  foo: String
+})
 </script>
 
 <style scoped>
@@ -335,8 +342,7 @@ input[type="radio"] {
   background-color: #FFFFFF;
 }
 
-.button-add-sponsor {
-
+.button-add-sponsor  input{
   width: 9vw;
   height: 3vw; 
   border: none;
@@ -349,6 +355,7 @@ input[type="radio"] {
   background-color: #152259;
   padding: 0.2vw 1vw;
   cursor: pointer;
+  display: none;
 }
 
 .button{

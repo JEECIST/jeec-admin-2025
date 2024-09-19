@@ -7,7 +7,6 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10.5 17a6.5 6.5 0 100-13 6.5 6.5 0 000 13z" />
           </svg>
           <input 
-            type="text" 
             placeholder="Search for a sponsor" 
             class="search-bar" 
             v-model="searchQuery"
