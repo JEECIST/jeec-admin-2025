@@ -71,6 +71,10 @@ function selectRow(e, row) {
 
 
 function normalizeStr(str) {
+  if (typeof str !== 'string') {
+    // Return an empty string if the input is not a string
+    return '';
+  }
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()
 }
 
