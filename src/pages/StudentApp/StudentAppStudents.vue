@@ -33,10 +33,18 @@
         <h3>{{ selectedStudent.name }}</h3>
         <p class="role">Student</p>
         <div class="student-actions">
-          <div class="action-button">1</div>
-          <div class="action-button">2</div>
-          <div class="action-button">3</div>
-          <div class="action-button">4</div>
+          <div class="action-button">
+            <img :src="students1Icon" alt="Icon 1">
+          </div>
+          <div class="action-button">
+            <img :src="students2Icon" alt="Icon 2">
+          </div>
+          <div class="action-button">
+            <img :src="students3Icon" alt="Icon 3">
+          </div>
+          <div class="action-button">
+            <img :src="students4Icon" alt="Icon 4">
+          </div>
         </div>
         <p class="email-title">Email</p>
         <p class="email">{{ selectedStudent.email }}</p>
@@ -71,16 +79,14 @@
   </div>
 </template>
 
-        <!-- <div class="student-actions">
-          <button class="action-button"><img src="path/to/icon1.png" alt="Action 1"></button>
-          <button class="action-button"><img src="path/to/icon2.png" alt="Action 2"></button>
-          <button class="action-button"><img src="path/to/icon3.png" alt="Action 3"></button>
-          <button class="action-button"><img src="path/to/icon4.png" alt="Action 4"></button>
-        </div> -->
-
 <script setup>
 import { ref, computed } from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
+
+import students1Icon from '/Users/lunaferreira/Desktop/admin/jeec-admin-2025/src/assets/students/students1.svg';
+import students2Icon from '/Users/lunaferreira/Desktop/admin/jeec-admin-2025/src/assets/students/students2.svg';
+import students3Icon from '/Users/lunaferreira/Desktop/admin/jeec-admin-2025/src/assets/students/students3.svg';
+import students4Icon from '/Users/lunaferreira/Desktop/admin/jeec-admin-2025/src/assets/students/students4.svg';
 
 const students = ref([
   {
@@ -153,7 +159,7 @@ const selectStudent = (student) => {
   width: 638px;
   height: 49px; 
   background-color: #EBF6FF; 
-  border-radius: 4px; /* quanto? */
+  border-radius: 8px; /* quanto? */
   padding: 16px, 20px, 16px, 16px; 
 }
 
@@ -208,7 +214,7 @@ const selectStudent = (student) => {
 }
 
 .no-students {
-  width: 1121px;
+  width: 1121px; /* width: 100%; ???? */
   height: 490px;
   display: flex;
   align-items: center;
