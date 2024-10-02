@@ -83,10 +83,10 @@
 import { ref, computed } from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
 
-import students1Icon from '/Users/lunaferreira/Desktop/admin/jeec-admin-2025/src/assets/students/students1.svg';
-import students2Icon from '/Users/lunaferreira/Desktop/admin/jeec-admin-2025/src/assets/students/students2.svg';
-import students3Icon from '/Users/lunaferreira/Desktop/admin/jeec-admin-2025/src/assets/students/students3.svg';
-import students4Icon from '/Users/lunaferreira/Desktop/admin/jeec-admin-2025/src/assets/students/students4.svg';
+// import students1Icon from '../assets/students/students1.svg';
+// import students2Icon from '../assets/students/students2.svg';
+// import students3Icon from '../assets/students/students3.svg';
+// import students4Icon from '../assets/students/students4.png';
 
 const students = ref([
   {
