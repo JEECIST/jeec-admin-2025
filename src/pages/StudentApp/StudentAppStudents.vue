@@ -213,6 +213,30 @@ const selectStudent = (student) => {
   width: 100%;
 }
 
+.student-actions {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.action-button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  cursor: pointer;
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1A1A1A;
+}
+
+.action-button img {
+  width: 20px;
+  height: 20px;
+}
+
 .no-students {
   width: 1121px; /* width: 100%; ???? */
   height: 490px;
