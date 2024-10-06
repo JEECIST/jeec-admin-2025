@@ -98,7 +98,7 @@ const tablePref = {
           <label>
             <img src="../../assets/search.svg">
           </label>
-          <input v-model="message" placeholder="Search for a user">
+          <input v-model="message" placeholder="Search for a speaker type">
         </form>
       <button class="topbtn" @click="openModal">Add Type</button>
       <Transition name="fade" appear>
@@ -173,7 +173,7 @@ const tablePref = {
           <label>
             <img src="../../assets/search.svg">
           </label>
-          <input v-model="message" placeholder="Search for a user">
+          <input v-model="message" placeholder="Search for a speaker type">
         </form>
       <button class="mobile-topbtn" @click="openModal">Add Type</button>
       <Transition name="fade" appear>
@@ -246,7 +246,7 @@ const tablePref = {
   position: relative;
   height: calc(100dvh - var(--header-height));
   padding: 3ch 1ch 1ch 1ch;
-  margin-right: -7vw;
+  margin-right: 0vw;
   overflow-x: hidden;
 }
 
@@ -256,6 +256,7 @@ const tablePref = {
   height: calc(100dvh - var(--header-height));
   padding: 5ch 3ch 3ch 3ch;
   overflow-y: hidden;
+  gap: 3ch;
 }
 
 .table {
@@ -263,7 +264,6 @@ const tablePref = {
   flex-direction: column;
   width: 100%;
   gap: 3ch;
-  padding-right: 3ch;
 }
 
 

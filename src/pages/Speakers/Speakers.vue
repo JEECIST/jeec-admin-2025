@@ -4,6 +4,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import AddSpeakerPopup from './AddSpeakerPopup.vue';
 import EditSpeakerPopup from './EditSpeakerPopup.vue';
+import MobilePopup from './MobilePopup.vue';
 
 const popupShow = ref(false);
 const descriptionShow = ref(false);
@@ -34,6 +35,12 @@ const closeOtherModal = () => {
   isOtherModalOpened.value = false;
 };
 
+const isMobileModalOpened = ref(false);
+
+const closeMobileModal = () => {
+  isModalOpened.value = false;
+};
+
 function isMobile() {
    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
      return true;
@@ -54,6 +61,7 @@ const message = ref();
 function selectCallback(row) {
   console.log(row)
   popupShow.value = true;
+  isMobileModalOpened.value = true;
 }
 
 const datab = [
@@ -328,7 +336,7 @@ const tablePref = {
         <label>
           <img src="../../assets/search.svg">
         </label>
-        <input v-model="message" placeholder="Search for a user">
+        <input v-model="message" placeholder="Search for a speaker">
       </form>
       <div class="imsosickofdivs">
       <label for="evento" class="eventselect">Event</label>
@@ -432,7 +440,7 @@ const tablePref = {
         <label>
           <img src="../../assets/search.svg">
         </label>
-        <input v-model="message" placeholder="Search for a user">
+        <input v-model="message" placeholder="Search for a speaker">
       </form>
       <div class="imsosickofdivs">
       <label for="evento" class="eventselect">Event</label>
@@ -449,6 +457,9 @@ const tablePref = {
      </Transition>
      <Transition name="fade" appear>
         <EditSpeakerPopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerPopup>
+     </Transition>
+     <Transition name="fade" appear>
+        <MobilePopup :isOpen="isMobileModalOpened" @modal-close="closeMobileModal"></MobilePopup>
      </Transition>
      <div class="popup-mask" v-show="descriptionShow">
      <div class="description-mobile">
@@ -534,7 +545,7 @@ const tablePref = {
   position: relative;
   height: calc(100dvh - var(--header-height));
   padding: 3ch 1ch 1ch 1ch;
-  margin-right: -7vw;
+  margin-right: 0vw;
   overflow-x: hidden;
 }
 
@@ -544,6 +555,7 @@ const tablePref = {
   height: calc(100dvh - var(--header-height));
   padding: 5ch 3ch 3ch 3ch;
   overflow-y: hidden;
+  gap: 3ch;
 }
 
 .table {
@@ -551,7 +563,7 @@ const tablePref = {
   flex-direction: column;
   width: 100%;
   gap: 3ch;
-  padding-right: 3ch;
+  padding-right: 0ch;
 }
 
 .mobile-topbar > form {
@@ -797,8 +809,8 @@ button {
   display: flex;
   justify-content: center;
   background-color: white;
-  width: 30vw;
-  height: 80%;
+  width: 60vw;
+  height: 50%;
   position: absolute;
   top: 50%;
   left: 50%;
