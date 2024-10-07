@@ -37,6 +37,10 @@ const closeOtherModal = () => {
 
 const isMobileModalOpened = ref(false);
 
+const openMobileModal = () => {
+  isMobileModalOpened.value = true;
+};
+
 const closeMobileModal = () => {
   isModalOpened.value = false;
 };
@@ -61,7 +65,7 @@ const message = ref();
 function selectCallback(row) {
   console.log(row)
   popupShow.value = true;
-  isMobileModalOpened.value = true;
+  openMobileModal();
 }
 
 const datab = [
