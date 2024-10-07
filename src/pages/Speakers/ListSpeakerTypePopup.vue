@@ -110,11 +110,11 @@ const tablePref = {
     display: flex;
     justify-content: center;
     background-color: white;
-    width: 94.5vw;
+    width: 90.5vw;
     height: 80%;
     position: absolute;
     top: 50%;
-    left: 46.5%;
+    left: 50%;
     translate: -50% -50%;
 }
 

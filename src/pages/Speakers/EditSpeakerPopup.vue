@@ -230,11 +230,11 @@ function isMobile() {
     display: flex;
     justify-content: center;
     background-color: white;
-    width: 94.5vw;
-    height: 95%;
+    width: 90.5vw;
+    height: 100%;
     position: absolute;
     top: 50%;
-    left: 46.5%;
+    left: 50%;
     translate: -50% -50%;
 }
 
@@ -414,12 +414,12 @@ select {
 
 .mobile-flex-2 > #speakerdickpic {
     width: 20vw;
-    height: 25vh;
+    height: 20vh;
 }
 
 .mobile-flex-2 > #companylogo {
     width: 20vw;
-    height: 25vh;
+    height: 20vh;
 }
 
 #speakerdickpic,
@@ -502,15 +502,15 @@ p {
     color: white;
     border-radius: 5px;
     border: none;
-    margin-right: 3vw;
-    margin-top: 2%;
+    margin-right: -3%;
+    margin-top: -6%;
     margin-bottom: 2%;
     display: flex;
     width: 16vw;
     height: 3.5vh;
     align-items: center;
     justify-content: center;
-    gap: 10vh;
+    gap: 20vw;
     cursor: pointer;
 }
 
@@ -525,10 +525,10 @@ p {
 .mobile-btns {
     width: 80vw;
     display: flex;
-    gap: 20px;
+    /* gap: 20px; */
     margin-top: 4vh;
     justify-content: right;
-    gap: 0.1%;
+    gap: 10%;
 }
 
 .labels>#name {
