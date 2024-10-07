@@ -42,7 +42,7 @@ const openMobileModal = () => {
 };
 
 const closeMobileModal = () => {
-  isModalOpened.value = false;
+  isMobileModalOpened.value = false;
 };
 
 function isMobile() {
@@ -491,46 +491,6 @@ const tablePref = {
      </div>
      </div>
      </div>
-     <div class="right-popup-placeholder-mobile" v-show="popupShow">
-        <div class="items">
-          <h1>SPEAKER TYPE</h1>
-          <div class="speaker-photo">Insert Speaker Photo</div>
-          <h3 class="text1">Speaker Name</h3>
-          <p class="text2 title">Speaker</p>
-          <div class="btns-row">
-            <button class="btn" @click="openOtherModal">
-                <img src="../../assets/pencil.svg">
-            </button>
-            <button class="btn" @click="showfunction">
-                <img src="../../assets/sheet.svg">
-            </button>
-            <button class="btn">
-                <img src="../../assets/linkedin.svg">
-            </button>
-            <button class="btn">
-                <img src="../../assets/trash.svg">
-            </button>
-          </div>
-          <div id="info">
-            <p>Company</p>
-            <p class="text2">Intel</p>
-            <p>Position</p>
-            <p class="text2">Global Team Technical Lead</p>
-            <div class="row">
-              <div class="col">
-                <p>Country</p>
-                <p class="text2">Germany</p>           
-              </div>
-              <div class="col">
-                <p>Event</p>
-                <p class="text2">JEEC 24</p>
-              </div>
-            </div>
-            <p>JEEC Responsible</p>
-            <p class="text2">Francisco Rosa</p>
-          </div>
-        </div>
-      </div>
       <TheTable
         :data="datab"
         :tableHeaders="tablePref"
