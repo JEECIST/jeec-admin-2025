@@ -129,7 +129,10 @@ function isMobile() {
                             </div>
                         </div>
                     </div>
-                    <button class="mobile-add" @click.stop="emit('modal-close')">Add</button>
+                    <div class="mobile-btns">
+                        <button class="mobile-add" @click.stop="emit('modal-close')">Add</button>
+                        <button class="mobile-add" @click.stop="emit('modal-close')">Cancel</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -151,11 +154,11 @@ function isMobile() {
     display: flex;
     justify-content: center;
     background-color: white;
-    width: 94.5vw;
-    height: 80%;
+    width: 90.5vw;
+    height: 90%;
     position: absolute;
     top: 50%;
-    left: 46.5%;
+    left: 50%;
     translate: -50% -50%;
 }
 
@@ -307,6 +310,15 @@ radio {
     justify-content: center;
     gap: 10vh;
     cursor: pointer;
+}
+
+.mobile-btns {
+    width: 60vw;
+    display: flex;
+    margin-top: 4vh;
+    justify-content: right;
+    gap: 4%;
+    margin-left: 25%;
 }
 
 .btns {

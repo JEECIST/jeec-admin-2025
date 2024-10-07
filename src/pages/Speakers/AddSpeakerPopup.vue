@@ -234,7 +234,7 @@ function isMobile() {
     height: 95%;
     position: absolute;
     top: 50%;
-    left: 46.5%;
+    left: 50%;
     translate: -50% -50%;
 }
 

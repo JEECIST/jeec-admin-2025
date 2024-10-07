@@ -129,7 +129,10 @@ function isMobile() {
                             </div>
                         </div>
                     </div>
-                    <button class="mobile-add" @click.stop="emit('modal-close')">Add</button>
+                    <div class="mobile-btns">
+                        <button class="mobile-add" @click.stop="emit('modal-close')">Add</button>
+                        <button class="mobile-add" @click.stop="emit('modal-close')">Cancel</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -151,11 +154,11 @@ function isMobile() {
     display: flex;
     justify-content: center;
     background-color: white;
-    width: 94.5vw;
+    width: 90.5vw;
     height: 80%;
     position: absolute;
     top: 50%;
-    left: 46.5%;
+    left: 50%;
     translate: -50% -50%;
 }
 
@@ -280,16 +283,24 @@ radio {
     border-radius: 5px;
     border: none;
     margin-right: 3vw;
-    margin-top: 13%;
+    margin-top: 2%;
     margin-bottom: 2%;
     display: flex;
-    margin-left: auto;
     width: 8.4vw;
     height: 3.5vh;
     align-items: center;
     justify-content: center;
-    gap: 10vh;
+    gap: 20vh;
     cursor: pointer;
+}
+
+.mobile-btns {
+    width: 80vw;
+    display: flex;
+    margin-top: 4vh;
+    justify-content: right;
+    gap: 4%;
+    margin-left: 5%;
 }
 
 .mobile-add {
@@ -298,11 +309,10 @@ radio {
     border-radius: 5px;
     border: none;
     margin-right: 3vw;
-    margin-top: 13%;
+    margin-top: 2%;
     margin-bottom: 2%;
     display: flex;
-    margin-left: auto;
-    width: 20vw;
+    width: 16vw;
     height: 3.5vh;
     align-items: center;
     justify-content: center;
