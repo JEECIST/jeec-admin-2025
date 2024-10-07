@@ -38,7 +38,7 @@ const closeAnotherModal = () => {
 const isMobileModalOpened = ref(false);
 
 const closeMobileModal = () => {
-  isModalOpened.value = false;
+  isMobileModalOpened.value = false;
 };
 
 function isMobile() {
