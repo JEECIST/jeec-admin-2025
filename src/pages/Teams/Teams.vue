@@ -22,7 +22,7 @@
               </option>
             </select>
           </div>
-          <button class="add-team">Add Team</button>
+          <button class="add-team" @click="openAddPopup">Add Team</button>
         </div>
       </div>
 
@@ -34,6 +34,7 @@
               :tableHeaders="{ name: 'Name', event: 'Event', priority: 'Priority', members: 'Members' }"
               :searchInput="searchQuery"
               @onRowSelect="selectTeam"
+              :selectedRowIndex="selectedRowIndex"
             ></TheTable>
           </div>
 
@@ -70,30 +71,80 @@
             </div>
           </div>
 
-          <div v-if="showEditPopup" class="edit-popup">
+          <div v-if="showEditPopup" class="modal-overlay-add">
             <div class="edit-popup-content">
               <h2>Edit Team</h2>
-              <form @submit.prevent="saveEdit">
-                <label for="name" class="editpopup">Name:</label>
-                <input type="text" v-model="editTeam.name" id="name" required />
-                <label for="event" class="editpopup">Event:</label>
-                <input type="text" v-model="editTeam.event" id="event" required />
-                <label for="priority" class="editpopup">Priority:</label>
-                <input type="text" v-model="editTeam.priority" id="priority" required />
-                <label for="members" class="editpopup">Members:</label>
-                <input type="text" v-model="editTeam.members" id="members" required />
-                <button type="submit" class="add-team">Save</button>
-                <button type="button" @click="closeEditPopup" class="add-team">Cancel</button>
+              <form @submit.prevent="saveEdit" class="popup_form">
+                <div class="name-event">
+                  <div class="form-group">
+                    <label for="editTeamName" class="labels">Name</label>
+                    <input type="text" v-model="editTeam.name" id="editTeamName" required class="formUsername" />
+                  </div>
+                  <div class="form-group">
+                    <label for="editTeamEvent" class="labels">Event</label>
+                    <input type="text" v-model="editTeam.event" id="editTeamEvent" required class="formRole" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="editTeamPriority" class="labels">Priority</label>
+                  <input type="text" v-model="editTeam.priority" id="editTeamPriority" required class="formRole" />
+                </div>
+                <div class="form-group">
+                  <label for="editTeamMembers" class="labels">Members</label>
+                  <input type="text" v-model="editTeam.members" id="editTeamMembers" required class="formRole" />
+                </div>
+                <div class="modal-actions">
+                  <button type="button" @click="closeEditPopup" class="add-team">Cancel</button>
+                  <button type="submit" class="add-team">Save</button>
+                </div>
               </form>
             </div>
           </div>
-          <div v-if-click-outside="closeEditPopup"></div>
         </div>
       </div>
     </div>
 
     <div v-if="filteredTeams.length === 0" class="form">
       <label class="no-teams">No teams found</label>
+    </div>
+  </div>
+
+  <div v-if="showAddPopup" class="modal-overlay-add">
+    <div class="edit-popup-content">
+      <button class="closeX" @click="closePopup">&times;</button>
+      <h2>Add Team</h2>
+      <form @submit.prevent="saveNewTeam" class="popup_form">
+        <div class="name-event">
+          <div class="form-group">
+            <label for="newTeamName" class="labels">Name</label>
+            <input type="text" v-model="newTeamName" id="newTeamName" required class="formUsername" />
+          </div>
+          <div class="form-group">
+            <label for="newTeamEvent" class="labels">Event</label>
+            <input type="text" v-model="newTeamEvent" id="newTeamEvent" required class="formRole" />
+          </div>
+          <div class="form-group">
+            <label for="newTeamPriority" class="labels">Priority</label>
+            <input type="text" v-model="newTeamPriority" id="newTeamPriority" required class="formRole" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="newTeamMembers" class="labels">Description</label>
+          <input type="text" v-model="Description" id="newTeamMembers" required class="formRole" />
+        </div>
+        <div class="form-group">
+          <label for="newTeamPicture" class="labels">Picture</label>
+          <div class="small-quadrado"></div>
+        </div>
+        <div class="modal-actions">
+          <label class="custom-file-upload">
+            <input type="file" id="newTeamPicture" @change="handleFileChange"/>
+            <span>Add Picture</span>
+          </label>
+          <span v-if="selectedFile">{{ selectedFile.name }}</span>
+          <button type="submit" class="add">Add</button>
+        </div>
+      </form>
     </div>
   </div>
 </template>
@@ -124,6 +175,12 @@ export default {
       showEditPopup: false,
       selectedTeam: {},
       editTeam: {},
+      selectedRowIndex: null,
+      showAddPopup: false,
+      newTeamName: '',
+      newTeamEvent: '',
+      newTeamPriority: '',
+      newTeamMembers: '',
     };
   },
   computed: {
@@ -137,14 +194,15 @@ export default {
     handleEventChange() {
       console.log(this.selectedEvent);
     },
-    selectTeam(row) {
+    selectTeam(row, index) {
       this.selectedTeam = row;
-      console.log(row)
+      this.selectedRowIndex = index;
       this.showPopup = true;
     },
     closePopup() {
       this.showPopup = false;
       this.selectedTeam = {};
+      this.selectedRowIndex = null;
     },
     editButton() {
       this.editTeam = { ...this.selectedTeam };
@@ -155,7 +213,7 @@ export default {
       const index = this.teams.findIndex(team => team.id === this.editTeam.id);
       if (index !== -1) {
         this.teams.splice(index, 1, this.editTeam);
-        this.selectedTeam = { ...this.editTeam }; 
+        this.selectedTeam = { ...this.editTeam };
         this.showEditPopup = false;
       }
     },
@@ -168,6 +226,25 @@ export default {
     },
     TeamMembers() {
       console.log('Team Members');
+    },
+    openAddPopup() { 
+      this.showAddPopup = true;
+      console.log('Add Team');
+    },
+    closeAddPopup() {
+      this.showAddPopup = false;
+      console.log('Close Add Team Popup');
+    },
+    saveNewTeam() {
+      const newTeam = {
+        id: this.teams.length + 1,
+        name: this.newTeamName,
+        event: this.newTeamEvent,
+        priority: this.newTeamPriority,
+        members: this.newTeamMembers,
+      };
+      this.teams.push(newTeam);
+      this.closeAddPopup();
     },
   },
 };
@@ -447,50 +524,207 @@ export default {
   gap: 40px;
 }
 
-.edit-popup {
+.modal-overlay {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  border-radius: 10px;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100000;
+}
+
+.edit-popup {
   background: white;
-  padding: 30px;
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 50%;
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  justify-content: center;
 }
 
 .edit-popup-content {
   display: flex;
+  justify-content: center;
   flex-direction: column;
-}
-
-.edit-popup-content h2 {
-  margin-bottom: 20px;
-}
+  gap: 20px;
+} 
 
 .edit-popup-content form {
   display: flex;
   flex-direction: column;
+  gap: 15px;
+  justify-content: center;
 }
 
-.edit-popup-content form label {
-  margin-bottom: 5px;
+.popup_form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: center;
 }
 
-.edit-popup-content form input {
-  margin-bottom: 10px;
-  padding: 5px;
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
 }
 
-.edit-popup-content form button {
-  margin-top: 10px;
+.edit-popup h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
-.editpopup {
+.formUsername, .formRole {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  padding: 0.5rem;
+  margin-right: 10px;
+  padding-left: 1.5rem;
+}
+
+.popup, .formRole label, .formUsername label {
+  display: block;
+  margin-bottom: 0.5rem;
   font-size: 1rem;
-  font-weight: bold;
-  color: var(--c-text);
-  margin-top: 10px;
-  margin-bottom: 5px;
+  font-weight: 500;
 }
+
+.add-popup-name {
+  display: block;
+  margin-top: 1rem;
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: var(--c-text);
+  opacity: 0.5;
+}
+
+.modal-overlay-add {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100000;
+}
+
+.edit-popup-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 600px;
+  height: auto; 
+}
+
+.name-event {
+  display: flex;
+  margin-top: 1rem;
+  justify-content: space-between;
+  width: 100%;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+}
+
+.add-teams {
+  height: 49px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  background-color: darkblue;
+  border-radius: 10px;
+  color: white;
+  padding: 0.5ch 3ch;
+  cursor: pointer;
+  outline: none;
+  justify-content: flex-end;
+}
+
+.labels {
+  display: flex;
+  flex-direction: column;
+  color: #515151;
+  font-size: smaller;
+  height: 100%;
+  opacity: 0.8;
+}
+
+.add {
+  background-color: #152259;
+  color: white;
+  border-radius: 5px;
+  border: none;
+  display: inline-block;
+  margin-left: auto;
+  width: 8.4vw;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 10vh;
+  cursor: pointer;
+}
+
+.custom-file-upload {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-file-upload input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.custom-file-upload span {
+  background-color: var(--c-select);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  height: 40px;
+  font-size: 1rem;
+  padding: 0.5ch 3ch;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.small-quadrado {
+  width: 20%;
+  height: 100px;
+  background-color: var(--c-accent);
+  border-radius: 4px;
+}
+
 </style>
