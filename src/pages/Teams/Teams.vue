@@ -683,17 +683,15 @@ export default {
   border: none;
   display: inline-block;
   margin-left: auto;
-  width: 8.4vw;
-  height: 40px;
-  align-items: center;
-  justify-content: center;
-  gap: 10vh;
+  width: 10vw;
+  height: 35px;
   cursor: pointer;
 }
 
 .custom-file-upload {
   position: relative;
-  display: inline-block;
+  width: 10vw;
+  display: flex;
 }
 
 .custom-file-upload input[type="file"] {
@@ -711,17 +709,17 @@ export default {
   color: white;
   border: none;
   border-radius: 4px;
-  height: 40px;
-  font-size: 1rem;
+  height: 35px;
   padding: 0.5ch 3ch;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.8rem;
 }
 
 .small-quadrado {
-  width: 20%;
+  width: 10vw;
   height: 100px;
   background-color: var(--c-accent);
   border-radius: 4px;
