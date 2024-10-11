@@ -1,5 +1,6 @@
 <template>
   <div class="squads-app-container">
+    <!-- Fixed header for search -->
     <div class="header">
       <div class="search-container">
         <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -15,21 +16,23 @@
     </div>
 
     <div class="content">
-      <!-- Squads table on the left side -->
-      <div :class="['squads-table-container', { 'full-width': !selectedSquad }]">
-        <TheTable
-          :data="filteredSquads"
-          :tableHeaders="tableHeaders"
-          :buttons="tableButtons"
-          :searchInput="searchQuery"
-          @onRowSelect="selectSquad"
-        />
+      <!-- Scrollable table for squads -->
+      <div class="squads-table-container">
+        <div class="table-header-fixed">
+          <TheTable
+            :data="filteredSquads"
+            :tableHeaders="tableHeaders"
+            :buttons="tableButtons"
+            :searchInput="searchQuery"
+            @onRowSelect="selectSquad"
+          />
+        </div>
         <div v-if="!filteredSquads.length" class="no-squads">
           No Squads found
         </div>
       </div>
 
-      <!-- Squad details on the right side -->
+      <!-- Squad details (remains unchanged) -->
       <div class="squad-detail" v-if="selectedSquad">
         <p class="squad-name">{{ selectedSquad.name }}</p>
         <img class="squad-pic" src="../../assets/StudentApp/example_squad_photo.svg" alt="Squad Picture" />
@@ -231,6 +234,9 @@ const selectSquad = (squad) => {
 }
 
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -238,6 +244,7 @@ const selectSquad = (squad) => {
 }
 
 .search-container {
+  position: relative;
   background-color: #EBF6FF; 
   position: relative;
   width: 100%; 
@@ -248,6 +255,7 @@ const selectSquad = (squad) => {
 }
 
 .search-icon {
+  position: absolute;
   color: #8A8A8A;
   position: absolute;
   top: 50%;
@@ -258,6 +266,7 @@ const selectSquad = (squad) => {
 }
 
 .search-bar {
+  background-color: #EBF6FF;
   color: #8A8A8A;
   width: 100%;
   height: 49px;
@@ -267,7 +276,6 @@ const selectSquad = (squad) => {
   font-family: 'Kumbh Sans', sans-serif;
   font-size: 14px; 
   font-weight: 500;
-  background-color: #EBF6FF;
 }
 
 .content {
@@ -279,7 +287,15 @@ const selectSquad = (squad) => {
 
 .squads-table-container {
   flex: 1;
-  overflow-x: auto;
+  height: calc(100vh - 40px - 250px); 
+  overflow-y: auto;
+  position: relative;
+}
+
+.table-header-fixed {
+  position: sticky;
+  top: 0;
+  z-index: 5;
 }
 
 .squad-actions {
@@ -313,15 +329,15 @@ const selectSquad = (squad) => {
 }
 
 .icon-base {
+  position: relative;
   width: 100%;
   height: 100%;
-  position: relative;
 }
 
 .icon-overlay {
+  position: absolute;
   width: 70%;
   height: 70%;
-  position: absolute;
   top: 50%; 
   left: 50%;
   transform: translate(-50%, -50%); /* Center the overlay icon */
@@ -333,7 +349,7 @@ const selectSquad = (squad) => {
   font-size: 28px;
   width: 100%; 
   max-width: 1500px; 
-  height: calc(100vh - 100px); /* viewport height - padding for the header */
+  height: calc(100vh - 80px - 250px); 
   padding: 2rem;
   align-items: center;
   justify-content: center;

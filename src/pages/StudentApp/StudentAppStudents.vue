@@ -1,7 +1,7 @@
 <template>
   <div class="student-app-container">
     <div class="header">
-      <div class="search-container">
+      <div class="search-container" v-if="!showBannedPopup">
         <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10.5 17a6.5 6.5 0 100-13 6.5 6.5 0 000 13z" />
         </svg>
@@ -12,16 +12,26 @@
           v-model="searchQuery" 
         />
       </div>
-      <button class="btn-banned">Banned Students</button>
+      <button class="btn-banned" v-if="!showBannedPopup" @click="toggleBannedPopup">
+        Banned Students
+      </button>
     </div>
-    <div class="content">
-      <!-- <pre>{{ filteredStudents }}</pre>
 
-      <ul>
-  <li v-for="student in filteredStudents" :key="student.id">
-    {{ student.name }} ({{ student.username }})
-  </li>
-</ul> -->
+    <!-- Banned Students Popup -->
+    <div v-if="showBannedPopup" class="banned-popup">
+      <div class="popup-content">
+        <h2>Banned Students</h2>
+        <TheTable
+          :data="bannedStudents"
+          :tableHeaders="bannedTableHeaders"
+          :buttons="unbanButtons"
+        />
+        <button class="close-popup" @click="toggleBannedPopup">Close</button>
+      </div>
+    </div>
+
+    <!-- Main Content (Hidden when Banned Popup is active) -->
+    <div class="content" v-if="!showBannedPopup">
       <div :class="['students-table-container', { 'full-width': !selectedStudent }]">
         <TheTable
           :data="filteredStudents"
@@ -90,6 +100,46 @@
 import { ref, computed } from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
 
+const showBannedPopup = ref(false);
+
+const toggleBannedPopup = () => {
+  showBannedPopup.value = !showBannedPopup.value;
+};
+
+// Sample banned students data
+const bannedStudents = ref([
+  { id: 1, name: 'André Santos', username: 'andregay', email: 'parkour_is_gay@proton.me' },
+  { id: 2, name: 'André Santos 2', username: 'andregay 2', email: 'parkour_is_gay2@proton.me' },
+  { id: 3, name: 'André Santos 3', username: 'andregay 3', email: 'parkour_is_gay3@proton.me' },
+]);
+
+const bannedTableHeaders = {
+  id: "ID",
+  name: "Name",
+  username: "Username",
+  email: "Email",
+  unban: "Unban", // NÃO APARECE
+};
+
+const unbanButtons = [
+  {
+    render: () => {
+      return `
+        <div class="action-button icon-combination">
+          <img class="icon-base" src="../../assets/StudentApp/students4.svg" alt="Icon Base">
+          <img class="icon-overlay" src="../../assets/StudentApp/squads1.svg" alt="Icon Overlay">
+        </div>
+      `;
+    },
+    action: (row) => unbanStudent(row),
+  },
+];
+
+const unbanStudent = (student) => {
+  // Logic to unban student
+  console.log('Unbanning student:', student);
+};
+
 const students = ref([
   {
     id: 1,
@@ -119,6 +169,123 @@ const students = ref([
   },
   {
     id: 3,
+    name: 'Luna Ferreira',
+    username: 'lunaferreira',
+    squad: 'lu',
+    dailyPoints: 5,
+    totalPoints: 18,
+    email: 'luna@ferreira.com.pt',
+    linkedin: 'https://www.linkedin.com/lunaferreira',
+    currentPoints: 87,
+    cvStatus: 'Approved',
+    degree: 'BSc/IST',
+  },
+  {
+    id: 4,
+    name: 'André Santos',
+    username: 'andregay',
+    squad: 'parkour_is_gay',
+    dailyPoints: 43,
+    totalPoints: 12,
+    email: 'andregay@proton.me',
+    linkedin: 'https://www.linkedin.com/andregay',
+    currentPoints: 6896,
+    cvStatus: 'Approved',
+    degree: 'BSc/IST',
+  },
+  {
+    id: 5,
+    name: 'André Santos Gonçalves Ferreira',
+    username: 'andregay2andregay2andregay2',
+    squad: 'parkour_is_gay2_parkour_is_gay2',
+    dailyPoints: -731,
+    totalPoints: 0,
+    email: 'andregay2andregay2andregay2@proton.me',
+    linkedin: 'https://www.linkedin.com/andregay2andregay2',
+    currentPoints: 413,
+    cvStatus: 'Approved',
+    degree: 'BSc/IST',
+  },
+  {
+    id: 6,
+    name: 'Luna Ferreira',
+    username: 'lunaferreira',
+    squad: 'lu',
+    dailyPoints: 5652,
+    totalPoints: 1,
+    email: 'luna@ferreira.com.pt',
+    linkedin: 'https://www.linkedin.com/lunaferreira',
+    currentPoints: 90,
+    cvStatus: 'Approved',
+    degree: 'BSc/IST',
+  },
+  {
+    id: 7,
+    name: 'André Santos',
+    username: 'andregay',
+    squad: 'parkour_is_gay',
+    dailyPoints: -1,
+    totalPoints: -2,
+    email: 'andregay@proton.me',
+    linkedin: 'https://www.linkedin.com/andregay',
+    currentPoints: 66,
+    cvStatus: 'Approved',
+    degree: 'BSc/IST',
+  },
+  {
+    id: 8,
+    name: 'André Santos Gonçalves Ferreira',
+    username: 'andregay2andregay2andregay2',
+    squad: 'parkour_is_gay2_parkour_is_gay2',
+    dailyPoints: -1,
+    totalPoints: -2,
+    email: 'andregay2andregay2andregay2@proton.me',
+    linkedin: 'https://www.linkedin.com/andregay2andregay2',
+    currentPoints: 66,
+    cvStatus: 'Approved',
+    degree: 'BSc/IST',
+  },
+  {
+    id: 9,
+    name: 'Luna Ferreira',
+    username: 'lunaferreira',
+    squad: 'lu',
+    dailyPoints: 5,
+    totalPoints: 18,
+    email: 'luna@ferreira.com.pt',
+    linkedin: 'https://www.linkedin.com/lunaferreira',
+    currentPoints: 87,
+    cvStatus: 'Approved',
+    degree: 'BSc/IST',
+  },
+  {
+    id: 10,
+    name: 'André Santos',
+    username: 'andregay',
+    squad: 'parkour_is_gay',
+    dailyPoints: -1,
+    totalPoints: -2,
+    email: 'andregay@proton.me',
+    linkedin: 'https://www.linkedin.com/andregay',
+    currentPoints: 66,
+    cvStatus: 'Approved',
+    degree: 'BSc/IST',
+  },
+  {
+    id: 11,
+    name: 'André Santos Gonçalves Ferreira',
+    username: 'andregay2andregay2andregay2',
+    squad: 'parkour_is_gay2_parkour_is_gay2',
+    dailyPoints: -1,
+    totalPoints: -2,
+    email: 'andregay2andregay2andregay2@proton.me',
+    linkedin: 'https://www.linkedin.com/andregay2andregay2',
+    currentPoints: 66,
+    cvStatus: 'Approved',
+    degree: 'BSc/IST',
+  },
+  {
+    id: 12,
     name: 'Luna Ferreira',
     username: 'lunaferreira',
     squad: 'lu',
@@ -163,6 +330,14 @@ const selectStudent = (student) => {
 </script>
 
 <style scoped>
+/* Style for all table headers in the current component - NÃO FUNCIONA */
+th {
+  color: #424242;
+  font-family: 'Kumbh Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+
 .student-app-container {
   background: #FFFFFF;
   display: flex;
@@ -173,6 +348,9 @@ const selectStudent = (student) => {
 }
 
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -180,6 +358,7 @@ const selectStudent = (student) => {
 }
 
 .search-container {
+  position: relative;
   background-color: #EBF6FF; 
   position: relative;
   width: 87%; 
@@ -190,6 +369,7 @@ const selectStudent = (student) => {
 }
 
 .search-icon {
+  position: absolute;
   color: #8A8A8A;
   position: absolute;
   top: 50%;
@@ -232,6 +412,70 @@ const selectStudent = (student) => {
   align-items: center; 
 }
 
+.banned-popup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.banned-popup > div {
+  width: 100%;
+  max-width: 950px;
+}
+
+.banned-popup h2 {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 39.69px;
+  text-align: left;
+  margin-bottom: 40px;
+}
+
+.close-popup {
+  width: 120px;
+  height: 41px;
+  background-color: #509CDB;
+  color: #FFFFFF;
+  border: none; 
+  border-radius: 4px;
+  padding: 12px 0px;
+  cursor: pointer;
+  font-family: 'Kumbh Sans', sans-serif; 
+  font-weight: 600; 
+  font-size: 14px;
+  line-height: 17.36px; 
+  text-align: center; 
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  margin-top: 10px;
+}
+
+.icon-combination {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-base {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.icon-overlay {
+  position: absolute;
+  top: 50%; 
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 70%;
+  z-index: 1;
+}
+
 .content {
   display: flex;
   justify-content: space-between;
@@ -241,7 +485,9 @@ const selectStudent = (student) => {
 
 .students-table-container {
   flex: 1;
-  overflow-x: auto;
+  height: calc(100vh - 40px - 250px); 
+  overflow-y: auto;
+  position: relative;
 }
 
 .student-actions {
@@ -274,7 +520,7 @@ const selectStudent = (student) => {
   font-size: 28px;
   width: 100%; 
   max-width: 1500px; 
-  height: calc(100vh - 100px); /* viewport height - padding for the header */
+  height: calc(100vh - 80px - 250px); 
   padding: 2rem;
   align-items: center;
   justify-content: center;
