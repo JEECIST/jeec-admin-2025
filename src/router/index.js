@@ -164,7 +164,7 @@ const routes = [
     path: "/student-app/points",
     name: "studentapp-points",
     meta: { title: "Points" },
-    component: () => import("../pages/StudentApp/StudentAppPoints.vue"),
+    component: () => import("../pages/StudentApp/StudentAppPrizesSpecial.vue"),
   },
   {
     path: "/student-app/students",
@@ -185,10 +185,16 @@ const routes = [
     component: () => import("../pages/StudentApp/StudentAppPrizes.vue"),
   },
   {
-    path: "/student-app/types",
-    name: "studentapp-types",
-    meta: { title: "Prize Types" },
-    component: () => import("../pages/StudentApp/StudentAppPrizeTypes.vue"),
+    path: "/student-app/special",
+    name: "studentapp-special",
+    meta: { title: "Prize Special" },
+    component: () => import("../pages/StudentApp/StudentAppPrizesSpecial.vue"),
+  },
+  {
+    path: "/student-app/shop",
+    name: "studentapp-shop",
+    meta: { title: "Prize Shop" },
+    component: () => import("../pages/StudentApp/StudentAppPrizeShop.vue"),
   },
   {
     path: "/teams",
