@@ -5,13 +5,12 @@ import Dashboard from "../global-components/TheDashboard.vue";
 
 const routes = [
   {
-    path: "/login",
+    path: "/",
     name: "login",
     component: () => import("../pages/Login.vue"),
   },
   {
     path: "/dashboard",
-    alias: "/",
     name: "dashboard",
     component: Dashboard,
     meta: { 
@@ -201,6 +200,12 @@ const routes = [
     name: "teams-members",
     meta: { title: "Team Members" },
     component: () => import("../pages/Teams/TeamMembers.vue"),
+  },
+  {
+    path: "/user-shifts",
+    name: "usershifts",
+    meta: { title: "Shifts", children: false },
+    component: () => import("../pages/UserShifts/UserShifts.vue"),
   },
   {
     path: "/:pathMatch(.*)*",

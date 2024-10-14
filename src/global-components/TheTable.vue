@@ -95,9 +95,9 @@ const rows = computed(() => {
     return props.data.filter(row => {
       return Object.values(row).some(
         cell => !props.searchInput || ((typeof cell === 'string')
-        ? normalizeStr(cell).includes(normalizeStr(props.searchInput))
-        : normalizeStr(cell).toString(10).includes(normalizeStr(props.searchInput))
-      ))
+          ? normalizeStr(cell).includes(normalizeStr(props.searchInput))
+          : normalizeStr(cell).toString(10).includes(normalizeStr(props.searchInput))
+        ))
     })
 })
 </script>
@@ -138,7 +138,7 @@ tr:nth-child(even) {
   background-color: var(--c-accent);
 }
 
-tbody > tr:hover {
+tbody>tr:hover {
   filter: brightness(0.9);
 }
 
@@ -147,21 +147,22 @@ tr.selected {
   color: white;
 }
 
-tbody > tr.selected:hover {
+tbody>tr.selected:hover {
   filter: none;
 }
 
-td, th {
+td,
+th {
   min-width: 10ch;
   padding: 0 1ch;
 }
 
-:is(th, td).button  {
+:is(th, td).button {
   min-width: 60px;
   text-align: center;
 }
 
-td.button > button {
+td.button>button {
   border: none;
   background-color: var(--c-select);
   width: 37px;
@@ -171,7 +172,7 @@ td.button > button {
   cursor: pointer;
 }
 
-tr.selected > td.button > button {
+tr.selected>td.button>button {
   background-color: var(--c-bg-light);
   color: var(--c-select);
   transition: all 0.2s;
