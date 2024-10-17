@@ -44,7 +44,7 @@
               <p>No logo selected yet</p>
             </div>
             <!-- Hidden file input -->
-            <label for="logo-upload" class="custom-logo-label">Upload Logo</label>
+            <label for="logo-upload" class="custom-logo-label">Add new Logo</label>
             <input id="logo-upload" type="file" @change="onLogoSelected" class="button-add-logo" accept="image/*" />
           </div>
           <div class="second-column">
@@ -149,7 +149,7 @@ const props = defineProps({
 }
 
 .tier-pop-up h1{
-  font-size: 1.5em;
+  font-size: 2em;
 }
 
 
@@ -218,7 +218,6 @@ input[type="radio"] {
   flex-grow: 3;
   max-width: 500px;
   gap:1vh; 
-  min-height: 60px;
 }
 
 .inputname input{
@@ -382,7 +381,7 @@ input[type="radio"] {
 }
 
 .button-add-sponsor {
-  width: 80px;
+  width: 27vh;
   min-height: 40px;
   height: 100%; 
   border: none;
@@ -392,7 +391,7 @@ input[type="radio"] {
   font-size: 1.1em;
   font-weight: 500;
   color: #FFFFFF;
-  background-color: var(--c-select);
+  background-color: #152259;
   padding: 0.2vw 1vw;
   cursor: pointer;
   align-self: flex-end;
