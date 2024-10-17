@@ -93,13 +93,14 @@
         </div>
         <div class="card-paragraph">
           <h1>Event</h1>
-          <p>{{ selectedRow.event }}</p>
+          <p>{{ selectedRow.eventselected }}</p>
         </div>
         
       </div>
     </div>
 
     <AddSponsor v-if="isaddsponsor" @close="toogleadd"/>
+    <EditSponsor v-if="iseditsponsor" @close="editRow(selectedRow)" :sponsorData="selectedRow" :isOpen="iseditsponsor"/>
   </div>
   
 </template>
@@ -108,12 +109,13 @@
 import { ref } from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
 import AddSponsor from './AddSponsor.vue';
+import EditSponsor from './EditSponsor.vue';
 
 // Example data to be displayed in the table
 const tableData = ref([
-  { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQBEqoºnaljbfºoWHEFAK´PJ+EHOQW NEDQBEVFI +ehpndbfowpodsnk', event: 'JEEC 23/24' },
-  { id: 2, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', event: 'JEEC 23/24' },
-  { id: 3, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', event: 'JEEC 23/24'},
+  { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQBEqoºnaljbfºoWHEFAKPJ+EHOQW NEDQBEVFI +ehpndbfowpodsnk', eventselected: 'JEEC 23/24', showInWebsite: false },
+  { id: 2, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
+  { id: 3, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
 ]);
 
 // Headers to map the data keys to table headers
@@ -137,6 +139,8 @@ function handleRowSelect(row) {
 
 // Event handlers for button clicks
 function editRow(row) {
+  iseditsponsor.value= !iseditsponsor.value
+  console.log(iseditsponsor.value)
   console.log('Edit button clicked for row:', row);
 }
 
@@ -146,6 +150,7 @@ function deleteRow(row) {
 
 const issponsorstier= ref(false);
 const isaddsponsor= ref(false);
+const iseditsponsor= ref(false);
 
 function toogleTiers()
 {
@@ -158,6 +163,7 @@ function toogleadd()
   isaddsponsor.value= !isaddsponsor.value
   console.log(isaddsponsor.value)
 }
+
 
 const eventselected = ref('');
 
