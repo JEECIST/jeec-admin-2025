@@ -13,7 +13,6 @@
           />
         </div>
       <button class="button-add-sponsor" @click="toogleadd">Add Tier</button>
-      <button @click="closePopup" class="close-button"></button>
       </div>
       <div class="table-container">
         <TheTable 
@@ -31,14 +30,14 @@
 
     <div v-if="selectedRow" class="sponsor-card">
       <div class="sponsor-card-header">
-        <img class='sponsor-logo' src="src/assets/JEEC.png" alt="sponsor logo" />
+        <img class='sponsor-logo' :src="JEEC" alt="sponsor logo" />
         <div class="card-title">
-          <p class="card-name">{{ selectedRow.tier }}</p>
+          <p class="card-name">{{ selectedRow.name }}</p>
           <p class="card-subtitle">Sponsor Tier</p>
         </div>
         <div class="card-buttons">
           <button @click="editRow(selectedRow)" class="icon-button">
-            <img src="src/assets/pencil.svg" alt="edit" class="icon" />
+            <img :src="pencilIcon" alt="edit" class="icon" />
           </button>
           <button @click="editRow(selectedRow)" class="icon-button">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="icon" width="16" height="16">
@@ -46,7 +45,7 @@
             </svg>
           </button>
           <button @click="deleteRow(selectedRow)" class="icon-button">
-            <img src="src/assets/trash.svg" alt="delete" class="icon" />
+            <img :src="trashIcon" alt="delete" class="icon" />
           </button>
 
         </div>
@@ -111,8 +110,9 @@
 <script setup>
 import { ref } from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
-import AddSponsor from './AddSponsor.vue';
-import EditSponsor from './EditSponsor.vue';
+import pencilIcon from '../../assets/pencil.svg'
+import trashIcon from '../../assets/trash.svg'
+import JEEC from '../../assets/JEEC.png'
 
 // Example data to be displayed in the table
 const tableData = ref([
@@ -162,7 +162,6 @@ function toogleadd()
 }
 
 
-const eventselected = ref('');
 
 </script>
 
@@ -177,7 +176,6 @@ const eventselected = ref('');
   width: 100%;
   height: 100%;
   padding: 5px 5px 5px 5px;
-  z-index: 1000;
 }
 
 .sponsor-card{
@@ -192,6 +190,8 @@ const eventselected = ref('');
   background-color: var(--c-accent);
   border-radius: 10px;
   gap:2px;
+  flex-grow: 1;
+  max-width: 250px;
 }
 
 .sponsor-card-header {
@@ -214,6 +214,8 @@ const eventselected = ref('');
   height: 11vw;
   min-width: 100px;
   min-height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .card-title{
@@ -247,12 +249,12 @@ const eventselected = ref('');
 
 .sponsor-card-body{
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  flex-direction: row;
+  justify-content: center;
   height: 100%;
   width: 100%;
   padding: 5px 5px 5px 5px;
-  gap: 8px;
+  gap: 20px;
 }
 
 .card-paragraph{
@@ -262,12 +264,18 @@ const eventselected = ref('');
 }
 .sponsor-card-body h1{
   color: var(--c-ft-dark);
-  font-size: 0.9em;
+  font-size: 0.6em;
   font-weight: 700;
 }
 .sponsor-card-body p{
-  font-size: 0.6em;
+  font-size: 0.5em;
   color: var(--c-ft-semi-light);
+}
+
+.card-collumn{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .sponsors-table {
@@ -391,6 +399,7 @@ const eventselected = ref('');
   background-color: var(--c-select);
   padding: 4px 4px;
   cursor: pointer;
+  flex-grow: 1;
 }
 
 .button-sponsor-tiers {
@@ -411,6 +420,7 @@ const eventselected = ref('');
   background-color: var(--c-select);
   padding: 4px 4px;
   cursor: pointer;
+  flex-grow: 1;
 }
 
 .chevron-icon {
