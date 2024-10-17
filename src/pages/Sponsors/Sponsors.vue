@@ -99,6 +99,7 @@
       </div>
     </div>
 
+    <SponsorsTiers v-if="issponsorstier" @close="toogleTiers" />
     <AddSponsor v-if="isaddsponsor" @close="toogleadd"/>
     <EditSponsor v-if="iseditsponsor" @close="editRow(selectedRow)" :sponsorData="selectedRow" :isOpen="iseditsponsor"/>
   </div>
