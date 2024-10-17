@@ -1,19 +1,6 @@
 <template>
   <div class="wrapper">
     <div class="table">
-      <form>
-        <div class="search_style">
-          <label>
-            <img src="../../assets/search.svg">
-          </label>
-          <input v-model="message" placeholder="Search for a user" />
-        </div>
-        
-        <button type="button" @click="showAddUserModal = true">Add User</button>
-        
-          <button v-if = "selectedRow" type="button" @click="manageUserRoles">User Roles <span class = "chevron"> </span></button>
-        
-      </form>
       <TheTable
         :data="datab"
         :tableHeaders="tablePref"
@@ -23,127 +10,168 @@
       ></TheTable>
     </div>
     
-    <!-- Conditionally render the right popup placeholder -->
     <div v-if="selectedRow" class="right-popup-placeholder">
       <div class="header">
-        <p class="cardUsername">{{ selectedRow.weekday   }}</p>
-      </div>      
+        <h1 class="cardUsername">{{ selectedRow.weekday }}</h1>
+      </div>
+      <img src="../../assets/wrizz.jpg" alt="Profile Image" class="pfp">
+      <h2>{{ selectedRow.day }}</h2>
+      <p :style="{ color: 'gray', fontSize: '18px' }">Meal</p>
+      <div class="cardActions">
+        <button class="edit-button" type="button" @click="editModal = true">
+          <img src="../../assets/pencil.svg">
+        </button>
+        <button class="meal-button">
+          <img src="../../assets/meal_btn.svg">
+        </button>
+      </div>
       
-        <img src="../../assets/wrizz.jpg" alt="Profile Image" class="pfp">
-        <p class="cardUsername">{{ selectedRow.user }}</p>
-        <p class="cardUseless">Team User</p>
-        <div class="cardActions">
-          <button class="edit-button" type = "button" @click="showAddUserModal = true"><img src="../../assets/edit_btn.png"></button>
-          <button class="delete-button"><img src="../../assets/delete_btn.png"></button>
+      <div class="cardInfo">
+        <div class="cardInfoMember">
+          <p class="cardInfoLabel">Dishes Available</p>
+          <!-- Check if 'name' is an array and iterate, else display it as a single dish -->
+          <div v-if="Array.isArray(selectedRow.name)">
+            <div v-for="(dish, index) in selectedRow.name" :key="index">
+              <p class="cardInfoValue">Dish {{ index + 1 }}: {{ dish }}</p>
+            </div>
+          </div>
+          <div v-else>
+            <p class="cardInfoValue">Dish: {{ selectedRow.name }}</p>
+          </div>
         </div>
-        <div class="cardInfo">
-          <div class = "cardInfoMember"> 
-            <p class="cardInfoLabel">Member</p>
-            <p class="cardInfoValue">{{ selectedRow.name }}</p>
-          </div>
-            
-          <div class = "cardInfoMember"> 
-            <p class="cardInfoLabel">PASSWORD</p>
-            <p> Placeholder for password from database</p>
-          </div>
+      </div>
 
-          
-        </div>
-      
     </div>
-
   </div>
 
-  <!-- Modal Popup -->
-  <div v-if="showAddUserModal" class="modal-overlay">
+  
+  
+  <!-- Modal for Editing User Info -->
+  <div v-if="editModal" class="modal-overlay">
     <div class="modal">
-      <h2>Add Team User</h2>
+      <h2>Edit Day</h2>
       <form class="popup_form" @submit.prevent="addUser">
-        <div class="formUsername">
-          <label for="username">Username</label>
-          <input v-model="newUser.username" id="username" required />
+        <div class="formReg">
+          <div class="form-group">
+            <label for="regDay">Registration Day</label>
+            <input 
+              type="date" 
+              v-model="newUser.regDay" 
+              id="regDay" 
+              required 
+              :min="minDate" 
+              :max="maxDate"
+            />
+          </div>
+          <div class="form-group">
+            <label for="regHour">Registration Hour</label>
+            <input 
+              type="time" 
+              v-model="newUser.regHour" 
+              id="regHour" 
+              required 
+            />
+          </div>
         </div>
+
+        <!-- Dishes Section -->
         <div class="formRole">
-          <label for="role">Role</label>
-          <select v-model="newUser.role" id="role" required>
-            <option value="Admin">Admin</option>
-            <option value="User">User</option>
-            <option value="Viewer">Viewer</option>
-          </select>
+          <div v-for="(dish, index) in newUser.dishes" :key="index" class="form-group">
+            <!-- Dynamic label for each dish -->
+            <label :for="'dish' + index">Dish {{ index + 1 }}</label>
+            <input v-model="newUser.dishes[index]" :id="'dish' + index" placeholder="Enter Dish Name" required />
+          </div>
         </div>
+
+        <!-- Button to add a new dish input -->
+        <div class="addDish">
+          <button type="button" class="btn-primary" @click="addDish">Add Dish</button>
+        </div>
+
+        <!-- Modal actions -->
         <div class="modal-actions">
-          <button type="submit" class="btn-primary">Add</button>
-          <button class="btnCancel" @click="closeModal()">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+          <button type="button" class="btnCancel" @click="closeModal()">Cancel</button>
         </div>
       </form>
     </div>
   </div>
 </template>
 
+
 <script setup>
-import TheTable from '../../global-components/TheTable.vue';
 import { ref } from 'vue';
+import TheTable from '../../global-components/TheTable.vue';
 
 const message = ref('');
-const showAddUserModal = ref(false);
-
+const editModal = ref(false);  // Modal visibility
+const newUser = ref({
+  regDay: '',
+  regHour: '',
+  role: '',
+  dishes: ['']  // Initially one dish input field
+});
 const selectedRow = ref(null);  // Track the selected row
 
+// Callback for row selection in the table
 function selectCallback(row) {
-  selectedRow.value = row;  // Set the selected row
+  selectedRow.value = row;
   console.log('Selected Row:', row);
 }
-
+function addDish() {
+  newUser.value.dishes.push('');  // Add an empty string for a new dish input
+}
+// Function to handle adding a new user
 function addUser() {
-  datab.value.push({ user: newUser.value.username, role: newUser.value.role, name: newUser.value.username });
+  console.log(newUser.value);
   closeModal();
 }
 
+// Function to close the modal
 function closeModal() {
-  showAddUserModal.value = false;
-  newUser.value = { username: '', role: '' };
+  editModal.value = false;
+  newUser.value = { regDay: '', regHour: '', role: '', dishes: [''] };  // Reset form fields
 }
 
-const datab = ref([
 
+
+const datab = ref([
   {
-    day: "07/05/2025",
+    day: "07-05-2025",
     weekday: "Monday",
     registrationDay: "IDK",
     registrationWeekday: "IDK",
     registrationTime: "23:59"
   },
   {
-    day: "08/05/2025",
+    day: "08-05-2025",
     weekday: "Tuesday",
     registrationDay: "IDK",
     registrationWeekday: "IDK",
     registrationTime: "23:59"
   },
   {
-    day: "09/05/2025",
+    day: "09-05-2025",
     weekday: "Wednesday",
     registrationDay: "IDK",
     registrationWeekday: "IDK",
     registrationTime: "23:59"
   },
   {
-    day: "10/05/2025",
+    day: "10-05-2025",
     weekday: "Thursday",
     registrationDay: "IDK",
     registrationWeekday: "IDK",
     registrationTime: "23:59"
   },
   {
-    day: "11/05/2025",
+    day: "11-05-2025",
     weekday: "Friday",
     registrationDay: "IDK",
     registrationWeekday: "IDK",
     registrationTime: "23:59"
   },
-
 ]);
-
 
 const tablePref = {
   day: "Day",
@@ -152,15 +180,10 @@ const tablePref = {
   registrationWeekday: "Registration Weekday",
   registrationTime: "Registration Time"
 };
-
-function manageUserRoles() {
-  console.log('User Roles button clicked');
-}
 </script>
 
 
 <style scoped>
-
 .wrapper {
   display: flex;
   position: relative;
@@ -187,77 +210,20 @@ form {
   border-radius: 10px;
 }
 
-.search_style {
-  display: flex;
-  background-color: var(--c-accent);
-  height: 50px;
-  line-height: 50px;
-  align-items: center;
-  gap: 1ch;
-  padding-left: 1ch;
-  border-radius: 6px;
-  width: 100%;
+h2 {
+  margin-bottom: 0.3rem;
 }
 
-.search_style > label > img {
-  width: 20px;
-  position: relative;
-  top: 4px;
-  left: 3px;
-}
-
-.search_style > input {
-  appearance: none;
-  background-color: transparent;
-  border: 0px;
-  color: var(--c-ft-semi-light);
-  font-style: inherit;
-  font-variant: inherit;
-  font-weight: inherit;
-  font-stretch: inherit;
-  line-height: inherit;
-  font-family: inherit;
-  font-size-adjust: inherit;
-  font-kerning: inherit;
-  font-optical-sizing: inherit;
-  font-language-override: inherit;
-  font-feature-settings: inherit;
-  font-variation-settings: inherit;
-  font-size: 1rem;
-  height: 100%;
-  outline: none;
-  padding: 0px 0px 0px 8px;
-  width: 100%;
-}
-
-.search_style input::placeholder {
-  color: var(--c-ft-semi-light);
-}
-
-
-form > button {
-  font-size: 1rem;
-  font-weight: 500;
-  border: none;
-  background-color: var(--c-select);
-  border-radius: 6px;
-  color: var(--c-bg-light);
-  cursor: pointer;
-  padding: 0px 15px;
-  height: 100%;
-  width: 25%;
-}
-
-
-.chevron{
+.chevron {
   display: inline-block;
   width: 11px;
   height: 11px;
   border-right: 2px solid white;
   border-bottom: 2px solid white;
   transform: rotate(-45deg);
-  border-radius: 2px; 
+  border-radius: 2px;
 }
+
 /* Right Popup Placeholder */
 .right-popup-placeholder {
   position: sticky;
@@ -285,8 +251,6 @@ form > button {
   margin-bottom: 10px;
 }
 
-
-
 .right-popup-placeholder .pfp {
   width: 100px;
   height: 100px;
@@ -295,14 +259,13 @@ form > button {
 }
 
 .right-popup-placeholder .cardUsername {
-  font-size: 1.5rem ;
+  font-size: 1.5rem;
   font-weight: 600;
   color: #333;
   margin-bottom: 5px;
 }
 
 .right-popup-placeholder .cardRole {
-  
   font-weight: 500;
   color: #777;
   margin-bottom: 20px;
@@ -311,22 +274,22 @@ form > button {
 .right-popup-placeholder .cardActions {
   display: flex;
   gap: 10px;
+  margin-top: 1rem;
   margin-bottom: 20px;
 }
 
 .right-popup-placeholder .edit-button,
-.right-popup-placeholder .delete-button {
+.right-popup-placeholder .meal-button {
   background-color: #ffffff;
   border: none;
   border-radius: 8px;
   padding: 8px;
   cursor: pointer;
   font-size: 1.2rem;
-  
 }
 
 .right-popup-placeholder .edit-button:hover,
-.right-popup-placeholder .delete-button:hover {
+.right-popup-placeholder .meal-button:hover {
   background-color: #f0f0f0;
 }
 
@@ -354,7 +317,7 @@ form > button {
 
 /* Modal styles */
 .modal-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -370,8 +333,9 @@ form > button {
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  width: 50%;
-  height: 70%;
+  width: 100%;
+  max-width: 700px;
+  
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
@@ -379,7 +343,6 @@ form > button {
 }
 
 .popup_form {
-  
   display: flex;
   height: 100%;
   flex-direction: column;
@@ -387,7 +350,6 @@ form > button {
 }
 
 .modal-actions {
-  
   display: flex;
   justify-content: flex-end;
   align-self: flex-end;
@@ -397,18 +359,37 @@ form > button {
 }
 
 .modal h2 {
+  padding-left: 8px;
   margin-top: 0;
   margin-bottom: 2%;
   font-size: 1.5rem;
   font-weight: 600;
 }
 
-.formUsername {
+.formReg {
+  display: flex;
+  justify-content: space-between;
   width: 100%;
+  gap:2rem;
 }
 
-.formRole {
+.form-group {
+  flex: 1;
   
+}
+
+.form-group:last-child {
+  margin-right: 0; /* Remove margin for the last input in the row */
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+
+.formRole {
   justify-content: flex-start;
   align-self: flex-start;
   width: 60%;
@@ -417,7 +398,7 @@ form > button {
 /* Label Styling */
 .popup,
 .formRole label,
-.formUsername label {
+.formReg label {
   display: block;
   margin-bottom: -1rem;
   padding: 0px;
@@ -427,9 +408,9 @@ form > button {
 
 /* Input Styling */
 .formRole input,
-.formUsername input,
+.formReg input,
 .formRole select,
-.formUsername select {
+.formReg select {
   width: 100%;
   padding: 0.5rem;
   font-size: 1rem;
@@ -437,16 +418,21 @@ form > button {
   border-radius: 4px;
   background-color: white;
 }
-
+.addDish{
+  justify-content: flex-start;
+  align-self: flex-start;
+  width: 100%;
+}
 /* Button Styling */
 .btnCancel,
 .btn-primary {
-  width: 15%;
+  width: 18%;
   background-color: var(--c-select);
   color: white;
   border: none;
   padding: 0.5rem 1rem;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   border-radius: 4px;
   cursor: pointer;
 }

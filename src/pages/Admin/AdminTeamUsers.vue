@@ -11,7 +11,7 @@
         
         <button type="button" @click="showAddUserModal = true">Add User</button>
         
-        <button v-if = "selectedRow" type="button" @click="manageUserRoles">User Roles <span class = "chevron"> </span></button>
+        <button type="button" @click="manageUserRoles">User Roles <span class = "chevron"> </span></button>
       </form>
       <TheTable
         :data="datab"
@@ -339,15 +339,15 @@ form > button {
 .modal {
   background: white;
   padding: 2rem;
+  margin: 1rem;
   border-radius: 8px;
-  max-width: 900px;
+  max-width: 700px;
   width: 100%;
-  min-height: 70%;
+  /* min-height: 70%; */
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
   position: relative;
-  flex: 1;          
 }
 
 .popup_form {
@@ -369,6 +369,7 @@ form > button {
 }
 
 .modal h2 {
+  padding-left: 8px;
   margin-top: 0;
   margin-bottom: 2%;
   font-size: 1.5rem;
