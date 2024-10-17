@@ -101,8 +101,8 @@
       </div>
     </div>
 
-    <AddSponsor v-if="isaddsponsor" @close="toogleadd"/>
-    <EditSponsor v-if="iseditsponsor" @close="editRow(selectedRow)" :sponsorData="selectedRow" :isOpen="iseditsponsor"/>
+    <AddSponsorTier v-if="isaddsponsortier" @close="toogleadd"/>
+    <EditSponsorTier v-if="iseditsponsortier" @close="editRow(selectedRow)" :sponsorData="selectedRow" :isOpen="iseditsponsor"/>
   </div>
   
 </template>
@@ -113,12 +113,14 @@ import TheTable from '../../global-components/TheTable.vue';
 import pencilIcon from '../../assets/pencil.svg'
 import trashIcon from '../../assets/trash.svg'
 import JEEC from '../../assets/JEEC.png'
+import AddSponsorTier from './AddSponsorTier.vue';
+import EditSponsorTier from './EditSponsorTier.vue';
 
 // Example data to be displayed in the table
 const tableData = ref([
-  { name: 'Gold', priority: 1, sponsors: 3, includemeal:true, showInWebsite: false, socialmedia: true, logoincanvas:true, logoinposters:true, exclusivevideo:true, exclusiveposts: true, teaser:true },
-  { name: 'Silver', priority: 2, sponsors: 15, includemeal:true, showInWebsite: false, socialmedia: true, logoincanvas:true, logoinposters:true, exclusivevideo:true, exclusiveposts: true, teaser:true },
-  { name: 'Bronze', priority: 3, sponsors: 9, includemeal:false, showInWebsite: false, socialmedia: true, logoincanvas:true, logoinposters:true, exclusivevideo:true, exclusiveposts: true, teaser:true },
+  { name: 'Gold', priority: 1, sponsors: 3, includemeal:"Yes", showInWebsite: "No", socialmedia: "Yes", logoincanvas:"Yes", logoinposters:"Yes", exclusivevideo:"Yes", exclusiveposts: "Yes", teaser:"Yes" },
+  { name: 'Silver', priority: 2, sponsors: 15, includemeal:"Yes", showInWebsite: "No", socialmedia: "Yes", logoincanvas:"Yes", logoinposters:"Yes", exclusivevideo:"Yes", exclusiveposts: "Yes", teaser:"Yes" },
+  { name: 'Bronze', priority: 3, sponsors: 9, includemeal:"No", showInWebsite: "No", socialmedia: "Yes", logoincanvas:"Yes", logoinposters:"Yes", exclusivevideo:"Yes", exclusiveposts: "Yes", teaser:"Yes" },
 ]);
 
 // Headers to map the data keys to table headers
@@ -142,7 +144,7 @@ function handleRowSelect(row) {
 
 // Event handlers for button clicks
 function editRow(row) {
-  iseditsponsor.value= !iseditsponsor.value
+  iseditsponsortier.value= !iseditsponsortier.value
   console.log(iseditsponsor.value)
   console.log('Edit button clicked for row:', row);
 }
@@ -151,14 +153,15 @@ function deleteRow(row) {
   console.log('Delete button clicked for row:', row);
 }
 
-const isaddsponsor= ref(false);
-const iseditsponsor= ref(false);
+const isaddsponsortier= ref(false);
+const iseditsponsortier= ref(false);
+const listsponsors= ref(false);
 
 
 function toogleadd()
 {
-  isaddsponsor.value= !isaddsponsor.value
-  console.log(isaddsponsor.value)
+  isaddsponsortier.value= !isaddsponsortier.value
+  console.log(isaddsponsortier.value)
 }
 
 

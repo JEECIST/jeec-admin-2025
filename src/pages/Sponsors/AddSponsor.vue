@@ -381,7 +381,7 @@ input[type="radio"] {
 }
 
 .button-add-sponsor {
-  width: 27vh;
+  width: 100px;
   min-height: 40px;
   height: 100%; 
   border: none;
