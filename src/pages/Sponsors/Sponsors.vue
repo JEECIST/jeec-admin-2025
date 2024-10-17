@@ -111,7 +111,7 @@ import AddSponsor from './AddSponsor.vue';
 
 // Example data to be displayed in the table
 const tableData = ref([
-  { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio', event: 'JEEC 23/24' },
+  { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQBEqoºnaljbfºoWHEFAK´PJ+EHOQW NEDQBEVFI +ehpndbfowpodsnk', event: 'JEEC 23/24' },
   { id: 2, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', event: 'JEEC 23/24' },
   { id: 3, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', event: 'JEEC 23/24'},
 ]);
@@ -168,11 +168,12 @@ const eventselected = ref('');
 .sponsors-container {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
   width: 100%;
   height: 100%;
-  padding: 3vh 2vw;
+  padding: 5px 5px 5px 5px;
 }
 
 .sponsor-card{
@@ -180,12 +181,13 @@ const eventselected = ref('');
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding: 3vh 2.5vw;
+  padding: 10px 10px 10px 10px;
   max-height: max-content;
-  width: 25vw;
+  width: 28%;
+  min-width: 200px;
   background-color: var(--c-accent);
-  border-radius: 2vh;
-  gap:1.8vh;
+  border-radius: 10px;
+  gap:2px;
 }
 
 .sponsor-card-header {
@@ -194,18 +196,20 @@ const eventselected = ref('');
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 0.5vw 1vw;
-  gap:1vw;
+  padding: 5px 5px 10px 5px;
+  gap:10px;
 }
 
 .card-tier{
   text-transform: uppercase;
-  font-size: 1.7vw;
+  font-size: 1.6em;
 }
 
 .sponsor-logo {
   width: 11vw;
   height: 11vw;
+  min-width: 100px;
+  min-height: 100px;
 }
 
 .card-title{
@@ -219,12 +223,12 @@ const eventselected = ref('');
 .card-name{
   font-weight: 800;
   color: var(--c-ft-dark);
-  font-size:1.5vw;
+  font-size:1.3em;
 }
 
 .card-subtitle{
   color: var(--c-ft-semi-light);
-  font-size:1.1vw;
+  font-size:1em;
 }
 
 .card-buttons {
@@ -232,8 +236,9 @@ const eventselected = ref('');
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0.5vw 1vw;
-  gap: 1vw;
+  min-width: 20px;
+  padding: 1px 1px;
+  gap: 10px;
 }
 
 .sponsor-card-body{
@@ -242,15 +247,23 @@ const eventselected = ref('');
   justify-content: space-between;
   height: 100%;
   width: 100%;
-  gap: 1.5vh;
+  padding: 5px 5px 5px 5px;
+  gap: 8px;
+}
+
+.card-paragraph{
+  display: flex;
+  flex-direction: column;
+  gap:2px;
 }
 .sponsor-card-body h1{
   color: var(--c-ft-dark);
-  font-size: 0.9vw;
+  font-size: 0.9em;
   font-weight: 700;
 }
 .sponsor-card-body p{
-  font-size: 0.8vw;
+  font-size: 0.6em;
+  color: var(--c-ft-semi-light);
 }
 
 .sponsors-table {
@@ -258,27 +271,29 @@ const eventselected = ref('');
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  width: 100%;
+  width: 70%;
+  min-width: 380px;
 }
 
 .table-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2vh 2vw;
+  padding: 10px 10px 10px 10px;
   width: 100%;
 }
 
 .table{
   width: 100%;
   height: 100%;
+  font-size: 0.8em;
 }
 
 .nosponsors{
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 2vw;
+  font-size: 0.6em;
   color: var(--c-tf);
   background-color: var(--c-accent);
   font-weight: 500; 
@@ -288,10 +303,11 @@ const eventselected = ref('');
   width: 100%;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: end;
-  padding: 0vh 2vw; 
-  gap: 1vw;
+  padding: 10px 10px 10px 10px;
+  gap: 7px;
   color: #8A8A8A;
 }
 
@@ -299,33 +315,34 @@ const eventselected = ref('');
   display: flex;
   align-content: center;
   position: relative;
-  min-width: 19vw;
-  height: 3vw; 
+  min-height: 36px;
+  min-width:200px;
+  width:40%; 
   background-color: #EBF6FF; 
-  border-radius: 1vh; 
+  border-radius: 4px; 
   flex-grow: 4;
 }
 
 .search-icon {
   position: absolute;
   top: 50%;
-  left: 1vw;
+  left: 4px;
   transform: translateY(-50%);
-  width: 1.33vw;
-  height: 3.5vh;
+  width: 15px;
+  height: 15px;
   color: #8A8A8A;
 }
 
 .search-bar {
-  width: 100%;
-  height: 100%;
-  padding: 0.5vh 1vw 0.5vh 4vw;
+  height: 36px;
+  min-width: 170px; 
+  padding: 0.5px 1px 0.5px 24px;
   border: none;
-  border-radius: 1vh;
+  border-radius: 4px;
   outline-color: var(--c-select);
   color: #8A8A8A;
   font-family: 'Kumbh Sans', sans-serif;
-  font-size: 1vw;
+  font-size: 0.7em;
   font-weight: 500;
   line-height: 2.67vh;
   background-color: #EBF6FF;
@@ -336,60 +353,65 @@ const eventselected = ref('');
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  font-size: 0.8vw;
-  gap: 0.5vh;
-  width: 7vw; 
+  font-size: 0.6em;
+  gap: 2px;
+  width: 16%;
+  height: 50px;
+  min-width: 95px; 
 }
 
 .selection-box {
   width: 100%;
-  height: 3vw; 
+  height: 100%;
   border: 1px solid #8A8A8A;
-  border-radius: 0.7vh;
+  border-radius: 4px;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
-  padding: 0.5vh 0.5vw;
-  font-size: 0.8vw;
+  padding: 1px 1px;
+  font-size: 1em;
   color: #8A8A8A;
   background-color: #FFFFFF;
 }
 
 .button-add-sponsor {
-  max-width: 9vw;
-  height: 3vw; 
+  width: 16%;
+  min-width: 90px;
+  height: 36px; 
   border: none;
-  border-radius: 0.7vh;
+  border-radius: 4px;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
-  font-size: 0.9vw;
-  font-weight: 500;
+  font-size: 0.7em;
+  font-weight: 400;
   color: #FFFFFF;
   background-color: var(--c-select);
-  padding: 0.2vw 1vw;
+  padding: 4px 4px;
   cursor: pointer;
 }
 
 .button-sponsor-tiers {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  max-width: 12vw;
-  height: 3vw; 
+  justify-content: center;
+  gap:2px;
+  width: 18%;
+  min-width: 95px;
+  height: 36px; 
   border: none;
-  border-radius: 0.7vh;
+  border-radius: 4px;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
-  font-size: 0.9vw;
-  font-weight: 500;
+  font-size: 0.7em;
+  font-weight: 400;
   color: #FFFFFF;
   background-color: var(--c-select);
-  padding: 0.2vw 1vw;
+  padding: 4px 4px;
   cursor: pointer;
 }
 
 .chevron-icon {
-  height: 1.5vw;
-  width: 1.5vw;
+  height: 15px;
+  width: 15px;
 }
 
 .icon-button {
@@ -400,13 +422,18 @@ const eventselected = ref('');
   align-content: space-between;
   width:  2vw;
   height: 2vw;
+  min-width: 20px;
+  min-height: 20px;
   display:flex;
   justify-content: center;
-  padding: 1%;
+  align-items: center;
+  padding: 1px 1px 1px 1px;
 }
 .icon {
   width: 1.5vw;
   height: 1.5vw;
+  min-width: 15px;
+  min-height: 15px;
   color: var(--c-ft-dark);
 }
 
