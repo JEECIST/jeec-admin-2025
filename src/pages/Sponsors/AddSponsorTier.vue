@@ -147,9 +147,10 @@ const props = defineProps({
   display: flex;
   flex-direction: column;
   max-width: 73%;
+  overflow-y: auto;
   padding: 4vw;
-  min-height: 680px;
-  max-height: 800px;
+  min-height: 640px;
+  max-height: 80vh;
   margin: 3vh auto;
   border-radius: 3vw;
   background-color: #ffff;

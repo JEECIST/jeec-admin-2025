@@ -164,9 +164,10 @@ watch(() => props.isOpen, (newVal) => {
   display: flex;
   flex-direction: column;
   max-width: 73%;
+  overflow-y: auto;
   padding: 4vw;
-  min-height: 680px;
-  max-height: 800px;
+  min-height: 640px;
+  max-height: 80vh;
   margin: 3vh auto;
   border-radius: 3vw;
   background-color: #ffff;
@@ -252,9 +253,10 @@ input[type="radio"] {
 .second-column{
   display:flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: flex-start;
+  padding: 10px 10px;
+  gap: 25px;
   flex-grow: 1;
-  gap: 20px;
 }
 
 .inputname{

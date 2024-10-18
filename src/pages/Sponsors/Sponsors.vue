@@ -166,7 +166,7 @@ const eventselected = ref('');
   min-width: 200px;
   background-color: var(--c-accent);
   border-radius: 10px;
-  gap:2px;
+  gap:15px;
   flex-grow: 1;
   max-width: 250px;
 }
@@ -256,6 +256,7 @@ const eventselected = ref('');
   align-items: center;
   width: 70%;
   min-width: 380px;
+  flex-grow: 1;
 }
 
 .table-container {

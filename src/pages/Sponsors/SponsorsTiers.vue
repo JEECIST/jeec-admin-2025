@@ -40,9 +40,7 @@
             <img :src="pencilIcon" alt="edit" class="icon" />
           </button>
           <button @click="editRow(selectedRow)" class="icon-button">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="icon" width="16" height="16">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 2h4a2 2 0 012 2v2h3a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h3V4a2 2 0 012-2zM10 6V4h4v2h-4z" />
-            </svg>
+            <img :src="briefcaseIcon" alt="list of sponsors in tier" class="icon">
           </button>
           <button @click="deleteRow(selectedRow)" class="icon-button">
             <img :src="trashIcon" alt="delete" class="icon" />
@@ -115,6 +113,7 @@ import trashIcon from '../../assets/trash.svg'
 import JEEC from '../../assets/JEEC.png'
 import AddSponsorTier from './AddSponsorTier.vue';
 import EditSponsorTier from './EditSponsorTier.vue';
+import briefcaseIcon from '../../assets/briefcase.svg'
 
 // Example data to be displayed in the table
 const tableData = ref([
@@ -192,7 +191,7 @@ function toogleadd()
   min-width: 200px;
   background-color: var(--c-accent);
   border-radius: 10px;
-  gap:2px;
+  gap:15px;
   flex-grow: 1;
   max-width: 250px;
 }
@@ -288,6 +287,7 @@ function toogleadd()
   align-items: center;
   width: 70%;
   min-width: 380px;
+  flex-grow: 1;
 }
 
 .table-container {
@@ -390,13 +390,13 @@ function toogleadd()
 
 .button-add-sponsor {
   width: 16%;
-  min-width: 90px;
+  min-width: 70px;
   height: 36px; 
   border: none;
   border-radius: 4px;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
-  font-size: 0.7em;
+  font-size: 0.8em;
   font-weight: 400;
   color: #FFFFFF;
   background-color: var(--c-select);
@@ -411,13 +411,13 @@ function toogleadd()
   justify-content: center;
   gap:2px;
   width: 18%;
-  min-width: 95px;
+  min-width: 80px;
   height: 36px; 
   border: none;
   border-radius: 4px;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
-  font-size: 0.7em;
+  font-size: 0.9em;
   font-weight: 400;
   color: #FFFFFF;
   background-color: var(--c-select);
