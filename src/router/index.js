@@ -26,6 +26,12 @@ const routes = [
     component: () => import("../pages/Activities/Activities.vue"),
   },
   {
+    path: "/activities/day",
+    name: "activities-day",
+    meta: { title: "Activities Day", children: false },
+    component: () => import("../pages/Activities/ActivitiesDay.vue"),
+  },
+  {
     path: "/activities/types",
     name: "activity-types",
     meta: { title: "Activity Types" },
