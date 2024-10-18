@@ -147,36 +147,36 @@ const datab = ref([
     day: "07-05-2025",
     weekday: "Monday",
     registrationDay: "--:--",
-    registrationWeekday: "--:--",
-    registrationTime: "--:--"
+    registrationTime: "--:--",
+    registrationWeekday: "--:--"    
   },
   {
     day: "08-05-2025",
     weekday: "Tuesday",
     registrationDay: "--:--",
-    registrationWeekday: "--:--",
-    registrationTime: "--:--"
+    registrationTime: "--:--",
+    registrationWeekday: "--:--"    
   },
   {
     day: "09-05-2025",
     weekday: "Wednesday",
     registrationDay: "--:--",
-    registrationWeekday: "--:--",
-    registrationTime: "--:--"
+    registrationTime: "--:--",
+    registrationWeekday: "--:--"    
   },
   {
     day: "10-05-2025",
     weekday: "Thursday",
     registrationDay: "--:--",
-    registrationWeekday: "--:--",
-    registrationTime: "--:--"
+    registrationTime: "--:--",
+    registrationWeekday: "--:--"    
   },
   {
     day: "11-05-2025",
     weekday: "Friday",
     registrationDay: "--:--",
-    registrationWeekday: "--:--",
-    registrationTime: "--:--"
+    registrationTime: "--:--",
+    registrationWeekday: "--:--"    
   },
 ]);
 
@@ -184,8 +184,9 @@ const tablePref = {
   day: "Day",
   weekday: "Weekday", 
   registrationDay: "Registration Day",
-  registrationWeekday: "Registration Weekday",
-  registrationTime: "Registration Time"
+  registrationTime: "Registration Time",
+  registrationWeekday: "Registration Weekday"
+  
 };
 </script>
 
@@ -197,6 +198,7 @@ const tablePref = {
   height: calc(100dvh - var(--header-height));
   padding: 5ch 3ch 3ch 3ch;
   overflow-y: hidden;
+  
 }
 
 .table {
@@ -355,6 +357,7 @@ h2 {
   height: 100%;
   flex-direction: column;
   gap: 10px;
+  
 }
 
 .modal-actions {

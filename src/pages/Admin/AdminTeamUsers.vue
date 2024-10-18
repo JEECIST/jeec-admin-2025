@@ -245,6 +245,7 @@ form > button {
   border-radius: 20px;
   background-color: #eef4fb;
   padding: 20px;
+  margin-left: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -472,10 +473,7 @@ form > button {
         cursor: pointer;
         color: #333;
     }
-  .modal {
-    max-width: 90%; /* Limit modal width on mobile */
-    padding: 1rem; /* Less padding on mobile */
-  }
+
   
   .btnCancel,
   .btn-primary {
