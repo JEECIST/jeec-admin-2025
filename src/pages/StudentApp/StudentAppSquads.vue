@@ -32,9 +32,9 @@
         </div>
       </div>
 
-      <!-- Squad details (remains unchanged) -->
+      <!-- Squad details -->
       <div class="squad-detail" v-if="selectedSquad">
-        <p class="squad-name">{{ selectedSquad.name }}</p>
+        <p class="squad-name">{{ selectedSquad.scream }}</p>
         <img class="squad-pic" src="../../assets/StudentApp/example_squad_photo.svg" alt="Squad Picture" />
         <h3>{{ selectedSquad.name }}</h3>
         <p class="role">Squad</p>
@@ -80,6 +80,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -88,6 +89,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delasssssssssssssssssssssssss'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -96,6 +98,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -104,6 +107,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -112,6 +116,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -120,6 +125,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -128,6 +134,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -136,6 +143,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -144,6 +152,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -152,6 +161,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -160,6 +170,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -168,6 +179,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -176,6 +188,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -184,6 +197,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
   {
     id: 1,
@@ -192,6 +206,7 @@ const squads = ref([
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
 ]);
 

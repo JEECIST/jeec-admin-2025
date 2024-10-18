@@ -26,7 +26,6 @@
           :tableHeaders="bannedTableHeaders"
           :buttons="unbanButtons"
         />
-        <button class="close-popup" @click="toggleBannedPopup">Close</button>
       </div>
     </div>
 
@@ -142,7 +141,7 @@ const unbanStudent = (student) => {
 
 const students = ref([
   {
-    id: 1,
+    id: '1',
     name: 'André Santos',
     username: 'andregay',
     squad: 'parkour_is_gayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
@@ -431,26 +430,6 @@ th {
   margin-bottom: 40px;
 }
 
-.close-popup {
-  width: 120px;
-  height: 41px;
-  background-color: #509CDB;
-  color: #FFFFFF;
-  border: none; 
-  border-radius: 4px;
-  padding: 12px 0px;
-  cursor: pointer;
-  font-family: 'Kumbh Sans', sans-serif; 
-  font-weight: 600; 
-  font-size: 14px;
-  line-height: 17.36px; 
-  text-align: center; 
-  display: flex;
-  justify-content: center; 
-  align-items: center; 
-  margin-top: 10px;
-}
-
 .icon-combination {
   position: relative;
   width: 36px;
@@ -535,7 +514,7 @@ th {
   display: flex;
   background-color: #EBF6FF;
   width: 323px;
-  height: auto; 
+  height: calc(100vh - 40px - 250px); 
   border-radius: 16px;
   padding: 35px;
   flex-direction: column;
