@@ -161,8 +161,7 @@ const eventselected = ref('');
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  height: 100%;
-  padding: 5px 5px 5px 5px;
+  padding: 20px 20px 20px 20px;
 }
 
 .sponsor-card{
@@ -265,23 +264,23 @@ const eventselected = ref('');
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  width: 70%;
-  min-width: 380px;
-  max-width: 70vw;
+  width: 80%;
+  height: 100vh;
+  overflow: hidden;
   flex-grow: 1;
 }
 
 .table-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px 10px 10px 10px;
+  justify-content: flex-start;
+  align-items: flex-start;
   width: 100%;
+  height: 100%;
 }
 
 .table{
   width: 100%;
-  height: 70vh;
+  height: 80%;
   font-size: 0.8em;
 }
 
@@ -314,11 +313,10 @@ const eventselected = ref('');
   align-content: center;
   position: relative;
   min-height: 36px;
-  min-width:200px;
-  width:40%; 
+  width: 30px;
   background-color: #EBF6FF; 
   border-radius: 4px; 
-  flex-grow: 4;
+  flex-grow: 1;
 }
 
 .search-icon {
@@ -332,8 +330,6 @@ const eventselected = ref('');
 }
 
 .search-bar {
-  height: 36px;
-  min-width: 170px; 
   padding: 0.5px 1px 0.5px 24px;
   border: none;
   border-radius: 4px;
@@ -353,9 +349,8 @@ const eventselected = ref('');
   align-items: flex-start;
   font-size: 0.6em;
   gap: 2px;
-  width: 16%;
   height: 50px;
-  min-width: 95px; 
+  min-width: 30px; 
 }
 
 .selection-box {
@@ -372,8 +367,7 @@ const eventselected = ref('');
 }
 
 .button-add-sponsor {
-  width: 16%;
-  min-width: 90px;
+  min-width: 80px;
   height: 36px; 
   border: none;
   border-radius: 4px;
@@ -385,7 +379,6 @@ const eventselected = ref('');
   background-color: var(--c-select);
   padding: 4px 4px;
   cursor: pointer;
-  flex-grow: 1;
 }
 
 .button-sponsor-tiers {
@@ -393,7 +386,6 @@ const eventselected = ref('');
   align-items: center;
   justify-content: center;
   gap:2px;
-  width: 18%;
   min-width: 95px;
   height: 36px; 
   border: none;
@@ -406,7 +398,6 @@ const eventselected = ref('');
   background-color: var(--c-select);
   padding: 4px 4px;
   cursor: pointer;
-  flex-grow: 1;
 }
 
 .chevron-icon {
