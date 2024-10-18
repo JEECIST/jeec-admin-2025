@@ -39,12 +39,16 @@ const props = defineProps({
     required: true
   },
   buttons: {
-    icon: {
-      type: String,
-      default: false
-    },
-    eventName: String,
-    name: String
+    type: Array[{
+      icon: {
+        type: String,
+        default: false,
+        required: false,
+      },
+      eventName: String,
+      name: String
+    }],
+    required: false,
   },
   searchInput: String,
   isSelectable: {
