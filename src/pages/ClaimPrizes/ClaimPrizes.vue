@@ -20,7 +20,7 @@
 import TheTable from '../../global-components/TheTable.vue';
 import { ref } from 'vue';
 import Check from '../../assets/check.svg';
-import axios from 'axios';
+// import axios from 'axios';
 
 const datab = ref([
   {

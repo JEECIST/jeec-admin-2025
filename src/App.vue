@@ -1,16 +1,18 @@
 <template>
   <div class="app">
     <template v-if="this.$route.name != 'login'">
-      <div v-show="stateStore.sideNavOpen" class="nav-backdrop" :class="{ open: stateStore.sideNavOpen }"
+        <div 
+        v-show="stateStore.sideNavOpen"
+        class="nav-backdrop" 
+        :class="{ open: stateStore.sideNavOpen }"
         @click="stateStore.sideNavOpen = false">
       </div>
       <TheNav class="nav" :class="{ open: stateStore.sideNavOpen }"></TheNav>
       <TheHeader class="header"></TheHeader>
-      <main>
-        <router-view :key="$route.fullPath" />
-      </main>
     </template>
-    <router-view v-if="this.$route.name == 'login'" :key="$route.fullPath" />
+    <main>
+      <router-view :key="$route.fullPath"/>
+    </main>
   </div>
 </template>
 
