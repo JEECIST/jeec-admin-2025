@@ -24,6 +24,7 @@
     
     <!-- Conditionally render the right popup placeholder -->
     <div v-if="selectedRow" class="right-popup-placeholder">
+      <button class="close-popup" @click="closeCardInfo">&times;</button>
       <div class="header">
         <p class="cardUsername">{{ selectedRow.role }}</p>
       </div>
@@ -32,8 +33,8 @@
         <p class="cardUsername">{{ selectedRow.user }}</p>
         <p class="cardUseless">Team User</p>
         <div class="cardActions">
-          <button class="edit-button"><img src="../../assets/edit_btn.png"></button>
-          <button class="delete-button"><img src="../../assets/delete_btn.png"></button>
+          <button class="edit-button"><img src="../../assets/pencil.svg"></button>
+          <button class="delete-button"><img src="../../assets/trash.svg"></button>
         </div>
         <div class="cardInfo">
           <div class = "cardInfoMember"> 
@@ -102,7 +103,9 @@ function closeModal() {
   showAddUserModal.value = false;
   newUser.value = { username: '', role: '' };
 }
-
+function closeCardInfo(){
+  selectedRow.value = null;
+}
 const datab = ref([
   {
     user: "Deco",
@@ -126,6 +129,7 @@ const tablePref = {
 function manageUserRoles() {
   console.log('User Roles button clicked');
 }
+
 </script>
 
 
@@ -144,7 +148,7 @@ function manageUserRoles() {
   flex-direction: column;
   width: 100%;
   gap: 3ch;
-  padding-right: 3ch;
+  
 }
 
 form {
@@ -156,7 +160,10 @@ form {
   padding-left: 1ch;
   border-radius: 10px;
 }
-
+.cardUseless{
+  color: gray;
+  margin-bottom: 1rem;
+}
 .search_style {
   display: flex;
   background-color: var(--c-accent);
@@ -233,7 +240,8 @@ form > button {
   position: sticky;
   top: 0;
   right: 0;
-  width: 350px;
+  width: 23rem;
+  height: 40rem;
   border-radius: 20px;
   background-color: #eef4fb;
   padding: 20px;
@@ -258,8 +266,8 @@ form > button {
 
 
 .right-popup-placeholder .pfp {
-  width: 100px;
-  height: 100px;
+  width: 10rem;
+  height: 10rem;
   border-radius: 50%;
   margin-bottom: 15px;
 }
@@ -281,7 +289,7 @@ form > button {
 .right-popup-placeholder .cardActions {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
+  
 }
 
 .right-popup-placeholder .edit-button,
@@ -429,4 +437,74 @@ form > button {
   background-color: #002855;
 }
 
+.right-popup-placeholder .close-popup {
+    display: none;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .right-popup-placeholder {
+    position: fixed; /* Position the popup above the content */
+    top: 50%; /* Vertically center */
+    left: 50%; /* Horizontally center */
+    transform: translate(-50%, -50%); /* Adjust the position to be truly centered */
+    width: 90%; /* Adjust width to fit on smaller screens */
+    height: auto; /* Let the height adapt to content */
+    background-color: #eef4fb; /* Add background for better visibility */
+    padding: 1rem;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow for a popup effect */
+    z-index: 1000; /* Ensure it stays above other content */
+  }
+
+
+  .right-popup-placeholder .close-popup {
+        display: block;
+        position: absolute;
+        top: 5px;
+        right: 25px;
+        background: none;
+        border: none;
+        font-size: 2.2rem;
+        cursor: pointer;
+        color: #333;
+    }
+  .modal {
+    max-width: 90%; /* Limit modal width on mobile */
+    padding: 1rem; /* Less padding on mobile */
+  }
+  
+  .btnCancel,
+  .btn-primary {
+    width: 5rem;
+    background-color: var(--c-select);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  form > button {
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    background-color: var(--c-select);
+    border-radius: 6px;
+    color: var(--c-bg-light);
+    cursor: pointer;
+    width: 6rem;
+    padding-right: 1rem;
+    
+  }
+
+  .chevron{
+    display: none;
+  
+  }
+}
 </style>

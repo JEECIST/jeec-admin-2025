@@ -11,6 +11,7 @@
     </div>
     
     <div v-if="selectedRow" class="right-popup-placeholder">
+      <button class="close-popup" @click="closeCardInfo">&times;</button>
       <div class="header">
         <h1 class="cardUsername">{{ selectedRow.weekday }}</h1>
       </div>
@@ -113,6 +114,7 @@ const newUser = ref({
 });
 const selectedRow = ref(null);  // Track the selected row
 
+
 // Callback for row selection in the table
 function selectCallback(row) {
   selectedRow.value = row;
@@ -130,7 +132,12 @@ function addUser() {
 // Function to close the modal
 function closeModal() {
   editModal.value = false;
+  selectedRow.value = null;
   newUser.value = { regDay: '', regHour: '', role: '', dishes: [''] };  // Reset form fields
+}
+
+function closeCardInfo(){
+  selectedRow.value = null;
 }
 
 
@@ -139,37 +146,37 @@ const datab = ref([
   {
     day: "07-05-2025",
     weekday: "Monday",
-    registrationDay: "IDK",
-    registrationWeekday: "IDK",
-    registrationTime: "23:59"
+    registrationDay: "--:--",
+    registrationWeekday: "--:--",
+    registrationTime: "--:--"
   },
   {
     day: "08-05-2025",
     weekday: "Tuesday",
-    registrationDay: "IDK",
-    registrationWeekday: "IDK",
-    registrationTime: "23:59"
+    registrationDay: "--:--",
+    registrationWeekday: "--:--",
+    registrationTime: "--:--"
   },
   {
     day: "09-05-2025",
     weekday: "Wednesday",
-    registrationDay: "IDK",
-    registrationWeekday: "IDK",
-    registrationTime: "23:59"
+    registrationDay: "--:--",
+    registrationWeekday: "--:--",
+    registrationTime: "--:--"
   },
   {
     day: "10-05-2025",
     weekday: "Thursday",
-    registrationDay: "IDK",
-    registrationWeekday: "IDK",
-    registrationTime: "23:59"
+    registrationDay: "--:--",
+    registrationWeekday: "--:--",
+    registrationTime: "--:--"
   },
   {
     day: "11-05-2025",
     weekday: "Friday",
-    registrationDay: "IDK",
-    registrationWeekday: "IDK",
-    registrationTime: "23:59"
+    registrationDay: "--:--",
+    registrationWeekday: "--:--",
+    registrationTime: "--:--"
   },
 ]);
 
@@ -229,7 +236,8 @@ h2 {
   position: sticky;
   top: 0;
   right: 0;
-  width: 350px;
+  width: 23rem;
+  height: 40rem;
   border-radius: 20px;
   background-color: #eef4fb;
   padding: 20px;
@@ -252,8 +260,8 @@ h2 {
 }
 
 .right-popup-placeholder .pfp {
-  width: 100px;
-  height: 100px;
+  width: 10rem;
+  height: 10rem;
   border-radius: 50%;
   margin-bottom: 15px;
 }
@@ -275,7 +283,7 @@ h2 {
   display: flex;
   gap: 10px;
   margin-top: 1rem;
-  margin-bottom: 20px;
+  
 }
 
 .right-popup-placeholder .edit-button,
@@ -441,5 +449,88 @@ input {
 .btn-primary:hover {
   background-color: #002855;
 }
+
+.right-popup-placeholder .close-popup {
+    display: none;
+}
+
+/* Styles for mobile screens */
+@media (max-width: 768px) {
+  /* Example: Make the wrapper full-width for mobile */
+  .wrapper {
+    flex-direction: column;
+    padding: 2ch 1ch;
+  }
+
+  /* Adjust the table to fit smaller screens */
+  .table {
+    width: 100%;
+    padding-right: 1ch;
+    gap: 1ch;
+  }
+
+  /* Make the right popup stack below the table */
+  .right-popup-placeholder {
+    position: fixed; /* Position the popup above the content */
+    top: 50%; /* Vertically center */
+    left: 50%; /* Horizontally center */
+    transform: translate(-50%, -50%); /* Adjust the position to be truly centered */
+    width: 90%; /* Adjust width to fit on smaller screens */
+    height: auto; /* Let the height adapt to content */
+    background-color: #eef4fb; /* Add background for better visibility */
+    padding: 1rem;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow for a popup effect */
+    z-index: 1000; /* Ensure it stays above other content */
+  }
+  .right-popup-placeholder .close-popup {
+        display: block;
+        position: absolute;
+        top: 5px;
+        right: 25px;
+        background: none;
+        border: none;
+        font-size: 2.2rem;
+        cursor: pointer;
+        color: #333;
+    }
+
+
+  .pfp {
+    width: 7rem;
+    height: 7rem;
+  }
+
+  .cardUsername {
+    font-size: 1.2rem;
+  }
+
+  .cardInfoLabel, .cardInfoValue {
+    font-size: 0.9rem;
+  }
+
+  /* Adjust modal width for mobile */
+  .modal {
+    width: 90%;
+    max-width: none;
+    padding: 1.5rem;
+  }
+
+  .btn-primary, .btnCancel {
+    width: 100%;  /* Buttons span full width on mobile */
+    margin-top: 10px;
+  }
+
+  .formReg, .formRole {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* Adjust form inputs for smaller screens */
+  input {
+    width: 100%;
+    padding: 8px;
+  }
+}
+
 
 </style>
