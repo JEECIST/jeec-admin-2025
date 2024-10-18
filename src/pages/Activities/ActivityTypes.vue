@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="activity_types">
     <div :class="['content', { 'shrink': selectedType }]">
       <div class="header">
