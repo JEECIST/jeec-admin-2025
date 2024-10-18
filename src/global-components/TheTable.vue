@@ -38,7 +38,14 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  buttons: Array[Object],
+  buttons: {
+    icon: {
+      type: String,
+      default: false
+    },
+    eventName: String,
+    name: String
+  },
   searchInput: String,
   isSelectable: {
     type: Boolean,
@@ -47,7 +54,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['onRowSelect']);
-
 
 const isAnySelected = ref(false);
 const whichIsSelected = ref();
@@ -105,6 +111,7 @@ table {
 
 thead {
   position: sticky;
+  position: -webkit-sticky;
   top: 0;
   z-index: 2;
 }
