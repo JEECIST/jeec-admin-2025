@@ -182,7 +182,6 @@ function tooglelist()
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: flex-start;
   width: 100%;
   height: 100%;
   padding: 5px 5px 5px 5px;
@@ -312,6 +311,7 @@ function tooglelist()
   width: 100%;
   height: 100%;
   font-size: 0.8em;
+  height: 70vh;
 }
 
 .nosponsors{
@@ -325,6 +325,8 @@ function tooglelist()
 }
 
 .header {
+  top:0;
+  position: sticky;
   width: 100%;
   display: flex;
   flex-direction: row;
