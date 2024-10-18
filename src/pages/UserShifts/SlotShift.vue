@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-// import { defineProps, computed } from 'vue';
+import { defineProps, computed } from 'vue';
 import { useSlotStore } from '../../stores/userShifts.js'; // Importe a store
 
 
@@ -38,6 +38,7 @@ function selectSlot() {
     background-color: #509CDB;
     border-radius: 10px;
     border: none;
+    height: 5%;
 }
 
 .slot-not-selected {
@@ -47,6 +48,7 @@ function selectSlot() {
     background-color: #EBF6FF;
     border-radius: 10px;
     border: none;
+    height: 5%;
 }
 
 p {
@@ -54,5 +56,6 @@ p {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 15px;
 }
 </style>

@@ -2,8 +2,8 @@
 <template>
     <div class="day">
         <div class="weekday">
-            <p>{{ props.day }} - May</p>
-            <p>{{ props.weekDay }}</p>
+            <p>{{ day }} - May</p>
+            <p>{{ weekDay }}</p>
         </div>
         <SlotShift v-for="slot in shifts" :key="slot" class="slot" :time="slot" :day="day" :weekDay="weekDay" />
     </div>
@@ -19,6 +19,7 @@ const props = defineProps({
     day: String,
     weekDay: String
 });
+
 </script>
 
 <style>
@@ -26,6 +27,7 @@ const props = defineProps({
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
+    margin-left: 100px;
 }
 
 p {

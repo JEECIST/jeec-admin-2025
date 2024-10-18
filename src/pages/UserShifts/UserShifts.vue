@@ -2,9 +2,6 @@
     <div class="week">
         <DayShifts v-for="day in days" :key="day" class="day" :day="day" :weekDay="weekDays[day - 3]" />
     </div>
-    <!-- <div>
-        Ola
-    </div> -->
 </template>
 
 <script setup>
@@ -17,13 +14,13 @@ const weekDays = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thurs
 <style>
 .week {
     display: flex;
-    justify-content: space-evenly;
-    height: 100%;
-    width: 100%;
+    height: 80vh;
+    overflow: auto;
 }
 
 .day {
-    width: 7%;
+    width: 80px;
     height: 100%;
+    margin-left: 10px;
 }
 </style>

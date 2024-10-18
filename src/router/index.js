@@ -15,7 +15,7 @@ const routes = [
     component: Dashboard,
     meta: { 
       title: "Dashboard",
-      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams"],
+      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts"],
     },
   },
   {
@@ -204,7 +204,7 @@ const routes = [
   {
     path: "/user-shifts",
     name: "usershifts",
-    meta: { title: "Shifts", children: false },
+    meta: { title: "Team Shifts", children: false },
     component: () => import("../pages/UserShifts/UserShifts.vue"),
   },
   {
