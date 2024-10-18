@@ -323,7 +323,11 @@ input[type="radio"] {
   flex-grow: 3;
 }
 
-
+.logo{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 /* Hide the file input */
 #logo-upload {
   display: none;

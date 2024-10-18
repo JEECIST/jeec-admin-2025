@@ -39,7 +39,7 @@
           <button @click="editRow(selectedRow)" class="icon-button">
             <img :src="pencilIcon" alt="edit" class="icon" />
           </button>
-          <button @click="editRow(selectedRow)" class="icon-button">
+          <button @click="tooglelist" class="icon-button">
             <img :src="briefcaseIcon" alt="list of sponsors in tier" class="icon">
           </button>
           <button @click="deleteRow(selectedRow)" class="icon-button">
@@ -99,6 +99,7 @@
       </div>
     </div>
 
+    <SponsorsList v-if="listsponsors" @close="tooglelist" :type="selectedRow.name" />
     <AddSponsorTier v-if="isaddsponsortier" @close="toogleadd"/>
     <EditSponsorTier v-if="iseditsponsortier" @close="editRow(selectedRow)" :sponsorData="selectedRow" :isOpen="iseditsponsor"/>
   </div>
@@ -114,6 +115,7 @@ import JEEC from '../../assets/JEEC.png'
 import AddSponsorTier from './AddSponsorTier.vue';
 import EditSponsorTier from './EditSponsorTier.vue';
 import briefcaseIcon from '../../assets/briefcase.svg'
+import SponsorsList from './SponsorsList.vue';
 
 // Example data to be displayed in the table
 const tableData = ref([
@@ -144,7 +146,7 @@ function handleRowSelect(row) {
 // Event handlers for button clicks
 function editRow(row) {
   iseditsponsortier.value= !iseditsponsortier.value
-  console.log(iseditsponsor.value)
+  console.log(iseditsponsortier.value)
   console.log('Edit button clicked for row:', row);
 }
 
@@ -161,6 +163,12 @@ function toogleadd()
 {
   isaddsponsortier.value= !isaddsponsortier.value
   console.log(isaddsponsortier.value)
+}
+
+function tooglelist()
+{
+  listsponsors.value= !listsponsors.value
+  console.log(listsponsors.value)
 }
 
 
@@ -186,6 +194,7 @@ function toogleadd()
   justify-content: flex-start;
   align-items: center;
   padding: 10px 10px 10px 10px;
+  margin: 10px 10px 10px 10px;
   max-height: max-content;
   width: 28%;
   min-width: 200px;
@@ -203,7 +212,7 @@ function toogleadd()
   align-items: center;
   width: 100%;
   padding: 5px 5px 10px 5px;
-  gap:10px;
+  gap:20px;
 }
 
 .card-tier{
@@ -255,8 +264,8 @@ function toogleadd()
   justify-content: center;
   height: 100%;
   width: 100%;
-  padding: 5px 5px 5px 5px;
-  gap: 20px;
+  padding: 5px 5px 10px 5px;
+  gap: 20%;
 }
 
 .card-paragraph{
@@ -287,6 +296,7 @@ function toogleadd()
   align-items: center;
   width: 70%;
   min-width: 380px;
+  max-width: 70vw;
   flex-grow: 1;
 }
 

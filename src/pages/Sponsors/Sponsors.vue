@@ -161,6 +161,7 @@ const eventselected = ref('');
   justify-content: flex-start;
   align-items: center;
   padding: 10px 10px 10px 10px;
+  margin: 10px 10px 10px 10px;
   max-height: max-content;
   width: 28%;
   min-width: 200px;
@@ -178,7 +179,7 @@ const eventselected = ref('');
   align-items: center;
   width: 100%;
   padding: 5px 5px 10px 5px;
-  gap:10px;
+  gap:20px;
 }
 
 .card-tier{
@@ -230,8 +231,8 @@ const eventselected = ref('');
   justify-content: space-between;
   height: 100%;
   width: 100%;
-  padding: 5px 5px 5px 5px;
-  gap: 8px;
+  padding: 5px 5px 10px 5px;
+  gap: 20%;
 }
 
 .card-paragraph{
@@ -256,6 +257,7 @@ const eventselected = ref('');
   align-items: center;
   width: 70%;
   min-width: 380px;
+  max-width: 70vw;
   flex-grow: 1;
 }
 
