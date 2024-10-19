@@ -4,6 +4,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import AddSpeakerPopup from './AddSpeakerPopup.vue';
 import EditSpeakerPopup from './EditSpeakerPopup.vue';
+import MobilePopup from './MobilePopup.vue';
 
 const popupShow = ref(false);
 const descriptionShow = ref(false);
@@ -34,6 +35,25 @@ const closeOtherModal = () => {
   isOtherModalOpened.value = false;
 };
 
+const isMobileModalOpened = ref(false);
+
+const openMobileModal = () => {
+  isMobileModalOpened.value = true;
+};
+
+const closeMobileModal = () => {
+  isMobileModalOpened.value = false;
+};
+
+function isMobile() {
+   if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+     return true;
+   }
+   else {
+    return false;
+   }
+}
+
 const router = useRouter();
 
 function goToSpeakerTypes() {
@@ -45,6 +65,7 @@ const message = ref();
 function selectCallback(row) {
   console.log(row)
   popupShow.value = true;
+  openMobileModal();
 }
 
 const datab = [
@@ -311,6 +332,7 @@ const tablePref = {
 </script>
 
 <template>
+<div class="desktop" v-if="!isMobile()">
 <div class="wrapper">
     <div class="table">
       <div class="topbar">
@@ -318,7 +340,7 @@ const tablePref = {
         <label>
           <img src="../../assets/search.svg">
         </label>
-        <input v-model="message" placeholder="Search for a user">
+        <input v-model="message" placeholder="Search for a speaker">
       </form>
       <div class="imsosickofdivs">
       <label for="evento" class="eventselect">Event</label>
@@ -371,11 +393,11 @@ const tablePref = {
     </div>
     <div class="right-popup-placeholder" v-show="popupShow">
         <div class="items">
-        <h1>SPEAKER TYPE</h1>
-        <div class="speaker-photo">Insert Speaker Photo</div>
-        <h3 class="text1">Speaker Name</h3>
-        <p class="text2 title">Speaker</p>
-        <div class="btns-row">
+          <h1>SPEAKER TYPE</h1>
+          <div class="speaker-photo">Insert Speaker Photo</div>
+          <h3 class="text1">Speaker Name</h3>
+          <p class="text2 title">Speaker</p>
+          <div class="btns-row">
             <button class="btn" @click="openOtherModal">
                 <img src="../../assets/pencil.svg">
             </button>
@@ -388,37 +410,116 @@ const tablePref = {
             <button class="btn">
                 <img src="../../assets/trash.svg">
             </button>
+          </div>
+          <div id="info">
+            <p>Company</p>
+            <p class="text2">Intel</p>
+            <p>Position</p>
+            <p class="text2">Global Team Technical Lead</p>
+            <div class="row">
+              <div class="col">
+                <p>Country</p>
+                <p class="text2">Germany</p>           
+              </div>
+              <div class="col">
+                <p>Event</p>
+                <p class="text2">JEEC 24</p>
+              </div>
+            </div>
+            <p>JEEC Responsible</p>
+            <p class="text2">Francisco Rosa</p>
+          </div>
         </div>
-        <div id="info">
-        <p>Company</p>
-        <p class="text2">Intel</p>
-        <p>Position</p>
-        <p class="text2">Global Team Technical Lead</p>
-        <div class="row">
-        <div class="col">
-            <p>Country</p>
-            <p class="text2">Germany</p>           
-        </div>
-        <div class="col">
-            <p>Event</p>
-            <p class="text2">JEEC 24</p>
-        </div>
-        </div>
-        <p>JEEC Responsible</p>
-        <p class="text2">Francisco Rosa</p>
-    </div>
-    </div>
-</div>
+      </div>
   </div>
+</div>
+
+
+
+<div class="mobile" v-else>
+<div class="mobile-wrapper">
+    <div class="table">
+      <div class="mobile-topbar">
+      <form>
+        <label>
+          <img src="../../assets/search.svg">
+        </label>
+        <input v-model="message" placeholder="Search for a speaker">
+      </form>
+      <div class="imsosickofdivs">
+      <label for="evento" class="eventselect">Event</label>
+      <select name="evento" placeholder="  " class="eventselect">
+                <option value="null" disabled selected hidden></option>
+                <option>hello</option>
+                <option>there</option>
+            </select>
+      </div>
+     <button class="topbtn" @click="openModal">Add Speaker</button>
+     <button @click="goToSpeakerTypes" class="topbtn">Speaker Types 〉</button>
+     <Transition name="fade" appear>
+        <AddSpeakerPopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerPopup>
+     </Transition>
+     <Transition name="fade" appear>
+        <EditSpeakerPopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerPopup>
+     </Transition>
+     <Transition name="fade" appear>
+        <MobilePopup :isOpen="isMobileModalOpened" @modal-close="closeMobileModal"></MobilePopup>
+     </Transition>
+     <div class="popup-mask" v-show="descriptionShow">
+     <div class="description-mobile">
+       <p>
+        description of speaker Once upon a time there was a lovely 
+        princess. But she had an enchantment 
+        upon her of a fearful sort which could 
+        only be broken by love's first kiss. 
+        She was locked away in a castle guarded 
+        by a terrible fire-breathing dragon. 
+        Many brave knights had attempted to 
+        free her from this dreadful prison, 
+        but non prevailed. She waited in the 
+        dragon's keep in the highest room of 
+        the tallest tower for her true love 
+        and true love's first kiss. (laughs) 
+        Like that's ever gonna happen. What 
+        a load of - (toilet flush)
+ 
+        Allstar - by Smashmouth begins to play. Shrek goes about his 
+        day. While in a nearby town, the villagers get together to go 
+        after the ogre.
+       </p>
+       <button class="mobile-closedescription" @click="closeDescription">X</button>
+     </div>
+     </div>
+     </div>
+      <TheTable
+        :data="datab"
+        :tableHeaders="tablePref"
+        :searchInput="message"
+        @onRowSelect="selectCallback"
+      ></TheTable>
+    </div>
+  </div>
+</div>
 </template>
 
 <style scoped>
+.mobile-wrapper {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: calc(100dvh - var(--header-height));
+  padding: 3ch 1ch 1ch 1ch;
+  margin-right: 0vw;
+  overflow-x: hidden;
+}
+
 .wrapper {
   display: flex;
   position: relative;
   height: calc(100dvh - var(--header-height));
   padding: 5ch 3ch 3ch 3ch;
   overflow-y: hidden;
+  gap: 3ch;
 }
 
 .table {
@@ -426,7 +527,20 @@ const tablePref = {
   flex-direction: column;
   width: 100%;
   gap: 3ch;
-  padding-right: 3ch;
+  padding-right: 0ch;
+}
+
+.mobile-topbar > form {
+  display: flex;
+  width: 21%;
+  background-color: var(--c-accent);
+  height: 50px;
+  line-height: 50px;
+  align-items: center;
+  gap: 1ch;
+  padding-left: 1ch;
+  border-radius: 10px;
+  flex-grow: 0.7;
 }
 
 form {
@@ -485,6 +599,15 @@ form > input::placeholder {
   border-radius: 30px;
   background-color: var(--c-accent);
   height: 100%;
+}
+
+.right-popup-placeholder-mobile {
+  width: 94.5vw;
+  height: 93vh;
+  border-radius: 30px;
+  background-color: var(--c-accent);
+  margin-right: -0vw;
+
 }
 
 .items {
@@ -588,7 +711,7 @@ select {
     cursor: pointer;
 }
 
-.topbar {
+.topbar, .mobile-topbar {
     display: flex;
     flex-direction: row;
     gap: 15px;
@@ -623,12 +746,35 @@ button {
   background-color: rgba(0, 0, 0, 0.425);
 }
 
+.description-mobile {
+  display: flex;
+  justify-content: left;
+  background-color: white;
+  width: 94.5vw;
+  height: 80%;
+  position: absolute;
+  top: 50%;
+  left: 46.5%;
+  translate: -50% -50%;
+  border-radius: 15px;
+}
+
+.description-mobile > p {
+   display: flex;
+   align-items: center;
+   vertical-align: center;
+   justify-content: center;
+   padding: 3.5vw;
+   font-weight: 350;
+   color: (--c-ft-semi-light);
+}
+
 .description {
   display: flex;
   justify-content: center;
   background-color: white;
-  width: 30vw;
-  height: 80%;
+  width: 60vw;
+  height: 50%;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -657,6 +803,25 @@ button {
   display: flex;
   margin-left: auto;
   width: 8.4vw;
+  height: 3.5vh;
+  align-items: center;
+  justify-content: center;
+  gap: 10vh;
+  cursor: pointer;
+  padding: 0.5vw;
+}
+
+.mobile-closedescription {
+  background-color: #152259;
+  color: white;
+  border-radius: 5px;
+  border: none;
+  margin-right: 3vw;
+  margin-top: 2%;
+  margin-bottom: 2%;
+  display: flex;
+  margin-left: auto;
+  width: 90vw;
   height: 3.5vh;
   align-items: center;
   justify-content: center;
