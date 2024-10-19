@@ -10,116 +10,219 @@
       ></TheTable>
     </div>
     
-    <!-- Conditionally render the right popup placeholder -->
     <div v-if="selectedRow" class="right-popup-placeholder">
+      <button class="close-popup" @click="closeCardInfo">&times;</button>
       <div class="header">
-        <p class="cardUsername">{{ selectedRow.weekday   }}</p>
-      </div>      
+        <h1 class="cardUsername">{{ selectedRow.weekday }}</h1>
+      </div>
+      <img src="../../assets/wrizz.jpg" alt="Profile Image" class="pfp">
+      <h2>{{ selectedRow.day }}</h2>
+      <p :style="{ color: 'gray', fontSize: '18px' }">Meal</p>
+      <div class="cardActions">
+        <button class="edit-button" type="button" @click="editModal = true">
+          <img src="../../assets/pencil.svg">
+        </button>
+        <button class="meal-button" type="button" @click="showMeal = true">
+          <img src="../../assets/meal_btn.svg">
+        </button>
+      </div>
       
-        <img src="../../assets/wrizz.jpg" alt="Profile Image" class="pfp">
-        <p class="cardUsername">{{ selectedRow.day }}</p>
-        <p class="cardUseless">Meal </p>
-        <div class="cardActions">
-          <button class="edit-button">✏️</button>
-          <button class="edit-button">🦍</button>
-          <button class="delete-button">🗑️</button>
+      <div class="cardInfo">
+        <div class="cardInfoMember">
+          <p class="cardInfoLabel">Dishes Available</p>
+          <!-- Check if 'name' is an array and iterate, else display it as a single dish -->
+          <div v-if="Array.isArray(selectedRow.name)">
+            <div v-for="(dish, index) in selectedRow.name" :key="index">
+              <p class="cardInfoValue">Dish {{ index + 1 }}: {{ dish }}</p>
+            </div>
+          </div>
+          <div v-else>
+            <p class="cardInfoValue">Dish: {{ selectedRow.name }}</p>
+          </div>
         </div>
-        <div class="cardInfo">
-          <div class = "cardInfoMember"> 
-            <p class="cardInfoLabel">Dises available</p>
-            <p class="cardInfoValue">{{ selectedRow.name }}</p>
-          </div>
-            
-          <div class = "cardInfoMember"> 
-            <p>add plates here</p>
-          </div>
+      </div>
 
+    </div>
+  </div>
+
+  
+  
+  <!-- Modal for Editing User Info -->
+  <div v-if="editModal" class="modal-overlay">
+    <div class="modal">
+      <button class="close-popup" @click="closeModal()">&times;</button>
+      <h2>Edit Day</h2>
+      <form class="popup_form" @submit.prevent="addUser">
+        <div class="formReg">
+          <div class="form-group">
+            <label for="regDay">Registration Day</label>
+            <input 
+              type="date" 
+              v-model="newUser.regDay" 
+              id="regDay" 
+              required 
+              :min="minDate" 
+              :max="maxDate"
+            />
+          </div>
+          <div class="form-group">
+            <label for="regHour">Registration Hour</label>
+            <input 
+              type="time" 
+              v-model="newUser.regHour" 
+              id="regHour" 
+              required 
+            />
+          </div>
+        </div>
+
+        <!-- Dishes Section -->
+        <div class="formRole">
+          <div v-for="(dish, index) in newUser.dishes" :key="index" class="form-group">
+            <!-- Dynamic label for each dish -->
+            <label :for="'dish' + index">Dish {{ index + 1 }}</label>
+            <input v-model="newUser.dishes[index]" :id="'dish' + index" placeholder="Enter Dish Name" required />
+          </div>
+        </div>
+
+        <!-- Button to add a new dish input -->
+        <div class="addDish">
+          <button type="button" class="btn-primary" @click="addDish">Add Dish</button>
+        </div>
+
+        <!-- Modal actions -->
+        <div class="modal-actions">
+          <button type="submit" class="btn-primary">Save</button>
           
         </div>
-      
+      </form>
     </div>
-
   </div>
+
+  <div v-if="showMeal" class="modal-overlay">
+    <div class="modal">
+      <button class="close-popup" @click="closeMeal()">&times;</button>
+      <h2>Meals Ordered</h2>
+      <div class="table">
+      <TheTable
+        :data="datab"
+        :tableHeaders="tablePref"
+        :searchInput="message"
+        :buttons="tableButtons"
+        @onRowSelect="selectCallback"
+      ></TheTable>
+    </div>
+    </div>
+  </div>
+
+
 </template>
 
+
 <script setup>
-import TheTable from '../../global-components/TheTable.vue';
 import { ref } from 'vue';
+import TheTable from '../../global-components/TheTable.vue';
 
 const message = ref('');
-const showAddUserModal = ref(false);
-
+const editModal = ref(false);  // Modal visibility
+const showMeal = ref(false);
+const newUser = ref({
+  regDay: '',
+  regHour: '',
+  role: '',
+  dishes: ['']  // Initially one dish input field
+});
 const selectedRow = ref(null);  // Track the selected row
 
+
+// Callback for row selection in the table
 function selectCallback(row) {
-  selectedRow.value = row;  // Set the selected row
+  selectedRow.value = row;
   console.log('Selected Row:', row);
+}
+function addDish() {
+  newUser.value.dishes.push('');  // Add an empty string for a new dish input
+}
+// Function to handle adding a new user
+function addUser() {
+  console.log(newUser.value);
+  closeModal();
+}
+
+// Function to close the modal
+function closeModal() {
+  editModal.value = false;
+ 
+  newUser.value = { regDay: '', regHour: '', role: '', dishes: [''] };  // Reset form fields
+}
+function closeMeal(){
+  showMeal.value = false;
+ 
+}
+
+function closeCardInfo(){
+  selectedRow.value = null;
 }
 
 
+
 const datab = ref([
-
   {
-    day: "07/05/2025",
+    day: "07-05-2025",
     weekday: "Monday",
-    registrationDay: "IDK",
-    registrationWeekday: "IDK",
-    registrationTime: "23:59"
+    registrationDay: "--:--",
+    registrationTime: "--:--",
+    registrationWeekday: "--:--"    
   },
   {
-    day: "08/05/2025",
+    day: "08-05-2025",
     weekday: "Tuesday",
-    registrationDay: "IDK",
-    registrationWeekday: "IDK",
-    registrationTime: "23:59"
+    registrationDay: "--:--",
+    registrationTime: "--:--",
+    registrationWeekday: "--:--"    
   },
   {
-    day: "09/05/2025",
+    day: "09-05-2025",
     weekday: "Wednesday",
-    registrationDay: "IDK",
-    registrationWeekday: "IDK",
-    registrationTime: "23:59"
+    registrationDay: "--:--",
+    registrationTime: "--:--",
+    registrationWeekday: "--:--"    
   },
   {
-    day: "10/05/2025",
+    day: "10-05-2025",
     weekday: "Thursday",
-    registrationDay: "IDK",
-    registrationWeekday: "IDK",
-    registrationTime: "23:59"
+    registrationDay: "--:--",
+    registrationTime: "--:--",
+    registrationWeekday: "--:--"    
   },
   {
-    day: "11/05/2025",
+    day: "11-05-2025",
     weekday: "Friday",
-    registrationDay: "IDK",
-    registrationWeekday: "IDK",
-    registrationTime: "23:59"
+    registrationDay: "--:--",
+    registrationTime: "--:--",
+    registrationWeekday: "--:--"    
   },
-
 ]);
-
 
 const tablePref = {
   day: "Day",
   weekday: "Weekday", 
   registrationDay: "Registration Day",
-  registrationWeekday: "Registration Weekday",
-  registrationTime: "Registration Time"
+  registrationTime: "Registration Time",
+  registrationWeekday: "Registration Weekday"
+  
 };
-
-function manageUserRoles() {
-  console.log('User Roles button clicked');
-}
 </script>
 
 
 <style scoped>
-
 .wrapper {
   display: flex;
   position: relative;
   height: calc(100dvh - var(--header-height));
   padding: 5ch 3ch 3ch 3ch;
   overflow-y: hidden;
+  
 }
 
 .table {
@@ -140,80 +243,27 @@ form {
   border-radius: 10px;
 }
 
-.search_style {
-  display: flex;
-  background-color: var(--c-accent);
-  height: 50px;
-  line-height: 50px;
-  align-items: center;
-  gap: 1ch;
-  padding-left: 1ch;
-  border-radius: 6px;
-  width: 60%;
+h2 {
+  margin-bottom: 0.3rem;
 }
 
-.search_style > label > img {
-  width: 20px;
-  position: relative;
-  top: 4px;
-  left: 3px;
-}
-
-.search_style > input {
-  appearance: none;
-  background-color: transparent;
-  border: 0px;
-  color: var(--c-ft-semi-light);
-  font-style: inherit;
-  font-variant: inherit;
-  font-weight: inherit;
-  font-stretch: inherit;
-  line-height: inherit;
-  font-family: inherit;
-  font-size-adjust: inherit;
-  font-kerning: inherit;
-  font-optical-sizing: inherit;
-  font-language-override: inherit;
-  font-feature-settings: inherit;
-  font-variation-settings: inherit;
-  font-size: 1rem;
-  height: 100%;
-  outline: none;
-  padding: 0px 0px 0px 8px;
-  width: 100%;
-}
-
-.search_style input::placeholder {
-  color: var(--c-ft-semi-light);
-}
-
-form > button {
-  font-size: 1.1rem;
-  font-weight: 500;
-  border: none;
-  background-color: var(--c-select);
-  border-radius: 6px;
-  color: var(--c-bg-light);
-  cursor: pointer;
-  padding: 0px 15px;
-  height: 100%;
-}
-
-.chevron{
+.chevron {
   display: inline-block;
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
   border-right: 2px solid white;
   border-bottom: 2px solid white;
   transform: rotate(-45deg);
-  border-radius: 2px; 
+  border-radius: 2px;
 }
+
 /* Right Popup Placeholder */
 .right-popup-placeholder {
   position: sticky;
   top: 0;
   right: 0;
-  width: 350px;
+  width: 23rem;
+  height: 100%;
   border-radius: 20px;
   background-color: #eef4fb;
   padding: 20px;
@@ -235,24 +285,21 @@ form > button {
   margin-bottom: 10px;
 }
 
-
-
 .right-popup-placeholder .pfp {
-  width: 100px;
-  height: 100px;
+  width: 10rem;
+  height: 10rem;
   border-radius: 50%;
   margin-bottom: 15px;
 }
 
 .right-popup-placeholder .cardUsername {
-  font-size: 1.5rem ;
+  font-size: 1.5rem;
   font-weight: 600;
   color: #333;
   margin-bottom: 5px;
 }
 
 .right-popup-placeholder .cardRole {
-  
   font-weight: 500;
   color: #777;
   margin-bottom: 20px;
@@ -261,21 +308,22 @@ form > button {
 .right-popup-placeholder .cardActions {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-top: 1rem;
+  
 }
 
 .right-popup-placeholder .edit-button,
-.right-popup-placeholder .delete-button {
+.right-popup-placeholder .meal-button {
   background-color: #ffffff;
+  border: none;
   border-radius: 8px;
   padding: 8px;
   cursor: pointer;
   font-size: 1.2rem;
-  border:none;
 }
 
 .right-popup-placeholder .edit-button:hover,
-.right-popup-placeholder .delete-button:hover {
+.right-popup-placeholder .meal-button:hover {
   background-color: #f0f0f0;
 }
 
@@ -303,7 +351,7 @@ form > button {
 
 /* Modal styles */
 .modal-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -319,57 +367,85 @@ form > button {
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  width: 50%;
-  height: 70%;
+  width: 100%;
+  max-width: 700px;
+  
   display: flex;
+  justify-content: flex-start;
   flex-direction: column;
   position: relative;
 }
 
 .popup_form {
   display: flex;
+  height: 100%;
   flex-direction: column;
   gap: 10px;
+  
 }
 
 .modal-actions {
-  margin-top: auto;
   display: flex;
   justify-content: flex-end;
+  align-self: flex-end;
   padding-top: 1rem;
   gap: 20px;
+  width: 100%;
 }
 
 .modal h2 {
+  padding-left: 8px;
   margin-top: 0;
+  margin-bottom: 2%;
   font-size: 1.5rem;
   font-weight: 600;
 }
 
-.formUsername {
+.formReg {
+  display: flex;
+  justify-content: space-between;
   width: 100%;
+  gap:2rem;
 }
+
+.form-group {
+  flex: 1;
+  
+}
+
+.form-group:last-child {
+  margin-right: 0; /* Remove margin for the last input in the row */
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
 
 .formRole {
   justify-content: flex-start;
+  align-self: flex-start;
   width: 60%;
 }
 
 /* Label Styling */
 .popup,
 .formRole label,
-.formUsername label {
+.formReg label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: -1rem;
+  padding: 0px;
   font-size: 1rem;
   font-weight: 500;
 }
 
 /* Input Styling */
 .formRole input,
-.formUsername input,
+.formReg input,
 .formRole select,
-.formUsername select {
+.formReg select {
   width: 100%;
   padding: 0.5rem;
   font-size: 1rem;
@@ -377,15 +453,21 @@ form > button {
   border-radius: 4px;
   background-color: white;
 }
-
+.addDish{
+  justify-content: flex-start;
+  align-self: flex-start;
+  width: 100%;
+}
 /* Button Styling */
 .btnCancel,
 .btn-primary {
+  width: 18%;
   background-color: var(--c-select);
   color: white;
   border: none;
   padding: 0.5rem 1rem;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -394,5 +476,96 @@ form > button {
 .btn-primary:hover {
   background-color: #002855;
 }
+
+.close-popup {
+        display: block;
+        position: absolute;
+        top: 5px;
+        right: 25px;
+        background: none;
+        border: none;
+        font-size: 2.2rem;
+        cursor: pointer;
+        color: #333;
+    }
+
+/* Styles for mobile screens */
+@media (max-width: 768px) {
+  /* Example: Make the wrapper full-width for mobile */
+  .wrapper {
+    flex-direction: column;
+    padding: 2ch 1ch;
+  }
+
+  /* Adjust the table to fit smaller screens */
+  .table {
+    width: 100%;
+    padding-right: 1ch;
+    gap: 1ch;
+  }
+
+  /* Make the right popup stack below the table */
+  .right-popup-placeholder {
+    position: fixed; /* Position the popup above the content */
+    top: 50%; /* Vertically center */
+    left: 50%; /* Horizontally center */
+    transform: translate(-50%, -50%); /* Adjust the position to be truly centered */
+    width: 90%; /* Adjust width to fit on smaller screens */
+    height: 75%; /* Let the height adapt to content */
+    background-color: #eef4fb; /* Add background for better visibility */
+    padding: 1rem;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow for a popup effect */
+    z-index: 1000; /* Ensure it stays above other content */
+  }
+  .right-popup-placeholder .close-popup {
+        display: block;
+        position: absolute;
+        top: 5px;
+        right: 25px;
+        background: none;
+        border: none;
+        font-size: 2.2rem;
+        cursor: pointer;
+        color: #333;
+    }
+
+
+  .pfp {
+    width: 7rem;
+    height: 7rem;
+  }
+
+  .cardUsername {
+    font-size: 1.2rem;
+  }
+
+  .cardInfoLabel, .cardInfoValue {
+    font-size: 0.9rem;
+  }
+
+  /* Adjust modal width for mobile */
+  .modal {
+    width: 90%;
+    max-width: none;
+    padding: 1.5rem;
+  }
+
+  .btn-primary, .btnCancel {
+    width: 100%;  /* Buttons span full width on mobile */
+    margin-top: 10px;
+  }
+
+  .formReg, .formRole {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* Adjust form inputs for smaller screens */
+  input {
+    width: 100%;
+    padding: 8px;
+  }
+}
+
 
 </style>
