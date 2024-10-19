@@ -24,7 +24,7 @@ function isMobile() {
             <div class="wrapper-wrapper">
                 <div class="popup-wrapper">
                     <div class="ihatedivs">
-                        <h1>Add Speaker Type</h1>
+                        <h1>Edit Speaker Type</h1>
                         <div class="flex-1">
                             <div class="flex-1-row-4">
                                 <div class="labels" id="name">
@@ -83,7 +83,7 @@ function isMobile() {
             <div class="mobile-wrapper-wrapper">
                 <div class="popup-wrapper">
                     <div class="ihatedivs">
-                        <h1>Add Speaker Type</h1>
+                        <h1>Edit Speaker Type</h1>
                         <div class="flex-1">
                             <div class="mobile-flex-1-row-4">
                                 <div class="labels" id="name">
@@ -155,7 +155,7 @@ function isMobile() {
     justify-content: center;
     background-color: white;
     width: 90.5vw;
-    height: 80%;
+    height: 90%;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -285,24 +285,15 @@ radio {
     border-radius: 5px;
     border: none;
     margin-right: 3vw;
-    margin-top: 2%;
+    margin-top: 13%;
     margin-bottom: 2%;
     display: flex;
+    margin-left: auto;
     width: 8.4vw;
     height: 3.5vh;
     align-items: center;
     justify-content: center;
-    gap: 20vh;
     cursor: pointer;
-}
-
-.mobile-btns {
-    width: 80vw;
-    display: flex;
-    margin-top: 4vh;
-    justify-content: right;
-    gap: 4%;
-    margin-left: 5%;
 }
 
 .mobile-add {
@@ -311,15 +302,25 @@ radio {
     border-radius: 5px;
     border: none;
     margin-right: 3vw;
-    margin-top: 2%;
+    margin-top: 13%;
     margin-bottom: 2%;
     display: flex;
-    width: 16vw;
+    margin-left: auto;
+    width: 20vw;
     height: 3.5vh;
     align-items: center;
     justify-content: center;
     gap: 10vh;
     cursor: pointer;
+}
+
+.mobile-btns {
+    width: 60vw;
+    display: flex;
+    margin-top: 4vh;
+    justify-content: right;
+    gap: 4%;
+    margin-left: 25%;
 }
 
 .btns {
@@ -330,4 +331,5 @@ radio {
     justify-content: left;
     gap: 0.1%;
 }
+
 </style>

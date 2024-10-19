@@ -21,10 +21,10 @@ function isMobile() {
 <template>
     <div v-if="isOpen" class="modal-mask">
       <div class="desktop" v-if="!isMobile()">
-        <div class="wrapper">
+        <div class="wrapper-wrapper">
         <div class="popup-wrapper" ref="target">
-            <h1>Add Speaker</h1>
-            <div class="elements">
+            <h1>Edit Speaker</h1>
+            <div class="stuff-inside">
             <div class="flex-1">
                 <div class="flex-1-row-1">
                     <div class="labels" id="name">
@@ -83,9 +83,9 @@ function isMobile() {
                 <div class="labels" id="speakerdickpic">
                     <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
                     <p class="idk">
-                        No picture selected yet
+                        No picture selected yet<!-- Size too small please insert larger dick 🥺 -->
                     </p>
-                    <button id="coolbutton">Add Pic</button>
+                    <button id="coolbutton">Add <!--Dic-->Pic</button>
                 </div>
                 <div class="labels" id="companylogo">
                     <label for="companylogo">Company Logo</label>
@@ -118,10 +118,10 @@ function isMobile() {
 
 
       <div class="mobile" v-else>
-        <div class="mobile-wrapper">
+        <div class="mobile-wrapper-wrapper">
         <div class="popup-wrapper" ref="target">
-            <h1>Add Speaker</h1>
-            <div class="elements">
+            <h1>Edit Speaker</h1>
+            <div class="stuff-inside">
             <div class="mobile-flex-1">
                 <div class="flex-1-row-1">
                     <div class="mobile-labels" id="name">
@@ -180,9 +180,9 @@ function isMobile() {
                 <div class="labels" id="speakerdickpic">
                     <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
                     <p class="idk">
-                        No picture selected yet
+                        No picture selected yet<!-- Size too small please insert larger dick 🥺 -->
                     </p>
-                    <button id="coolbutton">Add Pic</button>
+                    <button id="coolbutton">Add <!--Dic-->Pic</button>
                 </div>
                 <div class="labels" id="companylogo">
                     <label for="companylogo">Company Logo</label>
@@ -226,19 +226,19 @@ function isMobile() {
   background-color: rgba(0, 0, 0, 0.425);
 }
 
-.mobile-wrapper {
+.mobile-wrapper-wrapper {
     display: flex;
     justify-content: center;
     background-color: white;
-    width: 94.5vw;
-    height: 95%;
+    width: 90.5vw;
+    height: 100%;
     position: absolute;
     top: 50%;
     left: 50%;
     translate: -50% -50%;
 }
 
-.wrapper {
+.wrapper-wrapper {
     display: flex;
     justify-content: center;
     background-color: white;
@@ -416,12 +416,12 @@ select {
 
 .mobile-flex-2 > #speakerdickpic {
     width: 20vw;
-    height: 25vh;
+    height: 20vh;
 }
 
 .mobile-flex-2 > #companylogo {
     width: 20vw;
-    height: 25vh;
+    height: 20vh;
 }
 
 #speakerdickpic,
@@ -504,15 +504,15 @@ p {
     color: white;
     border-radius: 5px;
     border: none;
-    margin-right: 3vw;
-    margin-top: 2%;
+    margin-right: -3%;
+    margin-top: -6%;
     margin-bottom: 2%;
     display: flex;
     width: 16vw;
     height: 3.5vh;
     align-items: center;
     justify-content: center;
-    gap: 10vh;
+    gap: 20vw;
     cursor: pointer;
 }
 
@@ -527,10 +527,10 @@ p {
 .mobile-btns {
     width: 80vw;
     display: flex;
-    gap: 20px;
+    /* gap: 20px; */
     margin-top: 4vh;
     justify-content: right;
-    gap: 0.1%;
+    gap: 10%;
 }
 
 .labels>#name {

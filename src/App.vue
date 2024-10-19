@@ -1,13 +1,15 @@
 <template>
   <div class="app">
-    <div 
-      v-show="stateStore.sideNavOpen"
-      class="nav-backdrop" 
-      :class="{ open: stateStore.sideNavOpen }"
-      @click="stateStore.sideNavOpen = false">
-    </div>
-    <TheNav class="nav" :class="{ open: stateStore.sideNavOpen }"></TheNav>
-    <TheHeader class="header"></TheHeader>
+    <template v-if="this.$route.name != 'login'">
+        <div 
+        v-show="stateStore.sideNavOpen"
+        class="nav-backdrop" 
+        :class="{ open: stateStore.sideNavOpen }"
+        @click="stateStore.sideNavOpen = false">
+      </div>
+      <TheNav class="nav" :class="{ open: stateStore.sideNavOpen }"></TheNav>
+      <TheHeader class="header"></TheHeader>
+    </template>
     <main>
       <router-view :key="$route.fullPath"/>
     </main>
@@ -22,6 +24,7 @@ import { useStateStore } from './stores/state';
 
 useUserStore().getAccess();
 const stateStore = useStateStore();
+
 </script>
 
 <style scoped>
@@ -51,7 +54,9 @@ main {
 }
 
 @media screen and (max-width: 1000px) {
-  main, .header {
+
+  main,
+  .header {
     padding-left: 0;
   }
 
