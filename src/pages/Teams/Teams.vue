@@ -22,19 +22,21 @@
               </option>
             </select>
           </div>
-          <button class="add-team">Add Team</button>
+          <button class="add-team" @click="openAddPopup">Add Team</button>
         </div>
       </div>
 
       <div class="content-wrapper">
         <div class="content-container">
           <div :class="{'table-wrapper': true, 'table-wrapper-shrink': showPopup}">
-            <TheTable
-              :data="filteredTeams"
-              :tableHeaders="{ name: 'Name', event: 'Event', priority: 'Priority', members: 'Members' }"
-              :searchInput="searchQuery"
-              @onRowSelect="selectTeam"
-            ></TheTable>
+            <div class="scrollbar">
+              <TheTable
+                :data="filteredTeams"
+                :tableHeaders="{ name: 'Name', event: 'Event', priority: 'Priority', members: 'Members' }"
+                :searchInput="searchQuery"
+                @onRowSelect="selectTeam"
+              ></TheTable>
+            </div>
           </div>
 
           <div v-if="showPopup" class="right-popup-placeholder">
@@ -89,6 +91,54 @@
               </div>
             </div>
           </div>
+
+          <div v-if="showAddPopup" class="overlay">
+            <div class="edit-popup">
+              <div class="edit-popup-content">
+                <h2>Add Team</h2>
+                <button key="closeX" class="closeX" @click="closeAddPopup">&times;</button>
+                <form @submit.prevent="saveEdit"> 
+                  <div class="primline">
+                    <div class="Add-name">
+                      <label for="name" class="">Name:</label>
+                      <input type="text" v-model="editTeam.name" id="name" required />
+                    </div>
+                    <div class="Add-event">
+                      <label for="event" class="">Event:</label>
+                      <select v-model="selectedEvent" id="event" @change="handleEventChange">
+                        <option v-for="event in events" :key="event.id" :value="event.name"> 
+                          {{ event.name }}
+                        </option>
+                      </select>
+                    </div>
+                    <div class="Add-priority">
+                      <label for="priority" class="">Priority:</label>
+                      <input type="text" v-model="editTeam.priority" id="priority" required />
+                    </div>
+                  </div>
+                  <div class="Description">
+                      <label class="">Description:</label>
+                      <input type="text" v-model="editTeam.members" id="members" required />
+                  </div>
+                  <div class="primeline">
+                    <div class="form-group">
+                        <label class="custom-file-upload">
+                          Picture:
+                          <div class="small-quadrado">
+                            <label class="centrado">No file selected</label>
+                          </div>
+                          <div class="ultline">
+                            <button type="button" @click="handleFileChange" class="left-add">Add Picture</button>
+                            <button type="submit" class="right-add">Add</button>
+                        </div>
+                        </label>
+                        <span v-if="selectedFile">{{ selectedFile.name }}</span>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -115,6 +165,15 @@ export default {
         { id: 1, name: 'Team 1', event: 'Evento 1', priority: '100', members: '3' },
         { id: 2, name: 'Team 2', event: 'Evento 2', priority: '100', members: '5' },
         { id: 3, name: 'Team 3', event: 'Evento 3', priority: '100', members: '2' },
+        { id: 4, name: 'Team 4', event: 'Evento 1', priority: '100', members: '4' },
+        { id: 5, name: 'Team 5', event: 'Evento 2', priority: '100', members: '3' },
+        { id: 6, name: 'Team 6', event: 'Evento 3', priority: '100', members: '5' },
+        { id: 7, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
+        { id: 8, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
+        { id: 9, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
+        { id: 10, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
+        { id: 11, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
+        { id: 12, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
       ],
       events: [
         { id: 1, name: 'Evento 1' },
@@ -123,8 +182,14 @@ export default {
       ],
       showPopup: false,
       showEditPopup: false,
+      showAddPopup: false,
       selectedTeam: {},
       editTeam: {},
+      newTeamName: '',
+      newTeamEvent: '',
+      newTeamPriority: '',
+      Description: '',
+      selectedFile: null,
     };
   },
   computed: {
@@ -168,6 +233,27 @@ export default {
     },
     TeamMembers() {
       console.log('Team Members');
+    },
+    openAddPopup() {
+      console.log('Add Team');
+      this.showAddPopup = true;
+    },
+    closeAddPopup() {
+      this.showAddPopup = false;
+    },
+    saveNewTeam() {
+      const newTeam = {
+        id: this.teams.length + 1,
+        name: this.newTeamName,
+        event: this.newTeamEvent,
+        priority: this.newTeamPriority,
+        members: this.Description,
+      };
+      this.teams.push(newTeam);
+      this.closeAddPopup(); // Fecha o popup após adicionar a nova equipe
+    },
+    handleFileChange(event) {
+      this.selectedFile = event.target.files[0];
     },
   },
 };
@@ -465,7 +551,6 @@ export default {
   padding: 2rem;
   border-radius: 8px;
   width: 50%;
-  height: 70%;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -506,5 +591,154 @@ export default {
   color: var(--c-text);
   margin-top: 10px;
   margin-bottom: 5px;
+}
+
+.scrollbar {
+  overflow-y: auto;
+  height: calc(100% - 21vh);
+}
+
+.primline {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.Add-name, .Add-event, .Add-priority {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  margin-top: 15px;
+}
+
+.Add-name input, .Add-priority input {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  padding: 1.5rem;
+}
+
+.Add-event {
+  display: flex;
+}
+
+.Add-event select {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 0;
+}
+
+.Description {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.Description input {
+  width: 100%;
+  height: 70px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  padding: 1.5rem;
+}
+
+.custom-file-upload {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.pictbtn {
+  background-color: var(--c-select);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  height: 49px;
+  font-size: 1rem;
+  font-weight: 400;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+}
+
+.small-quadrado {
+  max-width: 100%;
+  width: 15vh;
+  height: 15vh;
+  background-color: var(--c-accent);
+  border-radius: 5px;
+  margin: 10px 0 10px 0;
+}
+
+.centrado {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  font-size: 1rem;
+  color: var(--c-text);
+}
+
+.form-group {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.primeline {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.ultline {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.left-add {
+  background-color: var(--c-select);
+  color: white;
+  border-radius: 10px;
+  border: none;
+  height: 49px;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.5ch 3ch;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.right-add {
+  background-color: #152259;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  height: 49px;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.5ch 3ch;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
