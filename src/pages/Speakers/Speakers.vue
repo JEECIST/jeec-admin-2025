@@ -527,7 +527,6 @@ const tablePref = {
   flex-direction: column;
   width: 100%;
   gap: 3ch;
-  padding-right: 0ch;
 }
 
 .mobile-topbar > form {
@@ -547,9 +546,7 @@ form {
   display: flex;
   width: 60%;
   background-color: var(--c-accent);
-  height: 50px;
   line-height: 50px;
-  align-items: center;
   gap: 1ch;
   padding-left: 1ch;
   border-radius: 10px;
@@ -596,9 +593,11 @@ form > input::placeholder {
   top: 0;
   right: 0;
   width: 500px;
+  height: 100%;
   border-radius: 30px;
   background-color: var(--c-accent);
-  height: 100%;
+  overflow-y: auto;
+  padding-bottom: 3%;
 }
 
 .right-popup-placeholder-mobile {
@@ -614,7 +613,7 @@ form > input::placeholder {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 2vh;
     margin-top: 7vh;
 }
 
@@ -653,7 +652,7 @@ form > input::placeholder {
 .col {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 1vh;
 }
 
 #info {
@@ -691,7 +690,6 @@ select {
     border-width: thin;
     border-radius: 7px;
     height: 50px;
-    padding: 12px;
     opacity: 60%;
     border-color: #8a8a8a;
     background-color: white;
@@ -780,6 +778,8 @@ button {
   left: 50%;
   translate: -50% -50%;
   border-radius: 15px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .description > p {

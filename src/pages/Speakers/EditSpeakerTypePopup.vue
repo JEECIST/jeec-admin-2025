@@ -172,6 +172,8 @@ function isMobile() {
     top: 50%;
     left: 50%;
     translate: -50% -50%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .popup-wrapper {

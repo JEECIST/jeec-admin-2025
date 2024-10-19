@@ -243,11 +243,13 @@ function isMobile() {
     justify-content: center;
     background-color: white;
     width: 60vw;
-    height: 95%;
+    height: 70%;
     position: absolute;
     top: 50%;
     left: 50%;
     translate: -50% -50%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 h1 {

@@ -291,6 +291,8 @@ form>input::placeholder {
   border-radius: 30px;
   background-color: var(--c-accent);
   height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .right-popup-placeholder-mobile {
@@ -306,8 +308,9 @@ form>input::placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 2vh;
   margin-top: 10vh;
+  margin-bottom: 3vh;
 }
 
 .speaker-photo {
@@ -341,8 +344,6 @@ form>input::placeholder {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
   grid-gap: 30px;
-  width: 300px;
-  margin-left: 0px;
 }
 
 .col {

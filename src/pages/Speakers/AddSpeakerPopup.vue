@@ -21,10 +21,10 @@ function isMobile() {
 <template>
     <div v-if="isOpen" class="modal-mask">
       <div class="desktop" v-if="!isMobile()">
-        <div class="wrapper-wrapper">
+        <div class="wrapper">
         <div class="popup-wrapper" ref="target">
             <h1>Add Speaker</h1>
-            <div class="stuff-inside">
+            <div class="elements">
             <div class="flex-1">
                 <div class="flex-1-row-1">
                     <div class="labels" id="name">
@@ -83,9 +83,9 @@ function isMobile() {
                 <div class="labels" id="speakerdickpic">
                     <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
                     <p class="idk">
-                        No picture selected yet<!-- Size too small please insert larger dick 🥺 -->
+                        No picture selected yet
                     </p>
-                    <button id="coolbutton">Add <!--Dic-->Pic</button>
+                    <button id="coolbutton">Add Pic</button>
                 </div>
                 <div class="labels" id="companylogo">
                     <label for="companylogo">Company Logo</label>
@@ -118,10 +118,10 @@ function isMobile() {
 
 
       <div class="mobile" v-else>
-        <div class="mobile-wrapper-wrapper">
+        <div class="mobile-wrapper">
         <div class="popup-wrapper" ref="target">
             <h1>Add Speaker</h1>
-            <div class="stuff-inside">
+            <div class="elements">
             <div class="mobile-flex-1">
                 <div class="flex-1-row-1">
                     <div class="mobile-labels" id="name">
@@ -180,9 +180,9 @@ function isMobile() {
                 <div class="labels" id="speakerdickpic">
                     <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
                     <p class="idk">
-                        No picture selected yet<!-- Size too small please insert larger dick 🥺 -->
+                        No picture selected yet
                     </p>
-                    <button id="coolbutton">Add <!--Dic-->Pic</button>
+                    <button id="coolbutton">Add Pic</button>
                 </div>
                 <div class="labels" id="companylogo">
                     <label for="companylogo">Company Logo</label>
@@ -226,7 +226,7 @@ function isMobile() {
   background-color: rgba(0, 0, 0, 0.425);
 }
 
-.mobile-wrapper-wrapper {
+.mobile-wrapper {
     display: flex;
     justify-content: center;
     background-color: white;
@@ -238,16 +238,18 @@ function isMobile() {
     translate: -50% -50%;
 }
 
-.wrapper-wrapper {
+.wrapper {
     display: flex;
     justify-content: center;
     background-color: white;
     width: 60vw;
-    height: 95%;
+    height: 70%;
     position: absolute;
     top: 50%;
     left: 50%;
     translate: -50% -50%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 h1 {
