@@ -25,6 +25,7 @@
           :data="bannedStudents"
           :tableHeaders="bannedTableHeaders"
           :buttons="unbanButtons"
+          @unban="unbanStudent"
         />
       </div>
     </div>
@@ -120,19 +121,11 @@ const bannedTableHeaders = {
   unban: "Unban", // NÃO APARECE
 };
 
-const unbanButtons = [
-  {
-    render: () => {
-      return `
-        <div class="action-button icon-combination">
-          <img class="icon-base" src="../../assets/StudentApp/students4.svg" alt="Icon Base">
-          <img class="icon-overlay" src="../../assets/StudentApp/squads1.svg" alt="Icon Overlay">
-        </div>
-      `;
-    },
-    action: (row) => unbanStudent(row),
-  },
-];
+const unbanButtons = {
+  name: "unban",
+  eventName: "unban",
+  icon: "../../assets/StudentApp/students1.svg",
+};
 
 const unbanStudent = (student) => {
   // Logic to unban student
