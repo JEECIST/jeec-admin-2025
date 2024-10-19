@@ -57,7 +57,9 @@
   <!-- Modal Popup -->
   <div v-if="showAddUserModal" class="modal-overlay">
     <div class="modal">
+      <button class="close-popup" @click="closeModal()">&times;</button>
       <h2>Add Team User</h2>
+      
       <form class="popup_form" @submit.prevent="addUser">
         <div class="formUsername">
           <label for="username">Username</label>
@@ -73,7 +75,6 @@
         </div>
         <div class="modal-actions">
           <button type="submit" class="btn-primary">Add</button>
-          <button class="btnCancel" @click="closeModal()">Cancel</button>
         </div>
       </form>
     </div>
@@ -95,7 +96,7 @@ function selectCallback(row) {
 }
 
 function addUser() {
-  datab.value.push({ user: newUser.value.username, role: newUser.value.role, name: newUser.value.username });
+  datab.value.push({ id: 1, user: newUser.value.username, role: newUser.value.role, name: newUser.value.username });
   closeModal();
 }
 
@@ -108,21 +109,27 @@ function closeCardInfo(){
 }
 const datab = ref([
   {
+    id: "1",
     user: "Deco",
+    
     role: "Webdev",
     name: "André Santos the Feeble",
     day: "123"
   },
   {
+    id: "2",
     user: "DD",
+    
     role: "Webdev",
     name: "André Santos"
   },
 ]);
 
 const tablePref = {
-  user: "User",
-  name: "First Name", 
+  id: "ID",
+  user: "Username",
+  name: "Member", 
+  
   role: "Role"
 };
 
@@ -141,6 +148,7 @@ function manageUserRoles() {
   height: calc(100dvh - var(--header-height));
   padding: 5ch 3ch 3ch 3ch;
   overflow-y: hidden;
+  
 }
 
 .table {
@@ -241,7 +249,7 @@ form > button {
   top: 0;
   right: 0;
   width: 23rem;
-  height: 40rem;
+  height: 100%;
   border-radius: 20px;
   background-color: #eef4fb;
   padding: 20px;
@@ -349,7 +357,6 @@ form > button {
   background: white;
   padding: 2rem;
   margin: 1rem;
-  border-radius: 8px;
   max-width: 700px;
   width: 100%;
   /* min-height: 70%; */
@@ -438,26 +445,38 @@ form > button {
   background-color: #002855;
 }
 
-.right-popup-placeholder .close-popup {
-    display: none;
-}
+.close-popup {
+        display: block;
+        position: absolute;
+        top: 5px;
+        right: 25px;
+        background: none;
+        border: none;
+        font-size: 2.2rem;
+        cursor: pointer;
+        color: #333;
+    }
 
 @media (max-width: 768px) {
   .wrapper {
     flex-direction: column;
     height: auto;
   }
-  
+  .table {
+    width: 100%;
+    padding-right: 1ch;
+    gap: 1ch;
+  }
   .right-popup-placeholder {
     position: fixed; /* Position the popup above the content */
     top: 50%; /* Vertically center */
-    left: 50%; /* Horizontally center */
+    left: 43%; /* Horizontally center */
     transform: translate(-50%, -50%); /* Adjust the position to be truly centered */
     width: 90%; /* Adjust width to fit on smaller screens */
-    height: auto; /* Let the height adapt to content */
+    height: 75%; /* Let the height adapt to content */
     background-color: #eef4fb; /* Add background for better visibility */
     padding: 1rem;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow for a popup effect */
+    box-shadow: 0px 4px 10px rgba(0.1, 0.1, 0.1, 0.1); /* Add shadow for a popup effect */
     z-index: 1000; /* Ensure it stays above other content */
   }
 

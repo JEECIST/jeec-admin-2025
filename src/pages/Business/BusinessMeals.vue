@@ -22,7 +22,7 @@
         <button class="edit-button" type="button" @click="editModal = true">
           <img src="../../assets/pencil.svg">
         </button>
-        <button class="meal-button">
+        <button class="meal-button" type="button" @click="showMeal = true">
           <img src="../../assets/meal_btn.svg">
         </button>
       </div>
@@ -50,6 +50,7 @@
   <!-- Modal for Editing User Info -->
   <div v-if="editModal" class="modal-overlay">
     <div class="modal">
+      <button class="close-popup" @click="closeModal()">&times;</button>
       <h2>Edit Day</h2>
       <form class="popup_form" @submit.prevent="addUser">
         <div class="formReg">
@@ -92,11 +93,29 @@
         <!-- Modal actions -->
         <div class="modal-actions">
           <button type="submit" class="btn-primary">Save</button>
-          <button type="button" class="btnCancel" @click="closeModal()">Cancel</button>
+          
         </div>
       </form>
     </div>
   </div>
+
+  <div v-if="showMeal" class="modal-overlay">
+    <div class="modal">
+      <button class="close-popup" @click="closeMeal()">&times;</button>
+      <h2>Meals Ordered</h2>
+      <div class="table">
+      <TheTable
+        :data="datab"
+        :tableHeaders="tablePref"
+        :searchInput="message"
+        :buttons="tableButtons"
+        @onRowSelect="selectCallback"
+      ></TheTable>
+    </div>
+    </div>
+  </div>
+
+
 </template>
 
 
@@ -106,6 +125,7 @@ import TheTable from '../../global-components/TheTable.vue';
 
 const message = ref('');
 const editModal = ref(false);  // Modal visibility
+const showMeal = ref(false);
 const newUser = ref({
   regDay: '',
   regHour: '',
@@ -132,8 +152,12 @@ function addUser() {
 // Function to close the modal
 function closeModal() {
   editModal.value = false;
-  selectedRow.value = null;
+ 
   newUser.value = { regDay: '', regHour: '', role: '', dishes: [''] };  // Reset form fields
+}
+function closeMeal(){
+  showMeal.value = false;
+ 
 }
 
 function closeCardInfo(){
@@ -239,7 +263,7 @@ h2 {
   top: 0;
   right: 0;
   width: 23rem;
-  height: 40rem;
+  height: 100%;
   border-radius: 20px;
   background-color: #eef4fb;
   padding: 20px;
@@ -453,9 +477,17 @@ input {
   background-color: #002855;
 }
 
-.right-popup-placeholder .close-popup {
-    display: none;
-}
+.close-popup {
+        display: block;
+        position: absolute;
+        top: 5px;
+        right: 25px;
+        background: none;
+        border: none;
+        font-size: 2.2rem;
+        cursor: pointer;
+        color: #333;
+    }
 
 /* Styles for mobile screens */
 @media (max-width: 768px) {
@@ -479,7 +511,7 @@ input {
     left: 50%; /* Horizontally center */
     transform: translate(-50%, -50%); /* Adjust the position to be truly centered */
     width: 90%; /* Adjust width to fit on smaller screens */
-    height: auto; /* Let the height adapt to content */
+    height: 75%; /* Let the height adapt to content */
     background-color: #eef4fb; /* Add background for better visibility */
     padding: 1rem;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow for a popup effect */
