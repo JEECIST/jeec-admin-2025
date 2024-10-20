@@ -23,33 +23,34 @@
     </div>
     
     <!-- Conditionally render the right popup placeholder -->
-    <div v-if="selectedRow" class="right-popup-placeholder">
-      <button class="close-popup" @click="closeCardInfo">&times;</button>
-      <div class="header">
-        <p class="cardUsername">{{ selectedRow.role }}</p>
-      </div>
-      
-        <img src="../../assets/wrizz.jpg" alt="Profile Image" class="pfp">
-        <p class="cardUsername">{{ selectedRow.user }}</p>
-        <p class="cardUseless">Team User</p>
-        <div class="cardActions">
-          <button class="edit-button"><img src="../../assets/pencil.svg"></button>
-          <button class="delete-button"><img src="../../assets/trash.svg"></button>
+    <div v-if="selectedRow" class="popUpOverlay"></div>
+      <div v-if="selectedRow" class="right-popup-placeholder">
+        <button class="close-popup" @click="closeCardInfo">&times;</button>
+        <div class="header">
+          <p class="cardUsername">{{ selectedRow.role }}</p>
         </div>
-        <div class="cardInfo">
-          <div class = "cardInfoMember"> 
-            <p class="cardInfoLabel">Member</p>
-            <p class="cardInfoValue">{{ selectedRow.name }}</p>
+        
+          <img src="../../assets/wrizz.jpg" alt="Profile Image" class="pfp">
+          <p class="cardUsername">{{ selectedRow.user }}</p>
+          <p class="cardUseless">Team User</p>
+          <div class="cardActions">
+            <button class="edit-button"><img src="../../assets/pencil.svg"></button>
+            <button class="delete-button"><img src="../../assets/trash.svg"></button>
           </div>
-            
-          <div class = "cardInfoMember"> 
-            <p class="cardInfoLabel">PASSWORD</p>
-            <p> Placeholder for password from database</p>
-          </div>
+          <div class="cardInfo">
+            <div class = "cardInfoMember"> 
+              <p class="cardInfoLabel">Member</p>
+              <p class="cardInfoValue">{{ selectedRow.name }}</p>
+            </div>
+              
+            <div class = "cardInfoMember"> 
+              <p class="cardInfoLabel">PASSWORD</p>
+              <p> Placeholder for password from database</p>
+            </div>
 
-          
-        </div>
-      
+            
+          </div>
+        
     </div>
 
   </div>
@@ -250,14 +251,15 @@ form > button {
   right: 0;
   width: 23rem;
   height: 100%;
-  border-radius: 20px;
+  border-radius: 1.5rem;
   background-color: #eef4fb;
-  padding: 20px;
+  padding: 1.5rem;
   margin-left: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.1);
+
 }
 
 .right-popup-placeholder .header {
@@ -459,9 +461,20 @@ form > button {
 
 @media (max-width: 768px) {
   .wrapper {
-    flex-direction: column;
-    height: auto;
-  }
+  display: flex;
+  position: relative;
+  height: calc(100dvh - var(--header-height));
+  padding: 5ch 3ch 3ch 3ch;  
+}
+.popUpOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent gray */
+    z-index: 500; /* Behind the popup */
+}
   .table {
     width: 100%;
     padding-right: 1ch;
@@ -473,10 +486,10 @@ form > button {
     left: 43%; /* Horizontally center */
     transform: translate(-50%, -50%); /* Adjust the position to be truly centered */
     width: 90%; /* Adjust width to fit on smaller screens */
-    height: 75%; /* Let the height adapt to content */
+    height: calc(97dvh - var(--header-height)); /* Let the height adapt to content */
     background-color: #eef4fb; /* Add background for better visibility */
     padding: 1rem;
-    box-shadow: 0px 4px 10px rgba(0.1, 0.1, 0.1, 0.1); /* Add shadow for a popup effect */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1000; /* Ensure it stays above other content */
   }
 
