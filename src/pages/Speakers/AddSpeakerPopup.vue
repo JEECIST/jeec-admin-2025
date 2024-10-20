@@ -23,7 +23,10 @@ function isMobile() {
       <div class="desktop" v-if="!isMobile()">
         <div class="wrapper">
         <div class="popup-wrapper" ref="target">
-            <h1>Add Speaker</h1>
+            <div class="header">
+                <h1>Add Speaker</h1>
+                <button class="close" @click.stop="emit('modal-close')">X</button>
+            </div>
             <div class="elements">
             <div class="flex-1">
                 <div class="flex-1-row-1">
@@ -110,7 +113,6 @@ function isMobile() {
         </div>
         <div class="btns">
             <button class="add" @click.stop="emit('modal-close')">Add</button>
-            <button class="add" @click.stop="emit('modal-close')">Cancel</button>
         </div>
         </div>
         </div>
@@ -250,6 +252,12 @@ function isMobile() {
     translate: -50% -50%;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 h1 {
@@ -497,6 +505,19 @@ p {
     justify-content: center;
     gap: 10vh;
     cursor: pointer;
+}
+
+.close {
+    background-color: #152259;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    width: 2vw;
+    height: 3.5vh;
+    margin-bottom: 2%;
+    margin-top: 2%;
+    margin-right: 2%;
 }
 
 .mobile-add {

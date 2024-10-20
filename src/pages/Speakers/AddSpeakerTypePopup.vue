@@ -24,7 +24,10 @@ function isMobile() {
             <div class="wrapper-wrapper">
                 <div class="popup-wrapper">
                     <div class="ihatedivs">
-                        <h1>Add Speaker Type</h1>
+                        <div class="header">
+                            <h1>Add Speaker Type</h1>
+                            <button class="close" @click.stop="emit('modal-close')">X</button>
+                        </div>
                         <div class="flex-1">
                             <div class="flex-1-row-4">
                                 <div class="labels" id="name">
@@ -72,7 +75,6 @@ function isMobile() {
                     </div>
                     <div class="btns">
                         <button class="add" @click.stop="emit('modal-close')">Add</button>
-                        <button class="add" @click.stop="emit('modal-close')">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -174,6 +176,12 @@ function isMobile() {
     translate: -50% -50%;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .popup-wrapper {
@@ -284,16 +292,25 @@ radio {
     color: white;
     border-radius: 5px;
     border: none;
-    margin-right: 3vw;
     margin-top: 2%;
     margin-bottom: 2%;
-    display: flex;
     width: 8.4vw;
     height: 3.5vh;
-    align-items: center;
-    justify-content: center;
     gap: 20vh;
     cursor: pointer;
+}
+
+.close {
+    background-color: #152259;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    width: 2vw;
+    height: 3.5vh;
+    margin-bottom: 3%;
+    margin-top: 2%;
+    margin-right: 2%;
 }
 
 .mobile-btns {
@@ -323,11 +340,11 @@ radio {
 }
 
 .btns {
-    width: 20vw;
     display: flex;
-    margin-left: 39vw;
+    margin-right: 8%;
     margin-top: 8vh;
-    justify-content: left;
+    justify-content: right;
     gap: 0.1%;
 }
+
 </style>
