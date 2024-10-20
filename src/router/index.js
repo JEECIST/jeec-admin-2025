@@ -94,7 +94,7 @@ const routes = [
   {
     path: "/business/companies",
     name: "business-companies",
-    meta: { title: "Companies" },
+    meta: {title: "Companies" },
     component: () => import("../pages/Business/BusinessCompanies.vue"),
   },
   {
