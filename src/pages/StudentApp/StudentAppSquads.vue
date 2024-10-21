@@ -302,7 +302,7 @@ const selectSquad = (squad) => {
 
 .squads-table-container {
   flex: 1;
-  height: calc(100vh - 40px - 250px); 
+  height: calc(100vh - 300px); 
   overflow-y: auto;
   position: relative;
 }
@@ -364,14 +364,14 @@ const selectSquad = (squad) => {
   font-size: 28px;
   width: 100%; 
   max-width: 1500px; 
-  height: calc(100vh - 80px - 250px); 
+  height: calc(100vh - 300px); 
   padding: 2rem;
   align-items: center;
   justify-content: center;
   font-weight: 600;
   color: #4F4F4F;
   border-radius: 8px;
-  margin: -2rem auto; 
+  margin: -3rem auto; 
   box-sizing: border-box; 
 }
 
@@ -379,7 +379,7 @@ const selectSquad = (squad) => {
   display: flex;
   background-color: #EBF6FF;
   width: 323px;
-  height: auto; 
+  height: calc(100vh - 300px); 
   border-radius: 16px;
   padding: 35px;
   flex-direction: column;
