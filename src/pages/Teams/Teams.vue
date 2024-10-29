@@ -76,18 +76,24 @@
             <div class="edit-popup">
               <div class="edit-popup-content">
                 <h2>Edit Team</h2>
-                <form @submit.prevent="saveEdit">
-                  <label for="name" class="editpopup">Name:</label>
-                  <input type="text" v-model="editTeam.name" id="name" required />
-                  <label for="event" class="editpopup">Event:</label>
-                  <input type="text" v-model="editTeam.event" id="event" required />
-                  <label for="priority" class="editpopup">Priority:</label>
-                  <input type="text" v-model="editTeam.priority" id="priority" required />
-                  <label for="members" class="editpopup">Members:</label>
-                  <input type="text" v-model="editTeam.members" id="members" required />
-                  <button type="submit" class="add-team">Save</button>
-                  <button type="button" @click="closeEditPopup" class="add-team">Cancel</button>
-                </form>
+                <button key="closeX" class="closeX" @click="closeEditPopup">&times;</button>
+                <div class="pos">
+                  <form @submit.prevent="saveEdit">
+                    <label for="name" class="Add-name">Name:
+                      <input type="text" v-model="editTeam.name" id="name" required />
+                    </label>
+                    <label for="event" class="Add-name">Event:
+                      <input type="text" v-model="editTeam.event" id="event" required />
+                    </label>
+                    <label for="priority" class="Add-name">Priority:
+                      <input type="text" v-model="editTeam.priority" id="priority" required />
+                    </label>
+                    <label for="members" class="Add-name">Members:
+                      <input type="text" v-model="editTeam.members" id="members" required />
+                    </label>
+                    <button type="submit" class="add-team">Save</button>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
@@ -275,7 +281,6 @@ export default {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
 }
 
 .header-wrapper {
@@ -286,6 +291,7 @@ export default {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  height: 0;
 }
 
 .headerteams {
@@ -385,7 +391,7 @@ export default {
 
 .right-popup {
   padding: 20px;
-  position: relative; /* Ensure the close button is positioned relative to the popup */
+  position: relative;
 }
 
 .popup-content {
@@ -550,7 +556,6 @@ export default {
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  width: 50%;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -574,11 +579,13 @@ export default {
 
 .edit-popup-content form label {
   margin-bottom: 5px;
+  width: 100%;
 }
 
 .edit-popup-content form input {
   margin-bottom: 10px;
   padding: 5px;
+  width: 100%;
 }
 
 .edit-popup-content form button {
@@ -619,7 +626,6 @@ export default {
   border-radius: 10px;
   font-size: 14px;
   outline: none;
-  padding: 1.5rem;
 }
 
 .Add-event {
@@ -741,4 +747,11 @@ export default {
   align-items: center;
   justify-content: center;
 }
+
+.pos {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 </style>
