@@ -12,6 +12,7 @@
               placeholder="Search for a team" 
               class="searchbar" 
               v-model="searchQuery" 
+              @input="closePopupOnSearch"
             />
           </div>
 
@@ -28,7 +29,7 @@
 
       <div class="content-wrapper">
         <div class="content-container">
-          <div :class="{'table-wrapper': true, 'table-wrapper-shrink': showPopup}">
+          <div :class="{'table-wrapper': true, 'hidden': showEditPopup || showAddPopup || showPopup}">
             <div class="scrollbar">
               <TheTable
                 :data="filteredTeams"
@@ -76,18 +77,24 @@
             <div class="edit-popup">
               <div class="edit-popup-content">
                 <h2>Edit Team</h2>
-                <form @submit.prevent="saveEdit">
-                  <label for="name" class="editpopup">Name:</label>
-                  <input type="text" v-model="editTeam.name" id="name" required />
-                  <label for="event" class="editpopup">Event:</label>
-                  <input type="text" v-model="editTeam.event" id="event" required />
-                  <label for="priority" class="editpopup">Priority:</label>
-                  <input type="text" v-model="editTeam.priority" id="priority" required />
-                  <label for="members" class="editpopup">Members:</label>
-                  <input type="text" v-model="editTeam.members" id="members" required />
-                  <button type="submit" class="add-team">Save</button>
-                  <button type="button" @click="closeEditPopup" class="add-team">Cancel</button>
-                </form>
+                <button key="closeX" class="closeX" @click="closeEditPopup">&times;</button>
+                <div class="pos">
+                  <form @submit.prevent="saveEdit">
+                    <label for="name" class="Add-name">Name:
+                      <input type="text" v-model="editTeam.name" id="name" required />
+                    </label>
+                    <label for="event" class="Add-name">Event:
+                      <input type="text" v-model="editTeam.event" id="event" required />
+                    </label>
+                    <label for="priority" class="Add-name">Priority:
+                      <input type="text" v-model="editTeam.priority" id="priority" required />
+                    </label>
+                    <label for="members" class="Add-name">Members:
+                      <input type="text" v-model="editTeam.members" id="members" required />
+                    </label>
+                    <button type="submit" class="add-team">Save</button>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
@@ -97,15 +104,15 @@
               <div class="edit-popup-content">
                 <h2>Add Team</h2>
                 <button key="closeX" class="closeX" @click="closeAddPopup">&times;</button>
-                <form @submit.prevent="saveEdit"> 
+                <form @submit.prevent="saveNewTeam"> 
                   <div class="primline">
                     <div class="Add-name">
                       <label for="name" class="">Name:</label>
-                      <input type="text" v-model="editTeam.name" id="name" required />
+                      <input type="text" v-model="newTeamName" id="name" required />
                     </div>
                     <div class="Add-event">
                       <label for="event" class="">Event:</label>
-                      <select v-model="selectedEvent" id="event" @change="handleEventChange">
+                      <select v-model="newTeamEvent" id="event">
                         <option v-for="event in events" :key="event.id" :value="event.name"> 
                           {{ event.name }}
                         </option>
@@ -113,22 +120,23 @@
                     </div>
                     <div class="Add-priority">
                       <label for="priority" class="">Priority:</label>
-                      <input type="text" v-model="editTeam.priority" id="priority" required />
+                      <input type="text" v-model="newTeamPriority" id="priority" required />
                     </div>
                   </div>
                   <div class="Description">
                       <label class="">Description:</label>
-                      <input type="text" v-model="editTeam.members" id="members" required />
+                      <input type="text" v-model="Description" id="members" required />
                   </div>
                   <div class="primeline">
                     <div class="form-group">
                         <label class="custom-file-upload">
                           Picture:
-                          <div class="small-quadrado">
-                            <label class="centrado">No file selected</label>
+                          <input type="file" @change="handleFileChange" class="file-input" ref="fileInput" style="display: none;" />
+                          <div class="small-quadrado" @click="triggerFileInput">
+                            <label class="centrado">{{ selectedFile ? selectedFile.name : 'No picture selected' }}</label>
                           </div>
                           <div class="ultline">
-                            <button type="button" @click="handleFileChange" class="left-add">Add Picture</button>
+                            <button type="button" class="left-add">Add Picture</button>
                             <button type="submit" class="right-add">Add</button>
                         </div>
                         </label>
@@ -209,19 +217,25 @@ export default {
     },
     closePopup() {
       this.showPopup = false;
-      this.selectedTeam = {}; // Deselect the team
+      this.selectedTeam = {}; 
+    },
+    closePopupOnSearch() {
+      this.showPopup = false;
     },
     editButton() {
-      this.editTeam = { ...this.selectedTeam }; // Create a copy of the selected team for editing
+      this.editTeam = { ...this.selectedTeam }; 
       this.showEditPopup = true;
-      this.showPopup = false;
     },
     saveEdit() {
       const index = this.teams.findIndex(team => team.id === this.editTeam.id);
       if (index !== -1) {
-        this.teams.splice(index, 1, this.editTeam); // Update the team in the list
-        this.selectedTeam = { ...this.editTeam }; // Update the selected team
+        this.teams.splice(index, 1, this.editTeam); 
+        this.selectedTeam = { ...this.editTeam }; 
         this.showEditPopup = false;
+        // Fechar o popup da direita se estiver no telemóvel
+        if (window.innerWidth <= 768) {
+          this.showPopup = false;
+        }
       }
     },
     closeEditPopup() {
@@ -232,10 +246,9 @@ export default {
       this.closePopup();
     },
     TeamMembers() {
-      console.log('Team Members');
+      this.$router.push({ name: 'teams-members', params: { teamId: this.selectedTeam.id } }); 
     },
     openAddPopup() {
-      console.log('Add Team');
       this.showAddPopup = true;
     },
     closeAddPopup() {
@@ -250,10 +263,13 @@ export default {
         members: this.Description,
       };
       this.teams.push(newTeam);
-      this.closeAddPopup(); // Fecha o popup após adicionar a nova equipe
+      this.closeAddPopup(); 
     },
     handleFileChange(event) {
       this.selectedFile = event.target.files[0];
+    },
+    triggerFileInput() {
+      this.$refs.fileInput.click();
     },
   },
 };
@@ -275,7 +291,6 @@ export default {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
 }
 
 .header-wrapper {
@@ -286,6 +301,7 @@ export default {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  height: 0;
 }
 
 .headerteams {
@@ -293,10 +309,11 @@ export default {
   justify-content: space-between; 
   margin-bottom: 20px;
   transition: width 0.3s ease;
+  gap: 1%;
 }
 
 .headerteams-shrink {
-  width: calc(100% - 320px); /* 300px for popup + 20px margin */
+  width: calc(100% - 320px); 
 }
 
 .searchteam {
@@ -306,7 +323,6 @@ export default {
   height: 49px;
   background-color: #EBF6FF;
   border-radius: 10px;
-  margin-right: 10px;
 }
 
 .searchicon {
@@ -327,10 +343,12 @@ export default {
   background-color: #EBF6FF;
   border-radius: 10px;
   outline: none;
+  padding-right: 5px;
 }
 
 .evento {
   display: flex;
+  margin-left: 0;
 }
 
 .evento select {
@@ -341,7 +359,6 @@ export default {
   font-size: 14px;
   outline: none;
   padding: 1.5rem;
-  margin-right: 10px;
   padding-left: 1.5rem;
 }
 
@@ -385,7 +402,7 @@ export default {
 
 .right-popup {
   padding: 20px;
-  position: relative; /* Ensure the close button is positioned relative to the popup */
+  position: relative;
 }
 
 .popup-content {
@@ -550,7 +567,6 @@ export default {
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  width: 50%;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -574,11 +590,13 @@ export default {
 
 .edit-popup-content form label {
   margin-bottom: 5px;
+  width: 100%;
 }
 
 .edit-popup-content form input {
   margin-bottom: 10px;
   padding: 5px;
+  width: 100%;
 }
 
 .edit-popup-content form button {
@@ -603,12 +621,12 @@ export default {
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
+  gap: 2.5%;
 }
 
 .Add-name, .Add-event, .Add-priority {
   display: flex;
   flex-direction: column;
-  width: 30%;
   margin-top: 15px;
 }
 
@@ -619,7 +637,6 @@ export default {
   border-radius: 10px;
   font-size: 14px;
   outline: none;
-  padding: 1.5rem;
 }
 
 .Add-event {
@@ -688,7 +705,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
-  width: 100%;
+  padding: 50%;
   font-size: 1rem;
   color: var(--c-text);
 }
@@ -740,5 +757,68 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.pos {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .headerteams {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .searchteam {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .evento {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .add-team {
+    width: 100%;
+  }
+
+  .edit-popup {
+    width: 90%;
+    height: 65%;
+  }
+
+  .content-container {
+    flex-direction: column;
+  }
+
+  .table-wrapper.hidden {
+    display: none; 
+  }
+
+  .right-popup-placeholder {
+    width: 100%;
+    margin-left: 0;
+    border-radius: 10px;
+    height: auto;
+    margin-top: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  .right-popup {
+    width: 100%;
+    height: auto; 
+    padding: 10px;
+    display: block;
+  }
+
+  .popup-content {
+    width: 100%;
+    height: auto;
+  }
 }
 </style>
