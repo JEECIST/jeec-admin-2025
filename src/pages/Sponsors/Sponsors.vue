@@ -170,7 +170,7 @@ const eventselected = ref('');
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  padding: 20px 20px 20px 20px;
+  padding: 14px 20px 20px 20px;
   gap: 15px;
 }
 
@@ -182,7 +182,8 @@ const eventselected = ref('');
   overflow-y: auto;
   padding: 10px 10px 10px 10px;
   align-self: flex-end;
-  height: calc(75vh - 13px);
+  height: calc(75vh - 14px);
+  max-height: 446px;
   width: 20%;
   min-width: 250px;
   background-color: var(--c-accent);
@@ -207,9 +208,9 @@ const eventselected = ref('');
 }
 
 .sponsor-logo {
-  width: 30vw;
-  height: 30vw;
-  min-width: 50px;
+  width: 8vw;
+  height: 8vw;
+  min-height: 50px;
   min-width: 50px;
   max-width: 100px;
   max-height: 100px;
@@ -251,7 +252,7 @@ const eventselected = ref('');
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
-  padding: 5px 5px 5px 5px;
+  padding: 10px 10px 10px 10px;
   gap: 10px;
 
 }
@@ -278,6 +279,7 @@ const eventselected = ref('');
   justify-content: flex-start;
   align-items: center;
   height: 75vh;
+  max-height: 460px;
   width: 80%;
   min-width: 300px;
   overflow: hidden;
@@ -361,7 +363,7 @@ const eventselected = ref('');
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  font-size: 0.6em;
+  font-size: 10px;
   gap: 2px;
   height: 50px;
   min-width: 30px; 
@@ -458,10 +460,16 @@ const eventselected = ref('');
     flex-direction: column; /* Stack the elements vertically */
   }
 
+  .sponsors-table {
+    max-height: 700px;
+    height: 90vh;
+  }
+
   .sponsor-card {
     position: absolute; /* Position the sponsor card absolutely */
     top: 120px; /* Position the sponsor card 50px below the center */
     width: 90vw; /* Set the width to 100% */
+    max-height: fit-content;
     height: 80vh; /* Set the height to 100% */
   }
   .sponsor-card-body h1{

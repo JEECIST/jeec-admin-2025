@@ -29,6 +29,12 @@
     </div>
 
     <div v-if="selectedRow" class="sponsor-card">
+      <button @click="unselectRow" class="close-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
       <div class="sponsor-card-header">
         <img class='sponsor-logo' :src="JEEC" alt="sponsor logo" />
         <div class="card-title">
@@ -143,6 +149,10 @@ function handleRowSelect(row) {
   selectedRow.value = row;
 }
 
+function unselectRow() {
+  selectedRow.value = null;
+}
+
 // Event handlers for button clicks
 function editRow(row) {
   iseditsponsortier.value= !iseditsponsortier.value
@@ -180,11 +190,11 @@ function tooglelist()
 .sponsors-container {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
   justify-content: center;
+  align-items: flex-start;
   width: 100%;
-  height: 100%;
-  padding: 5px 5px 5px 5px;
+  padding: 20px 20px 20px 20px;
+  gap: 15px;
 }
 
 .sponsor-card{
@@ -192,16 +202,17 @@ function tooglelist()
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  overflow-y: auto;
   padding: 10px 10px 10px 10px;
-  margin: 10px 10px 10px 10px;
-  max-height: max-content;
-  width: 28%;
-  min-width: 200px;
+  height: 75vh;
+  max-height: 505px;
+  width: 35%;
+  min-width: 250px;
   background-color: var(--c-accent);
   border-radius: 10px;
-  gap:15px;
+  gap: 10px;
   flex-grow: 1;
-  max-width: 250px;
+  z-index: 3;
 }
 
 .sponsor-card-header {
@@ -210,8 +221,7 @@ function tooglelist()
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 5px 5px 10px 5px;
-  gap:20px;
+  gap:10px;
 }
 
 .card-tier{
@@ -220,10 +230,12 @@ function tooglelist()
 }
 
 .sponsor-logo {
-  width: 11vw;
-  height: 11vw;
-  min-width: 100px;
-  min-height: 100px;
+  width: 8vw;
+  height: 8vw;
+  min-height: 50px;
+  min-width: 50px;
+  max-width: 100px;
+  max-height: 100px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -252,7 +264,7 @@ function tooglelist()
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-width: 20px;
+  min-width: 30px;
   padding: 1px 1px;
   gap: 10px;
 }
@@ -260,32 +272,32 @@ function tooglelist()
 .sponsor-card-body{
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  height: 100%;
+  justify-content: space-between;
   width: 100%;
-  padding: 5px 5px 10px 5px;
-  gap: 20%;
+  padding: 15px 15px 15px 15px;
+  gap: 15px;
+
 }
 
 .card-paragraph{
   display: flex;
   flex-direction: column;
-  gap:2px;
+  flex-wrap: wrap;
 }
 .sponsor-card-body h1{
   color: var(--c-ft-dark);
-  font-size: 0.6em;
+  font-size: 0.8em;
   font-weight: 700;
 }
 .sponsor-card-body p{
-  font-size: 0.5em;
+  font-size: 0.7em;
   color: var(--c-ft-semi-light);
 }
 
 .card-collumn{
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
 .sponsors-table {
@@ -293,25 +305,27 @@ function tooglelist()
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  width: 70%;
-  min-width: 380px;
-  max-width: 70vw;
+  height: 75vh;
+  max-height: 460px;
+  width: 80%;
+  min-width: 300px;
+  overflow: hidden;
   flex-grow: 1;
+  gap: 4px;
 }
 
 .table-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px 10px 10px 10px;
+  justify-content: flex-start;
+  align-items: flex-start;
   width: 100%;
+  overflow: hidden;
 }
 
 .table{
   width: 100%;
   height: 100%;
   font-size: 0.8em;
-  height: 70vh;
 }
 
 .nosponsors{
@@ -333,7 +347,6 @@ function tooglelist()
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: end;
-  padding: 10px 10px 10px 10px;
   gap: 7px;
   color: #8A8A8A;
 }
@@ -344,7 +357,6 @@ function tooglelist()
   position: relative;
   min-height: 36px;
   min-width:200px;
-  width:40%; 
   background-color: #EBF6FF; 
   border-radius: 4px; 
   flex-grow: 4;
@@ -361,8 +373,7 @@ function tooglelist()
 }
 
 .search-bar {
-  height: 36px;
-  min-width: 170px; 
+  height: 36px; 
   padding: 0.5px 1px 0.5px 24px;
   border: none;
   border-radius: 4px;
@@ -401,7 +412,6 @@ function tooglelist()
 }
 
 .button-add-sponsor {
-  width: 16%;
   min-width: 70px;
   height: 36px; 
   border: none;
@@ -464,6 +474,67 @@ function tooglelist()
   min-width: 15px;
   min-height: 15px;
   color: var(--c-ft-dark);
+}
+
+.close-button{
+  z-index: 3;
+  background: none;
+  border: none;
+  cursor: pointer;
+  align-self: flex-end;
+  margin-bottom: -20px;
+}
+
+@media (max-width: 700px) {
+  .container {
+    flex-direction: column; /* Stack the elements vertically */
+  }
+
+  .sponsor-card {
+    position: absolute; /* Position the sponsor card absolutely */
+    top: 120px; /* Position the sponsor card 50px below the center */
+    width: 90vw; /* Set the width to 100% */
+    max-height: 600px;
+    height: 80vh; /* Set the height to 100% */
+  }
+  .sponsor-card-body h1{
+    font-size: 1em;
+  }
+  .sponsor-card-body p{
+    font-size: 0.9em;
+  }
+
+  .card-name{
+    font-size:1.9em;
+  }
+
+  .card-subtitle{
+    font-size:1.3em;
+  }
+
+  .card-tier{
+    font-size: 1.9em;
+  }
+
+  .sponsor-logo {
+    width: 40vw;
+    height: 40vw;
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .icon-button {
+    max-height: 40px;
+    max-width: 40px;
+  }
+
+  .icon {
+    max-width: 35px;
+    max-height: 20px;
+  }
+
 }
 
 
