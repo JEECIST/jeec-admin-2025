@@ -42,6 +42,12 @@
     </div>
 
     <div v-if="selectedRow" class="sponsor-card">
+      <button @click="unselectRow" class="close-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
       <div class="sponsor-card-header">
         <h1 class="card-tier">{{ selectedRow.tier }}</h1>
         <img class='sponsor-logo' :src=selectedRow.logo alt="sponsor logo" />
@@ -92,16 +98,16 @@ import trashIcon from '../../assets/trash.svg'
 
 // Example data to be displayed in the table
 const tableData = ref([
-  { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQBEqoºnaljbfºoWHEFAKPJ+EHOQW NEDQBEVFI +ehpndbfowpodsnk', eventselected: 'JEEC 23/24', showInWebsite: false },
+  { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk', eventselected: 'JEEC 23/24', showInWebsite: false },
   { id: 2, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
   { id: 3, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-  { id: 4, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQBEqoºnaljbfºoWHEFAKPJ+EHOQW NEDQBEVFI +ehpndbfowpodsnk', eventselected: 'JEEC 23/24', showInWebsite: false },
+  { id: 4, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv', eventselected: 'JEEC 23/24', showInWebsite: false },
   { id: 5, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
   { id: 6, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-  { id: 7, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQBEqoºnaljbfºoWHEFAKPJ+EHOQW NEDQBEVFI +ehpndbfowpodsnk', eventselected: 'JEEC 23/24', showInWebsite: false },
+  { id: 7, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv', eventselected: 'JEEC 23/24', showInWebsite: false },
   { id: 8, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
   { id: 9, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-  { id: 10, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQBEqoºnaljbfºoWHEFAKPJ+EHOQW NEDQBEVFI +ehpndbfowpodsnk', eventselected: 'JEEC 23/24', showInWebsite: false },
+  { id: 10, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv ', eventselected: 'JEEC 23/24', showInWebsite: false },
   { id: 11, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
   { id: 12, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
 
@@ -124,6 +130,10 @@ const selectedRow = ref(null);
 // Event handler for row selection
 function handleRowSelect(row) {
   selectedRow.value = row;
+}
+
+function unselectRow() {
+  selectedRow.value = null;
 }
 
 // Event handlers for button clicks
@@ -157,11 +167,11 @@ const eventselected = ref('');
 .sponsors-container {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
   width: 100%;
   padding: 20px 20px 20px 20px;
+  gap: 15px;
 }
 
 .sponsor-card{
@@ -169,16 +179,17 @@ const eventselected = ref('');
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  overflow-y: auto;
   padding: 10px 10px 10px 10px;
-  margin: 10px 10px 10px 10px;
-  max-height: max-content;
-  width: 28%;
-  min-width: 200px;
+  align-self: flex-end;
+  height: calc(75vh - 13px);
+  width: 20%;
+  min-width: 250px;
   background-color: var(--c-accent);
   border-radius: 10px;
-  gap:15px;
+  gap: 10px;
   flex-grow: 1;
-  max-width: 250px;
+  z-index: 3;
 }
 
 .sponsor-card-header {
@@ -187,8 +198,7 @@ const eventselected = ref('');
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 5px 5px 10px 5px;
-  gap:20px;
+  gap:10px;
 }
 
 .card-tier{
@@ -197,10 +207,12 @@ const eventselected = ref('');
 }
 
 .sponsor-logo {
-  width: 11vw;
-  height: 11vw;
-  min-width: 100px;
-  min-height: 100px;
+  width: 30vw;
+  height: 30vw;
+  min-width: 50px;
+  min-width: 50px;
+  max-width: 100px;
+  max-height: 100px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -229,7 +241,7 @@ const eventselected = ref('');
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-width: 20px;
+  min-width: 30px;
   padding: 1px 1px;
   gap: 10px;
 }
@@ -238,16 +250,17 @@ const eventselected = ref('');
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
   width: 100%;
-  padding: 5px 5px 10px 5px;
-  gap: 20%;
+  padding: 5px 5px 5px 5px;
+  gap: 10px;
+
 }
 
 .card-paragraph{
   display: flex;
   flex-direction: column;
-  gap:2px;
+  flex-wrap: wrap;
+  gap:5px;
 }
 .sponsor-card-body h1{
   color: var(--c-ft-dark);
@@ -255,7 +268,7 @@ const eventselected = ref('');
   font-weight: 700;
 }
 .sponsor-card-body p{
-  font-size: 0.6em;
+  font-size: 0.8em;
   color: var(--c-ft-semi-light);
 }
 
@@ -264,10 +277,12 @@ const eventselected = ref('');
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  height: 75vh;
   width: 80%;
-  height: 100vh;
+  min-width: 300px;
   overflow: hidden;
   flex-grow: 1;
+  gap: 4px;
 }
 
 .table-container {
@@ -275,12 +290,12 @@ const eventselected = ref('');
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
-  height: 100%;
+  overflow: hidden;
 }
 
 .table{
   width: 100%;
-  height: 80%;
+  height: 100%;
   font-size: 0.8em;
 }
 
@@ -303,7 +318,6 @@ const eventselected = ref('');
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: end;
-  padding: 10px 10px 10px 10px;
   gap: 7px;
   color: #8A8A8A;
 }
@@ -411,21 +425,83 @@ const eventselected = ref('');
   border-radius: 20%;
   cursor: pointer;
   align-content: space-between;
-  width:  2vw;
-  height: 2vw;
+  width:  8vw;
+  height: 8vw;
   min-width: 20px;
   min-height: 20px;
+  max-height: 25px;
+  max-width: 25px;
   display:flex;
   justify-content: center;
   align-items: center;
-  padding: 1px 1px 1px 1px;
+  padding: 2px 2px 2px 2px;
 }
 .icon {
-  width: 1.5vw;
-  height: 1.5vw;
-  min-width: 15px;
-  min-height: 15px;
+  width: 6.5vw;
+  height: 6.5vw;
+  max-width: 25px;
+  max-height: 15px;
   color: var(--c-ft-dark);
+}
+
+.close-button{
+  z-index: 3;
+  background: none;
+  border: none;
+  cursor: pointer;
+  align-self: flex-end;
+  margin-bottom: -20px;
+}
+
+@media (max-width: 700px) {
+  .container {
+    flex-direction: column; /* Stack the elements vertically */
+  }
+
+  .sponsor-card {
+    position: absolute; /* Position the sponsor card absolutely */
+    top: 120px; /* Position the sponsor card 50px below the center */
+    width: 90vw; /* Set the width to 100% */
+    height: 80vh; /* Set the height to 100% */
+  }
+  .sponsor-card-body h1{
+    font-size: 1em;
+  }
+  .sponsor-card-body p{
+    font-size: 0.9em;
+  }
+
+  .card-name{
+    font-size:1.9em;
+  }
+
+  .card-subtitle{
+    font-size:1.3em;
+  }
+
+  .card-tier{
+    font-size: 1.9em;
+  }
+
+  .sponsor-logo {
+    width: 40vw;
+    height: 40vw;
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .icon-button {
+    max-height: 40px;
+    max-width: 40px;
+  }
+
+  .icon {
+    max-width: 35px;
+    max-height: 20px;
+  }
+
 }
 
 
