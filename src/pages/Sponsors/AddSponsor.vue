@@ -4,7 +4,7 @@
       <div class="header">
         <h1>Add Sponsor</h1>
         <button @click="closePopup" class="close-button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"  fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -84,8 +84,8 @@
           </div>
             
         </div>
-        <button class="button-add-sponsor">Add</button>
       </form>
+      <button class="button-add-sponsor">Add</button>
     </div>
   </div>
   
@@ -118,19 +118,19 @@ const props = defineProps({
 .tier-pop-up{
   display: flex;
   flex-direction: column;
-  max-width: 73%;
+  width: 70vw;
+  max-width: 800px;
   overflow-y: auto;
-  padding: 4vw;
-  min-height: 640px;
-  max-height: 80vh;
+  padding: 30px 30px 30px 30px;
+  height: 90vh;
+  max-height: 600px;
+  min-height: 520px;
   margin: 3vh auto;
-  border-radius: 3vw;
   background-color: #ffff;
   font-size: 0.9em;
   color: var(--text-color);
   font-family: var(--font-family);
   z-index: 3;
-  gap:3vh;
 }
 
 .header{
@@ -138,6 +138,8 @@ const props = defineProps({
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
 }
 
 
@@ -157,9 +159,11 @@ const props = defineProps({
 .form{
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 10px;
   height: 100%;
+  width: 100%;
+  padding-right: 26px;
 }
 
 .form-line{
@@ -178,7 +182,7 @@ const props = defineProps({
   justify-content: flex-start;
   align-items: center;
   font-size: 0.7em;
-  gap: 1vw;
+  gap: 10px;
   width: 20vw;
 }
 
@@ -189,28 +193,27 @@ const props = defineProps({
 }
 
 input[type="radio"] {
-    /* Adjust size directly using viewport width without calc */
-    transform: scale(1 + 0.02 * (2vh)); /* Adjust size based on viewport width */
-    margin: 1vw; /* Margin based on viewport width */
-  }
+  /* Adjust size directly using viewport width without calc */
+  transform: scale(1 + 0.02 * (2vh)); /* Adjust size based on viewport width */
+  margin: 1vw; /* Margin based on viewport width */
+}
 
 .form-columns{
   min-height: 200px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-content: center;
   flex-direction: row;
   flex-wrap: wrap;
   width:100%;
-  gap: 20px;
+  gap: 30px;
 }
 
 .second-column{
   display:flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 10px 10px;
-  gap: 25px;
+  gap: 20px;
   flex-grow: 1;
 }
 
@@ -218,7 +221,7 @@ input[type="radio"] {
   display: flex;
   flex-direction: column;
   flex-grow: 3;
-  max-width: 500px;
+  width: 20vw;
   gap:1vh; 
 }
 
@@ -261,7 +264,7 @@ input[type="radio"] {
 .inputdescription{
   display: flex;
   flex-direction: column;
-  width: 77vw;
+  width: 100%;
   gap:1vh;
 }
 
@@ -284,6 +287,7 @@ input[type="radio"] {
   display: flex;
   flex-direction: column;
   align-content: center;
+  object-fit: cover;
 }
 /* Hide the file input */
 #logo-upload {
@@ -390,8 +394,7 @@ input[type="radio"] {
 
 .button-add-sponsor {
   width: 100px;
-  min-height: 40px;
-  height: 100%; 
+  height: 40px;
   border: none;
   border-radius: 0.7vh;
   outline-color: var(--c-select);
@@ -400,10 +403,9 @@ input[type="radio"] {
   font-weight: 500;
   color: #FFFFFF;
   background-color: #152259;
-  padding: 0.2vw 1vw;
+  padding: 2px 2px;
   cursor: pointer;
   align-self: flex-end;
-  margin: 5px 5px 5px 5px;
 }
 
   
