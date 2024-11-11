@@ -205,12 +205,12 @@ function tooglelist()
   overflow-y: auto;
   padding: 10px 10px 10px 10px;
   height: 75vh;
-  max-height: 505px;
+  max-height: 490px;
   width: 35%;
   min-width: 250px;
   background-color: var(--c-accent);
   border-radius: 10px;
-  gap: 10px;
+  gap: 20px;
   flex-grow: 1;
   z-index: 3;
 }

@@ -118,8 +118,8 @@ const props = defineProps({
 .tier-pop-up{
   display: flex;
   flex-direction: column;
-  width: 70vw;
-  max-width: 800px;
+  width: 90vw;
+  max-width: 750px;
   overflow-y: auto;
   padding: 30px 30px 30px 30px;
   height: 90vh;
@@ -201,7 +201,7 @@ input[type="radio"] {
 .form-columns{
   min-height: 200px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-content: center;
   flex-direction: row;
   flex-wrap: wrap;

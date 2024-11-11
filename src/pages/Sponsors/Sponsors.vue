@@ -462,14 +462,14 @@ const eventselected = ref('');
 
   .sponsors-table {
     max-height: 700px;
-    height: 90vh;
+    height: 78vh;
   }
 
   .sponsor-card {
     position: absolute; /* Position the sponsor card absolutely */
-    top: 120px; /* Position the sponsor card 50px below the center */
+    top: 118px; /* Position the sponsor card 50px below the center */
     width: 90vw; /* Set the width to 100% */
-    max-height: fit-content;
+    max-height: 750px;
     height: 80vh; /* Set the height to 100% */
   }
   .sponsor-card-body h1{
