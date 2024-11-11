@@ -1,10 +1,29 @@
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import AddSpeakerPopup from './AddSpeakerPopup.vue';
 import EditSpeakerPopup from './EditSpeakerPopup.vue';
 import MobilePopup from './MobilePopup.vue';
+import axios from 'axios';
+
+const datab = ref(null)
+
+// const api = import.meta.env.VUE_APP_JEEC_BRAIN_URL
+
+const fetchData = () => {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',{auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then((response)=>{
+          const data=response.data
+          datab.value = response.data.speakers
+          console.log(datab.value)
+        })
+}
+
+
+onMounted(fetchData)
 
 const popupShow = ref(false);
 const descriptionShow = ref(false);
@@ -72,265 +91,265 @@ function selectCallback(row) {
   openMobileModal();
 }
 
-const datab = [
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
-  {
-    id: "69",
-    type: "Main Speaker",
-    name: "Waqas SJ.",
-    company: "Intel",
-    country: "Germany",
-    responsible: "Francisco Rosa",
-  },
+// const datab = [
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
+//   {
+//     id: "69",
+//     type: "Main Speaker",
+//     name: "Waqas SJ.",
+//     company: "Intel",
+//     country: "Germany",
+//     responsible: "Francisco Rosa",
+//   },
 
-];
+// ];
 
 const tablePref = {
   id: "ID",
   name: "Name",
-  type: "Type",
+  // type: "Type",
   company: "Company",
   country: "Country",
-  responsible: "JEEC Responsible",
+  // responsible: "JEEC Responsible",
 };
 
 </script>
@@ -388,8 +407,8 @@ const tablePref = {
             </div>
           </div>
         </div>
-        <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
-        </TheTable>
+        <!-- <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
+        </TheTable> -->
       </div>
       <div class="right-popup-placeholder" v-show="popupShow">
         <div class="close-wrapper">
@@ -541,6 +560,28 @@ const tablePref = {
   flex-grow: 0.7;
 }
 
+button {
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
+p {
+  color: black;
+  font-weight: 500;
+  font-size: small;
+}
+
+select {
+  border-style: solid;
+  border-width: thin;
+  border-radius: 7px;
+  height: 50px;
+  opacity: 60%;
+  border-color: #8a8a8a;
+  background-color: white;
+}
+
 form {
   display: flex;
   width: 60%;
@@ -596,6 +637,8 @@ form>input::placeholder {
   border-radius: 30px;
   background-color: var(--c-accent);
   overflow-y: auto;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
   padding-bottom: 3%;
 }
 
@@ -605,6 +648,9 @@ form>input::placeholder {
   border-radius: 30px;
   background-color: var(--c-accent);
   margin-right: -0vw;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 3%;
 
 }
 
@@ -699,22 +745,6 @@ form>input::placeholder {
   justify-content: center;
 }
 
-p {
-  color: black;
-  font-weight: 500;
-  font-size: small;
-}
-
-select {
-  border-style: solid;
-  border-width: thin;
-  border-radius: 7px;
-  height: 50px;
-  opacity: 60%;
-  border-color: #8a8a8a;
-  background-color: white;
-}
-
 .topbtn {
   background-color: var(--c-select);
   color: white;
@@ -747,12 +777,6 @@ select {
 .imsosickofdivs>label {
   position: absolute;
   bottom: 100%;
-}
-
-button {
-  outline: none;
-  border: none;
-  cursor: pointer;
 }
 
 .popup-mask {
