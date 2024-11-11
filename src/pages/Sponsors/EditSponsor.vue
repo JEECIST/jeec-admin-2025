@@ -2,7 +2,7 @@
   <div class="backdrop">
     <div class="tier-pop-up">
       <div class="header">
-        <h1>Add Sponsor</h1>
+        <h1>Edit Sponsor</h1>
         <button @click="closePopup" class="close-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"  fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
           <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -51,10 +51,10 @@
             <div class="form-line">
               <div class="inputjeec">
                 <label for="jeecresponsible">JEEC Responsible</label>
-                <select class="selection-box-jeec">
+                <select class="selection-box-jeec" v-model="jeecresponsible">
                   <option value="all">All</option>
-                  <option value="Maria">Maria</option>
-                  <option value="Francisca">Francisca</option>
+                  <option value="Maria">André</option>
+                  <option value="Francisca">Maria Francisca</option>
                 </select>
               </div>
             </div>
@@ -63,10 +63,10 @@
               <div class="radio-label">
                 <label for="show">Show in Website</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
+                  <input type="radio" id="yes" name="show" value="Yes" v-model="showInWebsite"/>
                   <label for="yes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
+                  <input type="radio" id="no" name="show" value="No" v-model="showInWebsite"/>
                   <label for="no">No</label>
                 </div>
               </div>
@@ -92,6 +92,7 @@
 </template>
 
 <script setup>
+import { defineProps, defineEmits, ref, watch } from 'vue';
 const emit = defineEmits(['close'])
 
 function closePopup() {
@@ -99,8 +100,52 @@ emit('close');
 }
 
 const props = defineProps({
-  foo: String
+  foo: String,
+  sponsorData: {
+    type: Object,
+    required: true
+  },
+  isOpen: {
+    type: Boolean,
+    required: true
+  }
 })
+
+// Define data properties
+const name = ref('');
+const eventselected = ref('all');
+const description = ref('');
+const logo = ref(null);
+const jeecresponsible = ref('all');
+const showInWebsite = ref('Yes');
+const tier = ref('Gold');
+
+// Handle logo selection
+function onLogoSelected(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      logo.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+
+// Watch for changes to isOpen and initialize data properties
+watch(() => props.isOpen, (newVal) => {
+  if (newVal) {
+    name.value = props.sponsorData.name || '';
+    eventselected.value = props.sponsorData.eventselected || 'all';
+    description.value = props.sponsorData.description || '';
+    logo.value = props.sponsorData.logo || null;
+    jeecresponsible.value = props.sponsorData.jeecresponsible || 'all';
+    showInWebsite.value = props.sponsorData.showInWebsite || 'Yes';
+    tier.value = props.sponsorData.tier || 'Gold';
+  }
+});
+
 </script>
 
 <style scoped>
@@ -193,10 +238,10 @@ const props = defineProps({
 }
 
 input[type="radio"] {
-  /* Adjust size directly using viewport width without calc */
-  transform: scale(1 + 0.02 * (2vh)); /* Adjust size based on viewport width */
-  margin: 1vw; /* Margin based on viewport width */
-}
+    /* Adjust size directly using viewport width without calc */
+    transform: scale(1 + 0.02 * (2vh)); /* Adjust size based on viewport width */
+    margin: 1vw; /* Margin based on viewport width */
+  }
 
 .form-columns{
   min-height: 200px;

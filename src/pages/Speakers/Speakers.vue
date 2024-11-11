@@ -456,8 +456,6 @@ const tablePref = {
     </div>
   </div>
 
-
-
   <div class="mobile" v-else>
     <div class="mobile-wrapper">
       <div class="table">

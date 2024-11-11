@@ -98,6 +98,7 @@ const tablePref = {
   background-color: rgba(0, 0, 0, 0.425);
 }
 
+
 .mobile-wrapper {
   display: flex;
   justify-content: center;
