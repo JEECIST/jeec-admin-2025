@@ -12,7 +12,6 @@
               placeholder="Search for a team" 
               class="searchbar" 
               v-model="searchQuery" 
-              @input="closePopupOnSearch"
             />
           </div>
 
@@ -155,6 +154,45 @@
       <label class="no-teams">No teams found</label>
     </div>
   </div>
+
+  <div v-if="showAddPopup" class="modal-overlay-add">
+    <div class="edit-popup-content">
+      <button class="closeX" @click="closePopup">&times;</button>
+      <h2>Add Team</h2>
+      <form @submit.prevent="saveNewTeam" class="popup_form">
+        <div class="name-event">
+          <div class="form-group">
+            <label for="newTeamName" class="labels">Name</label>
+            <input type="text" v-model="newTeamName" id="newTeamName" required class="formUsername" />
+          </div>
+          <div class="form-group">
+            <label for="newTeamEvent" class="labels">Event</label>
+            <input type="text" v-model="newTeamEvent" id="newTeamEvent" required class="formRole" />
+          </div>
+          <div class="form-group">
+            <label for="newTeamPriority" class="labels">Priority</label>
+            <input type="text" v-model="newTeamPriority" id="newTeamPriority" required class="formRole" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="newTeamMembers" class="labels">Description</label>
+          <input type="text" v-model="Description" id="newTeamMembers" required class="formRole" />
+        </div>
+        <div class="form-group">
+          <label for="newTeamPicture" class="labels">Picture</label>
+          <div class="small-quadrado"></div>
+        </div>
+        <div class="modal-actions">
+          <label class="custom-file-upload">
+            <input type="file" id="newTeamPicture" @change="handleFileChange"/>
+            <span>Add Picture</span>
+          </label>
+          <span v-if="selectedFile">{{ selectedFile.name }}</span>
+          <button type="submit" class="add">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -211,8 +249,9 @@ export default {
     handleEventChange() {
       console.log(this.selectedEvent);
     },
-    selectTeam(row) {
+    selectTeam(row, index) {
       this.selectedTeam = row;
+      this.selectedRowIndex = index;
       this.showPopup = true;
     },
     closePopup() {
@@ -313,7 +352,7 @@ export default {
 }
 
 .headerteams-shrink {
-  width: calc(100% - 320px); 
+  width: calc(100% - 320px);
 }
 
 .searchteam {
@@ -402,7 +441,7 @@ export default {
 
 .right-popup {
   padding: 20px;
-  position: relative;
+  position: relative; /* Ensure the close button is positioned relative to the popup */
 }
 
 .popup-content {
@@ -549,6 +588,7 @@ export default {
   justify-content: space-between;
   gap: 40px;
 }
+
 
 .overlay {
   position: fixed;
