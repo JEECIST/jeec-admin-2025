@@ -7,8 +7,11 @@ import ListSpeakerTypePopup from './ListSpeakerTypePopup.vue';
 import TypeMobilePopup from './TypeMobilePopup.vue';
 
 const popupShow = ref(false);
-
 const isModalOpened = ref(false);
+
+const closePopup = () => {
+  popupShow.value = false;
+};
 
 const openModal = () => {
   isModalOpened.value = true;
@@ -119,6 +122,9 @@ const tablePref = {
         </TheTable>
       </div>
       <div class="right-popup-placeholder" v-show="popupShow">
+        <div class="close-wrapper">
+          <button class="close" @click="closePopup">X</button>
+        </div>
         <div class="items">
           <div class="speaker-photo">Insert Speaker Photo</div>
           <h3 class="text1">Speaker Type</h3>
@@ -291,6 +297,8 @@ form>input::placeholder {
   border-radius: 30px;
   background-color: var(--c-accent);
   height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .right-popup-placeholder-mobile {
@@ -302,12 +310,35 @@ form>input::placeholder {
 
 }
 
+
+.close-wrapper {
+  display: flex;
+  justify-content: right;
+  margin-right: 2%;
+
+}
+
+.close {
+  background-color: var(--c-accent);
+  color: rgba(0, 0, 0, 0.710);
+  font-size: large;
+  font-weight: bolder;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  width: 2vw;
+  height: 3.5vh;
+  margin-top: 3%;
+  margin-right: 2%;
+}
+
 .items {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  margin-top: 10vh;
+  gap: 2vh;
+  margin-top: 3vh;
+  margin-bottom: 3vh;
 }
 
 .speaker-photo {
@@ -341,8 +372,6 @@ form>input::placeholder {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
   grid-gap: 30px;
-  width: 300px;
-  margin-left: 0px;
 }
 
 .col {

@@ -11,12 +11,11 @@ const routes = [
   },
   {
     path: "/dashboard",
-    alias: "/",
     name: "dashboard",
     component: Dashboard,
     meta: { 
       title: "Dashboard",
-      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams"],
+      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts"],
     },
   },
   {
@@ -201,6 +200,12 @@ const routes = [
     name: "teams-members",
     meta: { title: "Team Members" },
     component: () => import("../pages/Teams/TeamMembers.vue"),
+  },
+  {
+    path: "/user-shifts",
+    name: "usershifts",
+    meta: { title: "Team Shifts", children: false },
+    component: () => import("../pages/UserShifts/UserShifts.vue"),
   },
   {
     path: "/:pathMatch(.*)*",

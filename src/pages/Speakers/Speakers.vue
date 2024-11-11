@@ -9,12 +9,16 @@ import MobilePopup from './MobilePopup.vue';
 const popupShow = ref(false);
 const descriptionShow = ref(false);
 
+const closePopup = () => {
+  popupShow.value = false;
+};
+
 function showfunction() {
-  descriptionShow.value=true;
+  descriptionShow.value = true;
 }
 
 function closeDescription() {
-  descriptionShow.value=false;
+  descriptionShow.value = false;
 }
 
 const isModalOpened = ref(false);
@@ -46,12 +50,12 @@ const closeMobileModal = () => {
 };
 
 function isMobile() {
-   if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-     return true;
-   }
-   else {
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    return true;
+  }
+  else {
     return false;
-   }
+  }
 }
 
 const router = useRouter();
@@ -70,7 +74,7 @@ function selectCallback(row) {
 
 const datab = [
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -78,7 +82,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -86,7 +90,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -94,7 +98,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -102,7 +106,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -110,7 +114,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -118,7 +122,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -126,7 +130,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -134,7 +138,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -142,7 +146,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -150,7 +154,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -158,7 +162,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -166,7 +170,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -174,7 +178,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -182,7 +186,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -190,7 +194,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -198,7 +202,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -206,7 +210,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -214,7 +218,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -222,7 +226,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -230,7 +234,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -238,7 +242,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -246,7 +250,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -254,7 +258,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -262,7 +266,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -270,7 +274,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -278,7 +282,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -286,7 +290,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -294,7 +298,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -302,7 +306,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -310,7 +314,7 @@ const datab = [
     responsible: "Francisco Rosa",
   },
   {
-    id:   "69",
+    id: "69",
     type: "Main Speaker",
     name: "Waqas SJ.",
     company: "Intel",
@@ -332,66 +336,65 @@ const tablePref = {
 </script>
 
 <template>
-<div class="desktop" v-if="!isMobile()">
-<div class="wrapper">
-    <div class="table">
-      <div class="topbar">
-      <form>
-        <label>
-          <img src="../../assets/search.svg">
-        </label>
-        <input v-model="message" placeholder="Search for a speaker">
-      </form>
-      <div class="imsosickofdivs">
-      <label for="evento" class="eventselect">Event</label>
-      <select name="evento" placeholder="  " class="eventselect">
-                <option value="null" disabled selected hidden></option>
-                <option>hello</option>
-                <option>there</option>
+  <div class="desktop" v-if="!isMobile()">
+    <div class="wrapper">
+      <div class="table">
+        <div class="topbar">
+          <form>
+            <label>
+              <img src="../../assets/search.svg">
+            </label>
+            <input v-model="message" placeholder="Search for a speaker">
+          </form>
+          <div class="imsosickofdivs">
+            <label for="evento" class="eventselect">Event</label>
+            <select name="evento" placeholder="  " class="eventselect">
+              <option value="null" disabled selected hidden></option>
+              <option>hello</option>
+              <option>there</option>
             </select>
+          </div>
+          <button class="topbtn" @click="openModal">Add Speaker</button>
+          <button @click="goToSpeakerTypes" class="topbtn">Speaker Types 〉</button>
+          <Transition name="fade" appear>
+            <AddSpeakerPopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerPopup>
+          </Transition>
+          <Transition name="fade" appear>
+            <EditSpeakerPopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerPopup>
+          </Transition>
+          <div class="popup-mask" v-show="descriptionShow">
+            <div class="description">
+              <p>
+                description of speaker Once upon a time there was a lovely
+                princess. But she had an enchantment
+                upon her of a fearful sort which could
+                only be broken by love's first kiss.
+                She was locked away in a castle guarded
+                by a terrible fire-breathing dragon.
+                Many brave knights had attempted to
+                free her from this dreadful prison,
+                but non prevailed. She waited in the
+                dragon's keep in the highest room of
+                the tallest tower for her true love
+                and true love's first kiss. (laughs)
+                Like that's ever gonna happen. What
+                a load of - (toilet flush)
+
+                Allstar - by Smashmouth begins to play. Shrek goes about his
+                day. While in a nearby town, the villagers get together to go
+                after the ogre.
+              </p>
+              <button class="closedescription" @click="closeDescription">X</button>
+            </div>
+          </div>
+        </div>
+        <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
+        </TheTable>
       </div>
-     <button class="topbtn" @click="openModal">Add Speaker</button>
-     <button @click="goToSpeakerTypes" class="topbtn">Speaker Types 〉</button>
-     <Transition name="fade" appear>
-        <AddSpeakerPopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerPopup>
-     </Transition>
-     <Transition name="fade" appear>
-        <EditSpeakerPopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerPopup>
-     </Transition>
-     <div class="popup-mask" v-show="descriptionShow">
-     <div class="description">
-       <p>
-        description of speaker Once upon a time there was a lovely 
-        princess. But she had an enchantment 
-        upon her of a fearful sort which could 
-        only be broken by love's first kiss. 
-        She was locked away in a castle guarded 
-        by a terrible fire-breathing dragon. 
-        Many brave knights had attempted to 
-        free her from this dreadful prison, 
-        but non prevailed. She waited in the 
-        dragon's keep in the highest room of 
-        the tallest tower for her true love 
-        and true love's first kiss. (laughs) 
-        Like that's ever gonna happen. What 
-        a load of - (toilet flush)
- 
-        Allstar - by Smashmouth begins to play. Shrek goes about his 
-        day. While in a nearby town, the villagers get together to go 
-        after the ogre.
-       </p>
-       <button class="closedescription" @click="closeDescription">X</button>
-     </div>
-     </div>
-     </div>
-      <TheTable
-        :data="datab"
-        :tableHeaders="tablePref"
-        :searchInput="message"
-        @onRowSelect="selectCallback"
-      ></TheTable>
-    </div>
-    <div class="right-popup-placeholder" v-show="popupShow">
+      <div class="right-popup-placeholder" v-show="popupShow">
+        <div class="close-wrapper">
+          <button class="close" @click="closePopup">X</button>
+        </div>
         <div class="items">
           <h1>SPEAKER TYPE</h1>
           <div class="speaker-photo">Insert Speaker Photo</div>
@@ -399,16 +402,16 @@ const tablePref = {
           <p class="text2 title">Speaker</p>
           <div class="btns-row">
             <button class="btn" @click="openOtherModal">
-                <img src="../../assets/pencil.svg">
+              <img src="../../assets/pencil.svg">
             </button>
             <button class="btn" @click="showfunction">
-                <img src="../../assets/sheet.svg">
+              <img src="../../assets/sheet.svg">
             </button>
             <button class="btn">
-                <img src="../../assets/linkedin.svg">
+              <img src="../../assets/linkedin.svg">
             </button>
             <button class="btn">
-                <img src="../../assets/trash.svg">
+              <img src="../../assets/trash.svg">
             </button>
           </div>
           <div id="info">
@@ -419,7 +422,7 @@ const tablePref = {
             <div class="row">
               <div class="col">
                 <p>Country</p>
-                <p class="text2">Germany</p>           
+                <p class="text2">Germany</p>
               </div>
               <div class="col">
                 <p>Event</p>
@@ -431,75 +434,69 @@ const tablePref = {
           </div>
         </div>
       </div>
-  </div>
-</div>
-
-
-
-<div class="mobile" v-else>
-<div class="mobile-wrapper">
-    <div class="table">
-      <div class="mobile-topbar">
-      <form>
-        <label>
-          <img src="../../assets/search.svg">
-        </label>
-        <input v-model="message" placeholder="Search for a speaker">
-      </form>
-      <div class="imsosickofdivs">
-      <label for="evento" class="eventselect">Event</label>
-      <select name="evento" placeholder="  " class="eventselect">
-                <option value="null" disabled selected hidden></option>
-                <option>hello</option>
-                <option>there</option>
-            </select>
-      </div>
-     <button class="topbtn" @click="openModal">Add Speaker</button>
-     <button @click="goToSpeakerTypes" class="topbtn">Speaker Types 〉</button>
-     <Transition name="fade" appear>
-        <AddSpeakerPopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerPopup>
-     </Transition>
-     <Transition name="fade" appear>
-        <EditSpeakerPopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerPopup>
-     </Transition>
-     <Transition name="fade" appear>
-        <MobilePopup :isOpen="isMobileModalOpened" @modal-close="closeMobileModal"></MobilePopup>
-     </Transition>
-     <div class="popup-mask" v-show="descriptionShow">
-     <div class="description-mobile">
-       <p>
-        description of speaker Once upon a time there was a lovely 
-        princess. But she had an enchantment 
-        upon her of a fearful sort which could 
-        only be broken by love's first kiss. 
-        She was locked away in a castle guarded 
-        by a terrible fire-breathing dragon. 
-        Many brave knights had attempted to 
-        free her from this dreadful prison, 
-        but non prevailed. She waited in the 
-        dragon's keep in the highest room of 
-        the tallest tower for her true love 
-        and true love's first kiss. (laughs) 
-        Like that's ever gonna happen. What 
-        a load of - (toilet flush)
- 
-        Allstar - by Smashmouth begins to play. Shrek goes about his 
-        day. While in a nearby town, the villagers get together to go 
-        after the ogre.
-       </p>
-       <button class="mobile-closedescription" @click="closeDescription">X</button>
-     </div>
-     </div>
-     </div>
-      <TheTable
-        :data="datab"
-        :tableHeaders="tablePref"
-        :searchInput="message"
-        @onRowSelect="selectCallback"
-      ></TheTable>
     </div>
   </div>
-</div>
+
+  <div class="mobile" v-else>
+    <div class="mobile-wrapper">
+      <div class="table">
+        <div class="mobile-topbar">
+          <form>
+            <label>
+              <img src="../../assets/search.svg">
+            </label>
+            <input v-model="message" placeholder="Search for a speaker">
+          </form>
+          <div class="imsosickofdivs">
+            <label for="evento" class="eventselect">Event</label>
+            <select name="evento" placeholder="  " class="eventselect">
+              <option value="null" disabled selected hidden></option>
+              <option>hello</option>
+              <option>there</option>
+            </select>
+          </div>
+          <button class="topbtn" @click="openModal">Add Speaker</button>
+          <button @click="goToSpeakerTypes" class="topbtn">Speaker Types 〉</button>
+          <Transition name="fade" appear>
+            <AddSpeakerPopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerPopup>
+          </Transition>
+          <Transition name="fade" appear>
+            <EditSpeakerPopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerPopup>
+          </Transition>
+          <Transition name="fade" appear>
+            <MobilePopup :isOpen="isMobileModalOpened" @modal-close="closeMobileModal"></MobilePopup>
+          </Transition>
+          <div class="popup-mask" v-show="descriptionShow">
+            <div class="description-mobile">
+              <p>
+                description of speaker Once upon a time there was a lovely
+                princess. But she had an enchantment
+                upon her of a fearful sort which could
+                only be broken by love's first kiss.
+                She was locked away in a castle guarded
+                by a terrible fire-breathing dragon.
+                Many brave knights had attempted to
+                free her from this dreadful prison,
+                but non prevailed. She waited in the
+                dragon's keep in the highest room of
+                the tallest tower for her true love
+                and true love's first kiss. (laughs)
+                Like that's ever gonna happen. What
+                a load of - (toilet flush)
+
+                Allstar - by Smashmouth begins to play. Shrek goes about his
+                day. While in a nearby town, the villagers get together to go
+                after the ogre.
+              </p>
+              <button class="mobile-closedescription" @click="closeDescription">X</button>
+            </div>
+          </div>
+        </div>
+        <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
+        </TheTable>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -527,10 +524,9 @@ const tablePref = {
   flex-direction: column;
   width: 100%;
   gap: 3ch;
-  padding-right: 0ch;
 }
 
-.mobile-topbar > form {
+.mobile-topbar>form {
   display: flex;
   width: 21%;
   background-color: var(--c-accent);
@@ -547,23 +543,21 @@ form {
   display: flex;
   width: 60%;
   background-color: var(--c-accent);
-  height: 50px;
   line-height: 50px;
-  align-items: center;
   gap: 1ch;
   padding-left: 1ch;
   border-radius: 10px;
   flex-grow: 0.7;
 }
 
-form > label > img {
+form>label>img {
   width: 20px;
   position: relative;
   top: 4px;
   left: 3px;
 }
 
-form > input {
+form>input {
   appearance: none;
   background: transparent;
   border: 0px;
@@ -587,7 +581,7 @@ form > input {
   width: 100%;
 }
 
-form > input::placeholder {
+form>input::placeholder {
   color: var(--c-ft-semi-light)
 }
 
@@ -596,9 +590,11 @@ form > input::placeholder {
   top: 0;
   right: 0;
   width: 500px;
+  height: 100%;
   border-radius: 30px;
   background-color: var(--c-accent);
-  height: 100%;
+  overflow-y: auto;
+  padding-bottom: 3%;
 }
 
 .right-popup-placeholder-mobile {
@@ -610,122 +606,143 @@ form > input::placeholder {
 
 }
 
+.close-wrapper {
+  display: flex;
+  justify-content: right;
+  margin-right: 2%;
+
+}
+
+.close {
+  background-color: var(--c-accent);
+  color: rgba(0, 0, 0, 0.710);
+  font-size: large;
+  font-weight: bolder;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  width: 2vw;
+  height: 3.5vh;
+  margin-top: 3%;
+  margin-right: 2%;
+}
+
 .items {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    margin-top: 7vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2vh;
+  margin-top: 3vh;
 }
 
 .speaker-photo {
-    height: 165px;
-    width: 165px;
-    background-color: var(--c-select);
-    border-radius: 100%;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    color: white;
+  height: 165px;
+  width: 165px;
+  background-color: var(--c-select);
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: white;
 
 }
 
 .text1 {
-    color: black;
-    font-size: x-large;
+  color: black;
+  font-size: x-large;
 }
 
 .text2 {
-    color: var(--c-ft-semi-light);
+  color: var(--c-ft-semi-light);
 }
 
 .title {
-    font-size: larger;
-    font-weight: 550;
+  font-size: larger;
+  font-weight: 550;
 }
 
 .row {
-    display: flex;
-    flex-direction: row;
-    gap: 3.5vw;
+  display: flex;
+  flex-direction: row;
+  gap: 3.5vw;
 }
 
 .col {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
 }
 
 #info {
-    margin-left: -2.5vw;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 1.3vh;
+  margin-left: -2.5vw;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 1.3vh;
 }
 
 .btns-row {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
 }
 
 .btn {
-    width: 36px;
-    height: 36px;
-    background: #FFFFFF;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #FFFFFF;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 p {
-    color: black;
-    font-weight: 500;
-    font-size: small;
+  color: black;
+  font-weight: 500;
+  font-size: small;
 }
 
 select {
-    border-style: solid;
-    border-width: thin;
-    border-radius: 7px;
-    height: 50px;
-    padding: 12px;
-    opacity: 60%;
-    border-color: #8a8a8a;
-    background-color: white;
+  border-style: solid;
+  border-width: thin;
+  border-radius: 7px;
+  height: 50px;
+  opacity: 60%;
+  border-color: #8a8a8a;
+  background-color: white;
 }
 
 .topbtn {
-    background-color: var(--c-select);
-    color: white;
-    border: none;
-    border-radius: 7px;
-    align-items: center;
-    height: 50px;
-    font-weight: 500;
-    font-size: small;
-    flex-grow: 1;
-    width: 10%;
-    cursor: pointer;
+  background-color: var(--c-select);
+  color: white;
+  border: none;
+  border-radius: 7px;
+  align-items: center;
+  height: 50px;
+  font-weight: 500;
+  font-size: small;
+  flex-grow: 1;
+  width: 10%;
+  cursor: pointer;
 }
 
-.topbar, .mobile-topbar {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
+.topbar,
+.mobile-topbar {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
 }
 
 .imsosickofdivs {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    position: relative;
-    width: 10%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  position: relative;
+  width: 10%;
 }
 
-.imsosickofdivs > label {
+.imsosickofdivs>label {
   position: absolute;
   bottom: 100%;
 }
@@ -759,14 +776,14 @@ button {
   border-radius: 15px;
 }
 
-.description-mobile > p {
-   display: flex;
-   align-items: center;
-   vertical-align: center;
-   justify-content: center;
-   padding: 3.5vw;
-   font-weight: 350;
-   color: (--c-ft-semi-light);
+.description-mobile>p {
+  display: flex;
+  align-items: center;
+  vertical-align: center;
+  justify-content: center;
+  padding: 3.5vw;
+  font-weight: 350;
+  color: (--c-ft-semi-light);
 }
 
 .description {
@@ -780,16 +797,18 @@ button {
   left: 50%;
   translate: -50% -50%;
   border-radius: 15px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.description > p {
-   display: flex;
-   align-items: center;
-   vertical-align: center;
-   justify-content: center;
-   padding: 3.5vw;
-   font-weight: 350;
-   color: (--c-ft-semi-light);
+.description>p {
+  display: flex;
+  align-items: center;
+  vertical-align: center;
+  justify-content: center;
+  padding: 3.5vw;
+  font-weight: 350;
+  color: (--c-ft-semi-light);
 }
 
 .closedescription {
@@ -829,5 +848,4 @@ button {
   cursor: pointer;
   padding: 0.5vw;
 }
-
 </style>

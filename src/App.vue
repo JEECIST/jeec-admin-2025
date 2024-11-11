@@ -54,7 +54,9 @@ main {
 }
 
 @media screen and (max-width: 1000px) {
-  main, .header {
+
+  main,
+  .header {
     padding-left: 0;
   }
 
