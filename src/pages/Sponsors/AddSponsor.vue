@@ -118,19 +118,19 @@ const props = defineProps({
 .tier-pop-up{
   display: flex;
   flex-direction: column;
-  width: 90vw;
-  max-width: 750px;
+  width: 80vw;
+  max-width: 900px;
   overflow-y: auto;
-  padding: 30px 30px 30px 30px;
-  height: 90vh;
-  max-height: 600px;
-  min-height: 520px;
+  padding: 50px 50px 50px 50px;
+  height: fit-content;
+  max-height: 90vh;
   margin: 3vh auto;
   background-color: #ffff;
   font-size: 0.9em;
   color: var(--text-color);
   font-family: var(--font-family);
-  z-index: 3;
+  z-index: 10;
+  gap: 20px;
 }
 
 .header{
@@ -403,9 +403,20 @@ input[type="radio"] {
   font-weight: 500;
   color: #FFFFFF;
   background-color: #152259;
-  padding: 2px 2px;
+  padding: 8px 5px 8px 5px;
   cursor: pointer;
   align-self: flex-end;
+}
+
+@media (max-width: 700px) {
+
+  .form{
+    padding-right: 0;
+  }  
+
+  .close-button{
+    margin-right: -8px;
+  }
 }
 
   
