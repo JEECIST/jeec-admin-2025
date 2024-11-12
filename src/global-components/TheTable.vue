@@ -3,16 +3,16 @@
     <table>
       <thead>
         <tr>
-          <template v-for="(value, key) in props.data[0]">
-            <th v-if="key in tableHeaders">{{ tableHeaders[key] }}</th>
+          <template v-for="(value, key) in tableHeaders">
+            <th>{{ value }}</th>
           </template>
           <th class="button" v-for="button in props.buttons">{{ button.name }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="row in rows" @click="selectRow($event, row)">
-          <template v-for="(value, key) in row">
-            <td v-if="key in tableHeaders">{{ value }}</td>
+          <template v-for="(value, key) in tableHeaders">
+            <td>{{ row[key] }}</td>
           </template>
           <td class="button" v-for="button in props.buttons">
             <button v-if="!button.icon" @click="$emit(button.eventName, row)">{{ button.name }}</button>
@@ -29,7 +29,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 
-const props = await defineProps({
+const props = defineProps({
   data: {
     type: Array[Object],
     required: true
@@ -89,7 +89,7 @@ function normalizeStr(str) {
 }
 
 const rows = computed(() => {
-  if (!props.data.length)
+  if (!props.data.length) 
     return []
   else
     return props.data.filter(row => {
