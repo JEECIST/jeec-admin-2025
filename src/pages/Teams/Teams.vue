@@ -53,7 +53,9 @@
                     <img src="/home/code/jeec-admin-2025/src/assets/pencil.svg" alt="Edit" />
                   </button>
                   <button class="edit" @click="TeamMembers">
-                    <img src="/home/code/jeec-admin-2025/src/assets/linkedin.svg" alt="Team" />
+                    <a href="/teams/members/externalid">
+                      <img src="/home/code/jeec-admin-2025/src/assets/linkedin.svg" alt="Team" />
+                    </a>
                   </button>
                   <button class="edit" @click="deleteTeam">
                     <img src="/home/code/jeec-admin-2025/src/assets/trash.svg" alt="Delete" />
@@ -182,6 +184,21 @@ export default {
         { id: 10, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
         { id: 11, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
         { id: 12, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
+        { id: 13, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
+        { id: 14, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
+        { id: 15, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
+        { id: 16, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
+        { id: 17, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
+        { id: 18, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
+        { id: 19, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
+        { id: 20, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
+        { id: 21, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
+        { id: 22, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
+        { id: 23, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
+        { id: 24, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
+        { id: 25, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
+        { id: 26, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
+        { id: 27, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
       ],
       events: [
         { id: 1, name: 'Evento 1' },
@@ -246,7 +263,7 @@ export default {
       this.closePopup();
     },
     TeamMembers() {
-      this.$router.push({ name: 'teams-members', params: { teamId: this.selectedTeam.id } }); 
+      this.$router.push({ name: 'teams-members'}); 
     },
     openAddPopup() {
       this.showAddPopup = true;
@@ -291,6 +308,7 @@ export default {
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: 100%;
 }
 
 .header-wrapper {
@@ -301,7 +319,7 @@ export default {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  height: 0;
+  height: 100%;
 }
 
 .headerteams {
@@ -379,11 +397,13 @@ export default {
   display: flex;
   justify-content: space-between;
   flex-grow: 1;
+  height: calc(100% + var(--header-height) + 3ch);
 }
 
 .table-wrapper {
   flex-grow: 1;
   transition: flex-grow 0.3s ease;
+  height: 100%;
 }
 
 .table-wrapper-shrink {
@@ -396,7 +416,7 @@ export default {
   margin-left: 20px;
   border-radius: 10px;
   background-color: var(--c-accent);
-  height: calc(100% + 70px);
+  height: calc(100% - var(--header-height) - 3ch);
   margin-top: -70px;
 }
 
@@ -413,6 +433,7 @@ export default {
   align-items: center;
 }
 
+/*box de fundo não completa*/
 .form {
   display: flex;
   justify-content: center;
