@@ -40,7 +40,7 @@
               <button class="closeX" @click="closePopup">&times;</button>
               <div class="popup-content">
                 <div class="fotobola"></div>
-                <h2 class="subtitulo">Webdev</h2>
+                <h2 class="subtitulo">{{ selectedMember.userRole }}</h2>
                 <p class="sub-subtitulo">Members</p>
                 <div class="display">
                   <button class="edit" @click="editButton">
@@ -60,13 +60,16 @@
                   {{ selectedMember.email }}
                 </p>
                 <p class="descricao">Linkedin:</p>
+                <p class="inf1">
+                  {{ selectedMember.linkedin }}
+                </p>
                 <div class="linha">
                   <p class="direita">Shifts:</p>
                   <p class="direita">User Role:</p>
                 </div>
                 <div class="linha">
-                  <p class="opaco">{{ selectedMember.email }}</p>
                   <p class="opaco">{{ selectedMember.shifts }}</p>
+                  <p class="opaco">{{ selectedMember.userRole }}</p>
                 </div>
               </div>
             </div>
@@ -91,6 +94,9 @@
                     <label for="members" class="Add-name">User Role:
                       <input type="text" v-model="editMember.userRole" id="members" required />
                     </label>
+                    <label for="shifts" class="Add-name">Shifts:
+                      <input type="number" v-model="editMember.shifts" id="shifts" required />
+                    </label>
                     <button type="submit" class="add-team">Save</button>
                   </form>
                 </div>
@@ -110,34 +116,40 @@
                       <input type="text" v-model="newMemberName" id="name" required />
                     </div>
                     <div class="Add-priority">
-                      <label for="priority" class="">User Name:</label>
-                      <input type="text" v-model="newMemberPriority" id="priority" required />
+                      <label for="username" class="">User Name:</label>
+                      <input type="text" v-model="newMemberUsername" id="username" required />
                     </div>
                   </div>
                   <div class="primline">
                     <div class="Add-priority">
-                      <label for="priority" class="">Email:</label>
-                      <input type="text" v-model="newMemberPriority" id="priority" required />
+                      <label for="email" class="">Email:</label>
+                      <input type="text" v-model="newMemberEmail" id="email" required />
                     </div>
                     <div class="Add-priority">
-                      <label for="priority" class="">Linkedin:</label>
-                      <input type="text" v-model="newMemberPriority" id="priority" required />
+                      <label for="userRole" class="">User Role:</label>
+                      <input type="text" v-model="newMemberUserRole" id="userRole" required />
+                    </div>
+                  </div>
+                  <div class="primline">
+                    <div class="Add-priority">
+                      <label for="shifts" class="">Shifts:</label>
+                      <input type="number" v-model="newMemberShifts" id="shifts" required />
                     </div>
                   </div>
                   <div class="primeline">
                     <div class="form-group">
-                        <label class="custom-file-upload">
-                          Picture:
-                          <input type="file" @change="handleFileChange" class="file-input" ref="fileInput" style="display: none;" />
-                          <div class="small-quadrado" @click="triggerFileInput">
-                            <label class="centrado">{{ selectedFile ? selectedFile.name : 'No picture selected' }}</label>
-                          </div>
-                          <div class="ultline">
-                            <button type="button" class="left-add">Add Picture</button>
-                            <button type="submit" class="right-add">Add</button>
+                      <label class="custom-file-upload">
+                        Picture:
+                        <input type="file" @change="handleFileChange" class="file-input" ref="fileInput" style="display: none;" />
+                        <div class="small-quadrado" @click="triggerFileInput">
+                          <label class="centrado">{{ selectedFile ? selectedFile.name : 'No picture selected' }}</label>
                         </div>
-                        </label>
-                        <span v-if="selectedFile">{{ selectedFile.name }}</span>
+                        <div class="ultline">
+                          <button type="button" class="left-add">Add Picture</button>
+                          <button type="submit" class="right-add">Add</button>
+                        </div>
+                      </label>
+                      <span v-if="selectedFile">{{ selectedFile.name }}</span>
                     </div>
                   </div>
                 </form>
@@ -167,26 +179,26 @@ export default {
       selectedEvent: 'Select an event',
       searchQuery: '',
       members: [
-        { id: 1, name: 'Filipa', username: 'Pipinha', userRole: 'Admin', shifts: 69 },
-        { id: 2, name: 'Ricardo', username: 'ricardinho', userRole: 'User', shifts: 3 },
-        { id: 3, name: 'João', username: 'joãozinho', userRole: 'User', shifts: 1 },
-        { id: 4, name: 'Maria', username: 'mariazinha', userRole: 'User', shifts: 2 },
-        { id: 5, name: 'Ana', username: 'aninha', userRole: 'User', shifts: 3 },
-        { id: 6, name: 'Pedro', username: 'pedrinho', userRole: 'User', shifts: 1 },
-        { id: 7, name: 'Miguel', username: 'miguelzinho', userRole: 'User', shifts: 2 },
-        { id: 8, name: 'Sofia', username: 'sofinha', userRole: 'User', shifts: 3 },
-        { id: 9, name: 'Marta', username: 'martinha', userRole: 'User', shifts: 1 },
-        { id: 10, name: 'Rita', username: 'ritinha', userRole: 'User', shifts: 2 },
-        { id: 11, name: 'Filipa', username: 'filipinha', userRole: 'User', shifts: 3 },
-        { id: 12, name: 'Inês', username: 'inesinha', userRole: 'User', shifts: 1 },
-        { id: 13, name: 'Mariana', username: 'marianinha', userRole: 'User', shifts: 2 },
-        { id: 14, name: 'Carolina', username: 'carolininha', userRole: 'User', shifts: 3 },
-        { id: 15, name: 'Diana', username: 'dianinha', userRole: 'User', shifts: 1 },
-        { id: 16, name: 'Catarina', username: 'catarininha', userRole: 'User', shifts: 2 },
-        { id: 17, name: 'Margarida', username: 'margaridinha', userRole: 'User', shifts: 3 },
-        { id: 18, name: 'Beatriz', username: 'beatrizinha', userRole: 'User', shifts: 1 },
-        { id: 19, name: 'Sara', username: 'sarazinha', userRole: 'User', shifts: 2 },
-        { id: 20, name: 'Teresa', username: 'terezinha', userRole: 'User', shifts: 3 },
+        { id: 1, name: 'Filipa', username: 'Pipinha', userRole: 'Admin', shifts: 69, email: 'filipa@example.com', linkedin: 'linkedin.com/in/filipa' },
+        { id: 2, name: 'Ricardo', username: 'ricardinho', userRole: 'User', shifts: 3, email: 'ricardo@example.com', linkedin: 'linkedin.com/in/ricardo' },
+        { id: 3, name: 'João', username: 'joãozinho', userRole: 'User', shifts: 1, email: 'joao@example.com', linkedin: 'linkedin.com/in/joao' },
+        { id: 4, name: 'Maria', username: 'mariazinha', userRole: 'User', shifts: 2, email: 'maria@example.com', linkedin: 'linkedin.com/in/maria' },
+        { id: 5, name: 'Ana', username: 'aninha', userRole: 'User', shifts: 3, email: 'ana@example.com', linkedin: 'linkedin.com/in/ana' },
+        { id: 6, name: 'Pedro', username: 'pedrinho', userRole: 'User', shifts: 1, email: 'pedro@example.com', linkedin: 'linkedin.com/in/pedro' },
+        { id: 7, name: 'Miguel', username: 'miguelzinho', userRole: 'User', shifts: 2, email: 'miguel@example.com', linkedin: 'linkedin.com/in/miguel' },
+        { id: 8, name: 'Sofia', username: 'sofinha', userRole: 'User', shifts: 3, email: 'sofia@example.com', linkedin: 'linkedin.com/in/sofia' },
+        { id: 9, name: 'Marta', username: 'martinha', userRole: 'User', shifts: 1, email: 'marta@example.com', linkedin: 'linkedin.com/in/marta' },
+        { id: 10, name: 'Rita', username: 'ritinha', userRole: 'User', shifts: 2, email: 'rita@example.com', linkedin: 'linkedin.com/in/rita' },
+        { id: 11, name: 'Filipa', username: 'filipinha', userRole: 'User', shifts: 3, email: 'filipa2@example.com', linkedin: 'linkedin.com/in/filipa2' },
+        { id: 12, name: 'Inês', username: 'inesinha', userRole: 'User', shifts: 1, email: 'ines@example.com', linkedin: 'linkedin.com/in/ines' },
+        { id: 13, name: 'Mariana', username: 'marianinha', userRole: 'User', shifts: 2, email: 'mariana@example.com', linkedin: 'linkedin.com/in/mariana' },
+        { id: 14, name: 'Carolina', username: 'carolininha', userRole: 'User', shifts: 3, email: 'carolina@example.com', linkedin: 'linkedin.com/in/carolina' },
+        { id: 15, name: 'Diana', username: 'dianinha', userRole: 'User', shifts: 1, email: 'diana@example.com', linkedin: 'linkedin.com/in/diana' },
+        { id: 16, name: 'Catarina', username: 'catarininha', userRole: 'User', shifts: 2, email: 'catarina@example.com', linkedin: 'linkedin.com/in/catarina' },
+        { id: 17, name: 'Margarida', username: 'margaridinha', userRole: 'User', shifts: 3, email: 'margarida@example.com', linkedin: 'linkedin.com/in/margarida' },
+        { id: 18, name: 'Beatriz', username: 'beatrizinha', userRole: 'User', shifts: 1, email: 'beatriz@example.com', linkedin: 'linkedin.com/in/beatriz' },
+        { id: 19, name: 'Sara', username: 'sarazinha', userRole: 'User', shifts: 2, email: 'sara@example.com', linkedin: 'linkedin.com/in/sara' },
+        { id: 20, name: 'Teresa', username: 'terezinha', userRole: 'User', shifts: 3, email: 'teresa@example.com', linkedin: 'linkedin.com/in/teresa' },
       ],
       showPopup: false,
       showEditPopup: false,
@@ -194,9 +206,10 @@ export default {
       selectedMember: {},
       editMember: {},
       newMemberName: '',
-      newMemberEvent: '',
-      newMemberPriority: '',
-      Description: '',
+      newMemberUsername: '',
+      newMemberEmail: '',
+      newMemberUserRole: '',
+      newMemberShifts: '',
       selectedFile: null,
     };
   },
@@ -257,9 +270,11 @@ export default {
       const newMember = {
         id: this.members.length + 1,
         name: this.newMemberName,
-        event: this.newMemberEvent,
-        priority: this.newMemberPriority,
-        members: this.Description,
+        username: this.newMemberUsername,
+        email: this.newMemberEmail,
+        userRole: this.newMemberUserRole,
+        shifts: this.newMemberShifts,
+        linkedin: this.newMemberLinkedin,
       };
       this.members.push(newMember);
       this.closeAddPopup(); 
@@ -379,11 +394,13 @@ export default {
   display: flex;
   justify-content: space-between;
   flex-grow: 1;
+  flex-shrink: 1;
   height: calc(100% + var(--header-height) + 3ch);
 }
 
 .table-wrapper {
   flex-grow: 1;
+  flex-shrink: 1;
   transition: flex-grow 0.3s ease;
   height: 100%;
 }
@@ -393,12 +410,13 @@ export default {
   width: calc(100% - 320px);
 }
 
+/* recurso */
 .right-popup-placeholder {
   width: 300px;
   margin-left: 20px;
   border-radius: 10px;
   background-color: var(--c-accent);
-  height: calc(100% - var(--header-height) - 3ch);
+  height: calc(100% - var(--header-height) - 2.55ch);
   margin-top: -70px;
 }
 
@@ -408,7 +426,8 @@ export default {
 }
 
 .popup-content {
-  padding: 20px;
+  padding: 2vh;
+  padding-top: 1vh;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -441,28 +460,28 @@ export default {
 
 .titulo {
   text-align: center;
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 2rem;
   color: var(--c-text);
-  margin-top: 10px;
+  margin-top: 6vh;
   font-weight: bold;
 }
 
 .subtitulo {
   text-align: center;
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.5rem;
   color: var(--c-text);
-  margin-bottom: 10px;
+  margin-top: 1.5vh;
+  margin-bottom: 1.5vh;
   font-weight: bold;
 }
 
 .sub-subtitulo {
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: var(--c-text);
   opacity: 0.5;
-  margin-bottom: 10px;
+  margin-bottom: 2.75vh;
+  margin-top: 1.25vh;
 }
 
 .inf {
@@ -510,32 +529,31 @@ export default {
   height: 165px;
   background-color: #000000;
   border-radius: 50%;
-  margin-bottom: 10px;
-  margin-top: 0;
+  margin-bottom: 3vh;
+  margin-top: 3vh;
 }
 
 .display {
   display: flex;
   justify-content: space-between;
-  gap: 5px;
+  gap: 1vh;
 }
 
 .descricao {
   width: 100%;
   font-size: 1rem;
-  margin-top: 10px;
+  margin-top: 3vh;
   font-weight: bold;
   color: var(--c-text);
-  margin-bottom: 5px;
+  margin-bottom: 0.5vh;
 }
 
 .direita {
   width: 100%;
   font-size: 1rem;
   color: var(--c-text);
-  margin-top: 10px;
+  margin-top: 3vh;
   font-weight: bold;
-  margin-bottom: 5px;
 }
 
 .opaco {

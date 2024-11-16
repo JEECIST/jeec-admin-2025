@@ -42,7 +42,7 @@
 
           <div v-if="showPopup" class="right-popup-placeholder">
             <div class="right-popup">
-              <h2 class="titulo">JEEC25</h2>
+              <h2 class="titulo">{{ selectedTeam.name }}</h2>
               <button class="closeX" @click="closePopup">&times;</button>
               <div class="popup-content">
                 <div class="fotobola"></div>
@@ -62,7 +62,7 @@
                   </button>
                 </div>
                 <p class="descricao">Description:</p>
-                <p class="inf1">A melhor e a que mais trabalha</p>
+                <p class="inf1">{{ selectedTeam.description }}</p>
                 <div class="linha">
                   <p class="direita">Priority:</p>
                   <p class="direita">Members:</p>
@@ -93,6 +93,9 @@
                     </label>
                     <label for="members" class="Add-name">Members:
                       <input type="text" v-model="editTeam.members" id="members" required />
+                    </label>
+                    <label for="description" class="Add-name">Description:
+                      <input type="text" v-model="editTeam.description" id="description" required />
                     </label>
                     <button type="submit" class="add-team">Save</button>
                   </form>
@@ -127,7 +130,7 @@
                   </div>
                   <div class="Description">
                       <label class="">Description:</label>
-                      <input type="text" v-model="Description" id="members" required />
+                      <input type="text" v-model="newTeamDescription" id="description" required />
                   </div>
                   <div class="primeline">
                     <div class="form-group">
@@ -172,33 +175,33 @@ export default {
       selectedEvent: 'Select an event',
       searchQuery: '',
       teams: [
-        { id: 1, name: 'Team 1', event: 'Evento 1', priority: '100', members: '3' },
-        { id: 2, name: 'Team 2', event: 'Evento 2', priority: '100', members: '5' },
-        { id: 3, name: 'Team 3', event: 'Evento 3', priority: '100', members: '2' },
-        { id: 4, name: 'Team 4', event: 'Evento 1', priority: '100', members: '4' },
-        { id: 5, name: 'Team 5', event: 'Evento 2', priority: '100', members: '3' },
-        { id: 6, name: 'Team 6', event: 'Evento 3', priority: '100', members: '5' },
-        { id: 7, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
-        { id: 8, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
-        { id: 9, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
-        { id: 10, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
-        { id: 11, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
-        { id: 12, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
-        { id: 13, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
-        { id: 14, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
-        { id: 15, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
-        { id: 16, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
-        { id: 17, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
-        { id: 18, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
-        { id: 19, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
-        { id: 20, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
-        { id: 21, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
-        { id: 22, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
-        { id: 23, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
-        { id: 24, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
-        { id: 25, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2' },
-        { id: 26, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4' },
-        { id: 27, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3' },
+        { id: 1, name: 'Team 1', event: 'Evento 1', priority: '100', members: '3', description: 'Description 1' },
+        { id: 2, name: 'Team 2', event: 'Evento 2', priority: '100', members: '5', description: 'Description 2' },
+        { id: 3, name: 'Team 3', event: 'Evento 3', priority: '100', members: '2', description: 'Description 3' },
+        { id: 4, name: 'Team 4', event: 'Evento 1', priority: '100', members: '4', description: 'Description 4' },
+        { id: 5, name: 'Team 5', event: 'Evento 2', priority: '100', members: '3', description: 'Description 5' },
+        { id: 6, name: 'Team 6', event: 'Evento 3', priority: '100', members: '5', description: 'Description 6' },
+        { id: 7, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 7' },
+        { id: 8, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 8' },
+        { id: 9, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 9' },
+        { id: 10, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 10' },
+        { id: 11, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 11' },
+        { id: 12, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 12' },
+        { id: 13, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 13' },
+        { id: 14, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 14' },
+        { id: 15, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 15' },
+        { id: 16, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 16' },
+        { id: 17, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 17' },
+        { id: 18, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 18' },
+        { id: 19, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 19' },
+        { id: 20, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 20' },
+        { id: 21, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 21' },
+        { id: 22, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 22' },
+        { id: 23, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 23' },
+        { id: 24, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 24' },
+        { id: 25, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 25' },
+        { id: 26, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 26' },
+        { id: 27, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 27' },
       ],
       events: [
         { id: 1, name: 'Evento 1' },
@@ -213,7 +216,7 @@ export default {
       newTeamName: '',
       newTeamEvent: '',
       newTeamPriority: '',
-      Description: '',
+      newTeamDescription: '',
       selectedFile: null,
     };
   },
@@ -277,7 +280,8 @@ export default {
         name: this.newTeamName,
         event: this.newTeamEvent,
         priority: this.newTeamPriority,
-        members: this.Description,
+        members: this.newTeamMembers,
+        description: this.newTeamDescription,
       };
       this.teams.push(newTeam);
       this.closeAddPopup(); 
@@ -296,7 +300,7 @@ export default {
 .teams {
   display: flex;
   flex-direction: column;
-  width: calc(200dvh - var(--sidebar-width));
+  width: 100%;
   background: #FFFFFF;
   height: calc(100vh - var(--header-height));
   overflow: hidden;
@@ -411,12 +415,13 @@ export default {
   width: calc(100% - 320px);
 }
 
+/* recurso */
 .right-popup-placeholder {
   width: 300px;
   margin-left: 20px;
   border-radius: 10px;
   background-color: var(--c-accent);
-  height: calc(100% - var(--header-height) - 3ch);
+  height: calc(100% - var(--header-height) - 2.55ch);
   margin-top: -70px;
 }
 
@@ -426,7 +431,8 @@ export default {
 }
 
 .popup-content {
-  padding: 20px;
+  padding: 2vh;
+  padding-top: 0;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -460,18 +466,17 @@ export default {
 .titulo {
   text-align: center;
   font-size: 1.5rem;
-  font-weight: 600;
   color: var(--c-text);
-  margin-top: 10px;
+  margin-top: 6vh;
   font-weight: bold;
 }
 
 .subtitulo {
   text-align: center;
   font-size: 1.25rem;
-  font-weight: 600;
   color: var(--c-text);
-  margin-bottom: 10px;
+  margin-top: 1.5vh;
+  margin-bottom: 1.5vh;
   font-weight: bold;
 }
 
@@ -480,7 +485,8 @@ export default {
   font-size: 1.2rem;
   color: var(--c-text);
   opacity: 0.5;
-  margin-bottom: 10px;
+  margin-bottom: 2.75vh;
+  margin-top: 1.25vh;
 }
 
 .inf {
@@ -528,32 +534,31 @@ export default {
   height: 165px;
   background-color: #000000;
   border-radius: 50%;
-  margin-bottom: 10px;
-  margin-top: 0;
+  margin-bottom: 3vh;
+  margin-top: 3vh;
 }
 
 .display {
   display: flex;
   justify-content: space-between;
-  gap: 5px;
+  gap: 1vh;
 }
 
 .descricao {
   width: 100%;
   font-size: 1rem;
-  margin-top: 10px;
+  margin-top: 4vh;
   font-weight: bold;
   color: var(--c-text);
-  margin-bottom: 5px;
+  margin-bottom: 0.5vh;
 }
 
 .direita {
   width: 100%;
   font-size: 1rem;
   color: var(--c-text);
-  margin-top: 10px;
+  margin-top: 3vh;
   font-weight: bold;
-  margin-bottom: 5px;
 }
 
 .opaco {
@@ -568,7 +573,7 @@ export default {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  gap: 40px;
+  gap: 4vh;
 }
 
 .overlay {
@@ -786,6 +791,10 @@ export default {
   width: 100%;
 }
 
+.teams table {
+  margin-bottom: 3ch;
+}
+
 @media (max-width: 768px) {
   .headerteams {
     flex-direction: column;
@@ -813,7 +822,7 @@ export default {
   }
 
   .content-container {
-    flex-direction: column;
+    padding-bottom: 16vh;
   }
 
   .table-wrapper.hidden {
