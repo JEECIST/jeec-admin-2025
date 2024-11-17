@@ -99,14 +99,15 @@ const rows = computed(() => {
             : normalizeStr(cell).toString(10).includes(normalizeStr(props.searchInput))
           ))
       })
-
+      var isEmpty = false
       if (filter == 0)
       {
-        emit ('notFound', true)
+        isEmpty = true
+        emit ('notFound', isEmpty)
         return []
       } 
       else{
-        emit ('notFound', false)
+        emit ('notFound', isEmpty)
         return filter
       }
        
