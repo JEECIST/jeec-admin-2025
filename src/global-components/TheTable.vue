@@ -57,7 +57,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['onRowSelect']);
+const emit = defineEmits(['onRowSelect', 'notFound']);
 
 const isAnySelected = ref(false);
 const whichIsSelected = ref();
@@ -92,13 +92,23 @@ const rows = computed(() => {
   if (!props.data.length) 
     return []
   else
-    return props.data.filter(row => {
+    var filter = props.data.filter(row => {
         return Object.values(row).some(
           cell => !props.searchInput || ((typeof cell === 'string')
             ? normalizeStr(cell).includes(normalizeStr(props.searchInput))
             : normalizeStr(cell).toString(10).includes(normalizeStr(props.searchInput))
           ))
       })
+
+      if (filter == 0)
+      {
+        emit ('notFound', true)
+        return []
+      } 
+      else{
+        emit ('notFound', false)
+        return filter
+      }
        
 })
 </script>
