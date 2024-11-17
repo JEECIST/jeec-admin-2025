@@ -1,6 +1,6 @@
 <template>
   <div class="scroll-wrapper">
-    <table>
+    <table v-if="rows.length != 0">
       <thead>
         <tr>
           <template v-for="(value, key) in tableHeaders">
@@ -93,12 +93,13 @@ const rows = computed(() => {
     return []
   else
     return props.data.filter(row => {
-      return Object.values(row).some(
-        cell => !props.searchInput || ((typeof cell === 'string')
-          ? normalizeStr(cell).includes(normalizeStr(props.searchInput))
-          : normalizeStr(cell).toString(10).includes(normalizeStr(props.searchInput))
-        ))
-    })
+        return Object.values(row).some(
+          cell => !props.searchInput || ((typeof cell === 'string')
+            ? normalizeStr(cell).includes(normalizeStr(props.searchInput))
+            : normalizeStr(cell).toString(10).includes(normalizeStr(props.searchInput))
+          ))
+      })
+       
 })
 </script>
 
