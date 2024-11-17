@@ -302,7 +302,6 @@ export default {
   flex-direction: column;
   width: 100%;
   background: #FFFFFF;
-  height: calc(100vh - var(--header-height));
   overflow: hidden;
   box-sizing: border-box;
   padding: 49px 3ch 3ch 3ch;
@@ -401,7 +400,6 @@ export default {
   display: flex;
   justify-content: space-between;
   flex-grow: 1;
-  height: calc(100% + var(--header-height) + 3ch);
 }
 
 .table-wrapper {
@@ -421,7 +419,6 @@ export default {
   margin-left: 20px;
   border-radius: 10px;
   background-color: var(--c-accent);
-  height: calc(100% - var(--header-height) - 2.55ch);
   margin-top: -70px;
 }
 

@@ -295,7 +295,6 @@ export default {
   flex-direction: column;
   width: calc(100vw - var(--sidebar-width));
   background: #FFFFFF;
-  height: calc(100vh - var(--header-height));
   overflow: hidden;
   box-sizing: border-box;
   padding: 3rem 3ch 3ch 3ch;
@@ -395,7 +394,6 @@ export default {
   justify-content: space-between;
   flex-grow: 1;
   flex-shrink: 1;
-  height: calc(100% + var(--header-height) + 3ch);
 }
 
 .table-wrapper {
@@ -416,7 +414,6 @@ export default {
   margin-left: 1.25rem;
   border-radius: 0.625rem;
   background-color: var(--c-accent);
-  height: calc(100% - var(--header-height) - 2.55ch);
   margin-top: -4.375rem;
 }
 
@@ -434,7 +431,7 @@ export default {
   align-items: center;
 }
 
-/*box de fundo não completa*/
+/*recurso*/
 .form {
   display: flex;
   justify-content: center;
