@@ -35,10 +35,11 @@
           :searchInput="searchQuery"
           :isSelectable="true"
           @onRowSelect="handleRowSelect"
+          @notFound="handleNosponsors"
           class="table"
         />
-        <div class="nosponsors" v-if="tableData.length == 0">No Sponsors Found</div>
       </div>
+      <div class="nosponsors" v-if=noSponsors>No Sponsors Found</div>
     </div>
 
     <div v-if="selectedRow" class="sponsor-card">
@@ -122,6 +123,7 @@ const headers = {
 };
 
 const tableButtons = '';
+const noSponsors = ref(false);
 
 // Search query for filtering the rows
 const searchQuery = ref('');
@@ -130,6 +132,11 @@ const selectedRow = ref(null);
 // Event handler for row selection
 function handleRowSelect(row) {
   selectedRow.value = row;
+}
+
+function handleNosponsors(isEmpty){
+  console.log('No sponsors found', isEmpty);
+  noSponsors.value = isEmpty;
 }
 
 function unselectRow() {
@@ -302,13 +309,16 @@ const eventselected = ref('');
 }
 
 .nosponsors{
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 0.6em;
+  font-size: 1em;
   color: var(--c-tf);
   background-color: var(--c-accent);
-  font-weight: 500; 
+  font-weight: 600; 
 }
 
 .header {

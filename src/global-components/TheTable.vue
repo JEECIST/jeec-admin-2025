@@ -107,6 +107,7 @@ const rows = computed(() => {
         return []
       } 
       else{
+        isEmpty = false
         emit ('notFound', isEmpty)
         return filter
       }
