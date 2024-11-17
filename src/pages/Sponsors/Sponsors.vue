@@ -171,7 +171,7 @@ const eventselected = ref('');
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  padding: 14px 20px 20px 20px;
+  padding: 34px 40px 40px 40px;
   gap: 15px;
 }
 
