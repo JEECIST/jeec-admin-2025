@@ -40,8 +40,8 @@
               <button class="closeX" @click="closePopup">&times;</button>
               <div class="popup-content">
                 <div class="fotobola"></div>
-                <h2 class="subtitulo">{{ selectedMember.userRole }}</h2>
-                <p class="sub-subtitulo">Members</p>
+                <h2 class="subtitulo">{{ selectedMember.name }}</h2>
+                <p class="sub-subtitulo">{{ selectedMember.userRole }}</p>
                 <div class="display">
                   <button class="edit" @click="editButton">
                     <img src="/home/code/jeec-admin-2025/src/assets/pencil.svg" alt="Edit" />
@@ -216,7 +216,7 @@ export default {
   computed: {
     filteredMembers() {
       return this.members.filter(member => 
-        member.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        member.username.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     },
   },
@@ -293,12 +293,12 @@ export default {
 .teams {
   display: flex;
   flex-direction: column;
-  width: calc(200dvh - var(--sidebar-width));
+  width: calc(100vw - var(--sidebar-width));
   background: #FFFFFF;
-  height: calc(100dvh - var(--header-height));
+  height: calc(100vh - var(--header-height));
   overflow: hidden;
   box-sizing: border-box;
-  padding: 49px 3ch 3ch 3ch;
+  padding: 3rem 3ch 3ch 3ch;
 }
 
 .wrapper {
@@ -322,43 +322,43 @@ export default {
 .headerteams {
   display: flex;
   justify-content: space-between; 
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
   transition: width 0.3s ease;
   gap: 1%;
 }
 
 .headerteams-shrink {
-  width: calc(100% - 320px); 
+  width: calc(100% - 20rem); 
 }
 
 .searchteam {
   display: flex;
   position: relative;
   width: 100%;
-  height: 49px;
+  height: 3rem;
   background-color: #EBF6FF;
-  border-radius: 10px;
+  border-radius: 0.625rem;
 }
 
 .searchicon {
   position: absolute;
   top: 50%;
-  left: 20px;
+  left: 1.25rem;
   transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
   color: #8A8A8A;
 }
 
 .searchbar {
   width: 100%;
   height: 100%;
-  padding-left: 40px;
+  padding-left: 2.5rem;
   border: none;
   background-color: #EBF6FF;
-  border-radius: 10px;
+  border-radius: 0.625rem;
   outline: none;
-  padding-right: 5px;
+  padding-right: 0.3125rem;
 }
 
 .evento {
@@ -368,22 +368,22 @@ export default {
 
 .evento select {
   width: 100%; 
-  height: 49px; 
+  height: 3rem; 
   border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
   outline: none;
   padding: 1.5rem;
   padding-left: 1.5rem;
 }
 
 .add-team {
-  height: 49px;
+  height: 3rem;
   font-size: 1rem;
   font-weight: 600;
   border: none;
   background-color: var(--c-select);
-  border-radius: 10px;
+  border-radius: 0.625rem;
   color: white;
   padding: 0.5ch 3ch;
   cursor: pointer;
@@ -407,28 +407,28 @@ export default {
 
 .table-wrapper-shrink {
   flex-grow: 0.7;
-  width: calc(100% - 320px);
+  width: calc(100% - 20rem);
 }
 
 /* recurso */
 .right-popup-placeholder {
-  width: 300px;
-  margin-left: 20px;
-  border-radius: 10px;
+  width: 18.75rem;
+  margin-left: 1.25rem;
+  border-radius: 0.625rem;
   background-color: var(--c-accent);
   height: calc(100% - var(--header-height) - 2.55ch);
-  margin-top: -70px;
+  margin-top: -4.375rem;
 }
 
 .right-popup {
-  padding: 20px;
+  padding: 1.25rem;
   position: relative;
 }
 
 .popup-content {
   padding: 2vh;
   padding-top: 1vh;
-  border-radius: 10px;
+  border-radius: 0.625rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -440,16 +440,15 @@ export default {
   justify-content: center;
   align-items: flex-start;
   background-color: var(--c-accent);
-  height: calc(100% + 49px);
+  height: calc(100% + 500rem);
   overflow: hidden;
   position: relative;
-  border-radius: 10px;
+  border-radius: 0.625rem;
   flex-grow: 1;
 }
 
 .no-teams {
   position: absolute;
-  height: 49px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -489,7 +488,7 @@ export default {
   font-size: 1rem;
   color: var(--c-text);
   display: space-between;
-  margin-top: 10px;
+  margin-top: 0.625rem;
   opacity: 0.5;
 }
 
@@ -503,8 +502,8 @@ export default {
 
 .closeX {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 0.625rem;
+  right: 0.625rem;
   background: none;
   border: none;
   font-size: 1.5rem;
@@ -513,10 +512,10 @@ export default {
 }
 
 .edit {
-  width: 36px;
-  height: 36px;
+  width: 2.25rem;
+  height: 2.25rem;
   background: #FFFFFF;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -525,8 +524,8 @@ export default {
 }
 
 .fotobola {
-  width: 165px;
-  height: 165px;
+  width: 10.3125rem;
+  height: 10.3125rem;
   background-color: #000000;
   border-radius: 50%;
   margin-bottom: 3vh;
@@ -560,7 +559,7 @@ export default {
   width: 100%;
   font-size: 0.8rem;
   color: var(--c-text);
-  margin-top: 5px;
+  margin-top: 0.3125rem;
   opacity: 0.5;
 }
 
@@ -568,7 +567,7 @@ export default {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  gap: 40px;
+  gap: 2.5rem;
 }
 
 .overlay {
@@ -587,7 +586,7 @@ export default {
 .edit-popup {
   background: white;
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -601,7 +600,7 @@ export default {
 }
 
 .edit-popup-content h2 {
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .edit-popup-content form {
@@ -610,26 +609,26 @@ export default {
 }
 
 .edit-popup-content form label {
-  margin-bottom: 5px;
+  margin-bottom: 0.3125rem;
   width: 100%;
 }
 
 .edit-popup-content form input {
-  margin-bottom: 10px;
-  padding: 5px;
+  margin-bottom: 0.625rem;
+  padding: 0.3125rem;
   width: 100%;
 }
 
 .edit-popup-content form button {
-  margin-top: 10px;
+  margin-top: 0.625rem;
 }
 
 .editpopup {
   font-size: 1rem;
   font-weight: bold;
   color: var(--c-text);
-  margin-top: 10px;
-  margin-bottom: 5px;
+  margin-top: 0.625rem;
+  margin-bottom: 0.3125rem;
 }
 
 .scrollbar {
@@ -648,15 +647,14 @@ export default {
 .Add-name, .Add-event, .Add-priority {
   display: flex;
   flex-direction: column;
-  margin-top: 15px;
+  margin-top: 0.9375rem;
 }
 
 .Add-name input, .Add-priority input {
-  width: 100%;
-  height: 40px;
+  height: 2.5rem;
   border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
   outline: none;
 }
 
@@ -666,10 +664,10 @@ export default {
 
 .Add-event select {
   width: 100%;
-  height: 40px;
+  height: 2.5rem;
   border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
   outline: none;
   margin-bottom: 0;
 }
@@ -678,15 +676,15 @@ export default {
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-top: 15px;
+  margin-top: 0.9375rem;
 }
 
 .Description input {
   width: 100%;
-  height: 70px;
+  height: 4.375rem;
   border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
   outline: none;
   padding: 1.5rem;
 }
@@ -701,8 +699,8 @@ export default {
   background-color: var(--c-select);
   color: white;
   border: none;
-  border-radius: 10px;
-  height: 49px;
+  border-radius: 0.625rem;
+  height: 3rem;
   font-size: 1rem;
   font-weight: 400;
   cursor: pointer;
@@ -717,8 +715,8 @@ export default {
   width: 15vh;
   height: 15vh;
   background-color: var(--c-accent);
-  border-radius: 5px;
-  margin: 10px 0 10px 0;
+  border-radius: 0.3125rem;
+  margin: 0.625rem 0 0.625rem 0;
 }
 
 .centrado {
@@ -753,9 +751,9 @@ export default {
 .left-add {
   background-color: var(--c-select);
   color: white;
-  border-radius: 10px;
+  border-radius: 0.625rem;
   border: none;
-  height: 49px;
+  height: 3rem;
   font-size: 1rem;
   font-weight: 600;
   padding: 0.5ch 3ch;
@@ -768,9 +766,9 @@ export default {
 .right-add {
   background-color: #152259;
   color: white;
-  border-radius: 10px;
+  border-radius: 0.625rem;
   border: none;
-  height: 49px;
+  height: 3rem;
   font-size: 1rem;
   font-weight: 600;
   padding: 0.5ch 3ch;
@@ -787,59 +785,68 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .headerteams {
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-  }
 
-  .searchteam {
-    width: 100%;
-    margin-bottom: 10px;
-  }
+.headerteams {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
 
-  .evento {
-    width: 100%;
-    margin-bottom: 10px;
-  }
+.searchteam {
+  width: 100%;
+  margin-bottom: 10px;
+}
 
-  .add-team {
-    width: 100%;
-  }
+.evento {
+  width: 100%;
+  margin-bottom: 1vh;
+}
 
-  .edit-popup {
-    width: 90%;
-    height: 65%;
-  }
+.add-team {
+  width: 100%;
+}
 
-  .content-container {
-    flex-direction: column;
-  }
+.edit-popup {
+  width: 90%;
+  height: 65%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: auto;
+}
 
-  .table-wrapper.hidden {
-    display: none; 
-  }
+.table-wrapper {
+  padding-bottom: 5rem;
+}
 
-  .right-popup-placeholder {
-    width: 100%;
-    margin-left: 0;
-    border-radius: 10px;
-    height: auto;
-    margin-top: 0;
-    bottom: 0;
-    right: 0;
-  }
+.table-wrapper.hidden {
+  display: none; 
+}
 
-  .right-popup {
-    width: 100%;
-    height: auto; 
-    padding: 10px;
-    display: block;
-  }
+.right-popup-placeholder {
+  width: 100%;
+  margin-left: 0;
+  height: fit-content;
+  margin-top: 0;
+}
+.right-popup {
+  width: 90%;
+  position: fixed;
+  top: 8.5rem;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 15px;
+  display: block;
+  overflow: auto;
+  background-color: var(--c-accent);
+  border-radius: 10px;
+}
 
-  .popup-content {
-    width: 100%;
-    height: auto;
-  }
+.popup-content {
+  width: 100%;
+  height: auto;
+}
 }
 </style>

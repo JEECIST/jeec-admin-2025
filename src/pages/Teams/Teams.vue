@@ -42,11 +42,11 @@
 
           <div v-if="showPopup" class="right-popup-placeholder">
             <div class="right-popup">
-              <h2 class="titulo">{{ selectedTeam.name }}</h2>
+              <h2 class="titulo">JEEC 24</h2>
               <button class="closeX" @click="closePopup">&times;</button>
               <div class="popup-content">
                 <div class="fotobola"></div>
-                <h2 class="subtitulo">Webdev</h2>
+                <h2 class="subtitulo">{{ selectedTeam.name }}</h2>
                 <p class="sub-subtitulo">Team</p>
                 <div class="display">
                   <button class="edit" @click="editButton">
@@ -445,7 +445,7 @@ export default {
   justify-content: center;
   align-items: flex-start;
   background-color: var(--c-accent);
-  height: calc(100% + 49px);
+  height: calc(100% + 500rem);
   overflow: hidden;
   position: relative;
   border-radius: 10px;
@@ -796,59 +796,68 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .headerteams {
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-  }
 
-  .searchteam {
-    width: 100%;
-    margin-bottom: 10px;
-  }
+.headerteams {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
 
-  .evento {
-    width: 100%;
-    margin-bottom: 10px;
-  }
+.searchteam {
+  width: 100%;
+  margin-bottom: 10px;
+}
 
-  .add-team {
-    width: 100%;
-  }
+.evento {
+  width: 100%;
+  margin-bottom: 1vh;
+}
 
-  .edit-popup {
-    width: 90%;
-    height: 65%;
-  }
+.add-team {
+  width: 100%;
+}
 
-  .content-container {
-    padding-bottom: 16vh;
-  }
+.edit-popup {
+  width: 90%;
+  height: 65%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: auto;
+}
 
-  .table-wrapper.hidden {
-    display: none; 
-  }
+.table-wrapper {
+  padding-bottom: calc(5rem + 1vh);
+}
 
-  .right-popup-placeholder {
-    width: 100%;
-    margin-left: 0;
-    border-radius: 10px;
-    height: auto;
-    margin-top: 0;
-    bottom: 0;
-    right: 0;
-  }
+.table-wrapper.hidden {
+  display: none; 
+}
 
-  .right-popup {
-    width: 100%;
-    height: auto; 
-    padding: 10px;
-    display: block;
-  }
+.right-popup-placeholder {
+  width: 100%;
+  margin-left: 0;
+  height: fit-content;
+  margin-top: 0;
+}
+.right-popup {
+  width: 90%;
+  position: fixed;
+  top: 8.5rem;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 15px;
+  display: block;
+  overflow: auto;
+  background-color: var(--c-accent);
+  border-radius: 10px;
+}
 
-  .popup-content {
-    width: 100%;
-    height: auto;
-  }
+.popup-content {
+  width: 100%;
+  height: auto;
+}
 }
 </style>
