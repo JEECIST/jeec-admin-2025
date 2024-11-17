@@ -208,6 +208,8 @@ export default {
         { id: 2, name: 'Evento 2' },
         { id: 3, name: 'Evento 3' },
       ],
+      searchQuery: '',
+      selectedEvent: '',
       showPopup: false,
       showEditPopup: false,
       showAddPopup: false,
@@ -222,9 +224,11 @@ export default {
   },
   computed: {
     filteredTeams() {
-      return this.teams.filter(team => 
-        team.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+      return this.teams.filter(team => {
+        const matchesSearchQuery = team.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+        const matchesSelectedEvent = this.selectedEvent ? team.event.toLowerCase() === this.selectedEvent.toLowerCase() : true;
+        return matchesSearchQuery && matchesSelectedEvent;
+      });
     },
   },
   methods: {
@@ -250,23 +254,9 @@ export default {
       const index = this.teams.findIndex(team => team.id === this.editTeam.id);
       if (index !== -1) {
         this.teams.splice(index, 1, this.editTeam); 
-        this.selectedTeam = { ...this.editTeam }; 
-        this.showEditPopup = false;
-        // Fechar o popup da direita se estiver no telemóvel
-        if (window.innerWidth <= 768) {
-          this.showPopup = false;
-        }
+        this.selectedTeam = { ...this.editTeam };
       }
-    },
-    closeEditPopup() {
       this.showEditPopup = false;
-    },
-    deleteTeam() {
-      this.teams = this.teams.filter(team => team.id !== this.selectedTeam.id);
-      this.closePopup();
-    },
-    TeamMembers() {
-      this.$router.push({ name: 'teams-members'}); 
     },
     openAddPopup() {
       this.showAddPopup = true;
@@ -276,21 +266,29 @@ export default {
     },
     saveNewTeam() {
       const newTeam = {
-        id: this.teams.length + 1,
+        id: Date.now(),
         name: this.newTeamName,
         event: this.newTeamEvent,
         priority: this.newTeamPriority,
-        members: this.newTeamMembers,
         description: this.newTeamDescription,
+        members: 0,
       };
       this.teams.push(newTeam);
-      this.closeAddPopup(); 
+      this.showAddPopup = false;
     },
     handleFileChange(event) {
       this.selectedFile = event.target.files[0];
     },
     triggerFileInput() {
       this.$refs.fileInput.click();
+    },
+    deleteTeam() {
+      const index = this.teams.findIndex(team => team.id === this.selectedTeam.id);
+      if (index !== -1) {
+        this.teams.splice(index, 1);
+        this.selectedTeam = {};
+        this.showPopup = false;
+      }
     },
   },
 };
