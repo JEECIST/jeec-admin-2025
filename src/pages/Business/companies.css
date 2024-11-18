@@ -117,8 +117,25 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
   }
+
+  @media (max-width: 1000px) {
+    .right-popup-placeholder {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 350px;
+        border-radius: 20px;
+        background-color: #eef4fb;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transform: translate(-50%, -50%);  /* Centraliza a div */
+        z-index: 100001;
+    }
+  }
+
   
   .right-popup-placeholder .title {
     font-size: 1.2rem;
@@ -191,6 +208,10 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+  }
+
+  .right-popup-placeholder .cardInfo .cardInfoMember {
+    flex: 1;
   }
   
   .right-popup-placeholder .cardInfo .line {

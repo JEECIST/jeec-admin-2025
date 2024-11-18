@@ -20,7 +20,7 @@
         :data="companies.filter(companies => companies.event == selectedEvent)"
         :tableHeaders="tablePref"
         :searchInput="message"
-        :buttons="tableButtons"
+        
         @onRowSelect="selectCallback"
       ></TheTable>
     </div>
@@ -34,7 +34,7 @@
       <p class="cardUsername">{{ selectedRow.name }}</p>
       <p class="cardUseless">Company</p>
       <div class="cardActions">
-        <button class="edit-button">
+        <button class="edit-button" @click="openEdit()">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <rect width="24" height="24" fill="url(#pattern0_118_1203)"/>
             <defs>
@@ -45,7 +45,7 @@
             </defs>
           </svg>
         </button>
-        <button class="web-button">
+        <button class="web-button" @click="irParaSite(selectedRow.web)">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <rect width="24" height="24" fill="url(#pattern0_125_1519)"/>
             <defs>
@@ -121,12 +121,16 @@
       <div class="btn-cancel" @click="selectCallback(selectedRow.value)"> X </div>
     </div>
   </div>
+  
 
   <!-- Modal Popup -->
-  <div v-if="showAddCompanyModal" class="modal-overlay">
+  <div v-if="showAddCompanyModal || showEditCompanyModal" class="modal-overlay">
     <div class="modal">
-      <div class="modal-header">
+      <div v-if="showAddCompanyModal" class="modal-header">
         <h2>Add Company</h2>
+      </div>
+      <div v-if="showEditCompanyModal" class="modal-header">
+        <h2>Edit Company</h2>
       </div>
       <form class="popup_form" >
 
@@ -152,7 +156,7 @@
             <input v-model="newCompany.email" id="email" required />
           </div>
           <div class="formEle" id="formWeb">
-            <label for="nawebme">Website</label>
+            <label for="web">Website</label>
             <input v-model="newCompany.web" id="web" required />
           </div>
         </div>
@@ -223,7 +227,8 @@
           </div>
         </div>
       </form>
-      <button type="submit" class="btn-primary" @click="addCompany()">Add</button>
+      <button v-if="showAddCompanyModal" type="submit" class="btn-primary" @click="addCompany()">Add</button>
+      <button v-if="showEditCompanyModal" type="submit" class="btn-primary" @click="editCompany()">Edit</button>
       <div class="btn-cancel" @click="closeModal()"> X </div>
     </div>
   </div>
@@ -237,7 +242,8 @@ import { companies as companiesData, events as eventsData, days as daysData, tie
 
 const message = ref('');
 const showAddCompanyModal = ref(false);
-const newCompany = ref({ name: '', event: '', email: '', website: '', username: '', cv: '', tier: '', jeec: '', img: '', days: '' });
+const showEditCompanyModal = ref(false);
+const newCompany = ref({ id: '',name: '', tier: '', username: '', jeec: '', web: '', email: '', event: '', cv: '', password: '', img: '', days: '' });
 const selectedRow = ref(null);
 const selectedEvent = ref('JEEC25');
 
@@ -258,6 +264,10 @@ const tablePref = {
   jeec: "JEEC Responsible"
 };
 
+function irParaSite(site) {
+  window.open(site, '_blank');
+}
+
 function selectCallback(row) {
   if (selectedRow.value == row) {
     selectedRow.value = null;
@@ -267,7 +277,41 @@ function selectCallback(row) {
 }
 
 function addCompany() {
-  companies.value.push({ name: selectedRow.value.name, event: selectedRow.value.event, email: selectedRow.value.email, website: selectedRow.value.website, username: selectedRow.value.username, cv: selectedRow.value.cv, tier: selectedRow.value.tier, jeec: selectedRow.value.jeec, img: selectedRow.value.img, days: selectedRow.value.days });
+  console.log(newCompany.value);
+  companies.value.push({ id:"1", name: newCompany.value.name, tier: newCompany.value.tier, username: newCompany.value.username, jeec: newCompany.value.jeec, web: newCompany.value.web, email: newCompany.value.email, event: newCompany.value.event, cv: newCompany.value.cv, password: newCompany.value.password, img: newCompany.value.img, days: newCompany.value.days });
+  closeModal();
+}
+
+function openEdit() {
+  newCompany.value.id = selectedRow.value.id;
+  newCompany.value.name = selectedRow.value.name;
+  newCompany.value.tier = selectedRow.value.tier;
+  newCompany.value.username = selectedRow.value.username;
+  newCompany.value.jeec = selectedRow.value.jeec;
+  newCompany.value.web = selectedRow.value.web;
+  newCompany.value.email = selectedRow.value.email;
+  newCompany.value.event = selectedRow.value.event;
+  newCompany.value.cv = selectedRow.value.cv;
+  newCompany.value.password = selectedRow.value.password;
+  newCompany.value.img = selectedRow.value.img;
+  newCompany.value.days = selectedRow.value.days;
+  showEditCompanyModal.value = true;
+}
+
+function editCompany() {
+  selectedRow.value.id = newCompany.value.id;
+  selectedRow.value.name = newCompany.value.name;
+  selectedRow.value.tier = newCompany.value.tier;
+  selectedRow.value.username = newCompany.value.username;
+  selectedRow.value.jeec = newCompany.value.jeec;
+  selectedRow.value.web = newCompany.value.web;
+  selectedRow.value.email = newCompany.value.email;
+  selectedRow.value.event = newCompany.value.event;
+  selectedRow.value.cv = newCompany.value.cv;
+  selectedRow.value.password = newCompany.value.password;
+  selectedRow.value.img = newCompany.value.img;
+  selectedRow.value.days = newCompany.value.days;
+  console.log("botao edit");
   closeModal();
 }
 
@@ -277,7 +321,8 @@ function removeCompany(row) {
 
 function closeModal() {
   showAddCompanyModal.value = false;
-  newCompany.value = { name: '', event: '', email: '', website: '', username: '', cv: '', tier: '', jeec: '', img: '', days: '' };
+  showEditCompanyModal.value = false;
+  newCompany.value = { name: '', event: '', email: '', web: '', username: '', cv: '', tier: '', jeec: '', img: '', days: '' };
 }
 
 </script>
