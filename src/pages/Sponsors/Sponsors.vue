@@ -1,6 +1,7 @@
 <template>
+  <div class="backdrop" v-if="cardDisplaying"></div>
   <div class="sponsors-container">
-    <div class="sponsors-table">
+    <div class="sponsors-table" :class="{ 'hide-on-mobile': cardDisplaying }">
       <div class="header">
         <div class="search-container">
           <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -124,6 +125,7 @@ const headers = {
 
 const tableButtons = '';
 const noSponsors = ref(false);
+const cardDisplaying = ref(false);
 
 // Search query for filtering the rows
 const searchQuery = ref('');
@@ -131,6 +133,7 @@ const selectedRow = ref(null);
 
 // Event handler for row selection
 function handleRowSelect(row) {
+  cardDisplaying.value = true;
   selectedRow.value = row;
 }
 
@@ -140,6 +143,7 @@ function handleNosponsors(isEmpty){
 }
 
 function unselectRow() {
+  cardDisplaying.value = false;
   selectedRow.value = null;
 }
 
@@ -466,6 +470,21 @@ const eventselected = ref('');
 }
 
 @media (max-width: 700px) {
+
+  .hide-on-mobile {
+    display: none;
+    background: rgba(0,0,0,0.5);
+  }
+
+  .backdrop{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+  }
+
   .container {
     flex-direction: column; /* Stack the elements vertically */
   }
