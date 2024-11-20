@@ -13,11 +13,10 @@ const datab = ref([{
   company: null,
   country: null,
 }])
-const datab = ref([])
 
 // const api = import.meta.env.VUE_APP_JEEC_BRAIN_URL
 
-async function fetchSpeakers() {
+// async function fetchSpeakers() {
   // await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',
   //      {auth: {
   //         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
@@ -27,16 +26,16 @@ async function fetchSpeakers() {
   //         datab.value = response.data.speakers
   //         console.log(datab.value)
   //       })
-  const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',
-    {
-      auth: {
-        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      }
-    });
-  datab.value = response.data.speakers || [];
-  console.log(datab.value);
-}
+//   const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',
+//     {
+//       auth: {
+//         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+//         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+//       }
+//     });
+//   datab.value = response.data.speakers || [];
+//   console.log(datab.value);
+// }
 
 const fetchData = () => {
     axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',{auth: {
