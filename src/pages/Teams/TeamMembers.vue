@@ -304,7 +304,7 @@ export default {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: 81vh;
 }
 
 .header-wrapper {
@@ -394,6 +394,7 @@ export default {
   justify-content: space-between;
   flex-grow: 1;
   flex-shrink: 1;
+  height: 94.5vh;
 }
 
 .table-wrapper {
@@ -410,6 +411,7 @@ export default {
 
 /* recurso */
 .right-popup-placeholder {
+  height: calc(84vh - 3ch);
   width: 18.75rem;
   margin-left: 1.25rem;
   border-radius: 0.625rem;
