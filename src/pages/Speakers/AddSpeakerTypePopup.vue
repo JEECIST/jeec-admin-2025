@@ -24,7 +24,10 @@ function isMobile() {
             <div class="wrapper-wrapper">
                 <div class="popup-wrapper">
                     <div class="ihatedivs">
-                        <h1>Add Speaker Type</h1>
+                        <div class="header">
+                            <h1 class="not-mobile-h1">Add Speaker Type</h1>
+                            <button class="close" @click.stop="emit('modal-close')">X</button>
+                        </div>
                         <div class="flex-1">
                             <div class="flex-1-row-4">
                                 <div class="labels" id="name">
@@ -72,7 +75,6 @@ function isMobile() {
                     </div>
                     <div class="btns">
                         <button class="add" @click.stop="emit('modal-close')">Add</button>
-                        <button class="add" @click.stop="emit('modal-close')">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -83,7 +85,10 @@ function isMobile() {
             <div class="mobile-wrapper-wrapper">
                 <div class="popup-wrapper">
                     <div class="ihatedivs">
-                        <h1>Add Speaker Type</h1>
+                        <div class="header">
+                            <h1 class="mobile-h1">Add Speaker Type</h1>
+                            <button class="mobile-close" @click.stop="emit('modal-close')">X</button>
+                        </div>
                         <div class="flex-1">
                             <div class="mobile-flex-1-row-4">
                                 <div class="labels" id="name">
@@ -131,7 +136,6 @@ function isMobile() {
                     </div>
                     <div class="mobile-btns">
                         <button class="mobile-add" @click.stop="emit('modal-close')">Add</button>
-                        <button class="mobile-add" @click.stop="emit('modal-close')">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -155,11 +159,13 @@ function isMobile() {
     justify-content: center;
     background-color: white;
     width: 90.5vw;
-    height: 80%;
+    height: 70%;
     position: absolute;
     top: 50%;
     left: 50%;
     translate: -50% -50%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .wrapper-wrapper {
@@ -176,18 +182,18 @@ function isMobile() {
     overflow-x: hidden;
 }
 
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .popup-wrapper {
     position: absolute;
     width: 100%;
     height: 100%;
     left: 0;
     top: 0;
-}
-
-h1 {
-    margin-bottom: 3%;
-    margin-top: 6%;
-    color: #515151;
 }
 
 .flex-1,
@@ -198,6 +204,9 @@ h1 {
     margin-left: 5%;
     margin-right: 15%;
     gap: 1.5vh;
+    margin-bottom: 3%;
+    margin-top: 6%;
+    color: #515151;
 }
 
 .mobile-flex-1-row-4 {
@@ -284,25 +293,32 @@ radio {
     color: white;
     border-radius: 5px;
     border: none;
-    margin-right: 3vw;
     margin-top: 2%;
     margin-bottom: 2%;
-    display: flex;
     width: 8.4vw;
     height: 3.5vh;
-    align-items: center;
-    justify-content: center;
     gap: 20vh;
     cursor: pointer;
+}
+
+.close {
+    background-color: #152259;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    width: 2vw;
+    height: 3.5vh;
+    margin-bottom: 3%;
+    margin-top: 2%;
+    margin-right: 2%;
 }
 
 .mobile-btns {
     width: 80vw;
     display: flex;
-    margin-top: 4vh;
     justify-content: right;
     gap: 4%;
-    margin-left: 5%;
 }
 
 .mobile-add {
@@ -310,9 +326,9 @@ radio {
     color: white;
     border-radius: 5px;
     border: none;
-    margin-right: 3vw;
     margin-top: 2%;
-    margin-bottom: 2%;
+    margin-bottom: 4%;
+    margin-right: -11%;
     display: flex;
     width: 16vw;
     height: 3.5vh;
@@ -322,12 +338,24 @@ radio {
     cursor: pointer;
 }
 
+.mobile-close {
+    background-color: #152259;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    width: 9.5vw;
+    height: 3.5vh;
+    margin-top: 4%;
+    margin-right: 2%;
+}
+
 .btns {
-    width: 20vw;
     display: flex;
-    margin-left: 39vw;
+    margin-right: 8%;
     margin-top: 8vh;
-    justify-content: left;
+    justify-content: right;
     gap: 0.1%;
 }
+
 </style>

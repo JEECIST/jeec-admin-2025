@@ -2,9 +2,9 @@
   <div class="backdrop">
     <div class="tier-pop-up">
       <div class="header">
-        <h1>Add Sponsor</h1>
+        <h1>Edit Sponsor Tier</h1>
         <button @click="closePopup" class="close-button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"  fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -16,50 +16,46 @@
             <label for="name">Name</label>
             <input type="text" v-model="name"/>
           </div>
-          <div class="event-filter">
-            <label for="event">Event</label>
-            <select class="selection-box" v-model="eventselected">
-              <option value="all">All</option>
-              <option value="JEEC 23/24">JEEC 23/24</option>
-              <option value="JEEC 24/25">JEEC 24/25</option>
-            </select>   
-          </div>
-        </div>
-        <div class="form-line">
-          <div class="inputdescription">
-          <label for="description">Description</label>
-          <textarea class="description" v-model="description"></textarea>
+          <div class="inputname">
+            <label for="Priority">Priority</label>
+            <input type="text" v-model="priority"/>
           </div>
         </div>
         <div class="form-columns">
-          <div class="logo">
-            
-            <div class="blue-square" v-if="logo">
-              <!-- Display the selected image -->
-              <img :src="logo" alt="Logo" class="logo-image" />
-            </div>
-            
-            <div class="blue-square" v-else>
-              <!-- Display this text when no logo is selected -->
-              <p>No logo selected yet</p>
-            </div>
-            <!-- Hidden file input -->
-            <label for="logo-upload" class="custom-logo-label">Add new Logo</label>
-            <input id="logo-upload" type="file" @change="onLogoSelected" class="button-add-logo" accept="image/*" />
+          
+          <div class="second-column">
+              <div class="radio-label">
+                <label for="show">Included Meal</label>
+                <div class="radio">
+                  <input type="radio" id="yes" name="show" value="Yes"/>
+                  <label for="yes">Yes</label>
+
+                  <input type="radio" id="no" name="show" value="No"/>
+                  <label for="no">No</label>
+                </div>
+              </div>
+              <div class="radio-label">
+                <label for="show">Logo in Canvas</label>
+                <div class="radio">
+                  <input type="radio" id="yes" name="show" value="Yes"/>
+                  <label for="yes">Yes</label>
+
+                  <input type="radio" id="no" name="show" value="No"/>
+                  <label for="no">No</label>
+                </div>
+              </div>
+              <div class="radio-label">
+                <label for="show">Teaser</label>
+                <div class="radio">
+                  <input type="radio" id="yes" name="show" value="Yes"/>
+                  <label for="yes">Yes</label>
+
+                  <input type="radio" id="no" name="show" value="No"/>
+                  <label for="no">No</label>
+                </div>
+              </div>
           </div>
           <div class="second-column">
-            <div class="form-line">
-              <div class="inputjeec">
-                <label for="jeecresponsible">JEEC Responsible</label>
-                <select class="selection-box-jeec">
-                  <option value="all">All</option>
-                  <option value="Maria">Maria</option>
-                  <option value="Francisca">Francisca</option>
-                </select>
-              </div>
-            </div>
-          
-            <div class="form-line">
               <div class="radio-label">
                 <label for="show">Show in Website</label>
                 <div class="radio">
@@ -70,22 +66,53 @@
                   <label for="no">No</label>
                 </div>
               </div>
-            
+              <div class="radio-label">
+                <label for="show">Logo in posters</label>
+                <div class="radio">
+                  <input type="radio" id="yes" name="show" value="Yes"/>
+                  <label for="yes">Yes</label>
 
-              <div class="inputtier">
-                <label for="Tier">Tier</label>
-                <select class="selection-box-tier">
-                  <option value="Gold">Gold</option>
-                  <option value="Bronze">Bronze</option>
-                  <option value="Sliver">Silver</option>
-                </select>
+                  <input type="radio" id="no" name="show" value="No"/>
+                  <label for="no">No</label>
+                </div>
               </div>
-            </div>
+              <div class="radio-label">
+                <label for="show">Exclusive Posts</label>
+                <div class="radio">
+                  <input type="radio" id="yes" name="show" value="Yes"/>
+                  <label for="yes">Yes</label>
+
+                  <input type="radio" id="no" name="show" value="No"/>
+                  <label for="no">No</label>
+                </div>
+              </div>
+          </div>
+          <div class="second-column">
+              <div class="radio-label">
+                <label for="show">Social Media</label>
+                <div class="radio">
+                  <input type="radio" id="yes" name="show" value="Yes"/>
+                  <label for="yes">Yes</label>
+
+                  <input type="radio" id="no" name="show" value="No"/>
+                  <label for="no">No</label>
+                </div>
+              </div>
+              <div class="radio-label">
+                <label for="show">Exclusive Video</label>
+                <div class="radio">
+                  <input type="radio" id="yes" name="show" value="Yes"/>
+                  <label for="yes">Yes</label>
+
+                  <input type="radio" id="no" name="show" value="No"/>
+                  <label for="no">No</label>
+                </div>
+              </div>
           </div>
             
         </div>
+        <button class="button-add-sponsor">Save</button>
       </form>
-      <button class="button-add-sponsor">Add</button>
     </div>
   </div>
   
@@ -100,6 +127,7 @@ emit('close');
 
 const props = defineProps({
   foo: String
+
 })
 </script>
 
@@ -118,19 +146,19 @@ const props = defineProps({
 .tier-pop-up{
   display: flex;
   flex-direction: column;
-  width: 70vw;
-  max-width: 800px;
+  max-width: 73%;
   overflow-y: auto;
-  padding: 30px 30px 30px 30px;
-  height: 90vh;
-  max-height: 600px;
-  min-height: 520px;
+  padding: 4vw;
+  min-height: 640px;
+  max-height: 80vh;
   margin: 3vh auto;
+  border-radius: 3vw;
   background-color: #ffff;
   font-size: 0.9em;
   color: var(--text-color);
   font-family: var(--font-family);
   z-index: 3;
+  gap:3vh;
 }
 
 .header{
@@ -138,8 +166,6 @@ const props = defineProps({
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  width: 100%;
 }
 
 
@@ -159,11 +185,9 @@ const props = defineProps({
 .form{
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: 30px;
   height: 100%;
-  width: 100%;
-  padding-right: 26px;
 }
 
 .form-line{
@@ -183,45 +207,48 @@ const props = defineProps({
   align-items: center;
   font-size: 0.7em;
   gap: 10px;
-  width: 20vw;
+  width: fit-content;
+  padding-left: 10px;
 }
 
 .radio-label{
   display: flex;
   flex-direction: column;
-  gap:1vh;
+  gap:10px;
 }
 
 input[type="radio"] {
-  /* Adjust size directly using viewport width without calc */
-  transform: scale(1 + 0.02 * (2vh)); /* Adjust size based on viewport width */
-  margin: 1vw; /* Margin based on viewport width */
+    /* Adjust size directly using viewport width without calc */
+    transform: scale(1 + 0.02 * (2vh)); /* Adjust size based on viewport width */
+    margin: 5px; /* Margin based on viewport width */
 }
 
 .form-columns{
   min-height: 200px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-content: center;
   flex-direction: row;
   flex-wrap: wrap;
   width:100%;
-  gap: 30px;
+  gap: 20px;
 }
 
 .second-column{
   display:flex;
   flex-direction: column;
+  flex-wrap: wrap;
   justify-content: flex-start;
-  gap: 20px;
   flex-grow: 1;
+  gap: 20px;
 }
 
 .inputname{
+  min-height: 60px;
   display: flex;
   flex-direction: column;
   flex-grow: 3;
-  width: 20vw;
+  max-width: 500px;
   gap:1vh; 
 }
 
@@ -234,7 +261,6 @@ input[type="radio"] {
   font-family: 'Kumbh Sans', sans-serif;
   font-size: 0.9em;
   font-weight: 500;
-  height: 35px;
   line-height: 2.67vh;
   flex-grow: 3;
 }
@@ -264,7 +290,7 @@ input[type="radio"] {
 .inputdescription{
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 77vw;
   gap:1vh;
 }
 
@@ -283,12 +309,6 @@ input[type="radio"] {
 }
 
 
-.logo{
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-  object-fit: cover;
-}
 /* Hide the file input */
 #logo-upload {
   display: none;
@@ -394,7 +414,8 @@ input[type="radio"] {
 
 .button-add-sponsor {
   width: 100px;
-  height: 40px;
+  min-height: 40px;
+  height: 100%; 
   border: none;
   border-radius: 0.7vh;
   outline-color: var(--c-select);
@@ -403,9 +424,10 @@ input[type="radio"] {
   font-weight: 500;
   color: #FFFFFF;
   background-color: #152259;
-  padding: 2px 2px;
+  padding: 0.2vw 1vw;
   cursor: pointer;
   align-self: flex-end;
+  margin: 5px 5px 5px 5px;
 }
 
   
