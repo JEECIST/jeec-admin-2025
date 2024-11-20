@@ -298,18 +298,18 @@ export default {
 .teams {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: calc(100vw - var(--sidebar-width));
   background: #FFFFFF;
   overflow: hidden;
   box-sizing: border-box;
-  padding: 49px 3ch 3ch 3ch;
+  padding: 3rem 3ch 3ch 3ch;
 }
 
 .wrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: 81vh;
 }
 
 .header-wrapper {
@@ -320,49 +320,49 @@ export default {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 0;
 }
 
 .headerteams {
   display: flex;
   justify-content: space-between; 
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
   transition: width 0.3s ease;
   gap: 1%;
 }
 
 .headerteams-shrink {
-  width: calc(100% - 320px); 
+  width: calc(100% - 20rem); 
 }
 
 .searchteam {
   display: flex;
   position: relative;
   width: 100%;
-  height: 49px;
+  height: 3rem;
   background-color: #EBF6FF;
-  border-radius: 10px;
+  border-radius: 0.625rem;
 }
 
 .searchicon {
   position: absolute;
   top: 50%;
-  left: 20px;
+  left: 1.25rem;
   transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
   color: #8A8A8A;
 }
 
 .searchbar {
   width: 100%;
   height: 100%;
-  padding-left: 40px;
+  padding-left: 2.5rem;
   border: none;
   background-color: #EBF6FF;
-  border-radius: 10px;
+  border-radius: 0.625rem;
   outline: none;
-  padding-right: 5px;
+  padding-right: 0.3125rem;
 }
 
 .evento {
@@ -372,22 +372,22 @@ export default {
 
 .evento select {
   width: 100%; 
-  height: 49px; 
+  height: 3rem; 
   border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
   outline: none;
   padding: 1.5rem;
   padding-left: 1.5rem;
 }
 
 .add-team {
-  height: 49px;
+  height: 3rem;
   font-size: 1rem;
   font-weight: 600;
   border: none;
   background-color: var(--c-select);
-  border-radius: 10px;
+  border-radius: 0.625rem;
   color: white;
   padding: 0.5ch 3ch;
   cursor: pointer;
@@ -398,31 +398,43 @@ export default {
   display: flex;
   justify-content: space-between;
   flex-grow: 1;
+  flex-shrink: 1;
 }
 
 .table-wrapper {
   flex-grow: 1;
+  flex-shrink: 1;
   transition: flex-grow 0.3s ease;
-  height: 100%;
+  height: 94.5vh;
 }
 
 .table-wrapper-shrink {
   flex-grow: 0.7;
-  width: calc(100% - 320px);
+  width: calc(100% - 20rem);
 }
 
 /* recurso */
 .right-popup-placeholder {
-  width: 300px;
-  margin-left: 20px;
-  border-radius: 10px;
+  height: 81.1vh;
+  width: 18.75rem;
+  margin-left: 1.25rem;
+  border-radius: 0.625rem;
   background-color: var(--c-accent);
-  margin-top: -70px;
+  margin-top: -4.375rem;
 }
 
 .right-popup {
-  padding: 20px;
+  padding: 1.25rem;
   position: relative;
+}
+
+.popup-content {
+  padding: 2vh;
+  padding-top: 1vh;
+  border-radius: 0.625rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .popup-content {
@@ -788,6 +800,10 @@ export default {
 
 .teams table {
   margin-bottom: 3ch;
+}
+
+:global(html, body) {
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
