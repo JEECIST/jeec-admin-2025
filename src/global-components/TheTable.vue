@@ -1,18 +1,18 @@
 <template>
   <div class="scroll-wrapper">
-    <table>
+    <table v-if="rows.length != 0">
       <thead>
         <tr>
-          <template v-for="(value, key) in props.data[0]">
-            <th v-if="key in tableHeaders">{{ tableHeaders[key] }}</th>
+          <template v-for="(value, key) in tableHeaders">
+            <th>{{ value }}</th>
           </template>
           <th class="button" v-for="button in props.buttons">{{ button.name }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="row in rows" @click="selectRow($event, row)">
-          <template v-for="(value, key) in row">
-            <td v-if="key in tableHeaders">{{ value }}</td>
+          <template v-for="(value, key) in tableHeaders">
+            <td>{{ row[key] }}</td>
           </template>
           <td class="button" v-for="button in props.buttons">
             <button v-if="!button.icon" @click="$emit(button.eventName, row)">{{ button.name }}</button>
@@ -57,7 +57,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['onRowSelect']);
+const emit = defineEmits(['onRowSelect', 'notFound']);
 
 const isAnySelected = ref(false);
 const whichIsSelected = ref();
@@ -89,16 +89,29 @@ function normalizeStr(str) {
 }
 
 const rows = computed(() => {
-  if (!props.data.length)
+  if (!props.data.length) 
     return []
   else
-    return props.data.filter(row => {
-      return Object.values(row).some(
-        cell => !props.searchInput || ((typeof cell === 'string')
-          ? normalizeStr(cell).includes(normalizeStr(props.searchInput))
-          : normalizeStr(cell).toString(10).includes(normalizeStr(props.searchInput))
-        ))
-    })
+    var filter = props.data.filter(row => {
+        return Object.values(row).some(
+          cell => !props.searchInput || ((typeof cell === 'string')
+            ? normalizeStr(cell).includes(normalizeStr(props.searchInput))
+            : normalizeStr(cell).toString(10).includes(normalizeStr(props.searchInput))
+          ))
+      })
+      var isEmpty = false
+      if (filter == 0)
+      {
+        isEmpty = true
+        emit ('notFound', isEmpty)
+        return []
+      } 
+      else{
+        isEmpty = false
+        emit ('notFound', isEmpty)
+        return filter
+      }
+       
 })
 </script>
 

@@ -11,7 +11,7 @@
         
         <button type="button" @click="showAddUserModal = true">Add User</button>
         
-        <button type="button" @click="manageUserRoles">User Roles <span class = "chevron"> </span></button>
+        <button type="button">User Roles <span class = "chevron"> </span></button>
       </form>
       <TheTable
         :data="datab"
@@ -93,7 +93,6 @@ const selectedRow = ref(null);  // Track the selected row
 
 function selectCallback(row) {
   selectedRow.value = row;  // Set the selected row
-  console.log('Selected Row:', row);
 }
 
 function addUser() {
@@ -115,7 +114,6 @@ const datab = ref([
     
     role: "Webdev",
     name: "André Santos the Feeble",
-    day: "123"
   },
   {
     id: "2",
@@ -129,14 +127,11 @@ const datab = ref([
 const tablePref = {
   id: "ID",
   user: "Username",
-  name: "Member", 
+  role: "Role",
+  name: "Member"
   
-  role: "Role"
+  
 };
-
-function manageUserRoles() {
-  console.log('User Roles button clicked');
-}
 
 </script>
 

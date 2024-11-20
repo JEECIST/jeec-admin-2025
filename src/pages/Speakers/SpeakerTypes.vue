@@ -183,7 +183,7 @@ const tablePref = {
             <label>
               <img src="../../assets/search.svg">
             </label>
-            <input v-model="message" placeholder="Search for a speaker type">
+            <input v-model="message" placeholder="Search">
           </form>
           <button class="mobile-topbtn" @click="openModal">Add Type</button>
           <Transition name="fade" appear>
