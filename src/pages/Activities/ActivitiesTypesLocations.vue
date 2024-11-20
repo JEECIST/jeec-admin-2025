@@ -22,11 +22,19 @@
       <AddLocPopUp v-if="isaddloc" @close="popup_addloc" />
     </div>
     <div class="right-popup-placeholder" v-if="selectedLoc && filteredActivityLoc.length > 0">
+      <button class="btn_close_rpp" @click="close_rpp">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+            stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+      </button>
       <div class="items">
-      <div class="popup-type">{{ selectedLoc.name }}</div>
+      <img  class="popup-logo" src="../../assets/wrizz.jpg" alt="Profile Image">
+      <div class="popup-loc">{{ selectedLoc.name }}</div>
       <div class="popup-title">Location</div>
       <div class="popup-btns">
-        <button class = "edit-btn">
+        <button class = "edit-btn" @click ="popup_editloc">
           <img src="../../assets/pencil.svg">
         </button>
         <button class = "edit-btn">
@@ -34,6 +42,7 @@
         </button>
       </div>
     </div>
+    <EditLocPopUp v-if="iseditloc" @close="popup_editloc" />
     </div>
   </div>
 </template>
@@ -42,6 +51,7 @@
 import { ref, computed } from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
 import AddLocPopUp from './AddLocPopUp.vue';
+import EditLocPopUp from './EditLocPopUp.vue';
 
 const database_loc = ref([
   {
@@ -94,11 +104,19 @@ const filteredActivityLoc = computed(() => {
   return filtered;
 });
 
+function close_rpp() {
+  selectedLoc.value = null;
+}
+
 const isaddloc = ref(false);
+const iseditloc = ref(false);
 
 function popup_addloc() {
   isaddloc.value = !isaddloc.value
-  console.log(isaddloc.value)
+}
+
+function popup_editloc() {
+  iseditloc.value = !iseditloc.value
 }
 
 </script>
@@ -138,62 +156,61 @@ function popup_addloc() {
 
 .search-container {
   display: flex;
-  align-content: center;
+  align-items: center;
   position: relative;
-  min-width: 19vw;
-  height: 3vw;
+  min-width: 30%; /* Usando % para ser responsivo */
+  height: 3.5rem;
   background-color: #EBF6FF;
-  border-radius: 1vh;
+  border-radius: 0.5rem;
   flex-grow: 1;
 }
 
 .search-icon {
   position: absolute;
   top: 50%;
-  left: 1vw;
+  left: 1rem;
   transform: translateY(-50%);
-  width: 1.1vw;
-  height: 3vh;
+  width: 1rem;
+  height: 1.5rem;
   color: #8A8A8A;
 }
 
 .search-bar {
   width: 100%;
   height: 100%;
-  padding: 0.5vh 1vw 0.5vh 3vw;
+  padding: 0.5rem 1rem 0.5rem 3rem;
   border: none;
-  border-radius: 1vh;
+  border-radius: 0.5rem;
   outline-color: var(--c-select);
   color: #8A8A8A;
   font-family: 'Kumbh Sans', sans-serif;
-  font-size: 0.9vw;
+  font-size: 1rem;
   font-weight: 500;
-  line-height: 2.67vh;
   background-color: #EBF6FF;
-  flex-grow: 1;
 }
 
 .btn_header {
-  max-width: 9vw;
-  height: 2.7vw; 
+  max-width: 9rem;
+  height: 100%;
   align-self: center;
   border: none;
-  border-radius: 0.7vh;
+  border-radius: 0.5rem;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
-  font-size: 0.9vw;
+  font-size: 1rem;
   font-weight: 500;
   color: #FFFFFF;
   background-color: var(--c-select);
-  padding: 0.2vw 1.5vw;
+  padding: 0.3rem 1rem;
   cursor: pointer;
 }
+
 
 .table-container {
   flex-grow: 1;
   transition: flex-grow 0.3s ease;
   margin-top: 1vh;
-  overflow-y:scroll;
+  overflow-y:auto;
 }
 
 .no-loc{
@@ -212,12 +229,33 @@ function popup_addloc() {
 }
 
 .right-popup-placeholder {
+  display: flex;
+  flex-direction: column;
   height: calc(92vh - var(--header-height));
-  width: 370px;
-  margin-left: 35px;
+  width: 380px;
+  margin-left: 20px;
+  margin-right: 20px;
   margin-top: -10px;
   border-radius: 10px;
   background-color: var(--c-accent);
+  overflow-y: auto;
+}
+
+.btn_close_rpp {
+  align-self: flex-end;
+  position: relative;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.popup-logo {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  margin-bottom: 15px;
 }
 
 .items{
@@ -230,10 +268,14 @@ function popup_addloc() {
   margin-top: 7vh;
 }
 
-.popup-type{
+.popup-loc{
   color: rgb(32, 32, 32);
   font-size: x-large;
   font-weight: bold;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .popup-title{
@@ -252,6 +294,7 @@ function popup_addloc() {
   background: #FFFFFF;
   border-radius: 8px;
   border-color: #FFFFFF;
+  cursor: pointer;
 }
 
 </style>
