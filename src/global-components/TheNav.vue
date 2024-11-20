@@ -49,7 +49,10 @@ const routes = computed(() => {
 })
 
 const parentRoute = computed(() => {
-  return Router.getRoutes().find(rte => rte.path === ('/' + Route.path.split('/')[1]))
+  if (Route.path === "/") 
+   return {}
+  else
+    return Router.getRoutes().find(rte => rte.path === ('/' + Route.path.split('/')[1]))
 })
 
 const childRoutes = computed(() => {

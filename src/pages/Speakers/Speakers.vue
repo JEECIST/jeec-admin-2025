@@ -7,6 +7,12 @@ import EditSpeakerPopup from './EditSpeakerPopup.vue';
 import MobilePopup from './MobilePopup.vue';
 import axios from 'axios';
 
+const datab = ref([{
+  id: null,
+  name: null,
+  company: null,
+  country: null,
+}])
 const datab = ref([])
 
 // const api = import.meta.env.VUE_APP_JEEC_BRAIN_URL
@@ -33,6 +39,14 @@ async function fetchSpeakers() {
 }
 
 const fetchData = () => {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',{auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then((response)=>{
+          const data = response.data
+          datab.value = response.data.speakers[1]
+          console.log(datab.value)
+        })
   fetchSpeakers()
 }
 
@@ -219,6 +233,8 @@ const closeMobileModal = () => {
             </div>
           </div>
         </div>
+        <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
+        </TheTable>
         <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
         </TheTable>
       </div>
