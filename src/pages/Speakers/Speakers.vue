@@ -7,66 +7,51 @@ import EditSpeakerPopup from './EditSpeakerPopup.vue';
 import MobilePopup from './MobilePopup.vue';
 import axios from 'axios';
 
-const datab = ref(null)
+const datab = ref([])
 
 // const api = import.meta.env.VUE_APP_JEEC_BRAIN_URL
 
-const fetchData = () => {
-    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',{auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        }}).then((response)=>{
-          const data=response.data
-          datab.value = response.data.speakers
-          console.log(datab.value)
-        })
+async function fetchSpeakers() {
+  // await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',
+  //      {auth: {
+  //         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+  //         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+  //       }}).then((response)=>{
+  //         const data=response.data
+  //         datab.value = response.data.speakers
+  //         console.log(datab.value)
+  //       })
+  const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',
+    {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    });
+  datab.value = response.data.speakers || [];
+  console.log(datab.value);
 }
 
+const fetchData = () => {
+  fetchSpeakers()
+}
 
 onMounted(fetchData)
 
-const popupShow = ref(false);
-const descriptionShow = ref(false);
-
-const closePopup = () => {
-  popupShow.value = false;
+const tablePref = {
+  id: "ID",
+  name: "Name",
+  // type: "Type",
+  company: "Company",
+  country: "Country",
+  // responsible: "JEEC Responsible",
 };
 
-function showfunction() {
-  descriptionShow.value = true;
+function selectCallback(row) {
+  console.log(row)
+  popupShow.value = true;
+  openMobileModal();
 }
-
-function closeDescription() {
-  descriptionShow.value = false;
-}
-
-const isModalOpened = ref(false);
-
-const openModal = () => {
-  isModalOpened.value = true;
-};
-const closeModal = () => {
-  isModalOpened.value = false;
-};
-
-const isOtherModalOpened = ref(false);
-
-const openOtherModal = () => {
-  isOtherModalOpened.value = true;
-};
-const closeOtherModal = () => {
-  isOtherModalOpened.value = false;
-};
-
-const isMobileModalOpened = ref(false);
-
-const openMobileModal = () => {
-  isMobileModalOpened.value = true;
-};
-
-const closeMobileModal = () => {
-  isMobileModalOpened.value = false;
-};
 
 function isMobile() {
   if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -85,205 +70,41 @@ function goToSpeakerTypes() {
 
 const message = ref();
 
-function selectCallback(row) {
-  console.log(row)
-  popupShow.value = true;
-  openMobileModal();
+const popupShow = ref(false);
+const descriptionShow = ref(false);
+const isModalOpened = ref(false);
+const isOtherModalOpened = ref(false);
+const isMobileModalOpened = ref(false);
+
+const closePopup = () => {
+  popupShow.value = false;
+};
+function showfunction() {
+  descriptionShow.value = true;
 }
+function closeDescription() {
+  descriptionShow.value = false;
+}
+const openModal = () => {
+  isModalOpened.value = true;
+};
+const closeModal = () => {
+  isModalOpened.value = false;
+};
+const openOtherModal = () => {
+  isOtherModalOpened.value = true;
+};
+const closeOtherModal = () => {
+  isOtherModalOpened.value = false;
+};
+const openMobileModal = () => {
+  isMobileModalOpened.value = true;
+};
+const closeMobileModal = () => {
+  isMobileModalOpened.value = false;
+};
 
 // const datab = [
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
 //   {
 //     id: "69",
 //     type: "Main Speaker",
@@ -343,15 +164,6 @@ function selectCallback(row) {
 
 // ];
 
-const tablePref = {
-  id: "ID",
-  name: "Name",
-  // type: "Type",
-  company: "Company",
-  country: "Country",
-  // responsible: "JEEC Responsible",
-};
-
 </script>
 
 <template>
@@ -407,8 +219,8 @@ const tablePref = {
             </div>
           </div>
         </div>
-        <!-- <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
-        </TheTable> -->
+        <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
+        </TheTable>
       </div>
       <div class="right-popup-placeholder" v-show="popupShow">
         <div class="close-wrapper">
@@ -460,22 +272,28 @@ const tablePref = {
     <div class="mobile-wrapper">
       <div class="table">
         <div class="mobile-topbar">
-          <form>
-            <label>
-              <img src="../../assets/search.svg">
-            </label>
-            <input v-model="message" placeholder="Search for a speaker">
-          </form>
-          <div class="imsosickofdivs">
-            <label for="evento" class="eventselect">Event</label>
-            <select name="evento" placeholder="  " class="eventselect">
-              <option value="null" disabled selected hidden></option>
-              <option>hello</option>
-              <option>there</option>
-            </select>
+          <div class="topbar-wrapper">
+            <div class="topthings">
+              <form>
+                <label>
+                  <img src="../../assets/search.svg">
+                </label>
+                <input v-model="message" placeholder="Search">
+              </form>
+              <div class="imsosickofdivs">
+                <label for="evento" class="eventselect">Event</label>
+                <select name="evento" placeholder="  " class="eventselect">
+                  <option value="null" disabled selected hidden></option>
+                  <option>hello</option>
+                  <option>there</option>
+                </select>
+              </div>
+            </div>
+            <div class="topbtns">
+              <button class="topbtn" @click="openModal">Add Speaker</button>
+              <button @click="goToSpeakerTypes" class="topbtn">Speaker Types 〉</button>
+            </div>
           </div>
-          <button class="topbtn" @click="openModal">Add Speaker</button>
-          <button @click="goToSpeakerTypes" class="topbtn">Speaker Types 〉</button>
           <Transition name="fade" appear>
             <AddSpeakerPopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerPopup>
           </Transition>
@@ -555,7 +373,7 @@ const tablePref = {
   gap: 1ch;
   padding-left: 1ch;
   border-radius: 10px;
-  flex-grow: 0.7;
+  flex-grow: 0.5;
 }
 
 button {
@@ -582,7 +400,7 @@ select {
 
 form {
   display: flex;
-  width: 60%;
+  width: 70vw;
   background-color: var(--c-accent);
   line-height: 50px;
   gap: 1ch;
@@ -764,12 +582,30 @@ form>input::placeholder {
   gap: 15px;
 }
 
+.topbar-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.topthings {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
+.topbtns {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
 .imsosickofdivs {
   display: flex;
   flex-direction: column;
   gap: 5px;
   position: relative;
-  width: 10%;
+  width: 30vw;
 }
 
 .imsosickofdivs>label {

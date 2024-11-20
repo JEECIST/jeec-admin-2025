@@ -29,7 +29,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 
-const props = await defineProps({
+const props = defineProps({
   data: {
     type: Array[Object],
     required: true
