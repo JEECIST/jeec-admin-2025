@@ -12,6 +12,7 @@
               placeholder="Search for a team" 
               class="searchbar" 
               v-model="searchQuery" 
+              @input="closePopupOnSearch"
             />
           </div>
 
@@ -159,45 +160,6 @@
       <label class="no-teams">No teams found</label>
     </div>
   </div>
-
-  <div v-if="showAddPopup" class="modal-overlay-add">
-    <div class="edit-popup-content">
-      <button class="closeX" @click="closePopup">&times;</button>
-      <h2>Add Team</h2>
-      <form @submit.prevent="saveNewTeam" class="popup_form">
-        <div class="name-event">
-          <div class="form-group">
-            <label for="newTeamName" class="labels">Name</label>
-            <input type="text" v-model="newTeamName" id="newTeamName" required class="formUsername" />
-          </div>
-          <div class="form-group">
-            <label for="newTeamEvent" class="labels">Event</label>
-            <input type="text" v-model="newTeamEvent" id="newTeamEvent" required class="formRole" />
-          </div>
-          <div class="form-group">
-            <label for="newTeamPriority" class="labels">Priority</label>
-            <input type="text" v-model="newTeamPriority" id="newTeamPriority" required class="formRole" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="newTeamMembers" class="labels">Description</label>
-          <input type="text" v-model="Description" id="newTeamMembers" required class="formRole" />
-        </div>
-        <div class="form-group">
-          <label for="newTeamPicture" class="labels">Picture</label>
-          <div class="small-quadrado"></div>
-        </div>
-        <div class="modal-actions">
-          <label class="custom-file-upload">
-            <input type="file" id="newTeamPicture" @change="handleFileChange"/>
-            <span>Add Picture</span>
-          </label>
-          <span v-if="selectedFile">{{ selectedFile.name }}</span>
-          <button type="submit" class="add">Add</button>
-        </div>
-      </form>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -246,6 +208,8 @@ export default {
         { id: 2, name: 'Evento 2' },
         { id: 3, name: 'Evento 3' },
       ],
+      searchQuery: '',
+      selectedEvent: '',
       showPopup: false,
       showEditPopup: false,
       showAddPopup: false,
@@ -260,18 +224,19 @@ export default {
   },
   computed: {
     filteredTeams() {
-      return this.teams.filter(team => 
-        team.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+      return this.teams.filter(team => {
+        const matchesSearchQuery = team.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+        const matchesSelectedEvent = this.selectedEvent ? team.event.toLowerCase() === this.selectedEvent.toLowerCase() : true;
+        return matchesSearchQuery && matchesSelectedEvent;
+      });
     },
   },
   methods: {
     handleEventChange() {
       console.log(this.selectedEvent);
     },
-    selectTeam(row, index) {
+    selectTeam(row) {
       this.selectedTeam = row;
-      this.selectedRowIndex = index;
       this.showPopup = true;
     },
     closePopup() {
@@ -289,23 +254,9 @@ export default {
       const index = this.teams.findIndex(team => team.id === this.editTeam.id);
       if (index !== -1) {
         this.teams.splice(index, 1, this.editTeam); 
-        this.selectedTeam = { ...this.editTeam }; 
-        this.showEditPopup = false;
-        // Fechar o popup da direita se estiver no telemóvel
-        if (window.innerWidth <= 768) {
-          this.showPopup = false;
-        }
+        this.selectedTeam = { ...this.editTeam };
       }
-    },
-    closeEditPopup() {
       this.showEditPopup = false;
-    },
-    deleteTeam() {
-      this.teams = this.teams.filter(team => team.id !== this.selectedTeam.id);
-      this.closePopup();
-    },
-    TeamMembers() {
-      this.$router.push({ name: 'teams-members'}); 
     },
     openAddPopup() {
       this.showAddPopup = true;
@@ -315,21 +266,29 @@ export default {
     },
     saveNewTeam() {
       const newTeam = {
-        id: this.teams.length + 1,
+        id: Date.now(),
         name: this.newTeamName,
         event: this.newTeamEvent,
         priority: this.newTeamPriority,
-        members: this.newTeamMembers,
         description: this.newTeamDescription,
+        members: 0,
       };
       this.teams.push(newTeam);
-      this.closeAddPopup(); 
+      this.showAddPopup = false;
     },
     handleFileChange(event) {
       this.selectedFile = event.target.files[0];
     },
     triggerFileInput() {
       this.$refs.fileInput.click();
+    },
+    deleteTeam() {
+      const index = this.teams.findIndex(team => team.id === this.selectedTeam.id);
+      if (index !== -1) {
+        this.teams.splice(index, 1);
+        this.selectedTeam = {};
+        this.showPopup = false;
+      }
     },
   },
 };
@@ -339,18 +298,18 @@ export default {
 .teams {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: calc(100vw - var(--sidebar-width));
   background: #FFFFFF;
   overflow: hidden;
   box-sizing: border-box;
-  padding: 49px 3ch 3ch 3ch;
+  padding: 3rem 3ch 3ch 3ch;
 }
 
 .wrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: 81vh;
 }
 
 .header-wrapper {
@@ -361,49 +320,49 @@ export default {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 0;
 }
 
 .headerteams {
   display: flex;
   justify-content: space-between; 
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
   transition: width 0.3s ease;
   gap: 1%;
 }
 
 .headerteams-shrink {
-  width: calc(100% - 320px);
+  width: calc(100% - 20rem); 
 }
 
 .searchteam {
   display: flex;
   position: relative;
   width: 100%;
-  height: 49px;
+  height: 3rem;
   background-color: #EBF6FF;
-  border-radius: 10px;
+  border-radius: 0.625rem;
 }
 
 .searchicon {
   position: absolute;
   top: 50%;
-  left: 20px;
+  left: 1.25rem;
   transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
   color: #8A8A8A;
 }
 
 .searchbar {
   width: 100%;
   height: 100%;
-  padding-left: 40px;
+  padding-left: 2.5rem;
   border: none;
   background-color: #EBF6FF;
-  border-radius: 10px;
+  border-radius: 0.625rem;
   outline: none;
-  padding-right: 5px;
+  padding-right: 0.3125rem;
 }
 
 .evento {
@@ -413,22 +372,22 @@ export default {
 
 .evento select {
   width: 100%; 
-  height: 49px; 
+  height: 3rem; 
   border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
   outline: none;
   padding: 1.5rem;
   padding-left: 1.5rem;
 }
 
 .add-team {
-  height: 49px;
+  height: 3rem;
   font-size: 1rem;
   font-weight: 600;
   border: none;
   background-color: var(--c-select);
-  border-radius: 10px;
+  border-radius: 0.625rem;
   color: white;
   padding: 0.5ch 3ch;
   cursor: pointer;
@@ -439,31 +398,43 @@ export default {
   display: flex;
   justify-content: space-between;
   flex-grow: 1;
+  flex-shrink: 1;
 }
 
 .table-wrapper {
   flex-grow: 1;
+  flex-shrink: 1;
   transition: flex-grow 0.3s ease;
-  height: 100%;
+  height: 94.5vh;
 }
 
 .table-wrapper-shrink {
   flex-grow: 0.7;
-  width: calc(100% - 320px);
+  width: calc(100% - 20rem);
 }
 
 /* recurso */
 .right-popup-placeholder {
-  width: 300px;
-  margin-left: 20px;
-  border-radius: 10px;
+  height: 81.1vh;
+  width: 18.75rem;
+  margin-left: 1.25rem;
+  border-radius: 0.625rem;
   background-color: var(--c-accent);
-  margin-top: -70px;
+  margin-top: -4.375rem;
 }
 
 .right-popup {
-  padding: 20px;
-  position: relative; /* Ensure the close button is positioned relative to the popup */
+  padding: 1.25rem;
+  position: relative;
+}
+
+.popup-content {
+  padding: 2vh;
+  padding-top: 1vh;
+  border-radius: 0.625rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .popup-content {
@@ -611,7 +582,6 @@ export default {
   justify-content: space-between;
   gap: 4vh;
 }
-
 
 .overlay {
   position: fixed;
@@ -830,6 +800,10 @@ export default {
 
 .teams table {
   margin-bottom: 3ch;
+}
+
+:global(html, body) {
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {

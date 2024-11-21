@@ -171,6 +171,7 @@ function toogleadd()
 
 const eventselected = ref('');
 
+
 </script>
 
 <style scoped>
@@ -181,7 +182,7 @@ const eventselected = ref('');
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  padding: 14px 20px 20px 20px;
+  padding: 34px 40px 40px 40px;
   gap: 15px;
 }
 
@@ -192,16 +193,16 @@ const eventselected = ref('');
   align-items: center;
   overflow-y: auto;
   padding: 10px 10px 10px 10px;
-  align-self: flex-end;
-  height: calc(75vh - 14px);
-  max-height: 446px;
+  align-self: flex-start;
+  height: fit-content;
+  max-height: calc(75vh - 14px);
   width: 20%;
   min-width: 250px;
   background-color: var(--c-accent);
   border-radius: 10px;
   gap: 10px;
-  flex-grow: 1;
   z-index: 3;
+  margin-top: 13px;
 }
 
 .sponsor-card-header {
@@ -290,7 +291,6 @@ const eventselected = ref('');
   justify-content: flex-start;
   align-items: center;
   height: 75vh;
-  max-height: 460px;
   width: 80%;
   min-width: 300px;
   overflow: hidden;
@@ -491,15 +491,16 @@ const eventselected = ref('');
 
   .sponsors-table {
     max-height: 700px;
-    height: 90vh;
+    height: 78vh;
   }
 
   .sponsor-card {
     position: absolute; /* Position the sponsor card absolutely */
-    top: 120px; /* Position the sponsor card 50px below the center */
+    top: 118px; /* Position the sponsor card 50px below the center */
     width: 90vw; /* Set the width to 100% */
-    max-height: fit-content;
-    height: 80vh; /* Set the height to 100% */
+    max-height: 80vh;
+    height: fit-content; /* Set the height to 100% */
+    margin-top: 0;
   }
   .sponsor-card-body h1{
     font-size: 1em;

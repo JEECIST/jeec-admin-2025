@@ -138,14 +138,13 @@ const selectedRow = ref(null);  // Track the selected row
 // Callback for row selection in the table
 function selectCallback(row) {
   selectedRow.value = row;
-  console.log('Selected Row:', row);
+
 }
 function addDish() {
   newUser.value.dishes.push('');  // Add an empty string for a new dish input
 }
 // Function to handle adding a new user
 function addUser() {
-  console.log(newUser.value);
   closeModal();
 }
 
