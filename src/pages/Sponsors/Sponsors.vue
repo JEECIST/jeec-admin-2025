@@ -182,7 +182,7 @@ const eventselected = ref('');
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  padding: 34px 40px 40px 40px;
+  padding: 25px 40px 40px 40px;
   gap: 15px;
 }
 
@@ -347,6 +347,7 @@ const eventselected = ref('');
   background-color: #EBF6FF; 
   border-radius: 4px; 
   flex-grow: 1;
+  padding: 1px 1px 1px 1px;
 }
 
 .search-icon {
@@ -498,6 +499,7 @@ const eventselected = ref('');
     position: absolute; /* Position the sponsor card absolutely */
     top: 118px; /* Position the sponsor card 50px below the center */
     width: 90vw; /* Set the width to 100% */
+    max-width: 500px;
     max-height: 80vh;
     height: fit-content; /* Set the height to 100% */
     margin-top: 0;

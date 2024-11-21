@@ -197,7 +197,7 @@ function tooglelist()
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  padding: 20px 20px 20px 20px;
+  padding: 40px 40px 40px 40px;
   gap: 15px;
 }
 
@@ -279,7 +279,7 @@ function tooglelist()
   justify-content: space-between;
   width: 100%;
   padding: 15px 15px 15px 15px;
-  gap: 15px;
+  gap: 40px;
 
 }
 
@@ -364,6 +364,7 @@ function tooglelist()
   background-color: #EBF6FF; 
   border-radius: 4px; 
   flex-grow: 4;
+  padding: 1px 1px 1px 1px;
 }
 
 .search-icon {
@@ -378,9 +379,9 @@ function tooglelist()
 
 .search-bar {
   height: 36px; 
-  padding: 0.5px 1px 0.5px 24px;
-  border: none;
+  padding: 5px 5px 5px 24px;
   border-radius: 4px;
+  border: none;
   outline-color: var(--c-select);
   color: #8A8A8A;
   font-family: 'Kumbh Sans', sans-serif;
@@ -516,7 +517,7 @@ function tooglelist()
     position: absolute; /* Position the sponsor card absolutely */
     top: 120px; /* Position the sponsor card 50px below the center */
     width: 90vw; /* Set the width to 100% */
-    max-width: 600px;
+    max-width: fit-content;
     max-height: 600px;
     height: 80vh; /* Set the height to 100% */
   }
