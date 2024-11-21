@@ -43,10 +43,9 @@ const fetchData = () => {
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }}).then((response)=>{
           const data = response.data
-          datab.value = response.data.speakers[1]
+          datab.value = response.data.speakers[0]
           console.log(datab.value)
         })
-  fetchSpeakers()
 }
 
 onMounted(fetchData)
@@ -54,10 +53,10 @@ onMounted(fetchData)
 const tablePref = {
   id: "ID",
   name: "Name",
-  // type: "Type",
+  type: "Type",
   company: "Company",
   country: "Country",
-  // responsible: "JEEC Responsible",
+  responsible: "JEEC Responsible",
 };
 
 function selectCallback(row) {
@@ -117,66 +116,6 @@ const closeMobileModal = () => {
   isMobileModalOpened.value = false;
 };
 
-// const datab = [
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-//   {
-//     id: "69",
-//     type: "Main Speaker",
-//     name: "Waqas SJ.",
-//     company: "Intel",
-//     country: "Germany",
-//     responsible: "Francisco Rosa",
-//   },
-
-// ];
-
 </script>
 
 <template>
@@ -184,13 +123,13 @@ const closeMobileModal = () => {
     <div class="wrapper">
       <div class="table">
         <div class="topbar">
-          <form>
+          <form class="search-desktop">
             <label>
               <img src="../../assets/search.svg">
             </label>
             <input v-model="message" placeholder="Search for a speaker">
           </form>
-          <div class="imsosickofdivs">
+          <div class="imsosickofdivs-desktop">
             <label for="evento" class="eventselect">Event</label>
             <select name="evento" placeholder="  " class="eventselect">
               <option value="null" disabled selected hidden></option>
@@ -232,8 +171,6 @@ const closeMobileModal = () => {
             </div>
           </div>
         </div>
-        <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
-        </TheTable>
         <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
         </TheTable>
       </div>
@@ -289,7 +226,7 @@ const closeMobileModal = () => {
         <div class="mobile-topbar">
           <div class="topbar-wrapper">
             <div class="topthings">
-              <form>
+              <form class="search-mobile">
                 <label>
                   <img src="../../assets/search.svg">
                 </label>
@@ -413,7 +350,7 @@ select {
   background-color: white;
 }
 
-form {
+/* form {
   display: flex;
   width: 70vw;
   background-color: var(--c-accent);
@@ -422,7 +359,19 @@ form {
   padding-left: 1ch;
   border-radius: 10px;
   flex-grow: 0.7;
+} */
+
+.search-desktop {
+  display: flex;
+  width: 40vw;
+  background-color: var(--c-accent);
+  line-height: 50px;
+  gap: 1ch;
+  padding-left: 1ch;
+  border-radius: 10px;
+  flex-grow: 0.7;
 }
+
 
 form>label>img {
   width: 20px;
@@ -621,6 +570,19 @@ form>input::placeholder {
   gap: 5px;
   position: relative;
   width: 30vw;
+}
+
+.imsosickofdivs-desktop {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  position: relative;
+  width: 8vw;
+}
+
+.imsosickofdivs-desktop>label {
+  position: absolute;
+  bottom: 100%;
 }
 
 .imsosickofdivs>label {
