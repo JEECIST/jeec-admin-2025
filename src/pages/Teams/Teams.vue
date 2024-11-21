@@ -32,7 +32,7 @@
           <div :class="{'table-wrapper': true, 'hidden': showEditPopup || showAddPopup || showPopup}">
             <div class="scrollbar">
               <TheTable
-                :data="filteredTeams"
+                :data="this.teams"
                 :tableHeaders="{ name: 'Name', event: 'Event', priority: 'Priority', members: 'Members' }"
                 :searchInput="searchQuery"
                 @onRowSelect="selectTeam"
@@ -156,13 +156,15 @@
       </div>
     </div>
 
-    <div v-if="filteredTeams.length === 0" class="form">
+    <!-- <div v-if="filteredTeams.length === 0" class="form">
       <label class="no-teams">No teams found</label>
-    </div>
+    </div> -->
+
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import TheTable from '../../global-components/TheTable.vue';
 
 export default {
@@ -174,35 +176,7 @@ export default {
     return {
       selectedEvent: 'Select an event',
       searchQuery: '',
-      teams: [
-        { id: 1, name: 'Team 1', event: 'Evento 1', priority: '100', members: '3', description: 'Description 1' },
-        { id: 2, name: 'Team 2', event: 'Evento 2', priority: '100', members: '5', description: 'Description 2' },
-        { id: 3, name: 'Team 3', event: 'Evento 3', priority: '100', members: '2', description: 'Description 3' },
-        { id: 4, name: 'Team 4', event: 'Evento 1', priority: '100', members: '4', description: 'Description 4' },
-        { id: 5, name: 'Team 5', event: 'Evento 2', priority: '100', members: '3', description: 'Description 5' },
-        { id: 6, name: 'Team 6', event: 'Evento 3', priority: '100', members: '5', description: 'Description 6' },
-        { id: 7, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 7' },
-        { id: 8, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 8' },
-        { id: 9, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 9' },
-        { id: 10, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 10' },
-        { id: 11, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 11' },
-        { id: 12, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 12' },
-        { id: 13, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 13' },
-        { id: 14, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 14' },
-        { id: 15, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 15' },
-        { id: 16, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 16' },
-        { id: 17, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 17' },
-        { id: 18, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 18' },
-        { id: 19, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 19' },
-        { id: 20, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 20' },
-        { id: 21, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 21' },
-        { id: 22, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 22' },
-        { id: 23, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 23' },
-        { id: 24, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 24' },
-        { id: 25, name: 'Team 7', event: 'Evento 1', priority: '100', members: '2', description: 'Description 25' },
-        { id: 26, name: 'Team 8', event: 'Evento 2', priority: '100', members: '4', description: 'Description 26' },
-        { id: 27, name: 'Team 9', event: 'Evento 3', priority: '100', members: '3', description: 'Description 27' },
-      ],
+      teams: [],
       events: [
         { id: 1, name: 'Evento 1' },
         { id: 2, name: 'Evento 2' },
@@ -222,15 +196,16 @@ export default {
       selectedFile: null,
     };
   },
-  computed: {
-    filteredTeams() {
-      return this.teams.filter(team => {
-        const matchesSearchQuery = team.name.toLowerCase().includes(this.searchQuery.toLowerCase());
-        const matchesSelectedEvent = this.selectedEvent ? team.event.toLowerCase() === this.selectedEvent.toLowerCase() : true;
-        return matchesSearchQuery && matchesSelectedEvent;
-      });
-    },
-  },
+  // computed: {
+  //   filteredTeams() {
+  //     // if (!this.teams) return [];
+  //     return this.teams.filter(team => {
+  //       const matchesSearchQuery = team.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+  //       const matchesSelectedEvent = this.selectedEvent ? team.event.toLowerCase() === this.selectedEvent.toLowerCase() : true;
+  //       return matchesSearchQuery && matchesSelectedEvent;
+  //     });
+  //   },
+  // },
   methods: {
     handleEventChange() {
       console.log(this.selectedEvent);
@@ -290,6 +265,15 @@ export default {
         this.showPopup = false;
       }
     },
+  },
+  mounted() {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/teams-vue',{auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then(response => {const data = response.data; this.bigdata = data; this.teams = data.teams;
+          console.log(response.data.events);
+        })
+        
   },
 };
 </script>
