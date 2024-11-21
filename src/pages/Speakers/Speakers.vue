@@ -1,6 +1,6 @@
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import AddSpeakerPopup from './AddSpeakerPopup.vue';
 import EditSpeakerPopup from './EditSpeakerPopup.vue';
@@ -14,28 +14,6 @@ const datab = ref([{
   country: null,
 }])
 
-// const api = import.meta.env.VUE_APP_JEEC_BRAIN_URL
-
-// async function fetchSpeakers() {
-  // await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',
-  //      {auth: {
-  //         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-  //         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-  //       }}).then((response)=>{
-  //         const data=response.data
-  //         datab.value = response.data.speakers
-  //         console.log(datab.value)
-  //       })
-//   const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',
-//     {
-//       auth: {
-//         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-//         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-//       }
-//     });
-//   datab.value = response.data.speakers || [];
-//   console.log(datab.value);
-// }
 
 const fetchData = () => {
     axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',{auth: {
@@ -65,14 +43,10 @@ function selectCallback(row) {
   openMobileModal();
 }
 
-function isMobile() {
-  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
+const isMobile = ref();
+function updateIsMobile() { isMobile.value = window.innerWidth <= 800; }
+onMounted(() => { window.addEventListener('resize', updateIsMobile); });
+onUnmounted(() => { window.removeEventListener('resize', updateIsMobile); });
 
 const router = useRouter();
 
@@ -88,38 +62,20 @@ const isModalOpened = ref(false);
 const isOtherModalOpened = ref(false);
 const isMobileModalOpened = ref(false);
 
-const closePopup = () => {
-  popupShow.value = false;
-};
-function showfunction() {
-  descriptionShow.value = true;
-}
-function closeDescription() {
-  descriptionShow.value = false;
-}
-const openModal = () => {
-  isModalOpened.value = true;
-};
-const closeModal = () => {
-  isModalOpened.value = false;
-};
-const openOtherModal = () => {
-  isOtherModalOpened.value = true;
-};
-const closeOtherModal = () => {
-  isOtherModalOpened.value = false;
-};
-const openMobileModal = () => {
-  isMobileModalOpened.value = true;
-};
-const closeMobileModal = () => {
-  isMobileModalOpened.value = false;
-};
+const closePopup = () => { popupShow.value = false; };
+function showfunction() { descriptionShow.value = true; }
+function closeDescription() { descriptionShow.value = false; }
+const openModal = () => { isModalOpened.value = true; };
+const closeModal = () => { isModalOpened.value = false; };
+const openOtherModal = () => { isOtherModalOpened.value = true; };
+const closeOtherModal = () => { isOtherModalOpened.value = false; };
+const openMobileModal = () => { isMobileModalOpened.value = true; };
+const closeMobileModal = () => { isMobileModalOpened.value = false; };
 
 </script>
 
 <template>
-  <div class="desktop" v-if="!isMobile()">
+  <div class="desktop" v-if="!isMobile">
     <div class="wrapper">
       <div class="table">
         <div class="topbar">
@@ -201,7 +157,7 @@ const closeMobileModal = () => {
             <p>Company</p>
             <p class="text2">Intel</p>
             <p>Position</p>
-            <p class="text2">Global Team Technical Lead</p>
+            <p class="text2">Global Team Technical Lead </p>
             <div class="row">
               <div class="col">
                 <p>Country</p>
@@ -438,7 +394,6 @@ form>input::placeholder {
   display: flex;
   justify-content: right;
   margin-right: 2%;
-
 }
 
 .close {
@@ -453,6 +408,7 @@ form>input::placeholder {
   height: 3.5vh;
   margin-top: 3%;
   margin-right: 2%;
+  margin-bottom: -8%;
 }
 
 .items {
