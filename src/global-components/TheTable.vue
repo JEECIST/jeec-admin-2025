@@ -1,18 +1,18 @@
 <template>
   <div class="scroll-wrapper">
-    <table>
+    <table v-if="rows.length != 0">
       <thead>
         <tr>
-          <template v-for="(value, key) in props.data[0]">
-            <th v-if="key in tableHeaders">{{ tableHeaders[key] }}</th>
+          <template v-for="(value, key) in tableHeaders">
+            <th>{{ value }}</th>
           </template>
           <th class="button" v-for="button in props.buttons">{{ button.name }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="row in rows" @click="selectRow($event, row)">
-          <template v-for="(value, key) in row">
-            <td v-if="key in tableHeaders">{{ value }}</td>
+          <template v-for="(value, key) in tableHeaders">
+            <td>{{ row[key] }}</td>
           </template>
           <td class="button" v-for="button in props.buttons">
             <button v-if="!button.icon" @click="$emit(button.eventName, row)">{{ button.name }}</button>
@@ -38,7 +38,18 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  buttons: Array[Object],
+  buttons: {
+    type: Array[{
+      icon: {
+        type: String,
+        default: false,
+        required: false,
+      },
+      eventName: String,
+      name: String
+    }],
+    required: false,
+  },
   searchInput: String,
   isSelectable: {
     type: Boolean,
@@ -46,8 +57,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['onRowSelect']);
-
+const emit = defineEmits(['onRowSelect', 'notFound']);
 
 const isAnySelected = ref(false);
 const whichIsSelected = ref();
@@ -71,20 +81,37 @@ function selectRow(e, row) {
 
 
 function normalizeStr(str) {
+  if (typeof str !== 'string') {
+    // Return an empty string if the input is not a string
+    return '';
+  }
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()
 }
 
 const rows = computed(() => {
-  if (!props.data.length)
+  if (!props.data.length) 
     return []
   else
-    return props.data.filter(row => {
-      return Object.values(row).some(
-        cell => !props.searchInput || ((typeof cell === 'string')
-        ? normalizeStr(cell).includes(normalizeStr(props.searchInput))
-        : normalizeStr(cell).toString(10).includes(normalizeStr(props.searchInput))
-      ))
-    })
+    var filter = props.data.filter(row => {
+        return Object.values(row).some(
+          cell => !props.searchInput || ((typeof cell === 'string')
+            ? normalizeStr(cell).includes(normalizeStr(props.searchInput))
+            : normalizeStr(cell).toString(10).includes(normalizeStr(props.searchInput))
+          ))
+      })
+      var isEmpty = false
+      if (filter == 0)
+      {
+        isEmpty = true
+        emit ('notFound', isEmpty)
+        return []
+      } 
+      else{
+        isEmpty = false
+        emit ('notFound', isEmpty)
+        return filter
+      }
+       
 })
 </script>
 
@@ -101,6 +128,7 @@ table {
 
 thead {
   position: sticky;
+  position: -webkit-sticky;
   top: 0;
   z-index: 2;
 }
@@ -123,7 +151,7 @@ tr:nth-child(even) {
   background-color: var(--c-accent);
 }
 
-tbody > tr:hover {
+tbody>tr:hover {
   filter: brightness(0.9);
 }
 
@@ -132,21 +160,22 @@ tr.selected {
   color: white;
 }
 
-tbody > tr.selected:hover {
+tbody>tr.selected:hover {
   filter: none;
 }
 
-td, th {
+td,
+th {
   min-width: 10ch;
   padding: 0 1ch;
 }
 
-:is(th, td).button  {
+:is(th, td).button {
   min-width: 60px;
   text-align: center;
 }
 
-td.button > button {
+td.button>button {
   border: none;
   background-color: var(--c-select);
   width: 37px;
@@ -156,7 +185,7 @@ td.button > button {
   cursor: pointer;
 }
 
-tr.selected > td.button > button {
+tr.selected>td.button>button {
   background-color: var(--c-bg-light);
   color: var(--c-select);
   transition: all 0.2s;
