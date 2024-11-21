@@ -50,15 +50,15 @@
                 <p class="sub-subtitulo">Team</p>
                 <div class="display">
                   <button class="edit" @click="editButton">
-                    <img src="/home/code/jeec-admin-2025/src/assets/pencil.svg" alt="Edit" />
+                    <img src="../../src/assets/pencil.svg" alt="Edit" />
                   </button>
                   <button class="edit" @click="TeamMembers">
                     <a href="/teams/members/externalid">
-                      <img src="/home/code/jeec-admin-2025/src/assets/linkedin.svg" alt="Team" />
+                      <img src="../../src/assets/linkedin.svg" alt="Team" />
                     </a>
                   </button>
                   <button class="edit" @click="deleteTeam">
-                    <img src="/home/code/jeec-admin-2025/src/assets/trash.svg" alt="Delete" />
+                    <img src="../../src/assets/trash.svg" alt="Delete" />
                   </button>
                 </div>
                 <p class="descricao">Description:</p>

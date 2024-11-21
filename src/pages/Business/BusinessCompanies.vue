@@ -142,7 +142,7 @@ const newCompany = ref({
 const selectedRow = ref(null);
 const selectedEvent = ref('JEEC25');
 
-const companies = ref([...companiesData]); 
+let companies = ref([...companiesData]); 
 const events = ref([...eventsData]);
 const days = ref([...daysData]); 
 const tiers = ref([...tiersData]);

@@ -166,8 +166,15 @@ tbody>tr.selected:hover {
 
 td,
 th {
-  min-width: 10ch;
+  min-width: 5ch;
+  max-width: 10ch;
   padding: 0 1ch;
+}
+
+td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 :is(th, td).button {
