@@ -1,17 +1,11 @@
 
 
-
-
-
-//Por as dashboard do mesmo tamanho
-//Fechar tudo com cruzes, pop ups e dashboards
-//dashboard é popup em telemovel
-
-
+//tenho de fazer 1 contentor que contenha o wrapper e a dashboard
+//e fazer aquilo q o pedro fez para remover cenas da tabela
 
 
 <template>
-  <div class="wrapper">
+  <div class="wrapper" v-if="!isMobile()">
     <div class="no-events-message" v-if="tableData.length === 0">
       <p>No Event Days found</p>
     </div>
@@ -31,6 +25,7 @@
     </div>
     <div class="dashboard" v-if="showDashboard">
       <div class="dashboard-header">
+        <button @click="closeDashboard" class="close-btn">×</button>
         <h1 class="dbWeekday">{{ selectedRow.Weekday }}</h1>
         <img class="JEEC-Logo" :src="selectedRow.Logo" alt="JEEC Logo" />
           <div class="dashboard-title">
@@ -38,7 +33,7 @@
             <p class="dashboard-subtitle">Activities</p>
           </div>
           <div class="dashboard-buttons">
-            <button @click="editRow(selectedRow)" class="image-button">
+            <button @click="addPopUp/*editRow(selectedRow)*/" class="image-button">
               <img src="../../assets/pencil.svg">
             </button>
             <button @click="goToActivitiesDay" class="image-button">
@@ -60,8 +55,9 @@
           </div>
       </div>
     </div>
-    <div class=" pop-up-overlay" v-if="showModal"> 
+    <div class="pop-up-overlay" v-if="showModal"> 
       <div class="pop-up">
+        <button @click="closePopUp" class="close-btn">×</button>
       <form @submit.prevent="addNewActivity">
         <div class="form-group title-group">
           <h2>Add New Activity</h2>
@@ -116,19 +112,144 @@
 
         <div class="form-actions">
             <button type="submit" class="pop-up-add-btn">Add</button>
-            <button type="button" class="pop-up-close-btn" @click="closePopUp">Close</button>
         </div>
       </form>
       </div>
     </div>
   </div>
+  <div class="wrapper" v-if="isMobile()">
+    <div class="no-events-message" v-if="tableData.length === 0">
+      <p>No Event Days found</p>
+    </div>
+    <div class="table-with-buttons" v-if="tableData.length > 0 && !showDashboard">
+      <div class="buttons">
+        <button class="add-btn" @click="addPopUp">Add Activity</button>
+        <button class="types-btn" @click="goToActivitiesTypes">Activity Types ></button>
+      </div>
+      <div class="table">
+        <TheTable
+          :data="MobileTableData"
+          :tableHeaders="MobileHeaders"
+          :searchInput="searchQuery"
+          @onRowSelect="handleRowSelect"
+        />
+      </div>
+    </div>
+    <div class="dashboard" v-if="showDashboard">
+      <div class="dashboard-header">
+        <button @click="closeDashboard" class="close-btn">×</button>
+        <h1 class="dbWeekday">{{ selectedRow.Weekday }}</h1>
+        <img class="JEEC-Logo" :src="selectedRow.Logo" alt="JEEC Logo" />
+          <div class="dashboard-title">
+            <p class="dbDate">{{ selectedRow.Date }}</p>
+            <p class="dashboard-subtitle">Activities</p>
+          </div>
+          <div class="dashboard-buttons">
+            <button @click="addPopUp/*editRow(selectedRow)*/" class="image-button">
+              <img src="../../assets/pencil.svg">
+            </button>
+            <button @click="goToActivitiesDay" class="image-button">
+              <img src="../../assets/sheet.svg">
+            </button>
+            <button @click="deleteRow(selectedRow)" class="image-button">
+              <img src="../../assets/trash.svg">
+            </button>
+          </div>
+          <div class="dashboard-body">
+            <div class="dashboard-paragraph">
+              <h1>Activities</h1>
+              <p>{{ selectedRow.NumberActivities }}</p>
+            </div>
+            <div class="dashboard-paragraph">
+              <h1>JobFair</h1>
+              <p>{{ selectedRow.NumberJobFair }}</p>
+            </div>
+          </div>
+      </div>
+    </div>
+    <div class="pop-up-overlay" v-if="showModal"> 
+      <div class="pop-up">
+        <button @click="closePopUp" class="close-btn">×</button>
+      <form @submit.prevent="addNewActivity">
+        <div class="form-group title-group">
+          <h2>Add New Activity</h2>
+        </div>
+        
+        <div class="form-group name-group">
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" v-model="newActivity.name">
+        </div>
+
+        <div class="form-group activity-type-group">
+            <label for="activity-type">Activity Type:</label>
+            <select id="activity-type" name="activity-type" v-model="newActivity.type">
+              <option value="" selected disabled hidden>Select Activity</option>
+              <option value="Nhe">Nhe</option>
+              <option value="Fixe">Fixe</option>
+              <option value="Muito Louco">Muito Louco</option>
+            </select>
+        </div>
+
+        <div class="form-group description-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" v-model="newActivity.description"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="day">Day:</label>
+            <select id="day" name="day" v-model="newActivity.day">
+              <option value="" selected disabled hidden>Select day</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
+              <option value="21">21</option>
+              <option value="22">22</option>
+              <option value="23">23</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="start-time">Start Time:</label>
+            <input type="text" id="start-time" name="start-time" v-model="newActivity.startTime">
+        </div>
+
+        <div class="form-group">
+            <label for="end-time">End Time:</label>
+            <input type="text" id="end-time" name="end-time" v-model="newActivity.endTime">
+        </div>
+
+        <div class="form-group">
+            <label for="qr-code">End Time QR Codes:</label>
+            <input type="text" id="qr-code" name="qr-code" v-model="newActivity.qrCode">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="pop-up-add-btn">Add</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>  
 </template>
 
 
 <script setup>
+import axios from 'axios';
+import { onMounted } from 'vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import TheTable from '../../global-components/TheTable.vue';
+
+const fetchData = () => {
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities_vue', {event_id:"31cd68cf-ac76-4ae5-b9f3-434988d2556f",username:"Rafa"},{auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then((response)=>{
+          const data = response.data
+          console.log(response.data.real_activities)
+        })
+}
+
+onMounted(fetchData)
 
 const router = useRouter();
 function goToActivitiesTypes() {
@@ -154,6 +275,20 @@ const headers = ref ({
   NumberJobFair: '# Job Fair'
 });
 
+const MobileTableData = ref([
+  { Date: '19-02-2024', NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
+  { Date: '20-02-2024', NumberActivities: 9, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
+  { Date: '21-02-2024', NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
+  { Date: '22-02-2024', NumberActivities: 9, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
+  { Date: '23-02-2024', NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
+]);
+
+const MobileHeaders = ref ({
+  Date: 'Day',
+  NumberActivities: '# Activities',
+  NumberJobFair: '# Job Fair'
+});
+
 const searchQuery = ref('');
 const showDashboard = ref(false);
 const selectedRow = ref(null);
@@ -166,7 +301,20 @@ const newActivity = ref({
   day: '',
   startTime: '',
   endTime: '',
-  qrCode: '' }); // Dados da nova atividade
+  qrCode: '' });
+
+function isMobile() {
+  if(window.innerWidth <= 768) {
+    return true;
+  }
+  else {
+  return false;
+  }
+}
+
+function closeDashboard() {
+  showDashboard.value = false;
+}
 
 function addPopUp() {
   showModal.value = true;
@@ -212,6 +360,7 @@ function deleteRow(row) {
   position: relative;
   padding: 5ch 3ch 3ch 3ch;
   overflow-y: hidden;
+  max-height: calc(100vh - var(--header-height));
 }
 
 .no-events-message {
@@ -247,7 +396,6 @@ button {
   border-radius: 5px;
   font-size: 14px;
   cursor: pointer;
-
   font-family: 'Kumbh Sans', sans-serif;
   font-weight: 550;
 }
@@ -273,12 +421,13 @@ button:hover {
 }
 
 .dashboard {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   padding: 3vh 2.5vw;
-  max-height: max-content;
+  height: 100%;
   width: 25vw;
   background-color: var(--c-accent);
   border-radius: 2vh;
@@ -296,14 +445,42 @@ button:hover {
   gap:1vw;
 }
 
+.close-btn {
+  position: absolute;
+  top: 2%;
+  right: 2%;
+  background: none;
+  border: none;
+  font-size: 1.5vw;
+  color: #333;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 999;
+  padding: 0em;
+  border-radius: 50%;
+  width: 3vw;
+  height: 3vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: none;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: #666;
+  background-color: transparent;
+}
+
 .dbWeekday{
   text-transform: uppercase;
   font-size: 1.7vw;
 }
 
 .JEEC-Logo {
-  width: 150px;
-  height: 150px;
+  width: 15vw;
+  max-width: 150px;
+  height: auto;
   border-radius: 50%;
   object-fit: cover;
   aspect-ratio: 1 / 1;
@@ -343,18 +520,20 @@ button:hover {
   border: none;
   border-radius: 20%;
   cursor: pointer;
-  align-content: space-between;
-  width:  2.5vw;
-  height: 2.5vw;
-  display: center;
+  width: 5vw;
+  max-width: 35px;
+  height: 5vw;
+  max-height: 35px;
+  display: flex;
   justify-content: center;
-  padding: 1%;
+  align-items: center;
+  padding: 0;
 }
 
 .image {
-  width: 2vw;
-  height: 2vw;
-  color: var(--c-ft-dark);
+  width: 80%;
+  height: auto;
+  object-fit: contain;
 }
 
 .dashboard-body{
@@ -391,6 +570,7 @@ button:hover {
 }
 
 .pop-up {
+  position: relative;
   background-color: white;
   padding: 20px;
   border-radius: 8px;
@@ -401,6 +581,10 @@ button:hover {
   flex-direction: column;
   gap: 10px;
   z-index: 1000;
+}
+
+.pop-up .close-btn {
+  font-size: 2vw;
 }
 
 form {
@@ -470,20 +654,7 @@ form input, form select, form textarea {
   cursor: pointer;
 }
 
-.pop-up-close-btn {
-  background-color: #ccc;
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
 .pop-up-add-btn:hover {
   background-color: #4782c0;
-}
-
-.pop-up-close-btn:hover {
-  background-color: #999;
 }
 </style>
