@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <template v-if="this.$route.name != 'login'">
+    <template v-if="route.name != 'login'">
         <div 
         v-show="stateStore.sideNavOpen"
         class="nav-backdrop" 
@@ -19,6 +19,9 @@
 <script setup>
 import TheNav from './global-components/TheNav.vue';
 import TheHeader from './global-components/TheHeader.vue';
+import { useRoute } from 'vue-router';
+const route = useRoute();
+
 import { useUserStore } from './stores/user';
 import { useStateStore } from './stores/state';
 
@@ -54,7 +57,9 @@ main {
 }
 
 @media screen and (max-width: 1000px) {
-  main, .header {
+
+  main,
+  .header {
     padding-left: 0;
   }
 
