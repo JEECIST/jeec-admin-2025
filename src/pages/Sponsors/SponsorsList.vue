@@ -74,7 +74,7 @@ const props = defineProps({
   overflow-y: auto;
   padding: 50px 50px 50px 50px;
   height: fit-content;
-  max-height: 95vh;
+  max-height: 80vh;
   margin: 3vh auto;
   background-color: #ffff;
   font-size: 0.9em;
@@ -137,5 +137,23 @@ const props = defineProps({
   min-height: 20px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+@media (max-width: 700px) {
+
+  .sponsors-grid {
+    grid-template-columns: 1fr; /* 1 column */
+  }
+
+  /* Alternate row background across two columns */
+.sponsor-item:nth-child(odd) {
+  background-color: var(--c-bg-light);
+}
+
+.sponsor-item:nth-child(even) {
+  background-color: var(--c-accent);
+}
+
+
 }
 </style>
