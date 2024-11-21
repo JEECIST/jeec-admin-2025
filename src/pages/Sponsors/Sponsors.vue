@@ -182,7 +182,7 @@ const eventselected = ref('');
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  padding: 25px 40px 40px 40px;
+  padding: 15px 40px 15px 40px;
   gap: 15px;
 }
 

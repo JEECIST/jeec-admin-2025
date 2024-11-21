@@ -197,7 +197,7 @@ function tooglelist()
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  padding: 40px 40px 40px 40px;
+  padding: 25px 40px 25px 40px;
   gap: 15px;
 }
 
