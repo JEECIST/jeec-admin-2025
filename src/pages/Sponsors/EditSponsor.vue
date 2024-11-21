@@ -2,7 +2,7 @@
   <div class="backdrop">
     <div class="tier-pop-up">
       <div class="header">
-        <h1>Add Sponsor</h1>
+        <h1>Edit Sponsor</h1>
         <button @click="closePopup" class="close-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"  fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
           <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -160,7 +160,7 @@ const props = defineProps({
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 10px;
+  gap: 15px;
   height: 100%;
   width: 100%;
   padding-right: 26px;

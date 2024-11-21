@@ -1,14 +1,6 @@
-
-
-
-
-
 //Por as dashboard do mesmo tamanho
 //Fechar tudo com cruzes, pop ups e dashboards
 //dashboard é popup em telemovel
-
-
-
 
 <template>
   <div class="wrapper">
