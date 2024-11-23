@@ -112,7 +112,7 @@ function isMobile() {
             </div>
         </div>
         <div class="btns">
-            <button class="add" @click.stop="emit('modal-close')">Add</button>
+            <button class="add" @click.stop="emit('modal-close')">Save</button>
         </div>
         </div>
         </div>
@@ -208,7 +208,7 @@ function isMobile() {
             </div>
         </div>
         <div class="mobile-btns">
-            <button class="mobile-add" @click.stop="emit('modal-close')">Add</button>
+            <button class="mobile-add" @click.stop="emit('modal-close')">Save</button>
             <button class="mobile-add" @click.stop="emit('modal-close')">Cancel</button>
         </div>
         </div>
@@ -250,6 +250,7 @@ function isMobile() {
     top: 50%;
     left: 50%;
     translate: -50% -50%;
+    border-radius: 15px;
     overflow-y: auto;
     overflow-x: hidden;
 }
