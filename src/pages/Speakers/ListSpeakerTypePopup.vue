@@ -121,6 +121,7 @@ const tablePref = {
   top: 50%;
   left: 50%;
   translate: -50% -50%;
+  border-radius: 15px;
   overflow-y: auto;
   overflow-x: hidden;
 }

@@ -111,8 +111,9 @@
           </div>
             
         </div>
-        <button class="button-add-sponsor">Save</button>
       </form>
+      <button class="button-add-sponsor">Add</button>
+      
     </div>
   </div>
   
@@ -146,19 +147,19 @@ const props = defineProps({
 .tier-pop-up{
   display: flex;
   flex-direction: column;
-  max-width: 73%;
+  width: 90vw;
+  max-width: 900px;
   overflow-y: auto;
-  padding: 4vw;
-  min-height: 640px;
-  max-height: 80vh;
+  padding: 50px 50px 50px 50px;
+  height: fit-content;
+  max-height: 95vh;
   margin: 3vh auto;
-  border-radius: 3vw;
   background-color: #ffff;
   font-size: 0.9em;
   color: var(--text-color);
   font-family: var(--font-family);
   z-index: 3;
-  gap:3vh;
+  gap: 20px;
 }
 
 .header{
@@ -175,6 +176,7 @@ const props = defineProps({
   border: none;
   cursor: pointer;
   align-self: flex-end;
+  margin-right: -8px;
 }
 
 .tier-pop-up h1{
@@ -414,8 +416,7 @@ input[type="radio"] {
 
 .button-add-sponsor {
   width: 100px;
-  min-height: 40px;
-  height: 100%; 
+  height: 40px;
   border: none;
   border-radius: 0.7vh;
   outline-color: var(--c-select);
@@ -424,13 +425,23 @@ input[type="radio"] {
   font-weight: 500;
   color: #FFFFFF;
   background-color: #152259;
-  padding: 0.2vw 1vw;
+  padding: 8px 5px 8px 5px;
   cursor: pointer;
   align-self: flex-end;
-  margin: 5px 5px 5px 5px;
 }
 
-  
+@media (max-width: 700px) {
+
+  .tier-pop-up{
+    padding: 50px 30px 50px 30px;
+  }
+  .second-column{
+    align-content: center;
+    width: fit-content;
+    font-size: 1em;
+  }
+}
+
 
 
 </style>

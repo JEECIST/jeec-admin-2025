@@ -91,7 +91,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 import TheTable from '../../global-components/TheTable.vue';
 import AddSponsor from './AddSponsor.vue';
 import EditSponsor from './EditSponsor.vue';
@@ -99,21 +100,41 @@ import pencilIcon from '../../assets/pencil.svg'
 import trashIcon from '../../assets/trash.svg'
 
 // Example data to be displayed in the table
-const tableData = ref([
-  { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk', eventselected: 'JEEC 23/24', showInWebsite: false },
-  { id: 2, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
-  { id: 3, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-  { id: 4, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv', eventselected: 'JEEC 23/24', showInWebsite: false },
-  { id: 5, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
-  { id: 6, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-  { id: 7, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv', eventselected: 'JEEC 23/24', showInWebsite: false },
-  { id: 8, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
-  { id: 9, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-  { id: 10, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv ', eventselected: 'JEEC 23/24', showInWebsite: false },
-  { id: 11, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
-  { id: 12, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
+const tableData = ref([{
+  id: null,
+  name: null,
+  company: null,
+}])
 
-]);
+
+const fetchData = () => {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/sponsors_vue',{auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then((response)=>{
+          const data = response.data
+          tableData.value = response.data.sponsors
+          console.log(tableData.value)
+        })
+}
+
+onMounted(fetchData)
+
+// const tableData = ref([
+//   { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk', eventselected: 'JEEC 23/24', showInWebsite: false },
+//   { id: 2, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
+//   { id: 3, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
+//   { id: 4, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv', eventselected: 'JEEC 23/24', showInWebsite: false },
+//   { id: 5, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
+//   { id: 6, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
+//   { id: 7, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv', eventselected: 'JEEC 23/24', showInWebsite: false },
+//   { id: 8, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
+//   { id: 9, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
+//   { id: 10, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv ', eventselected: 'JEEC 23/24', showInWebsite: false },
+//   { id: 11, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
+//   { id: 12, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
+
+// ]);
 
 // Headers to map the data keys to table headers
 const headers = {
@@ -181,7 +202,7 @@ const eventselected = ref('');
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  padding: 14px 20px 20px 20px;
+  padding: 34px 40px 40px 40px;
   gap: 15px;
 }
 
@@ -192,16 +213,16 @@ const eventselected = ref('');
   align-items: center;
   overflow-y: auto;
   padding: 10px 10px 10px 10px;
-  align-self: flex-end;
-  height: calc(75vh - 14px);
-  max-height: 446px;
+  align-self: flex-start;
+  height: fit-content;
+  max-height: calc(75vh - 14px);
   width: 20%;
   min-width: 250px;
   background-color: var(--c-accent);
   border-radius: 10px;
   gap: 10px;
-  flex-grow: 1;
   z-index: 3;
+  margin-top: 13px;
 }
 
 .sponsor-card-header {
@@ -290,7 +311,6 @@ const eventselected = ref('');
   justify-content: flex-start;
   align-items: center;
   height: 75vh;
-  max-height: 460px;
   width: 80%;
   min-width: 300px;
   overflow: hidden;
@@ -491,15 +511,16 @@ const eventselected = ref('');
 
   .sponsors-table {
     max-height: 700px;
-    height: 90vh;
+    height: 78vh;
   }
 
   .sponsor-card {
     position: absolute; /* Position the sponsor card absolutely */
-    top: 120px; /* Position the sponsor card 50px below the center */
+    top: 118px; /* Position the sponsor card 50px below the center */
     width: 90vw; /* Set the width to 100% */
-    max-height: fit-content;
-    height: 80vh; /* Set the height to 100% */
+    max-height: 80vh;
+    height: fit-content; /* Set the height to 100% */
+    margin-top: 0;
   }
   .sponsor-card-body h1{
     font-size: 1em;

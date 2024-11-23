@@ -50,15 +50,15 @@
                 <p class="sub-subtitulo">Team</p>
                 <div class="display">
                   <button class="edit" @click="editButton">
-                    <img src="/home/code/jeec-admin-2025/src/assets/pencil.svg" alt="Edit" />
+                    <img src="../../src/assets/pencil.svg" alt="Edit" />
                   </button>
                   <button class="edit" @click="TeamMembers">
                     <a href="/teams/members/externalid">
-                      <img src="/home/code/jeec-admin-2025/src/assets/linkedin.svg" alt="Team" />
+                      <img src="../../src/assets/linkedin.svg" alt="Team" />
                     </a>
                   </button>
                   <button class="edit" @click="deleteTeam">
-                    <img src="/home/code/jeec-admin-2025/src/assets/trash.svg" alt="Delete" />
+                    <img src="../../src/assets/trash.svg" alt="Delete" />
                   </button>
                 </div>
                 <p class="descricao">Description:</p>
@@ -196,16 +196,26 @@ export default {
       selectedFile: null,
     };
   },
-  // computed: {
-  //   filteredTeams() {
-  //     // if (!this.teams) return [];
-  //     return this.teams.filter(team => {
-  //       const matchesSearchQuery = team.name.toLowerCase().includes(this.searchQuery.toLowerCase());
-  //       const matchesSelectedEvent = this.selectedEvent ? team.event.toLowerCase() === this.selectedEvent.toLowerCase() : true;
-  //       return matchesSearchQuery && matchesSelectedEvent;
-  //     });
-  //   },
-  // },
+  computed: {
+    filteredTeams() {
+      return this.teams.filter(team => {
+        const matchesSearchQuery = team.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+        const matchesSelectedEvent = this.selectedEvent ? team.event.toLowerCase() === this.selectedEvent.toLowerCase() : true;
+        return matchesSearchQuery && matchesSelectedEvent;
+      });
+    },
+  },
+  mounted() {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/teams-vue',{auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }}).then(response => {
+      const data = response.data;
+      this.teams = data.teams;
+      console.log(this.teams);
+    })
+    
+  },
   methods: {
     handleEventChange() {
       console.log(this.selectedEvent);

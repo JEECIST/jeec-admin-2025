@@ -69,19 +69,19 @@ const props = defineProps({
 .tier-pop-up {
   display: flex;
   flex-direction: column;
-  max-width: 73%;
+  width: 90vw;
+  max-width: 900px;
   overflow-y: auto;
-  padding: 4vw;
-  min-height: 500px;
-  max-height: 60vh;
+  padding: 50px 50px 50px 50px;
+  height: fit-content;
+  max-height: 95vh;
   margin: 3vh auto;
-  border-radius: 3vw;
   background-color: #ffff;
   font-size: 0.9em;
   color: var(--text-color);
   font-family: var(--font-family);
   z-index: 3;
-  gap: 3vh;
+  gap: 40px;
 }
 
 .header {
