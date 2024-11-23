@@ -32,7 +32,7 @@
           <div :class="{'table-wrapper': true, 'hidden': showEditPopup || showAddPopup || showPopup}">
             <div class="scrollbar">
               <TheTable
-                :data="filteredTeams"
+                :data="this.teams"
                 :tableHeaders="{ name: 'Name', event: 'Event', priority: 'Priority', members: 'Members' }"
                 :searchInput="searchQuery"
                 @onRowSelect="selectTeam"
@@ -156,9 +156,10 @@
       </div>
     </div>
 
-    <div v-if="filteredTeams.length === 0" class="form">
+    <!-- <div v-if="filteredTeams.length === 0" class="form">
       <label class="no-teams">No teams found</label>
-    </div>
+    </div> -->
+
   </div>
 </template>
 
@@ -274,6 +275,15 @@ export default {
         this.showPopup = false;
       }
     },
+  },
+  mounted() {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/teams-vue',{auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then(response => {const data = response.data; this.bigdata = data; this.teams = data.teams;
+          console.log(response.data.events);
+        })
+        
   },
 };
 </script>
