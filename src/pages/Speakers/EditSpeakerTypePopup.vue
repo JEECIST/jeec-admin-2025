@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, ref } from "vue";
+import { defineProps, defineEmits, ref, onMounted, onUnmounted } from "vue";
 
 const props = defineProps({
     isOpen: Boolean,
@@ -7,20 +7,16 @@ const props = defineProps({
 
 const emit = defineEmits(["modal-close"]);
 
-function isMobile() {
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
+const isMobile = ref();
+function updateIsMobile() { isMobile.value = window.innerWidth <= 800; }
+onMounted(() => { window.addEventListener('resize', updateIsMobile); });
+onUnmounted(() => { window.removeEventListener('resize', updateIsMobile); });
 
 </script>
 
 <template>
     <div v-if="isOpen" class="modal-mask">
-        <div class="desktop" v-if="!isMobile()">
+        <div class="desktop" v-if="!isMobile">
             <div class="wrapper">
                 <div class="popup-wrapper">
                     <div class="ihatedivs">
@@ -167,6 +163,7 @@ function isMobile() {
     border-radius: 15px;
     overflow-y: auto;
     overflow-x: hidden;
+    border-radius: 15px;
 }
 
 .mobile-wrapper {
@@ -182,6 +179,7 @@ function isMobile() {
     border-radius: 15px;
     overflow-y: auto;
     overflow-x: hidden;
+    border-radius: 15px;
 }
 
 .popup-wrapper {

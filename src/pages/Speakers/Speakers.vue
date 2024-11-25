@@ -1,3 +1,6 @@
+<!-- falta meter parte "no speakers found" - ver codigo dos sponsors -->
+
+
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
 import { ref, onMounted, onUnmounted } from 'vue';
@@ -326,8 +329,19 @@ select {
   padding-left: 1ch;
   border-radius: 10px;
   flex-grow: 0.7;
+  /* flex-shrink: 100; */
 }
 
+.search-mobile {
+  display: flex;
+  width: 70vw;
+  background-color: var(--c-accent);
+  line-height: 50px;
+  gap: 1ch;
+  padding-left: 1ch;
+  border-radius: 10px;
+  flex-grow: 0.7;
+}
 
 form>label>img {
   width: 20px;
@@ -503,6 +517,10 @@ form>input::placeholder {
 }
 
 .topbar-wrapper {
+  width: 100vw;
+}
+
+.topbar-wrapper {
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -512,6 +530,7 @@ form>input::placeholder {
   display: flex;
   flex-direction: row;
   gap: 15px;
+  justify-content: space-between;
 }
 
 .topbtns {

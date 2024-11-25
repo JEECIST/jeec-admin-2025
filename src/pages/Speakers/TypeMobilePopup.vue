@@ -1,3 +1,6 @@
+<!-- falta meter ellipsis no text- ver codigo da tabela -->
+
+
 <script setup>
 import { defineProps, defineEmits, ref } from "vue";
 import EditSpeakerTypePopup from './EditSpeakerTypePopup.vue';
@@ -10,29 +13,20 @@ const props = defineProps({
 const emit = defineEmits(["modal-close"]);
 
 const isOtherModalOpened = ref(false);
-
-const openOtherModal = () => {
-    isOtherModalOpened.value = true;
-};
-const closeOtherModal = () => {
-    isOtherModalOpened.value = false;
-};
-
-
 const isAnotherModalOpened = ref(false);
-
-const openAnotherModal = () => {
-  isAnotherModalOpened.value = true;
-};
-const closeAnotherModal = () => {
-  isAnotherModalOpened.value = false;
-};
+const openOtherModal = () => { isOtherModalOpened.value = true; };
+const closeOtherModal = () => { isOtherModalOpened.value = false; };
+const openAnotherModal = () => { isAnotherModalOpened.value = true; };
+const closeAnotherModal = () => { isAnotherModalOpened.value = false; };
 
 </script>
 
 <template>
     <div v-if="isOpen" class="modal-mask">
         <div class="right-popup-placeholder-mobile">
+            <div class="close-wrapper">
+                <button class="close" @click.stop="emit('modal-close')">X</button>
+            </div>
             <div class="items">
                 <div class="speaker-photo">Insert Speaker Photo</div>
                 <h3 class="text1">Speaker Type</h3>
@@ -81,7 +75,6 @@ const closeAnotherModal = () => {
                         </div>
                     </div>
                 </div>
-                <button class="close" @click.stop="emit('modal-close')"> Close </button>
             </div>
         </div>
     </div>
@@ -99,14 +92,17 @@ const closeAnotherModal = () => {
 }
 
 .right-popup-placeholder-mobile {
-    width: 90.5vw;
-    height: 88vh;
+    width: 350px;
+    height: 80vh;
     border-radius: 30px;
     background-color: var(--c-accent);
     position: absolute;
     top: 50%;
     left: 50%;
     translate: -50% -50%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 3%;
 
 }
 
@@ -188,5 +184,26 @@ button {
     outline: none;
     border: none;
     cursor: pointer;
+}
+
+.close-wrapper {
+  display: flex;
+  justify-content: right;
+  margin-right: 2%;
+}
+
+.close {
+  background-color: var(--c-accent);
+  color: rgba(0, 0, 0, 0.710);
+  font-size: large;
+  font-weight: bolder;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  width: 2vw;
+  height: 3.5vh;
+  margin-top: 3%;
+  margin-right: 2%;
+  margin-bottom: -8%;
 }
 </style>

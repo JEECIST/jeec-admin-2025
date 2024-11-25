@@ -1,3 +1,6 @@
+<!-- falta meter ellipsis no text- ver codigo da tabela -->
+
+
 <script setup>
 import { defineProps, defineEmits, ref } from "vue";
 import EditSpeakerPopup from './EditSpeakerPopup.vue';
@@ -9,12 +12,9 @@ const props = defineProps({
 const emit = defineEmits(["modal-close"]);
 
 const isOtherModalOpened = ref(false);
-
+const descriptionShow = ref(false);
 const openOtherModal = () => { isOtherModalOpened.value = true; };
 const closeOtherModal = () => { isOtherModalOpened.value = false; };
-
-const descriptionShow = ref(false);
-
 function showfunction() { descriptionShow.value = true; }
 function closeDescription() { descriptionShow.value = false; }
 
@@ -119,6 +119,7 @@ function closeDescription() { descriptionShow.value = false; }
     translate: -50% -50%;
     overflow-y: auto;
     overflow-x: hidden;
+    padding-bottom: 3%;
 
 }
 
@@ -270,4 +271,5 @@ button {
   margin-right: 2%;
   margin-bottom: -8%;
 }
+
 </style>
