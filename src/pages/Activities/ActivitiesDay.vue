@@ -1,41 +1,43 @@
 <template>
-  <div class="wrapper" v-if="!isMobile()">
+  <div class="wrapper">
     <div class="no-events-message" v-if="tableDataActivities.length === 0 && tableDataJobFair.length === 0">
       <p>No Event Days found</p>
     </div>
-    <div class="tables-with-title" v-if="tableDataActivities.length > 0 && tableDataJobFair.length > 0">
-      <div class="title-activities">
-        <h1>Activities</h1>
-      </div>
-      <div class="table-activities">
-        <TheTable
-          :data="tableDataActivities"
-          :tableHeaders="headersActivities"
-          :searchInput="searchQuery"
-          @onRowSelect="handleRowSelect"
-        />
-      </div>
-      <div class="title-job-fair">
-        <h1>Job Fair</h1>
-      </div>
-      <div class="table-job-fair">
-        <TheTable
-          :data="tableDataJobFair"
-          :tableHeaders="headersJobFair"
-          :searchInput="searchQuery"
-          @onRowSelect="handleRowSelect"
-        />
+    <div class="left-container">
+      <div class="tables-with-title" v-if="tableDataActivities.length > 0 && tableDataJobFair.length > 0 && !(isMobile && showDashboard)">
+        <div class="title-activities">
+          <h1>Activities</h1>
+        </div>
+        <div class="table-activities">
+          <TheTable
+            :data="tableDataActivities"
+            :tableHeaders="headersActivities"
+            :searchInput="searchQuery"
+            @onRowSelect="handleRowSelect"
+          />
+        </div>
+        <div class="title-job-fair">
+          <h1>Job Fair</h1>
+        </div>
+        <div class="table-job-fair">
+          <TheTable
+            :data="tableDataJobFair"
+            :tableHeaders="headersJobFair"
+            :searchInput="searchQuery"
+            @onRowSelect="handleRowSelect"
+          />
+        </div>
       </div>
     </div>
-    <div class="dashboard" v-if="showDashboard">
-      <div class="dashboard-header">
+    <div class="right-popup" v-if="showDashboard">
+      <div class="right-popup-header">
         <button @click="closeDashboard" class="close-btn">×</button>
         <img class="JEEC-Logo" :src="selectedRow.Logo" alt="JEEC Logo" />
-          <div class="dashboard-title">
+          <div class="right-popup-title">
             <p class="dbType">{{ selectedRow.Type }}</p>
-            <p class="dashboard-subtitle">{{ selectedRow.Subtitle }}</p>
+            <p class="right-popup-subtitle">{{ selectedRow.Subtitle }}</p>
           </div>
-          <div class="dashboard-buttons">
+          <div class="right-popup-buttons">
             <button @click="addPopUp/*editRow(selectedRow)*/" class="image-button">
               <img src="../../assets/pencil.svg">
             </button>
@@ -43,8 +45,8 @@
               <img src="../../assets/trash.svg">
             </button>
           </div>
-          <div class="dashboard-body">
-            <div class="dashboard-paragraph">
+          <div class="right-popup-body">
+            <div class="right-popup-paragraph">
               <div class="paragraph-item">
                 <h1>Start Time</h1>
                 <p>{{ selectedRow.StartTime }}</p>
@@ -54,13 +56,13 @@
                 <p>{{ selectedRow.EndTime }}</p>
               </div>
             </div>
-            <div class="dashboard-paragraph">
+            <div class="right-popup-paragraph">
               <div class="paragraph-item">
                 <h1>Name</h1>
                 <p>{{ selectedRow.Name }}</p>
               </div>
             </div>
-            <div class="dashboard-paragraph">
+            <div class="right-popup-paragraph" v-if="!isMobile">
               <div class="paragraph-item">
                 <h1>End Time QR Codes</h1>
                 <p>{{ selectedRow.EndTime }}</p>
@@ -130,143 +132,12 @@
       </form>
       </div>
     </div>
-  </div>  
-  <div class="wrapper" v-if="isMobile()">
-    <div class="no-events-message" v-if="tableDataActivities.length === 0 && tableDataJobFair.length === 0">
-      <p>No Event Days found</p>
-    </div>
-    <div class="tables-with-title" v-if="tableDataActivities.length > 0 && tableDataJobFair.length > 0 && !showDashboard">
-      <div class="title-activities">
-        <h1>Activities</h1>
-      </div>
-      <div class="table-activities">
-        <TheTable
-          :data="MobileTableDataActivities"
-          :tableHeaders="MobileHeadersActivities"
-          :searchInput="searchQuery"
-          @onRowSelect="handleRowSelect"
-        />
-      </div>
-      <div class="title-job-fair">
-        <h1>Job Fair</h1>
-      </div>
-      <div class="table-job-fair">
-        <TheTable
-          :data="MobileTableDataJobFair"
-          :tableHeaders="MobileHeadersJobFair"
-          :searchInput="searchQuery"
-          @onRowSelect="handleRowSelect"
-        />
-      </div>
-    </div>
-    <div class="dashboard" v-if="showDashboard">
-      <div class="dashboard-header">
-        <button @click="closeDashboard" class="close-btn">×</button>
-        <img class="JEEC-Logo" :src="selectedRow.Logo" alt="JEEC Logo" />
-          <div class="dashboard-title">
-            <p class="dbType">{{ selectedRow.Type }}</p>
-            <p class="dashboard-subtitle">{{ selectedRow.Subtitle }}</p>
-          </div>
-          <div class="dashboard-buttons">
-            <button @click="addPopUp/*editRow(selectedRow)*/" class="image-button">
-              <img src="../../assets/pencil.svg">
-            </button>
-            <button @click="deleteRow(selectedRow)" class="image-button">
-              <img src="../../assets/trash.svg">
-            </button>
-          </div>
-          <div class="dashboard-body">
-            <div class="dashboard-paragraph">
-              <div class="paragraph-item">
-                <h1>Start Time</h1>
-                <p>{{ selectedRow.StartTime }}</p>
-              </div>
-              <div class="paragraph-item">
-                <h1>End Time</h1>
-                <p>{{ selectedRow.EndTime }}</p>
-              </div>
-            </div>
-            <div class="dashboard-paragraph">
-              <div class="paragraph-item">
-                <h1>Name</h1>
-                <p>{{ selectedRow.Name }}</p>
-              </div>
-            </div>
-            <div class="dashboard-paragraph">
-              <div class="paragraph-item">
-                <h1>End Time QR Codes</h1>
-                <p>{{ selectedRow.EndTime }}</p>
-              </div>
-            </div>
-          </div>
-      </div>
-    </div>
-    <div class="pop-up-overlay" v-if="showModal"> 
-      <div class="pop-up">
-        <button @click="closePopUp" class="close-btn">×</button>
-      <form @submit.prevent="addNewActivity">
-        <div class="form-group title-group">
-          <h2>Add New Activity</h2>
-        </div>
-        
-        <div class="form-group name-group">
-          <label for="name">Name:</label>
-          <input type="text" id="name" name="name" v-model="newActivity.name">
-        </div>
-
-        <div class="form-group activity-type-group">
-            <label for="activity-type">Activity Type:</label>
-            <select id="activity-type" name="activity-type" v-model="newActivity.type">
-              <option value="" selected disabled hidden>Select Activity</option>
-              <option value="Nhe">Nhe</option>
-              <option value="Fixe">Fixe</option>
-              <option value="Muito Louco">Muito Louco</option>
-            </select>
-        </div>
-
-        <div class="form-group description-group">
-            <label for="description">Description:</label>
-            <textarea id="description" name="description" v-model="newActivity.description"></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="day">Day:</label>
-            <select id="day" name="day" v-model="newActivity.day">
-              <option value="" selected disabled hidden>Select day</option>
-              <option value="19">19</option>
-              <option value="20">20</option>
-              <option value="21">21</option>
-              <option value="22">22</option>
-              <option value="23">23</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="start-time">Start Time:</label>
-            <input type="text" id="start-time" name="start-time" v-model="newActivity.startTime">
-        </div>
-
-        <div class="form-group">
-            <label for="end-time">End Time:</label>
-            <input type="text" id="end-time" name="end-time" v-model="newActivity.endTime">
-        </div>
-
-        <div class="form-group">
-            <label for="qr-code">End Time QR Codes:</label>
-            <input type="text" id="qr-code" name="qr-code" v-model="newActivity.qrCode">
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" class="pop-up-add-btn">Add</button>
-        </div>
-      </form>
-      </div>
-    </div>
-  </div>  
+  </div>    
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import axios from 'axios';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import TheTable from '../../global-components/TheTable.vue';
 
@@ -283,12 +154,22 @@ const tableDataActivities = ref([
   { ID: '29', StartTime: '18:30',    EndTime: "20:00", Name: "YAPPING YAPPING",                  Type: "Alumni Talks",    Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
 ]);
 
-const headersActivities = ref ({
-  ID: 'ID',
-  StartTime: 'StartTime',
-  EndTime: 'EndTime',
-  Name: 'Name',
-  Type: 'Type'
+const headersActivities = computed(() => {
+  if (isMobile.value) {
+    return {
+      ID: 'ID',
+      StartTime: 'StartTime',
+      EndTime: 'EndTime',
+      Name: 'Name',
+      Type: 'Type'
+    };
+  }
+
+  return {
+    ID: 'ID',
+    Name: 'Name',
+    Type: 'Type'
+  };
 });
 
 const tableDataJobFair = ref([
@@ -300,47 +181,22 @@ const tableDataJobFair = ref([
   { ID: '3', StartTime: '09:00', EndTime: "19:00", Name: "Pingo Doce", Type: "Job Fair", Logo: "/src/assets/wrizz.jpg"},
 ]);
 
-const headersJobFair = ref ({
-  ID: 'ID',
-  StartTime: 'StartTime',
-  EndTime: 'EndTime',
-  Name: 'Company',
-  Type: 'Type'
-});
+const headersJobFair = computed(() => {
+  if (isMobile.value) {
+    return {
+      ID: 'ID',
+      Name: 'Company',
+      Type: 'Type'
+    };
+  }
 
-const MobileTableDataActivities = ref([
-  { ID: '3',  StartTime: '10:00',    EndTime: "11:00", Name: "Como transformar o caos em ordem", Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '42', StartTime: '11:00',    EndTime: "11:30", Name: "15/15 with Oracle",                Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '24', StartTime: '12:00',    EndTime: "13:30", Name: "Ética na Engenharia",              Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '36', StartTime: '14:00',    EndTime: "14:30", Name: "BLA BLA BLA",                      Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '12', StartTime: '14:30',    EndTime: "15:30", Name: "YAPPING YAPPING",                  Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '19', StartTime: '15:30',    EndTime: "16:00", Name: "YAPPING YAPPING YAPPING",          Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '40', StartTime: '16:00',    EndTime: "17:00", Name: "YAPPING YAPPING YAPPING YAPPING",  Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '7',  StartTime: '17:00',    EndTime: "18:30", Name: "YAPPING YAPPING YAPPING",          Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '29', StartTime: '18:30',    EndTime: "20:00", Name: "YAPPING YAPPING",                  Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-]);
-
-const MobileHeadersActivities = ref ({
-  ID: 'ID',
-  StartTime: 'StartTime',
-  EndTime: 'EndTime',
-  Name: 'Name'
-});
-
-const MobileTableDataJobFair = ref([
-  { ID: '3', StartTime: '09:00', EndTime: "19:00", Name: "Pingo Doce", Logo: "/src/assets/wrizz.jpg"},
-  { ID: '3', StartTime: '09:00', EndTime: "19:00", Name: "Pingo Doce", Logo: "/src/assets/wrizz.jpg"},
-  { ID: '3', StartTime: '09:00', EndTime: "19:00", Name: "Pingo Doce", Logo: "/src/assets/wrizz.jpg"},
-  { ID: '3', StartTime: '09:00', EndTime: "19:00", Name: "Pingo Doce", Logo: "/src/assets/wrizz.jpg"},
-  { ID: '3', StartTime: '09:00', EndTime: "19:00", Name: "Pingo Doce", Logo: "/src/assets/wrizz.jpg"},
-  { ID: '3', StartTime: '09:00', EndTime: "19:00", Name: "Pingo Doce", Logo: "/src/assets/wrizz.jpg"},
-]);
-
-const MobileHeadersJobFair = ref ({
-  ID: 'ID',
-  StartTime: 'StartTime',
-  EndTime: 'EndTime',
-  Name: 'Company'
+  return {
+    ID: 'ID',
+    StartTime: 'StartTime',
+    EndTime: 'EndTime',
+    Name: 'Company',
+    Type: 'Type'
+  };
 });
 
 const searchQuery = ref('');
@@ -357,14 +213,20 @@ const newActivity = ref({
   endTime: '',
   qrCode: '' });
 
-function isMobile() {
-   if(window.innerWidth <= 768) {
-     return true;
-   }
-   else {
-    return false;
-   }
-}
+const isMobile = ref(false);
+
+const updateIsMobile = () => {
+  isMobile.value = window.matchMedia('(max-width: 768px)').matches;
+};
+
+onMounted(() => {
+  updateIsMobile();
+  window.addEventListener('resize', updateIsMobile);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateIsMobile);
+});
 
 function closeDashboard() {
   showDashboard.value = false;
@@ -402,11 +264,19 @@ function handleRowSelect(row) {
 <style scoped>
 .wrapper {
   display: flex;
-  flex-direction: row;
-  position: relative;
+  box-sizing: border-box;
   padding: 5ch 3ch 3ch 3ch;
   overflow-y: hidden;
-  max-height: calc(100vh - var(--header-height));
+  width: calc(200dvh - var(--sidebar-width));
+  height: calc(100vh - var(--header-height));
+  background: #FFFFFF;
+}
+
+.left-container{
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
 }
 
 .no-events-message {
@@ -414,7 +284,7 @@ function handleRowSelect(row) {
   justify-content: center;
   align-items: center;
   width: 100%;
-  font-size: 2vw;
+  font-size: 25px;
   color: #4F4F4F;
   background-color: #EBF6FF;
   font-weight: 500; 
@@ -424,9 +294,7 @@ function handleRowSelect(row) {
   display: flex;
   flex-direction: column;
   width: 100%;
- 
   overflow-y: auto;
-  padding-right: 1rem;
 }
 
 .tables-with-title::-webkit-scrollbar {
@@ -439,11 +307,9 @@ function handleRowSelect(row) {
 }
 
 .table-activities, .table-job-fair {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 3ch;
-  padding-bottom: 3vh;
+  flex-grow: 1;
+  transition: flex-grow 0.3s ease;
+  margin-top: 1vh;
 }
 
 button {
@@ -454,7 +320,6 @@ button {
   border-radius: 5px;
   font-size: 14px;
   cursor: pointer;
-
   font-family: 'Kumbh Sans', sans-serif;
   font-weight: 550;
 }
@@ -463,29 +328,32 @@ button:hover {
   background-color: #4782c0;
 }
 
-.dashboard {
+.right-popup {
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   padding: 3vh 2.5vw;
-  max-height: 90dvh;
-  width: 25vw;
+  height: 100%;
+  width: 400px;
+  margin-left: 20px;
+  margin-right: 0px;
+  margin-top: -1px;
+  border-radius: 10px;
   background-color: var(--c-accent);
-  border-radius: 2vh;
   gap: 2vh;
-  min-height: 100%;
+  overflow-y: auto;
 }
 
-.dashboard-header {
+.right-popup-header {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   padding: 0.5vw 1vw;
-  gap:1vw;
+  gap: 5%;
 }
 
 .close-btn {
@@ -508,21 +376,21 @@ button:hover {
   align-items: center;
 }
 
-.close-btn:hover {
+.close-btn:hover,
+.close-btn:focus {
   color: #666;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: transparent;
 }
 
 .JEEC-Logo {
-  width: 15vw;
-  max-width: 150px;
+  width: 150px;
   height: auto;
   border-radius: 50%;
   object-fit: cover;
   aspect-ratio: 1 / 1;
 }
 
-.dashboard-title{
+.right-popup-title{
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -533,21 +401,22 @@ button:hover {
 .dbType{
   font-weight: 800;
   color: var(--c-ft-dark);
-  font-size:1.5vw;
+  font-size: 20px;
   margin-bottom: 5px;
 }
 
-.dashboard-subtitle{
+.right-popup-subtitle{
   color: var(--c-ft-semi-light);
-  font-size:1.1vw;
+  font-size: 15px;
 }
 
-.dashboard-buttons {
+.right-popup-buttons {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  gap: 1vw;
+  padding: 1%;
+  gap: 5%;
 }
 
 .image-button {
@@ -555,10 +424,8 @@ button:hover {
   border: none;
   border-radius: 20%;
   cursor: pointer;
-  width: 5vw;
-  max-width: 35px;
-  height: 5vw;
-  max-height: 35px;
+  width: 35px;
+  height: 35px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -571,27 +438,27 @@ button:hover {
   object-fit: contain;
 }
 
-.dashboard-body{
+.right-popup-body{
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
   width: 100%;
-  gap: 1.5vh;
+  gap: 1vh;
 }
 
-.dashboard-body h1{
+.right-popup-body h1{
   color: var(--c-ft-dark);
-  font-size: 0.9vw;
+  font-size: 14px;
   font-weight: 700;
 }
 
-.dashboard-body p{
-  font-size: 0.8vw;
+.right-popup-body p{
+  font-size: 14px;
   color: #A7A7A7;
 }
 
-.dashboard-paragraph {
+.right-popup-paragraph {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -600,10 +467,10 @@ button:hover {
 
 .paragraph-item {
   display: flex;
-  flex-direction: column; /* Título em cima do subtítulo */
+  flex-direction: column;
   justify-content: flex-start;
-  align-items: flex-start; /* Alinha os textos à esquerda */
-  gap: 0.5vh; /* Espaço entre título e subtítulo */
+  align-items: flex-start;
+  gap: 0.5vh;
 }
 
 .pop-up-overlay {
@@ -645,7 +512,7 @@ form {
 
 form label {
     display: block;
-    margin-bottom: 5px; /* Espaço entre o rótulo e o input */
+    margin-bottom: 5px;
 }
 
 form input, form select, form textarea {
