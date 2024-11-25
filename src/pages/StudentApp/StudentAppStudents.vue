@@ -100,7 +100,7 @@ const students = ref([
     id: 1,
     name: 'André Santos',
     username: 'andregay',
-    squad: 'parkour_is_gay',
+    squad: 'parkour_is_gayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
     dailyPoints: -1,
     totalPoints: -2,
     email: 'andregay@proton.me',
