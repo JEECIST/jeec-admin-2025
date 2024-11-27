@@ -1,9 +1,8 @@
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import AddPrizePopup from './AddPrizePopup.vue';
-import EditPrizePopup from './EditPrizePopup.vue';
+import EditPrizePopup from './EditPrizeShopPopup.vue';
+import AddPrizePopup from './AddPrizeShopPopup.vue';
 
 const popupShow = ref(false);
 
@@ -34,16 +33,6 @@ function isMobile() {
    }
 }
 
-const router = useRouter();
-
-function goToPrizeShop() {
-  router.push("/student-app/shop");
-}
-
-function goToPrizeSpecial() {
-  router.push("/student-app/special");
-}
-
 const message = ref();
 
 function selectCallback(row) {
@@ -51,101 +40,102 @@ function selectCallback(row) {
   popupShow.value = true;
 }
 
-function isDataBEmpty(){
-    return datab.length === 0;
-}
-
-
 const datab = [
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
   },
   {
     id:   "2",
     name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
+    price: "1.337",
+    limitPurchases: "-4"
+  },
+  {
+    id:   "2",
+    name: "Chamuça",
+    price: "1.337",
+    limitPurchases: "-4"
   },
 
 ];
@@ -153,15 +143,15 @@ const datab = [
 const tablePref = {
   id: "ID",
   name: "Name",
-  initialAmount: "Initial Amount",
-  currentAmount: "Current Amount"
+  price: "Price",
+  limitPurchases: "Limit Purchases"
 };
 
 </script>
 
 <template>
 <div class="desktop" v-if="!isMobile()">
-  <div class="wrapper">
+<div class="wrapper">
     <div class="table">
       <div class="topbar">
       <form>
@@ -171,59 +161,55 @@ const tablePref = {
         <input v-model="message" placeholder="Search for a prize">
       </form>
     
-      <button class="topbtn" @click="openModal">Add Prize</button>
-      <button class="topbtn" @click="goToPrizeSpecial">Special 〉</button>
-      <button @click="goToPrizeShop" class="topbtn">Shop 〉</button>
-      <Transition name="fade" appear>
-          <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-      </Transition>
-      <Transition name="fade" appear>
-          <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-      </Transition>
-      </div>
-        <div v-if="!isDataBEmpty()">
-            <TheTable
-            :data="datab"
-            :tableHeaders="tablePref"
-            :searchInput="message"
-            @onRowSelect="selectCallback"
-            ></TheTable>
-        </div>
-      </div>
-      <div class="right-popup-placeholder" v-show="popupShow">
-          <div class="items">
-            <h1>SHOP</h1>
-            <div class="prize-photo">Insert PPPPPrize Photo</div>
-            <h3 class="text1">Chamuça</h3>
-            <p class="text2 title">Prize</p>
-            <div class="btns-row">
-              <button class="btn" @click="openOtherModal">
-                  <img src="../../assets/pencil.svg">
-              </button>
-              <button class="btn">
-                  <img src="../../assets/internet.svg">
-              </button>
-              <button class="btn">
-                  <img src="../../assets/trash.svg">
-              </button>
-            </div>
-            <div id="info">
-              <p>Description</p>
-              <p class="text2">Vinda do ROSE STUPAA GOOAT</p>
-              <div class="row">
-                <div class="col">
-                  <p>Initial Amount</p>
-                  <p class="text2">69</p>           
-                </div>
-                <div class="col">
-                  <p>Current Amount</p>
-                  <p class="text2">6</p>
-                </div>
+     <button class="topbtn" @click="openModal">Add Prize</button>
+     <Transition name="fade" appear>
+        <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
+     </Transition>
+     <Transition name="fade" appear>
+        <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
+     </Transition>
+     </div>
+      <TheTable
+        :data="datab"
+        :tableHeaders="tablePref"
+        :searchInput="message"
+        @onRowSelect="selectCallback"
+      ></TheTable>
+    </div>
+    <div class="right-popup-placeholder" v-show="popupShow">
+        <div class="items">
+          <h1>SHOP</h1>
+          <div class="prize-photo">Insert PPPPPrize Photo</div>
+          <h3 class="text1">Chamuça</h3>
+          <p class="text2 title">Prize</p>
+          <div class="btns-row">
+            <button class="btn" @click="openOtherModal">
+                <img src="../../assets/pencil.svg">
+            </button>
+            <button class="btn">
+                <img src="../../assets/internet.svg">
+            </button>
+            <button class="btn">
+                <img src="../../assets/trash.svg">
+            </button>
+          </div>
+          <div id="info">
+            <p>Description</p>
+            <p class="text2">Vinda do ROSE STUPAA GOOAT</p>
+            <div class="row">
+              <div class="col">
+                <p>Initial Amount</p>
+                <p class="text2">69</p>           
+              </div>
+              <div class="col">
+                <p>Current Amount</p>
+                <p class="text2">6</p>
               </div>
             </div>
           </div>
         </div>
       </div>
+  </div>
 </div>
 
 
@@ -238,11 +224,7 @@ const tablePref = {
           </label>
           <input v-model="message" placeholder="Search for a prize">
         </form>
-
-        <div class="imsosickofdivs">
-        <button class="topbtn" @click="openModal">Add Prize</button>
-        <button class="topbtn" @click="goToPrizeSpecial">Special 〉</button>
-        <button @click="goToPrizeShop" class="topbtn">Shop 〉</button>
+      <button class="topbtn" @click="openModal">Add Prize</button>
       <Transition name="fade" appear>
           <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
       </Transition>
@@ -260,26 +242,12 @@ const tablePref = {
               <button class="btn" @click="openOtherModal">
                   <img src="../../assets/pencil.svg">
               </button>
-              <button class="btn">
-                  <img src="../../assets/internet.svg">
+              <button class="btn" @click="showfunction">
+                  <img src="../../assets/sheet.svg">
               </button>
               <button class="btn">
                   <img src="../../assets/trash.svg">
               </button>
-            </div>
-            <div id="info">
-              <p>Description</p>
-              <p class="text2">Vinda do ROSE STUPAA GOOAT</p>
-              <div class="row">
-                <div class="col">
-                  <p>Initial Amount</p>
-                  <p class="text2">69</p>           
-                </div>
-                <div class="col">
-                  <p>Current Amount</p>
-                  <p class="text2">6</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -291,22 +259,10 @@ const tablePref = {
         ></TheTable>
       </div>
     </div>
-  </div>
 </div>
 </template>
 
 <style scoped>
-
-.no-chamuca-found{
-  width: 85vw;
-  height: 80vh;
-  background-color: var(--c-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
 .mobile-wrapper {
   display: flex;
   flex-direction: column;

@@ -166,6 +166,12 @@ const routes = [
     },
   },
   {
+    path: "/student-app/points",
+    name: "studentapp-points",
+    meta: { title: "Points" },
+    component: () => import("../pages/StudentApp/StudentAppPrizesSpecial.vue"),
+  },
+  {
     path: "/student-app/students",
     name: "studentapp-students",
     meta: { title: "Students" },
