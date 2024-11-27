@@ -23,7 +23,10 @@ function isMobile() {
       <div class="desktop" v-if="!isMobile()">
         <div class="wrapper-wrapper">
         <div class="popup-wrapper" ref="target">
-            <h1>Edit Prize</h1>
+            <div class = "popupHeader">
+                <h1>Edit Prize</h1>
+                <button id = "closeButton" @click.stop="emit('modal-close')">X</button>
+            </div>
             <div class="stuff-inside">
             <div class="flex-1">
                 <div class="flex-1-row-1">
@@ -71,7 +74,6 @@ function isMobile() {
         </div>
         <div class="btns">
             <button class="add" @click.stop="emit('modal-close')">Add</button>
-            <button class="add" @click.stop="emit('modal-close')">Cancel</button>
         </div>
         </div>
         </div>
@@ -169,6 +171,25 @@ function isMobile() {
     top: 50%;
     left: 50%;
     translate: -50% -50%;
+}
+
+.popupHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    margin-right: 3%;
+}
+
+#closeButton {
+    width: 5%;
+    background-color: transparent;
+    font-size: 1.5em;
+    padding: 10px;
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
 }
 
 h1 {
@@ -325,7 +346,7 @@ select {
 
 #chamucapic,
 #companylogo {
-    width: 12.60vw;
+    width: 22vw;
     height: 22vh;
 }
 

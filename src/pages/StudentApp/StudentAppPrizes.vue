@@ -171,25 +171,25 @@ const tablePref = {
         <input v-model="message" placeholder="Search for a prize">
       </form>
     
-    <button class="topbtn" @click="openModal">Add Prize</button>
-    <button class="topbtn" @click="goToPrizeSpecial">Special 〉</button>
-    <button @click="goToPrizeShop" class="topbtn">Shop 〉</button>
-    <Transition name="fade" appear>
-        <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-    </Transition>
-    <Transition name="fade" appear>
-        <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-    </Transition>
-    </div>
-    <div v-if="!isDataBEmpty()">
-      <TheTable
-        :data="datab"
-        :tableHeaders="tablePref"
-        :searchInput="message"
-        @onRowSelect="selectCallback"
-      >
-    </TheTable>
-    
+      <button class="topbtn" @click="openModal">Add Prize</button>
+      <button class="topbtn" @click="goToPrizeSpecial">Special 〉</button>
+      <button @click="goToPrizeShop" class="topbtn">Shop 〉</button>
+      <Transition name="fade" appear>
+          <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
+      </Transition>
+      <Transition name="fade" appear>
+          <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
+      </Transition>
+      </div>
+        <div v-if="!isDataBEmpty()">
+            <TheTable
+            :data="datab"
+            :tableHeaders="tablePref"
+            :searchInput="message"
+            @onRowSelect="selectCallback"
+            ></TheTable>
+        </div>
+      </div>
       <div class="right-popup-placeholder" v-show="popupShow">
           <div class="items">
             <h1>SHOP</h1>
@@ -224,11 +224,6 @@ const tablePref = {
           </div>
         </div>
       </div>
-      <div class="no-chamuca-found" v-else>
-        <h2>NO PRIZES FOUND</h2>
-      </div>
-    </div>
-  </div>
 </div>
 
 

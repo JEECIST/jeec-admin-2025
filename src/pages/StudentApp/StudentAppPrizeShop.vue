@@ -215,80 +215,50 @@ const tablePref = {
 
 
 <div class="mobile" v-else>
-<div class="mobile-wrapper">
-    <div class="table">
-      <div class="mobile-topbar">
-      <form>
-        <label>
-          <img src="../../assets/search.svg">
-        </label>
-        <input v-model="message" placeholder="Search for a user">
-      </form>
-      <div class="imsosickofdivs">
-      <label for="evento" class="eventselect">Event</label>
-      <select name="evento" placeholder="  " class="eventselect">
-                <option value="null" disabled selected hidden></option>
-                <option>hello</option>
-                <option>there</option>
-            </select>
+  <div class="mobile-wrapper">
+      <div class="table">
+        <div class="mobile-topbar">
+        <form>
+          <label>
+            <img src="../../assets/search.svg">
+          </label>
+          <input v-model="message" placeholder="Search for a prize">
+        </form>
+      <button class="topbtn" @click="openModal">Add Prize</button>
+      <Transition name="fade" appear>
+          <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
+      </Transition>
+      <Transition name="fade" appear>
+          <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
+      </Transition>
       </div>
-     <button class="topbtn" @click="openModal">Add Speaker</button>
-     <button @click="goToSpeakerTypes" class="topbtn">Speaker Types 〉</button>
-     <Transition name="fade" appear>
-        <AddSpeakerPopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerPopup>
-     </Transition>
-     <Transition name="fade" appear>
-        <EditSpeakerPopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerPopup>
-     </Transition>
-     </div>
-     <div class="right-popup-placeholder-mobile" v-show="popupShow">
-        <div class="items">
-          <h1>SHOP</h1>
-          <div class="prize-photo">Insert PPPPPrize Photo</div>
-          <h3 class="text1">Chamuça</h3>
-          <p class="text2 title">Prize</p>
-          <div class="btns-row">
-            <button class="btn" @click="openOtherModal">
-                <img src="../../assets/pencil.svg">
-            </button>
-            <button class="btn" @click="showfunction">
-                <img src="../../assets/sheet.svg">
-            </button>
-            <button class="btn">
-                <img src="../../assets/linkedin.svg">
-            </button>
-            <button class="btn">
-                <img src="../../assets/trash.svg">
-            </button>
-          </div>
-          <div id="info">
-            <p>Company</p>
-            <p class="text2">Intel</p>
-            <p>Position</p>
-            <p class="text2">Global Team Technical Lead</p>
-            <div class="row">
-              <div class="col">
-                <p>Country</p>
-                <p class="text2">Germany</p>           
-              </div>
-              <div class="col">
-                <p>Event</p>
-                <p class="text2">JEEC 24</p>
-              </div>
+      <div class="right-popup-placeholder-mobile" v-show="popupShow">
+          <div class="items">
+            <h1>SHOP</h1>
+            <div class="prize-photo">Insert PPPPPrize Photo</div>
+            <h3 class="text1">Chamuça</h3>
+            <p class="text2 title">Prize</p>
+            <div class="btns-row">
+              <button class="btn" @click="openOtherModal">
+                  <img src="../../assets/pencil.svg">
+              </button>
+              <button class="btn" @click="showfunction">
+                  <img src="../../assets/sheet.svg">
+              </button>
+              <button class="btn">
+                  <img src="../../assets/trash.svg">
+              </button>
             </div>
-            <p>JEEC Responsible</p>
-            <p class="text2">Francisco Rosa</p>
           </div>
         </div>
+        <TheTable
+          :data="datab"
+          :tableHeaders="tablePref"
+          :searchInput="message"
+          @onRowSelect="selectCallback"
+        ></TheTable>
       </div>
-      <TheTable
-        :data="datab"
-        :tableHeaders="tablePref"
-        :searchInput="message"
-        @onRowSelect="selectCallback"
-      ></TheTable>
     </div>
-  </div>
 </div>
 </template>
 
