@@ -11,12 +11,11 @@ const routes = [
   },
   {
     path: "/dashboard",
-    alias: "/",
     name: "dashboard",
     component: Dashboard,
     meta: { 
       title: "Dashboard",
-      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams"],
+      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts"],
     },
   },
   {
@@ -24,6 +23,12 @@ const routes = [
     name: "activities",
     meta: { title: "Activities", children: false },
     component: () => import("../pages/Activities/Activities.vue"),
+  },
+  {
+    path: "/activities/day",
+    name: "activities-day",
+    meta: { title: "Activities Day", children: false },
+    component: () => import("../pages/Activities/ActivitiesDay.vue"),
   },
   {
     path: "/activities/types",
@@ -94,7 +99,7 @@ const routes = [
   {
     path: "/business/companies",
     name: "business-companies",
-    meta: { title: "Companies" },
+    meta: {title: "Companies" },
     component: () => import("../pages/Business/BusinessCompanies.vue"),
   },
   {
@@ -157,7 +162,7 @@ const routes = [
     name: "studentapp",
     component: Dashboard,
     meta: {
-      title: "Student App", children: ["studentapp-points", "studentapp-prizes", "studentapp-squads", "studentapp-students"]
+      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students"]
     },
   },
   {
@@ -185,16 +190,16 @@ const routes = [
     component: () => import("../pages/StudentApp/StudentAppPrizes.vue"),
   },
   {
-    path: "/student-app/special",
-    name: "studentapp-special",
-    meta: { title: "Prize Special" },
+    path: "/student-app/prizes/special",
+    name: "studentapp-prizes-special",
+    meta: { title: "Special Prizes" },
     component: () => import("../pages/StudentApp/StudentAppPrizesSpecial.vue"),
   },
   {
-    path: "/student-app/shop",
-    name: "studentapp-shop",
-    meta: { title: "Prize Shop" },
-    component: () => import("../pages/StudentApp/StudentAppPrizeShop.vue"),
+    path: "/student-app/prizes/shop",
+    name: "studentapp-prizes-shop",
+    meta: { title: "Shop" },
+    component: () => import("../pages/StudentApp/StudentAppPrizesShop.vue"),
   },
   {
     path: "/teams",
@@ -207,6 +212,12 @@ const routes = [
     name: "teams-members",
     meta: { title: "Team Members" },
     component: () => import("../pages/Teams/TeamMembers.vue"),
+  },
+  {
+    path: "/user-shifts",
+    name: "usershifts",
+    meta: { title: "Team Shifts", children: false },
+    component: () => import("../pages/UserShifts/UserShifts.vue"),
   },
   {
     path: "/:pathMatch(.*)*",

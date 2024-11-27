@@ -2,267 +2,289 @@
 import { defineProps, defineEmits, ref } from "vue";
 
 const props = defineProps({
-  isOpen: Boolean,
+    isOpen: Boolean,
 });
 
 const emit = defineEmits(["modal-close"]);
 
 function isMobile() {
-   if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-     return true;
-   }
-   else {
-    return false;
-   }
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 </script>
 
 <template>
     <div v-if="isOpen" class="modal-mask">
-      <div class="desktop" v-if="!isMobile()">
-        <div class="wrapper-wrapper">
-        <div class="popup-wrapper" ref="target">
-            <h1>Add Speaker</h1>
-            <div class="stuff-inside">
-            <div class="flex-1">
-                <div class="flex-1-row-1">
-                    <div class="labels" id="name">
-                        <label for="name">Name</label>
-                        <input type="text" placeholder="" id="name">
+        <div class="desktop" v-if="!isMobile()">
+            <div class="wrapper">
+                <div class="popup-wrapper" ref="target">
+                    <div class="header">
+                        <h1 class="not-mobile-h1">Add Speaker</h1>
+                        <button class="close" @click.stop="emit('modal-close')">X</button>
                     </div>
-                    <div class="labels" id="event">
-                        <label for="event">Event</label>
-                        <select placeholder="Choose Event" id="event">
-                            <option value="null" disabled selected hidden></option>
-                            <option>event test</option>
-                        </select>
+                    <div class="elements">
+                        <div class="flex-1">
+                            <div class="flex-1-row-1">
+                                <div class="labels" id="name">
+                                    <label for="name">Name</label>
+                                    <input type="text" placeholder="" id="name">
+                                </div>
+                                <div class="labels" id="event">
+                                    <label for="event">Event</label>
+                                    <select placeholder="Choose Event" id="event">
+                                        <option value="null" disabled selected hidden></option>
+                                        <option>event test</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex-1-row-2">
+                                <div class="labels" id="linkedin">
+                                    <label for="linkedin">LinkedIn</label>
+                                    <input type="text" placeholder="" id="linkedin">
+                                </div>
+                                <div class="labels" id="type">
+                                    <label for="type">Type</label>
+                                    <select placeholder="" id="type">
+                                        <option value="null" disabled selected hidden></option>
+                                        <option>type test</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex-1-row-3">
+                                <div class="labels" id="biography">
+                                    <label for="biography">Biography</label>
+                                    <input type="text" placeholder="" id="biography">
+                                </div>
+                            </div>
+                            <div class="flex-1-row-4">
+                                <div class="labels" id="company">
+                                    <label for="company">Company</label>
+                                    <input type="text" placeholder="" id="company">
+                                </div>
+                                <div class="labels" id="position">
+                                    <label for="position">Position</label>
+                                    <input type="text" placeholder="" id="position">
+                                </div>
+                            </div>
+                            <div class="flex-1-row-5">
+                                <div class="labels" id="website">
+                                    <label for="website">Company Website</label>
+                                    <input type="text" placeholder="" id="website">
+                                </div>
+                                <div class="labels" id="country">
+                                    <label for="country">Country</label>
+                                    <input type="text" placeholder="" id="country">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-2">
+                            <div class="labels" id="speakerdickpic">
+                                <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
+                                <p class="idk">
+                                    No picture selected yet
+                                </p>
+                                <button id="coolbutton">Add Pic</button>
+                            </div>
+                            <div class="labels" id="companylogo">
+                                <label for="companylogo">Company Logo</label>
+                                <p class="idk">
+                                    No logo selected yet
+                                </p>
+                                <button id="coolbutton">Add New Logo</button>
+                            </div>
+                            <div class="irresponsible">
+                                <div class="labels" id="responsible">
+                                    <label for="responsible">JEEC Responsible</label>
+                                    <select id="responsible">
+                                        <option value="0" disabled selected hidden></option>
+                                        <option value="1">LARA</option>
+                                        <option value="2">ZE</option>
+                                        <option value="3">EMO LARA</option>
+                                        <option value="4">AFONSO VILELA</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="flex-1-row-2">
-                    <div class="labels" id="linkedin">
-                        <label for="linkedin">LinkedIn</label>
-                        <input type="text" placeholder="" id="linkedin">
-                    </div>
-                    <div class="labels" id="type">
-                        <label for="type">Type</label>
-                        <select placeholder="" id="type">
-                            <option value="null" disabled selected hidden></option>
-                            <option>type test</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex-1-row-3">
-                    <div class="labels" id="biography">
-                        <label for="biography">Biography</label>
-                        <input type="text" placeholder="" id="biography">
-                    </div>
-                </div>
-                <div class="flex-1-row-4">
-                    <div class="labels" id="company">
-                        <label for="company">Company</label>
-                        <input type="text" placeholder="" id="company">
-                    </div>
-                    <div class="labels" id="position">
-                        <label for="position">Position</label>
-                        <input type="text" placeholder="" id="position">
-                    </div>
-                </div>
-                <div class="flex-1-row-5">
-                    <div class="labels" id="website">
-                        <label for="website">Company Website</label>
-                        <input type="text" placeholder="" id="website">
-                    </div>
-                    <div class="labels" id="country">
-                        <label for="country">Country</label>
-                        <input type="text" placeholder="" id="country">
+                    <div class="btns">
+                        <button class="add" @click.stop="emit('modal-close')">Add</button>
                     </div>
                 </div>
             </div>
-            <div class="flex-2">
-                <div class="labels" id="speakerdickpic">
-                    <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
-                    <p class="idk">
-                        No picture selected yet<!-- Size too small please insert larger dick 🥺 -->
-                    </p>
-                    <button id="coolbutton">Add <!--Dic-->Pic</button>
-                </div>
-                <div class="labels" id="companylogo">
-                    <label for="companylogo">Company Logo</label>
-                    <p class="idk">
-                        No logo selected yet
-                    </p>
-                    <button id="coolbutton">Add New Logo</button>
-                </div>
-                <div class="irresponsible">
-                    <div class="labels" id="responsible">
-                        <label for="responsible">JEEC Responsible</label>
-                        <select id="responsible">
-                            <option value="0" disabled selected hidden></option>
-                            <option value="1">LARA</option>
-                            <option value="2">ZE</option>
-                            <option value="3">EMO LARA</option>
-                            <option value="4">AFONSO VILELA</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
         </div>
-        <div class="btns">
-            <button class="add" @click.stop="emit('modal-close')">Add</button>
-            <button class="add" @click.stop="emit('modal-close')">Cancel</button>
-        </div>
-        </div>
-        </div>
-      </div>
 
 
-      <div class="mobile" v-else>
-        <div class="mobile-wrapper-wrapper">
-        <div class="popup-wrapper" ref="target">
-            <h1>Add Speaker</h1>
-            <div class="stuff-inside">
-            <div class="mobile-flex-1">
-                <div class="flex-1-row-1">
-                    <div class="mobile-labels" id="name">
-                        <label for="name">Name</label>
-                        <input type="text" placeholder="" id="name">
+        <div class="mobile" v-else>
+            <div class="mobile-wrapper">
+                <div class="popup-wrapper" ref="target">
+                    <div class="header">
+                        <h1 class="mobile-title">Add Speaker</h1>
+                        <button class="mobile-close" @click.stop="emit('modal-close')">X</button>
                     </div>
-                    <div class="mobile-labels" id="event">
-                        <label for="event">Event</label>
-                        <select placeholder="Choose Event" id="event">
-                            <option value="null" disabled selected hidden></option>
-                            <option>event test</option>
-                        </select>
+                    <div class="elements">
+                        <div class="mobile-flex-1">
+                            <div class="flex-1-row-1">
+                                <div class="mobile-labels" id="name">
+                                    <label for="name">Name</label>
+                                    <input type="text" placeholder="" id="name">
+                                </div>
+                                <div class="mobile-labels" id="event">
+                                    <label for="event">Event</label>
+                                    <select placeholder="Choose Event" id="event">
+                                        <option value="null" disabled selected hidden></option>
+                                        <option>event test</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex-1-row-2">
+                                <div class="mobile-labels" id="linkedin">
+                                    <label for="linkedin">LinkedIn</label>
+                                    <input type="text" placeholder="" id="linkedin">
+                                </div>
+                                <div class="mobile-labels" id="type">
+                                    <label for="type">Type</label>
+                                    <select placeholder="" id="type">
+                                        <option value="null" disabled selected hidden></option>
+                                        <option>type test</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex-1-row-3">
+                                <div class="mobile-labels" id="biography">
+                                    <label for="biography">Biography</label>
+                                    <input type="text" placeholder="" id="biography">
+                                </div>
+                            </div>
+                            <div class="flex-1-row-4">
+                                <div class="mobile-labels" id="company">
+                                    <label for="company">Company</label>
+                                    <input type="text" placeholder="" id="company">
+                                </div>
+                                <div class="mobile-labels" id="position">
+                                    <label for="position">Position</label>
+                                    <input type="text" placeholder="" id="position">
+                                </div>
+                            </div>
+                            <div class="flex-1-row-5">
+                                <div class="mobile-labels" id="website">
+                                    <label for="website">Company Website</label>
+                                    <input type="text" placeholder="" id="website">
+                                </div>
+                                <div class="mobile-labels" id="country">
+                                    <label for="country">Country</label>
+                                    <input type="text" placeholder="" id="country">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mobile-flex-2">
+                            <div class="labels" id="speakerdickpic">
+                                <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
+                                <p class="idk">
+                                    No picture selected yet
+                                </p>
+                                <button id="coolbutton">Add Pic</button>
+                            </div>
+                            <div class="labels" id="companylogo">
+                                <label for="companylogo">Company Logo</label>
+                                <p class="idk">
+                                    No logo selected yet
+                                </p>
+                                <button id="coolbutton">Add New Logo</button>
+                            </div>
+                            <div class="irresponsible">
+                                <div class="labels" id="responsible">
+                                    <label for="responsible">JEEC Responsible</label>
+                                    <select id="responsible">
+                                        <option value="0" disabled selected hidden></option>
+                                        <option value="1">LARA</option>
+                                        <option value="2">ZE</option>
+                                        <option value="3">EMO LARA</option>
+                                        <option value="4">AFONSO VILELA</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="flex-1-row-2">
-                    <div class="mobile-labels" id="linkedin">
-                        <label for="linkedin">LinkedIn</label>
-                        <input type="text" placeholder="" id="linkedin">
-                    </div>
-                    <div class="mobile-labels" id="type">
-                        <label for="type">Type</label>
-                        <select placeholder="" id="type">
-                            <option value="null" disabled selected hidden></option>
-                            <option>type test</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex-1-row-3">
-                    <div class="mobile-labels" id="biography">
-                        <label for="biography">Biography</label>
-                        <input type="text" placeholder="" id="biography">
-                    </div>
-                </div>
-                <div class="flex-1-row-4">
-                    <div class="mobile-labels" id="company">
-                        <label for="company">Company</label>
-                        <input type="text" placeholder="" id="company">
-                    </div>
-                    <div class="mobile-labels" id="position">
-                        <label for="position">Position</label>
-                        <input type="text" placeholder="" id="position">
-                    </div>
-                </div>
-                <div class="flex-1-row-5">
-                    <div class="mobile-labels" id="website">
-                        <label for="website">Company Website</label>
-                        <input type="text" placeholder="" id="website">
-                    </div>
-                    <div class="mobile-labels" id="country">
-                        <label for="country">Country</label>
-                        <input type="text" placeholder="" id="country">
+                    <div class="mobile-btns">
+                        <button class="mobile-add" @click.stop="emit('modal-close')">Add</button>
                     </div>
                 </div>
             </div>
-            <div class="mobile-flex-2">
-                <div class="labels" id="speakerdickpic">
-                    <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
-                    <p class="idk">
-                        No picture selected yet<!-- Size too small please insert larger dick 🥺 -->
-                    </p>
-                    <button id="coolbutton">Add <!--Dic-->Pic</button>
-                </div>
-                <div class="labels" id="companylogo">
-                    <label for="companylogo">Company Logo</label>
-                    <p class="idk">
-                        No logo selected yet
-                    </p>
-                    <button id="coolbutton">Add New Logo</button>
-                </div>
-                <div class="irresponsible">
-                    <div class="labels" id="responsible">
-                        <label for="responsible">JEEC Responsible</label>
-                        <select id="responsible">
-                            <option value="0" disabled selected hidden></option>
-                            <option value="1">LARA</option>
-                            <option value="2">ZE</option>
-                            <option value="3">EMO LARA</option>
-                            <option value="4">AFONSO VILELA</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
         </div>
-        <div class="mobile-btns">
-            <button class="mobile-add" @click.stop="emit('modal-close')">Add</button>
-            <button class="mobile-add" @click.stop="emit('modal-close')">Cancel</button>
-        </div>
-        </div>
-        </div>
-      </div>
     </div>
 </template>
 
 <style scoped>
 .modal-mask {
-  position: fixed;
-  z-index: 9998;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.425);
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.425);
 }
 
-.mobile-wrapper-wrapper {
+.mobile-wrapper {
     display: flex;
     justify-content: center;
     background-color: white;
-    width: 94.5vw;
-    height: 95%;
-    position: absolute;
-    top: 50%;
-    left: 46.5%;
-    translate: -50% -50%;
-}
-
-.wrapper-wrapper {
-    display: flex;
-    justify-content: center;
-    background-color: white;
-    width: 60vw;
-    height: 95%;
+    width: 90vw;
+    height: 70%;
     position: absolute;
     top: 50%;
     left: 50%;
     translate: -50% -50%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
-h1 {
+.wrapper {
+    display: flex;
+    justify-content: center;
+    background-color: white;
+    width: 60vw;
+    height: 70%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    border-radius: 15px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.not-mobile-h1 {
     margin-bottom: 2%;
     margin-top: 2%;
     color: #515151;
-}
-
-.flex-1,
-h1 {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     margin-left: 5%;
     margin-right: 15%;
+    gap: 1.5vh;
+}
+
+
+.mobile-title {
+    margin-bottom: 5%;
+    margin-top: 2%;
+    color: #515151;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     gap: 1.5vh;
 }
 
@@ -277,7 +299,7 @@ h1 {
     justify-content: space-between;
 }
 
-.mobile-flex-1 > .flex-1-row-1 {
+.mobile-flex-1>.flex-1-row-1 {
     display: flex;
     flex-direction: row;
     width: 80vw;
@@ -285,7 +307,7 @@ h1 {
     gap: 4vw;
 }
 
-.mobile-flex-1 > .flex-1-row-2,
+.mobile-flex-1>.flex-1-row-2,
 .flex-1-row-3,
 .flex-1-row-4,
 .flex-1-row-5 {
@@ -296,7 +318,7 @@ h1 {
     gap: 20vw;
 }
 
-.mobile-flex-1 > .flex-1-row-5 {
+.mobile-flex-1>.flex-1-row-5 {
     display: flex;
     flex-direction: row;
     width: 80vw;
@@ -304,12 +326,19 @@ h1 {
     gap: 20vw;
 }
 
-.mobile-wrapper-wrapper > .flex-1-row-2, .flex-1-row-3, .flex-1-row-4, .flex-1-row-5 {
+.mobile-wrapper-wrapper>.flex-1-row-2,
+.flex-1-row-3,
+.flex-1-row-4,
+.flex-1-row-5 {
     display: flex;
     flex-direction: row;
     width: 80vw;
     justify-content: left;
     gap: 4vw;
+}
+
+.flex-1 {
+    margin-left: 5%;
 }
 
 input {
@@ -347,11 +376,11 @@ select {
     height: 100%;
 }
 
-.mobile-labels> #name {
+.mobile-labels>#name {
     width: 50.085vw;
 }
 
-.mobile-labels > #event {
+.mobile-labels>#event {
     width: 26vw;
 }
 
@@ -359,11 +388,11 @@ select {
     width: 13.32vw;
 }
 
-.mobile-flex-1 > .labels>#event {
+.mobile-flex-1>.labels>#event {
     width: 60vw;
 }
 
-.mobile-labels > #biography {
+.mobile-labels>#biography {
     height: 20vh;
     width: 80vw;
 }
@@ -373,26 +402,31 @@ select {
     width: 48vw;
 }
 
-.mobile-labels > #company {
-    width:  38vw;
-}
-.mobile-labels > #position {
-    width: 38vw;
-}
-.mobile-labels > #website {
-    width: 38vw;
-}
-.mobile-labels > #country {
-    width: 38vw;
-}
-.mobile-labels > #linkedin {
-    width: 38vw;
-}
-.mobile-labels > #type {
+.mobile-labels>#company {
     width: 38vw;
 }
 
-.labels> #company,
+.mobile-labels>#position {
+    width: 38vw;
+}
+
+.mobile-labels>#website {
+    width: 38vw;
+}
+
+.mobile-labels>#country {
+    width: 38vw;
+}
+
+.mobile-labels>#linkedin {
+    width: 38vw;
+}
+
+.mobile-labels>#type {
+    width: 38vw;
+}
+
+.labels>#company,
 #position,
 #website,
 #country,
@@ -401,7 +435,8 @@ select {
     width: 22vw;
 }
 
-.flex-2, .mobile-flex-2 {
+.flex-2,
+.mobile-flex-2 {
     display: flex;
     flex-direction: row;
     margin-right: 9vw;
@@ -412,14 +447,14 @@ select {
 
 }
 
-.mobile-flex-2 > #speakerdickpic {
+.mobile-flex-2>#speakerdickpic {
     width: 20vw;
-    height: 25vh;
+    height: 20vh;
 }
 
-.mobile-flex-2 > #companylogo {
+.mobile-flex-2>#companylogo {
     width: 20vw;
-    height: 25vh;
+    height: 20vh;
 }
 
 #speakerdickpic,
@@ -428,28 +463,12 @@ select {
     height: 22vh;
 }
 
-.mobile-flex-2 > .irresponsible {
+.mobile-flex-2>.irresponsible {
     width: 15vw;
 }
 
 .irresponsible {
     width: 20.40vw;
-}
-
-.mobile-flex-2 > #coolbutton {
-    background-color: #509cdb;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    width: 8.4vw;
-    height: 3.5vh;
-    margin-top: 1vh;
-    font-size: smaller;
-    display: inline-block;
-    text-align: center;
-    vertical-align: middle;
-    justify-content: center;
-    cursor: pointer;
 }
 
 #coolbutton {
@@ -497,14 +516,25 @@ p {
     cursor: pointer;
 }
 
+.close {
+    background-color: #152259;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    width: 2vw;
+    height: 3.5vh;
+    margin-bottom: 2%;
+    margin-top: 2%;
+    margin-right: 2%;
+}
+
 .mobile-add {
     background-color: #152259;
     color: white;
     border-radius: 5px;
     border: none;
-    margin-right: 3vw;
-    margin-top: 2%;
-    margin-bottom: 2%;
+    margin-bottom: 4%;
     display: flex;
     width: 16vw;
     height: 3.5vh;
@@ -512,6 +542,17 @@ p {
     justify-content: center;
     gap: 10vh;
     cursor: pointer;
+}
+
+.mobile-close {
+    background-color: #152259;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    width: 7.5vw;
+    height: 3.5vh;
+    margin-top: 4%;
 }
 
 .btns {
@@ -522,6 +563,7 @@ p {
     justify-content: right;
     gap: 0.1%;
 }
+
 .mobile-btns {
     width: 80vw;
     display: flex;
@@ -538,5 +580,4 @@ p {
 .labels>#event {
     width: 13.32vw;
 }
-
 </style>

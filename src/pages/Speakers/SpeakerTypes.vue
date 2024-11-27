@@ -1,79 +1,66 @@
+<!-- falta meter parte "no speakers found" - ver codigo dos sponsors -->
+
+
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import AddSpeakerTypePopup from './AddSpeakerTypePopup.vue';
 import EditSpeakerTypePopup from './EditSpeakerTypePopup.vue';
 import ListSpeakerTypePopup from './ListSpeakerTypePopup.vue';
+import TypeMobilePopup from './TypeMobilePopup.vue';
 
 const popupShow = ref(false);
-
 const isModalOpened = ref(false);
-
-const openModal = () => {
-  isModalOpened.value = true;
-};
-const closeModal = () => {
-  isModalOpened.value = false;
-};
-
 const isOtherModalOpened = ref(false);
-
-const openOtherModal = () => {
-  isOtherModalOpened.value = true;
-};
-const closeOtherModal = () => {
-  isOtherModalOpened.value = false;
-};
-
 const isAnotherModalOpened = ref(false);
+const isMobileModalOpened = ref(false);
 
-const openAnotherModal = () => {
-  isAnotherModalOpened.value = true;
-};
-const closeAnotherModal = () => {
-  isAnotherModalOpened.value = false;
-};
+const closePopup = () => { popupShow.value = false; };
+const openModal = () => { isModalOpened.value = true; };
+const closeModal = () => { isModalOpened.value = false; };
+const openOtherModal = () => { isOtherModalOpened.value = true; };
+const closeOtherModal = () => { isOtherModalOpened.value = false; };
+const openAnotherModal = () => { isAnotherModalOpened.value = true; };
+const closeAnotherModal = () => { isAnotherModalOpened.value = false; };
+const closeMobileModal = () => { isMobileModalOpened.value = false; };
 
-function isMobile() {
-   if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-     return true;
-   }
-   else {
-    return false;
-   }
-}
+const isMobile = ref();
+function updateIsMobile() { isMobile.value = window.innerWidth <= 800; }
+onMounted(() => { window.addEventListener('resize', updateIsMobile); });
+onUnmounted(() => { window.removeEventListener('resize', updateIsMobile); });
 
 
 const message = ref();
 
 function selectCallback
-(row) {
+  (row) {
   console.log(row)
   popupShow.value = true;
+  isMobileModalOpened.value = true;
 }
 
 const datab = [
   {
     name: "Main Speaker",
-    priority:   "1",
+    priority: "1",
     speakersnum: "5",
     meal: "Yes",
   },
   {
     name: "Discussion Panel",
-    priority:   "2",
+    priority: "2",
     speakersnum: "20",
     meal: "Yes",
   },
   {
     name: "Alumni",
-    priority:   "3",
+    priority: "3",
     speakersnum: "9",
     meal: "Yes",
   },
   {
     name: "Moderator",
-    priority:   "2",
+    priority: "2",
     speakersnum: "4",
     meal: "Yes",
   },
@@ -90,153 +77,105 @@ const tablePref = {
 </script>
 
 <template>
-<div class="desktop" v-if="!isMobile()">
-<div class="wrapper">
-    <div class="table">
-      <div class="topbar">
-        <form>
-          <label>
-            <img src="../../assets/search.svg">
-          </label>
-          <input v-model="message" placeholder="Search for a user">
-        </form>
-      <button class="topbtn" @click="openModal">Add Type</button>
-      <Transition name="fade" appear>
-        <AddSpeakerTypePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerTypePopup>
-      </Transition>
-      <EditSpeakerTypePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerTypePopup>
-      <ListSpeakerTypePopup :isOpen="isAnotherModalOpened" @modal-close="closeAnotherModal"></ListSpeakerTypePopup>
-     </div>
-      <TheTable
-        :data="datab"
-        :tableHeaders="tablePref"
-        :searchInput="message"
-        @onRowSelect="selectCallback"
-      ></TheTable>
-    </div>
-    <div class="right-popup-placeholder" v-show="popupShow">
-        <div class="items">
-        <div class="speaker-photo">Insert Speaker Photo</div>
-        <h3 class="text1">Speaker Type</h3>
-        <p class="text2 title">Speaker Type</p>
-        <div class="btns-row">
-            <button class="btn" @click="openOtherModal">
-                <img src="../../assets/pencil.svg">
-            </button>
-            <button class="btn" @click="openAnotherModal">
-                <img src="../../assets/mic.svg">
-            </button>
-            <button class="btn">
-                <img src="../../assets/trash.svg">
-            </button>
+  <div class="desktop" v-if="!isMobile">
+    <div class="wrapper">
+      <div class="table">
+        <div class="topbar">
+          <form>
+            <label>
+              <img src="../../assets/search.svg">
+            </label>
+            <input v-model="message" placeholder="Search for a speaker type">
+          </form>
+          <button class="topbtn" @click="openModal">Add Type</button>
+          <Transition name="fade" appear>
+            <AddSpeakerTypePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerTypePopup>
+          </Transition>
+          <EditSpeakerTypePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerTypePopup>
+          <ListSpeakerTypePopup :isOpen="isAnotherModalOpened" @modal-close="closeAnotherModal"></ListSpeakerTypePopup>
         </div>
-        <div id="info">
-        <div class="row">
-        <div class="col item1">
-            <p>Priority</p>
-            <p class="text2">3</p>           
-        </div>
-        <div class="col item2">
-            <p># Speakers</p>
-            <p class="text2">9</p>
-        </div>
-        <div class="col item3">
-            <p>Show in Website</p>
-            <p class="text2">Yes</p>
-        </div>
-        <div class="col item4">
-            <p>Social Media</p>
-            <p class="text2">Yes</p>
-        </div>
-        <div class="col item5">
-            <p>Exclusive Video</p>
-            <p class="text2">No</p>
-        </div>
-        <div class="col item6">
-            <p>Exclusive Posts</p>
-            <p class="text2">No</p>
-        </div>
-        </div>
-    </div>
-    </div>
-</div>
-  </div>
-</div>
-
-
-
-<div class="mobile" v-else>
-  <div class="mobile-wrapper">
-    <div class="table">
-      <div class="mobile-topbar">
-        <form>
-          <label>
-            <img src="../../assets/search.svg">
-          </label>
-          <input v-model="message" placeholder="Search for a user">
-        </form>
-      <button class="mobile-topbtn" @click="openModal">Add Type</button>
-      <Transition name="fade" appear>
-        <AddSpeakerTypePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerTypePopup>
-      </Transition>
-      <EditSpeakerTypePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerTypePopup>
-      <ListSpeakerTypePopup :isOpen="isAnotherModalOpened" @modal-close="closeAnotherModal"></ListSpeakerTypePopup>
+        <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
+        </TheTable>
       </div>
-      <div class="right-popup-placeholder-mobile" v-show="popupShow">
+      <div class="right-popup-placeholder" v-show="popupShow">
+        <div class="close-wrapper">
+          <button class="close" @click="closePopup">X</button>
+        </div>
         <div class="items">
-        <div class="speaker-photo">Insert Speaker Photo</div>
-        <h3 class="text1">Speaker Type</h3>
-        <p class="text2 title">Speaker Type</p>
-        <div class="btns-row">
+          <div class="speaker-photo">Insert Speaker Photo</div>
+          <h3 class="text1">Speaker Type</h3>
+          <p class="text2 title">Speaker Type</p>
+          <div class="btns-row">
             <button class="btn" @click="openOtherModal">
-                <img src="../../assets/pencil.svg">
+              <img src="../../assets/pencil.svg">
             </button>
             <button class="btn" @click="openAnotherModal">
-                <img src="../../assets/mic.svg">
+              <img src="../../assets/mic.svg">
             </button>
             <button class="btn">
-                <img src="../../assets/trash.svg">
+              <img src="../../assets/trash.svg">
             </button>
+          </div>
+          <div id="info">
+            <div class="row">
+              <div class="col item1">
+                <p>Priority</p>
+                <p class="text2">3</p>
+              </div>
+              <div class="col item2">
+                <p># Speakers</p>
+                <p class="text2">9</p>
+              </div>
+              <div class="col item3">
+                <p>Show in Website</p>
+                <p class="text2">Yes</p>
+              </div>
+              <div class="col item4">
+                <p>Social Media</p>
+                <p class="text2">Yes</p>
+              </div>
+              <div class="col item5">
+                <p>Exclusive Video</p>
+                <p class="text2">No</p>
+              </div>
+              <div class="col item6">
+                <p>Exclusive Posts</p>
+                <p class="text2">No</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div id="info">
-        <div class="row">
-        <div class="col item1">
-            <p>Priority</p>
-            <p class="text2">3</p>           
-        </div>
-        <div class="col item2">
-            <p># Speakers</p>
-            <p class="text2">9</p>
-        </div>
-        <div class="col item3">
-            <p>Show in Website</p>
-            <p class="text2">Yes</p>
-        </div>
-        <div class="col item4">
-            <p>Social Media</p>
-            <p class="text2">Yes</p>
-        </div>
-        <div class="col item5">
-            <p>Exclusive Video</p>
-            <p class="text2">No</p>
-        </div>
-        <div class="col item6">
-            <p>Exclusive Posts</p>
-            <p class="text2">No</p>
-        </div>
-        </div>
-    </div>
-    </div>
-    </div>
-      <TheTable
-        :data="datab"
-        :tableHeaders="tablePref"
-        :searchInput="message"
-        @onRowSelect="selectCallback"
-      ></TheTable>
+      </div>
     </div>
   </div>
-</div>
+
+
+
+  <div class="mobile" v-else>
+    <div class="mobile-wrapper">
+      <div class="table">
+        <div class="mobile-topbar">
+          <form>
+            <label>
+              <img src="../../assets/search.svg">
+            </label>
+            <input v-model="message" placeholder="Search">
+          </form>
+          <button class="mobile-topbtn" @click="openModal">Add Type</button>
+          <Transition name="fade" appear>
+            <AddSpeakerTypePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerTypePopup>
+          </Transition>
+          <EditSpeakerTypePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerTypePopup>
+          <ListSpeakerTypePopup :isOpen="isAnotherModalOpened" @modal-close="closeAnotherModal"></ListSpeakerTypePopup>
+          <Transition name="fade" appear>
+            <TypeMobilePopup :isOpen="isMobileModalOpened" @modal-close="closeMobileModal"></TypeMobilePopup>
+          </Transition>
+        </div>
+        <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
+        </TheTable>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -246,7 +185,7 @@ const tablePref = {
   position: relative;
   height: calc(100dvh - var(--header-height));
   padding: 3ch 1ch 1ch 1ch;
-  margin-right: -7vw;
+  margin-right: 0vw;
   overflow-x: hidden;
 }
 
@@ -256,6 +195,7 @@ const tablePref = {
   height: calc(100dvh - var(--header-height));
   padding: 5ch 3ch 3ch 3ch;
   overflow-y: hidden;
+  gap: 3ch;
 }
 
 .table {
@@ -263,11 +203,10 @@ const tablePref = {
   flex-direction: column;
   width: 100%;
   gap: 3ch;
-  padding-right: 3ch;
 }
 
 
-.mobile-topbar > form {
+.mobile-topbar>form {
   display: flex;
   width: 70%;
   background-color: var(--c-accent);
@@ -291,14 +230,14 @@ form {
   border-radius: 10px;
 }
 
-form > label > img {
+form>label>img {
   width: 20px;
   position: relative;
   top: 4px;
   left: 3px;
 }
 
-form > input {
+form>input {
   appearance: none;
   background: transparent;
   border: 0px;
@@ -322,7 +261,7 @@ form > input {
   width: 100%;
 }
 
-form > input::placeholder {
+form>input::placeholder {
   color: var(--c-ft-semi-light)
 }
 
@@ -334,6 +273,8 @@ form > input::placeholder {
   border-radius: 30px;
   background-color: var(--c-accent);
   height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .right-popup-placeholder-mobile {
@@ -345,126 +286,149 @@ form > input::placeholder {
 
 }
 
+
+.close-wrapper {
+  display: flex;
+  justify-content: right;
+  margin-right: 2%;
+
+}
+
+.close {
+  background-color: var(--c-accent);
+  color: rgba(0, 0, 0, 0.710);
+  font-size: large;
+  font-weight: bolder;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  width: 2vw;
+  height: 3.5vh;
+  margin-top: 3%;
+  margin-right: 2%;
+}
+
 .items {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    margin-top: 10vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2vh;
+  margin-top: 3vh;
+  margin-bottom: 3vh;
 }
 
 .speaker-photo {
-    height: 165px;
-    width: 165px;
-    background-color: var(--c-select);
-    border-radius: 100%;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    color: white;
+  height: 165px;
+  width: 165px;
+  background-color: var(--c-select);
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: white;
 
 }
 
 .text1 {
-    color: black;
-    font-size: x-large;
+  color: black;
+  font-size: x-large;
 }
 
 .text2 {
-    color: var(--c-ft-semi-light);
+  color: var(--c-ft-semi-light);
 }
 
 .title {
-    font-size: larger;
-    font-weight: 550;
+  font-size: larger;
+  font-weight: 550;
 }
 
 .row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
-    grid-gap: 30px;
-    width: 300px;
-    margin-left: 0px;
-  }
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-gap: 30px;
+}
 
 .col {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 #info {
-    margin-left: 0vw;;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 30px;
+  margin-left: 0vw;
+  ;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 30px;
 }
 
 .btns-row {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
 }
 
 .btn {
-    width: 36px;
-    height: 36px;
-    background: #FFFFFF;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #FFFFFF;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 p {
-    color: black;
-    font-weight: 500;
-    font-size: small;
+  color: black;
+  font-weight: 500;
+  font-size: small;
 }
 
 select {
-    border-style: solid;
-    border-width: thin;
-    border-radius: 7px;
-    height: 50px;
-    padding: 12px;
-    opacity: 60%;
-    border-color: #8a8a8a;
-    background-color: white;
+  border-style: solid;
+  border-width: thin;
+  border-radius: 7px;
+  height: 50px;
+  padding: 12px;
+  opacity: 60%;
+  border-color: #8a8a8a;
+  background-color: white;
 }
 
 .mobile-topbtn {
-    background-color: var(--c-select);
-    color: white;
-    border: none;
-    border-radius: 7px;
-    align-items: center;
-    height: 50px;
-    width: 30%;
-    font-weight: 500;
-    font-size: small;
-    cursor: pointer;
+  background-color: var(--c-select);
+  color: white;
+  border: none;
+  border-radius: 7px;
+  align-items: center;
+  height: 50px;
+  width: 30%;
+  font-weight: 500;
+  font-size: small;
+  cursor: pointer;
 }
 
 .topbtn {
-    background-color: var(--c-select);
-    color: white;
-    border: none;
-    border-radius: 7px;
-    align-items: center;
-    height: 50px;
-    width: 15%;
-    font-weight: 500;
-    font-size: small;
-    cursor: pointer;
+  background-color: var(--c-select);
+  color: white;
+  border: none;
+  border-radius: 7px;
+  align-items: center;
+  height: 50px;
+  width: 15%;
+  font-weight: 500;
+  font-size: small;
+  cursor: pointer;
 }
 
-.topbar, .mobile-topbar {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
+.topbar,
+.mobile-topbar {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
 }
 
 button {

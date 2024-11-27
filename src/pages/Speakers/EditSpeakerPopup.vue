@@ -23,7 +23,10 @@ function isMobile() {
       <div class="desktop" v-if="!isMobile()">
         <div class="wrapper-wrapper">
         <div class="popup-wrapper" ref="target">
-            <h1>Edit Speaker</h1>
+            <div class="header">
+                <h1>Edit Speaker</h1>
+                <button class="close" @click.stop="emit('modal-close')">X</button>
+            </div>
             <div class="stuff-inside">
             <div class="flex-1">
                 <div class="flex-1-row-1">
@@ -109,8 +112,7 @@ function isMobile() {
             </div>
         </div>
         <div class="btns">
-            <button class="add" @click.stop="emit('modal-close')">Add</button>
-            <button class="add" @click.stop="emit('modal-close')">Cancel</button>
+            <button class="add" @click.stop="emit('modal-close')">Save</button>
         </div>
         </div>
         </div>
@@ -206,7 +208,7 @@ function isMobile() {
             </div>
         </div>
         <div class="mobile-btns">
-            <button class="mobile-add" @click.stop="emit('modal-close')">Add</button>
+            <button class="mobile-add" @click.stop="emit('modal-close')">Save</button>
             <button class="mobile-add" @click.stop="emit('modal-close')">Cancel</button>
         </div>
         </div>
@@ -230,11 +232,11 @@ function isMobile() {
     display: flex;
     justify-content: center;
     background-color: white;
-    width: 94.5vw;
-    height: 95%;
+    width: 90.5vw;
+    height: 100%;
     position: absolute;
     top: 50%;
-    left: 46.5%;
+    left: 50%;
     translate: -50% -50%;
 }
 
@@ -243,11 +245,20 @@ function isMobile() {
     justify-content: center;
     background-color: white;
     width: 60vw;
-    height: 95%;
+    height: 70%;
     position: absolute;
     top: 50%;
     left: 50%;
     translate: -50% -50%;
+    border-radius: 15px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 h1 {
@@ -414,12 +425,12 @@ select {
 
 .mobile-flex-2 > #speakerdickpic {
     width: 20vw;
-    height: 25vh;
+    height: 20vh;
 }
 
 .mobile-flex-2 > #companylogo {
     width: 20vw;
-    height: 25vh;
+    height: 20vh;
 }
 
 #speakerdickpic,
@@ -497,20 +508,33 @@ p {
     cursor: pointer;
 }
 
+.close {
+    background-color: #152259;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    width: 2vw;
+    height: 3.5vh;
+    margin-bottom: 2%;
+    margin-top: 2%;
+    margin-right: 2%;
+}
+
 .mobile-add {
     background-color: #152259;
     color: white;
     border-radius: 5px;
     border: none;
-    margin-right: 3vw;
-    margin-top: 2%;
+    margin-right: -3%;
+    margin-top: -6%;
     margin-bottom: 2%;
     display: flex;
     width: 16vw;
     height: 3.5vh;
     align-items: center;
     justify-content: center;
-    gap: 10vh;
+    gap: 20vw;
     cursor: pointer;
 }
 
@@ -525,10 +549,10 @@ p {
 .mobile-btns {
     width: 80vw;
     display: flex;
-    gap: 20px;
+    /* gap: 20px; */
     margin-top: 4vh;
     justify-content: right;
-    gap: 0.1%;
+    gap: 10%;
 }
 
 .labels>#name {
