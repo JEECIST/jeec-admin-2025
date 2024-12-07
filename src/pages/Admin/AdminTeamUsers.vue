@@ -83,8 +83,9 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import TheTable from '../../global-components/TheTable.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const message = ref('');
 const showAddUserModal = ref(false);
@@ -107,23 +108,26 @@ function closeModal() {
 function closeCardInfo(){
   selectedRow.value = null;
 }
-const datab = ref([
-  {
-    id: "1",
-    user: "Deco",
-    
-    role: "Webdev",
-    name: "André Santos the Feeble",
-  },
-  {
-    id: "2",
-    user: "DD",
-    
-    role: "Webdev",
-    name: "André Santos"
-  },
-]);
+const datab = ref([{
+  id: null,
+  name: null,
+  company: null,
+  country: null,
+}])
 
+
+const fetchData = () => {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss',{auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then((response)=>{
+          const data = response.data
+          datab.value = response.data.users
+          console.log(datab.value)
+        })
+}
+
+onMounted(fetchData)
 const tablePref = {
   id: "ID",
   user: "Username",
