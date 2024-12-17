@@ -239,6 +239,21 @@ const selectSquad = (squad) => {
 </script>
 
 <style scoped>
+/* Style for all table headers in the current component - NÃO FUNCIONA */
+th {
+  color: #424242;
+  font-family: 'Kumbh Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Style for all table to apply truncation for cells - NÃO FUNCIONA */
+th, td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px; 
+}
 .squads-app-container {
   background: #FFFFFF;
   display: flex;
@@ -364,14 +379,14 @@ const selectSquad = (squad) => {
   font-size: 28px;
   width: 100%; 
   max-width: 1500px; 
-  height: calc(100vh - 300px); 
+  height: 90%; 
   padding: 2rem;
   align-items: center;
   justify-content: center;
   font-weight: 600;
   color: #4F4F4F;
   border-radius: 8px;
-  margin: -3rem auto; 
+  margin: 2rem auto; 
   box-sizing: border-box; 
 }
 
@@ -407,7 +422,7 @@ h3 {
   margin-top: 10px;
 }
 
-.squad-name {
+/* .squad-name {
   color: #424242;
   font-size: 24px;
   font-weight: 800;
@@ -415,6 +430,18 @@ h3 {
   margin-bottom: 10px;
   word-wrap: break-word;
   max-width: 100%;
+} */
+
+.squad-name {
+  color: #424242;
+  font-size: 24px;
+  font-weight: 800;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%; 
+  margin-bottom: 10px;
 }
 
 .role {
@@ -436,14 +463,36 @@ h3 {
   margin: 5px 0;
 }
 
-.captain, .members {
+.captain {
   color: #A7A7A7;
   font-size: 14px;
   text-align: left; 
-  width: 100%;
-  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%; 
   margin: 5px 0;
-  word-wrap: break-word;
+}
+  
+  .members {
+    color: #A7A7A7;
+    font-size: 14px;
+    text-align: left; 
+    width: 100%;
+    font-weight: 500;
+    margin: 5px 0;
+    word-wrap: break-word;
+  }
+
+.members p {
+  color: #A7A7A7;
+  font-size: 14px;
+  text-align: left; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  margin: 5px 0;
 }
 
 .points {

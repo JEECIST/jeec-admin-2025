@@ -20,6 +20,12 @@
     <!-- Banned Students Popup -->
     <div v-if="showBannedPopup" class="banned-popup">
       <div class="popup-content">
+        <button @click="closePopup" class="close-button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
         <h2>Banned Students</h2>
         <TheTable
           :data="bannedStudents"
@@ -44,7 +50,13 @@
           No Students found
         </div>
       </div>
-      <div class="student-detail" v-if="selectedStudent">
+        <div class="student-detail" v-if="selectedStudent">
+          <button @click="selectStudent(null)" class="close-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         <p class="username">{{ selectedStudent.username }}</p>
         <img class="profile-pic" src="../../assets/StudentApp/example_students_photo.svg" alt="Profile Picture" />
         <h3>{{ selectedStudent.name }}</h3>
@@ -330,6 +342,14 @@ th {
   font-weight: 600;
 }
 
+/* Style for all table to apply truncation for cells - NÃO FUNCIONA */
+th, td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px; 
+}
+
 .student-app-container {
   background: #FFFFFF;
   display: flex;
@@ -423,6 +443,17 @@ th {
   margin-bottom: 40px;
 }
 
+.close-button {
+  z-index: 3;
+  background: none;
+  border: none;
+  cursor: pointer;
+  align-self: flex-end;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
 .icon-combination {
   position: relative;
   width: 36px;
@@ -492,14 +523,14 @@ th {
   font-size: 28px;
   width: 100%; 
   max-width: 1500px; 
-  height: calc(100vh - 300spx); 
+  height: 90%; 
   padding: 2rem;
   align-items: center;
   justify-content: center;
   font-weight: 600;
   color: #4F4F4F;
   border-radius: 8px;
-  margin: -3rem auto; /* POSSO FAZER ISTO? */
+  margin: 2rem auto; 
   box-sizing: border-box; 
 }
 
@@ -523,10 +554,12 @@ h3 {
   font-size: 24px;
   font-weight: 700;
   text-align: center;
-  line-height: 29.77px; 
-  word-wrap: break-word; 
-  max-width: 100%;
-  margin-top: 10px; 
+  line-height: 29.77px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%; 
+  margin-top: 10px;
 }
 
 .username {
@@ -535,8 +568,10 @@ h3 {
   font-weight: 800;
   text-align: center;
   margin-bottom: 10px;
-  word-wrap: break-word; 
-  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%; 
 }
 
 .role {
