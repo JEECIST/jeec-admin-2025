@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <div class="table">
+    <div v-if="!QR_enable" class="table">
       <form>
         <div class="search_style">
           <label>
@@ -9,39 +9,50 @@
           <input v-model="message" placeholder="Search for a user" />
         </div>
       </form>
-      <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" :buttons="tableButtons"
-        @QrRead="teste_merda">
+      <TheTable :data="QR_Activities" :tableHeaders="tablePref" :searchInput="message" :buttons="tableButtons"
+        @QrRead="activateReader">
       </TheTable>
     </div>
+    <!-- <div v-if="QR_enable">
+      <QrcodeStream @decode="onDecode" @init="onInit" @error="onError"></QrcodeStream>
+    </div> -->
   </div>
 </template>
 
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import qrImage from '../../assets/pages/qrcodes.svg';
 import axios from 'axios';
+import { QrcodeStream } from 'vue-qrcode-reader';
+
+const QR_Activities = ref([]);
+
+const QR_enable = ref(false);
+
 
 const datab = ref([
   {
     id: "1",
-    activity: "Workshop Delloite",
-    start: "11:00",
-    end: "12:00",
+    name: "Workshop Delloite",
+    time: "11:00",
+    end_time: "12:00",
+    outra: "coisa aleatoria",
   },
   {
     id: "2",
-    activity: "Main Speaker - Wagas",
-    start: "12:00",
-    end: "13:00",
+    name: "Main Speaker - Wagas",
+    time: "12:00",
+    end_time: "13:00",
+    outra: "coisa aleatoria",
   },
 ]);
 
 const tablePref = {
   id: "ID",
-  activity: "Activity",
-  start: "Start",
-  end: "End",
+  name: "Activity",
+  time: "Start",
+  end_time: "End",
 };
 
 const tableButtons = [{
@@ -50,11 +61,36 @@ const tableButtons = [{
   icon: qrImage
 }];
 
-function teste_merda() {
-  console.log("merda");
+function activateReader() {
+  console.log("Activating QR Reader");
+  QR_enable.value = !QR_enable.value;
 };
 
+function onDecode(content){
+  console.log("QR Code Content:", content);
+}
 
+function onInit(promise) {
+  promise.catch(error => {
+    console.error("Could not initialize the QR scanner:", error);
+  });
+}
+
+function onError(error) {
+  console.error("QR  Scanner Error:", error);
+}
+
+onMounted(() => {
+  console.log("Entrou!")
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/activities_vue_for_qr', {auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }}).then(response => {
+    console.log(response.data)
+    QR_Activities.value = response.data.activities
+    console.log(QR_Activities)
+  })
+});
 
 </script>
 
