@@ -3,15 +3,13 @@ import TheTable from '../../global-components/TheTable.vue';
 import AddBillPopup from './AddBillPopup.vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-
+import { isMobile } from '@utils/utils';
 
 const popupShow = ref(false);
 
 const isModalOpened = ref(false);
 
-const toggleModal = () => {
-  console.log("From: " + String(isModalOpened.value) + "\nTo: " + String(!isModalOpened.value));
-  
+const toggleModal = () => {  
   isModalOpened.value = !isModalOpened.value;
 };
 
@@ -24,14 +22,6 @@ const closeOtherModal = () => {
   isOtherModalOpened.value = false;
 };
 
-function isMobile() {
-   if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-     return true;
-   }
-   else {
-    return false;
-   }
-}
 
 const router = useRouter();
 

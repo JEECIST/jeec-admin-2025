@@ -1,20 +1,12 @@
 <script setup>
-import { defineProps, defineEmits, ref } from "vue";
+import { defineEmits, ref } from "vue";
+import { isMobile } from "@utils/utils";
 
 const props = defineProps({
     isOpen: Boolean,
 });
 
 const emit = defineEmits(["modal-close"]);
-
-function isMobile() {
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
 
 </script>
 
@@ -76,14 +68,14 @@ function isMobile() {
                             <div class="flex-1-row-1">
                                 <div class="labels" id="logo">
                                     <label for="logo">Image<!--Delicious Di.. ahm Chamuça Pick --></label>
-                                    <button id="coolbutton">Add New Image</button>
+                                    <input type="file" name="logo" id="input-logo" accept="image/*" >
                                 </div> 
                             </div>
                             <br>
                             <div class="flex-1-row-1">
                                 <div class="labels" id="bill">
                                     <label for="bill">Bill<!--Delicious Di.. ahm Chamuça Pick --></label>
-                                    <button id="coolbutton">Upload file</button>
+                                    <input type="file" name="bill" id="input-bill" accept="image/*" >
                                 </div> 
                             </div>
                        </div>
@@ -294,6 +286,12 @@ input {
     height: 5vh;
 }
 
+input[type="file" i] {
+    border-style: none;
+    align-items: center;
+    align-content: center;
+}
+
 select {
     border-style: solid;
     border-width: thin;
@@ -308,7 +306,11 @@ select {
     display: flex;
     flex-direction: column;
     color: #515151;
-    font-size: smaller;
+    foinput[type="file" i] {
+    background-color: initial;
+    border-color: initial;
+    border-radius: initial;
+}nt-size: smaller;
     height: 100%;
 }
 
