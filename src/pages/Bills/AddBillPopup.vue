@@ -7,12 +7,31 @@ const props = defineProps({
 
 const emit = defineEmits(["modal-close"]);
 
+function submitAddBill(e) {
+    console.log(e)
+    console.log(form_data);
+    
+}
+
+let value = ref()
+let date = ref()
+let shop = ref()
+let status = ref()
+let is_paid = ref()
+let form_data = {    
+    "value": value,
+    "date": date,
+    "shop": shop,
+    "status": status,
+    "is_paid": is_paid
+}
+
 function isMobile() {
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         return true;
     }
     else {
-        return false;
+    return false;
     }
 }
 
@@ -33,17 +52,17 @@ function isMobile() {
                             <div class="flex-1-row-1">
                                 <div class="labels" id="value">
                                     <label for="value">Value</label>
-                                    <input type="text" placeholder="" id="value">
+                                    <input required type="text" placeholder=""  id="value" v-model="value">
                                 </div>
                                 <div class="labels" id="date">
                                     <label for="date">Date</label>
-                                    <input type="date" name="date" id="date">
+                                    <input required type="date" name="date" id="date" v-model="date">
                                 </div>
                             </div>
                             <div class="flex-1-row-1">
                                 <div class="labels" id="shop">
                                     <label for="shop">Shop</label>
-                                    <input type="text" placeholder="" id="shop">
+                                    <input required type="text" placeholder="" id="shop" v-model="shop">
                                 </div>
                             </div>
                         </div>
@@ -51,8 +70,8 @@ function isMobile() {
                             <div class="flex-1-row-1">
                                 <div class="labels" id="status">
                                     <label for="status">Status</label>
-                                    <select name="status" id="status">
-                                        <option value="null" disabled selected hidden></option>
+                                    <select required name="status" id="status" v-model="status">
+                                        <option selected value="Pending">Pending</option>
                                         <option value="Approved">Approved</option>
                                         <option value="Rejected">Rejected</option>
                                     </select>
@@ -62,8 +81,8 @@ function isMobile() {
                                 <div class="labels" id="is-paid">
                                     <label for="is-paid">Is Paid</label>
 
-                                    <select name="Is paid" id="is-paid">
-                                        <option value="null" disabled selected hidden></option>
+                                    <select required name="Is paid" id="is-paid" v-model="is_paid">
+                                        <option selected value="No" >No</option>
                                         <option value="Yes">Yes</option>
                                         <option value="No">No</option>
                                     </select>
@@ -89,7 +108,7 @@ function isMobile() {
                        </div>
                     </div>
                     <div class="btns">
-                        <button class="add" @click.stop="emit('modal-close')">Add</button>
+                        <button class="add" @click="submitAddBill" @click.stop="emit('modal-close')">Add</button>
                     </div>
                 </div>
             </div>
