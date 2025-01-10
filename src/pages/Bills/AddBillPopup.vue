@@ -84,7 +84,6 @@ function isMobile() {
                                     <select required name="Is paid" id="is-paid" v-model="is_paid">
                                         <option selected value="No" >No</option>
                                         <option value="Yes">Yes</option>
-                                        <option value="No">No</option>
                                     </select>
                                 </div>
                             </div>
