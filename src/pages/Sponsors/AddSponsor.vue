@@ -18,10 +18,10 @@
           </div>
           <div class="event-filter">
             <label for="event">Event</label>
-            <select class="selection-box" v-model="eventselected">
+            <select class="selection-box" v-model="event_id">
               <option value="all">All</option>
               <option value="JEEC 23/24">JEEC 23/24</option>
-              <option value="JEEC 24/25">JEEC 24/25</option>
+              <option value="2">JEEC 24/25</option>
             </select>   
           </div>
         </div>
@@ -34,9 +34,9 @@
         <div class="form-columns">
           <div class="logo">
             
-            <div class="blue-square" v-if="logo">
+            <div class="blue-square" v-if="fileSelected">
               <!-- Display the selected image -->
-              <img :src="logo" alt="Logo" class="logo-image" />
+              <img :src="fileSelected" alt="Logo" class="logo-image" />
             </div>
             
             <div class="blue-square" v-else>
@@ -45,7 +45,7 @@
             </div>
             <!-- Hidden file input -->
             <label for="logo-upload" class="custom-logo-label">Add new Logo</label>
-            <input id="logo-upload" type="file" @change="onLogoSelected" class="button-add-logo" accept="image/*" />
+            <input id="logo-upload" name ="fileSelected" type="file" @change="onLogoSelected" class="button-add-logo" accept="image/*" />
           </div>
           <div class="second-column">
             <div class="form-line">
@@ -63,10 +63,10 @@
               <div class="radio-label">
                 <label for="show">Show in Website</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
+                  <input type="radio" id="yes" :name="show" value="True"/>
                   <label for="yes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
+                  <input type="radio" id="no" :name="show" value="False"/>
                   <label for="no">No</label>
                 </div>
               </div>
@@ -85,14 +85,17 @@
             
         </div>
       </form>
-      <button class="button-add-sponsor">Add</button>
+      <button class="button-add-sponsor" @click="addingSponsor">Add</button>
     </div>
   </div>
   
 </template>
 
 <script setup>
+import axios from 'axios';
+import { ref } from 'vue';
 const emit = defineEmits(['close'])
+
 
 function closePopup() {
 emit('close');
@@ -101,6 +104,45 @@ emit('close');
 const props = defineProps({
   foo: String
 })
+
+const name = ref('')
+const description = ref('')
+const event_id = ref('all')
+const fileSelected = null
+const fileToUpload = null
+const show = ref('False')
+const logo_image = ref('')
+
+
+
+
+
+function onLogoSelected(event){
+  this.fileSelected = event.target.files[0].name;
+  this.fileToUpload = event.target.files[0];
+}
+
+function addingSponsor(e) {
+        e.preventDefault()
+
+        const fd = new FormData();
+        fd.append('logo_image', this.fileToUpload)
+        fd.append('name', this.name)
+        fd.append('description', this.description)
+        fd.append ('event_id', this.event_id)
+
+        axios.post(process.env.VITE_APP_JEEC_BRAIN_URL+'/add-sponsor-vue',fd,{auth: {
+          username: process.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: process.env.VITE_APP_JEEC_WEBSITE_KEY
+        }} ).then(response => {
+          this.error = response.data.error
+          if(this.error==''){
+            closePopup()
+          }
+        })
+        
+      }
+
 </script>
 
 <style scoped>

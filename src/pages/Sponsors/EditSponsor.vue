@@ -63,10 +63,10 @@
               <div class="radio-label">
                 <label for="show">Show in Website</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
+                  <input type="radio" id="yes" name="show" value="True"/>
                   <label for="yes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
+                  <input type="radio" id="no" name="show" value="False"/>
                   <label for="no">No</label>
                 </div>
               </div>

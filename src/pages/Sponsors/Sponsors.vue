@@ -51,8 +51,9 @@
         </svg>
       </button>
       <div class="sponsor-card-header">
-        <h1 class="card-tier">{{ selectedRow.tier }}</h1>
-        <img class='sponsor-logo' :src=selectedRow.logo alt="sponsor logo" />
+        <h1 class="card-tier">{{ selectedRow.tier_name }}</h1>
+        <img v-if="selectedRow.logo" class='sponsor-logo' :src=selectedRow.logo alt="sponsor logo" />
+        <div v-else class='sponsor-no-logo'>No logo</div>
         <div class="card-title">
           <p class="card-name">{{ selectedRow.name }}</p>
           <p class="card-subtitle">Sponsor</p>
@@ -70,7 +71,7 @@
       <div class="sponsor-card-body">
         <div class="card-paragraph">
           <h1>JEEC Responsible</h1>
-          <p>{{ selectedRow.jeecresponsible }}</p>
+          <p>{{ selectedRow.jeec_responsible }}</p>
         </div>
         <div class="card-paragraph">
           <h1>Description</h1>
@@ -78,7 +79,7 @@
         </div>
         <div class="card-paragraph">
           <h1>Event</h1>
-          <p>{{ selectedRow.eventselected }}</p>
+          <p>{{ selectedRow.event_name }}</p>
         </div>
         
       </div>
@@ -106,6 +107,7 @@ const tableData = ref([{
   company: null,
 }])
 
+const events = ref('')
 
 const fetchData = () => {
     axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/sponsors_vue',{auth: {
@@ -116,6 +118,15 @@ const fetchData = () => {
           tableData.value = response.data.sponsors
           console.log(tableData.value)
         })
+    
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/events',{auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }}).then((response)=>{
+      const data = response.data
+      events.value = response.data.sponsors
+      console.log(events.value)
+    })
 }
 
 onMounted(fetchData)
@@ -140,8 +151,8 @@ onMounted(fetchData)
 const headers = {
   id: 'ID',
   name: 'Name',
-  tier: 'Tier',
-  jeecresponsible: 'JEEC Responsible',
+  tier_name: 'Tier',
+  jeec_responsible: 'JEEC Responsible',
 };
 
 const tableButtons = '';
@@ -240,14 +251,31 @@ const eventselected = ref('');
 }
 
 .sponsor-logo {
-  width: 8vw;
-  height: 8vw;
+  width: 9vw;
+  height: 9vw;
   min-height: 50px;
   min-width: 50px;
   max-width: 100px;
   max-height: 100px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.sponsor-no-logo {
+  width: 9vw;
+  height: 9vw;
+  min-height: 50px;
+  min-width: 50px;
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  color: #888;
+  font-size: 14px;
+  text-align: center;
 }
 
 .card-title{
