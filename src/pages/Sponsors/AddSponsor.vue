@@ -61,12 +61,12 @@
           
             <div class="form-line">
               <div class="radio-label">
-                <label for="show">Show in Website</label>
+                <label for="show_in_website">Show in Website</label>
                 <div class="radio">
-                  <input type="radio" id="yes" :name="show" value="True"/>
+                  <input type="radio" id="yes" :name="show_in_website" value="True"/>
                   <label for="yes">Yes</label>
 
-                  <input type="radio" id="no" :name="show" value="False"/>
+                  <input type="radio" id="no" :name="show_in_website" value="False"/>
                   <label for="no">No</label>
                 </div>
               </div>
@@ -108,9 +108,12 @@ const props = defineProps({
 const name = ref('')
 const description = ref('')
 const event_id = ref('all')
+const tier = ref('')
+const jeec_responsible = ref('')
+
 const fileSelected = null
 const fileToUpload = null
-const show = ref('False')
+const show_in_website = ref('False')
 const logo_image = ref('')
 
 
@@ -123,18 +126,23 @@ function onLogoSelected(event){
 }
 
 function addingSponsor(e) {
+      console.log('adding sponsor')
         e.preventDefault()
 
         const fd = new FormData();
-        fd.append('logo_image', this.fileToUpload)
-        fd.append('name', this.name)
-        fd.append('description', this.description)
-        fd.append ('event_id', this.event_id)
+        if (fileToUpload) fd.append('logo_image', fileToUpload.value)
+        fd.append('name', name.value)
+        fd.append('description', description.value)
+        fd.append('event_id', event_id.value)
+        fd.append('show_in_website', show_in_website.value)
+        fd.append('tier', tier.value)
+        fd.append('jeec_responsible', jeec_responsible.value)
 
-        axios.post(process.env.VITE_APP_JEEC_BRAIN_URL+'/add-sponsor-vue',fd,{auth: {
-          username: process.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-          password: process.env.VITE_APP_JEEC_WEBSITE_KEY
-        }} ).then(response => {
+        axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add_sponsors_vue',{auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then(response => {
+          console.log(response)
           this.error = response.data.error
           if(this.error==''){
             closePopup()

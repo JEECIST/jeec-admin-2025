@@ -101,11 +101,7 @@ import pencilIcon from '../../assets/pencil.svg'
 import trashIcon from '../../assets/trash.svg'
 
 // Example data to be displayed in the table
-const tableData = ref([{
-  id: null,
-  name: null,
-  company: null,
-}])
+const tableData = ref([])
 
 const events = ref('')
 
@@ -116,36 +112,15 @@ const fetchData = () => {
         }}).then((response)=>{
           const data = response.data
           tableData.value = response.data.sponsors
-          console.log(tableData.value)
+          console.log("Sponsors",tableData.value)
+          events.value = response.data.events
+          console.log("Events",events.value)
+        }).catch((error)=>{
+          console.log(error)
         })
-    
-    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/events',{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-    }}).then((response)=>{
-      const data = response.data
-      events.value = response.data.sponsors
-      console.log(events.value)
-    })
 }
 
 onMounted(fetchData)
-
-// const tableData = ref([
-//   { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk', eventselected: 'JEEC 23/24', showInWebsite: false },
-//   { id: 2, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
-//   { id: 3, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-//   { id: 4, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv', eventselected: 'JEEC 23/24', showInWebsite: false },
-//   { id: 5, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
-//   { id: 6, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-//   { id: 7, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv', eventselected: 'JEEC 23/24', showInWebsite: false },
-//   { id: 8, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
-//   { id: 9, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-//   { id: 10, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv ', eventselected: 'JEEC 23/24', showInWebsite: false },
-//   { id: 11, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
-//   { id: 12, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-
-// ]);
 
 // Headers to map the data keys to table headers
 const headers = {
@@ -251,10 +226,10 @@ const eventselected = ref('');
 }
 
 .sponsor-logo {
-  width: 9vw;
-  height: 9vw;
-  min-height: 50px;
-  min-width: 50px;
+  width: 10vh;
+  height: 10vh;
+  min-height: 70px;
+  min-width: 70px;
   max-width: 100px;
   max-height: 100px;
   border-radius: 50%;
@@ -262,12 +237,12 @@ const eventselected = ref('');
 }
 
 .sponsor-no-logo {
-  width: 9vw;
-  height: 9vw;
-  min-height: 50px;
-  min-width: 50px;
-  max-width: 100px;
-  max-height: 100px;
+  width: 10vh;
+  height: 10vh;
+  min-height:100px;
+  min-width: 100px;
+  max-width: 150px;
+  max-height: 150px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -314,6 +289,7 @@ const eventselected = ref('');
   width: 100%;
   padding: 10px 10px 10px 10px;
   gap: 10px;
+  overflow: hidden;
 
 }
 
