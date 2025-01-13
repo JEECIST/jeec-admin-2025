@@ -1,10 +1,15 @@
 <template>
+  <!-- Container principal da aplicação de estudantes -->
   <div class="student-app-container">
+    <!-- Cabeçalho da aplicação -->
     <div class="header">
-      <div class="search-container" v-if="!showBannedPopup">
+      <!-- Container da barra de pesquisa -->
+      <div class="search-container">
+        <!-- Ícone da lupa para pesquisa -->
         <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10.5 17a6.5 6.5 0 100-13 6.5 6.5 0 000 13z" />
         </svg>
+        <!-- Input da barra de pesquisa ligado ao `searchQuery` -->
         <input 
           type="text" 
           placeholder="Search for a student" 
@@ -12,32 +17,52 @@
           v-model="searchQuery" 
         />
       </div>
-      <button class="btn-banned" v-if="!showBannedPopup" @click="toggleBannedPopup">
+      <!-- Botão para abrir o popup de estudantes banidos -->
+      <button class="btn-banned" @click="toggleBannedPopup">
         Banned Students
       </button>
     </div>
 
-    <!-- Banned Students Popup -->
+    <!-- Overlay que sombreia o fundo quando o popup está visível -->
+    <div class="overlay" v-if="showBannedPopup"></div>
+
+    <!-- Popup para exibir estudantes banidos -->
     <div v-if="showBannedPopup" class="banned-popup">
       <div class="popup-content">
+        <!-- Botão para fechar o popup -->
         <button @click="closePopup" class="close-button">
           <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
+        <!-- Título do popup -->
         <h2>Banned Students</h2>
+        <!-- Tabela de estudantes banidos -->
         <TheTable
           :data="bannedStudents"
           :tableHeaders="bannedTableHeaders"
           :buttons="unbanButtons"
           @unban="unbanStudent"
-        />
+        >
+          <!-- Botão personalizado para remover o banimento -->
+          <template #unban="{ row }">
+            <div class="icon-combination" @click="unbanStudent(row)">
+              <div class="icon-base">
+                <img src="../../assets/StudentApp/students4.svg" alt="Trash Icon" />
+              </div>
+              <div class="icon-overlay">
+                <img src="../../assets/StudentApp/squads1.svg" alt="Circle X Icon" />
+              </div>
+            </div>
+          </template>
+        </TheTable>
       </div>
     </div>
 
-    <!-- Main Content (Hidden when Banned Popup is active) -->
-    <div class="content" v-if="!showBannedPopup">
+    <!-- Conteúdo principal -->
+    <div class="content">
+      <!-- Tabela de estudantes -->
       <div :class="['students-table-container', { 'full-width': !selectedStudent }]">
         <TheTable
           :data="filteredStudents"
@@ -46,21 +71,29 @@
           :searchInput="searchQuery"
           @onRowSelect="selectStudent"
         />
+        <!-- Mensagem exibida se nenhum estudante for encontrado -->
         <div v-if="!filteredStudents.length" class="no-students">
           No Students found
         </div>
       </div>
-        <div class="student-detail" v-if="selectedStudent">
-          <button @click="selectStudent(null)" class="close-button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
+      <!-- Detalhes de um estudante selecionado -->
+      <div class="student-detail" v-if="selectedStudent">
+        <!-- Botão para fechar o painel de detalhes -->
+        <button @click="selectStudent(null)" class="close-button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <!-- Nome de utilizador do estudante -->
         <p class="username">{{ selectedStudent.username }}</p>
-        <img class="profile-pic" src="../../assets/StudentApp/example_students_photo.svg" alt="Profile Picture" />
+        <!-- Foto de perfil do estudante -->
+        <img class="profile-pic" :src="selectedStudent.profilePic" alt="Profile Picture" />
+        <!-- Nome do estudante -->
         <h3>{{ selectedStudent.name }}</h3>
+        <!-- Papel do estudante (fixo como "Student") -->
         <p class="role">Student</p>
+        <!-- Botões de ações do estudante -->
         <div class="student-actions">
           <div class="action-button">
             <img src="../../assets/StudentApp/students1.svg" alt="Icon 1">
@@ -75,10 +108,12 @@
             <img src="../../assets/StudentApp/students4.svg" alt="Icon 4">
           </div>
         </div>
+        <!-- Informações do estudante -->
         <p class="email-title">Email</p>
         <p class="email">{{ selectedStudent.email }}</p>
         <p class="linkedin-title">LinkedIn</p>
         <p class="linkedin"><a :href="selectedStudent.linkedin">{{ selectedStudent.linkedin }}</a></p>
+        <!-- Pontuação do estudante -->
         <div class="points">
           <div>
             <p class="points-title">Current Points</p>
@@ -93,6 +128,7 @@
             <p class="points-value">{{ selectedStudent.totalPoints }}</p>
           </div>
         </div>
+        <!-- Estado do CV e grau académico do estudante -->
         <div class="status-degree">
           <div>
             <p class="status-title">CV Status</p>
@@ -109,46 +145,59 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import TheTable from '../../global-components/TheTable.vue';
+import { ref, computed } from 'vue'; // Importação de funcionalidades da Vue (reactividade e computação)
+import TheTable from '../../global-components/TheTable.vue'; // Importa o componente reutilizável de tabela
+import examplePhoto from '../../assets/StudentApp/example_students_photo.svg'; // Importa uma imagem exemplo para perfis
 
+// Variável reativa para controlar a exibição do popup de estudantes banidos
 const showBannedPopup = ref(false);
 
+// Função para alternar a exibição do popup de estudantes banidos
 const toggleBannedPopup = () => {
   showBannedPopup.value = !showBannedPopup.value;
 };
 
-// Sample banned students data
+// Dados fictícios de estudantes banidos (exemplo)
 const bannedStudents = ref([
-  { id: 1, name: 'André Santos', username: 'andregay', email: 'parkour_is_gay@proton.me' },
-  { id: 2, name: 'André Santos 2', username: 'andregay 2', email: 'parkour_is_gay2@proton.me' },
-  { id: 3, name: 'André Santos 3', username: 'andregay 3', email: 'parkour_is_gay3@proton.me' },
+  { id: 1, name: 'André Santos', username: 'andregay', email: 'parkour_is_gay@proton.me' }, // Estudante 1
+  { id: 2, name: 'André Santos 2', username: 'andregay 2', email: 'parkour_is_gay2@proton.me' }, // Estudante 2
+  { id: 3, name: 'André Santos 3', username: 'andregay 3', email: 'parkour_is_gay3@proton.me' }, // Estudante 3
 ]);
 
+// Estrutura dos cabeçalhos para a tabela de estudantes banidos
 const bannedTableHeaders = {
-  id: "ID",
-  name: "Name",
+  id: "ID", 
+  name: "Name", 
   username: "Username",
-  email: "Email",
-  unban: "Unban", // NÃO APARECE
+  email: "Email", 
+  unban: "Unban", 
 };
 
+// Botões associados à funcionalidade de desbanir
 const unbanButtons = {
   name: "unban",
-  eventName: "unban",
+  eventName: "unban", 
   icon: "../../assets/StudentApp/students1.svg",
 };
 
+// Função que desbane um estudante
 const unbanStudent = (student) => {
-  // Logic to unban student
+  // Lógica para desbanir o estudante (atualmente apenas exibe no console)
   console.log('Unbanning student:', student);
 };
 
+// Função para fechar o popup de estudantes banidos
+const closePopup = () => {
+  showBannedPopup.value = false; // Define a variável para false, escondendo o popup
+};
+
+// Lista de estudantes
 const students = ref([
   {
     id: '1',
     name: 'André Santos',
     username: 'andregay',
+    profilePic: examplePhoto,
     squad: 'parkour_is_gayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
     dailyPoints: -1,
     totalPoints: -2,
@@ -162,6 +211,7 @@ const students = ref([
     id: 2,
     name: 'André Santos Gonçalves Ferreira',
     username: 'andregay2andregay2andregay2',
+    profilePic: examplePhoto,
     squad: 'parkour_is_gay2_parkour_is_gay2',
     dailyPoints: -1,
     totalPoints: -2,
@@ -175,6 +225,7 @@ const students = ref([
     id: 3,
     name: 'Luna Ferreira',
     username: 'lunaferreira',
+    profilePic: examplePhoto,
     squad: 'lu',
     dailyPoints: 5,
     totalPoints: 18,
@@ -188,6 +239,7 @@ const students = ref([
     id: 4,
     name: 'André Santos',
     username: 'andregay',
+    profilePic: examplePhoto,
     squad: 'parkour_is_gay',
     dailyPoints: 43,
     totalPoints: 12,
@@ -201,6 +253,7 @@ const students = ref([
     id: 5,
     name: 'André Santos Gonçalves Ferreira',
     username: 'andregay2andregay2andregay2',
+    profilePic: examplePhoto,
     squad: 'parkour_is_gay2_parkour_is_gay2',
     dailyPoints: -731,
     totalPoints: 0,
@@ -214,6 +267,7 @@ const students = ref([
     id: 6,
     name: 'Luna Ferreira',
     username: 'lunaferreira',
+    profilePic: examplePhoto,
     squad: 'lu',
     dailyPoints: 5652,
     totalPoints: 1,
@@ -227,6 +281,7 @@ const students = ref([
     id: 7,
     name: 'André Santos',
     username: 'andregay',
+    profilePic: examplePhoto,
     squad: 'parkour_is_gay',
     dailyPoints: -1,
     totalPoints: -2,
@@ -240,6 +295,7 @@ const students = ref([
     id: 8,
     name: 'André Santos Gonçalves Ferreira',
     username: 'andregay2andregay2andregay2',
+    profilePic: examplePhoto,
     squad: 'parkour_is_gay2_parkour_is_gay2',
     dailyPoints: -1,
     totalPoints: -2,
@@ -253,6 +309,7 @@ const students = ref([
     id: 9,
     name: 'Luna Ferreira',
     username: 'lunaferreira',
+    profilePic: examplePhoto,
     squad: 'lu',
     dailyPoints: 5,
     totalPoints: 18,
@@ -266,6 +323,7 @@ const students = ref([
     id: 10,
     name: 'André Santos',
     username: 'andregay',
+    profilePic: examplePhoto,
     squad: 'parkour_is_gay',
     dailyPoints: -1,
     totalPoints: -2,
@@ -279,6 +337,7 @@ const students = ref([
     id: 11,
     name: 'André Santos Gonçalves Ferreira',
     username: 'andregay2andregay2andregay2',
+    profilePic: examplePhoto,
     squad: 'parkour_is_gay2_parkour_is_gay2',
     dailyPoints: -1,
     totalPoints: -2,
@@ -292,6 +351,7 @@ const students = ref([
     id: 12,
     name: 'Luna Ferreira',
     username: 'lunaferreira',
+    profilePic: examplePhoto,
     squad: 'lu',
     dailyPoints: 5,
     totalPoints: 18,
@@ -301,122 +361,135 @@ const students = ref([
     cvStatus: 'Approved',
     degree: 'BSc/IST',
   },
-  // Add students
+  // Adicionar estudantes
 ]);
 
+// Variável reativa para armazenar o texto de pesquisa inserido pelo utilizador
 const searchQuery = ref('');
+
+// Variável reativa para armazenar o estudante atualmente selecionado
 const selectedStudent = ref(null);
 
+// Estrutura dos cabeçalhos da tabela que exibe os dados dos estudantes
 const tableHeaders = {
-  id: "ID",
-  name: "Name",
-  username: "Username",
+  id: "ID", 
+  name: "Name", 
+  username: "Username", 
   squad: "Squad",
-  dailyPoints: "Daily Points",
-  totalPoints: "Total Points"
+  dailyPoints: "Daily Points", 
+  totalPoints: "Total Points" 
 };
 
+// Computed property que filtra os estudantes com base no texto de pesquisa
 const filteredStudents = computed(() => {
   if (!searchQuery.value.trim()) {
-    // If the search query is empty or just spaces, return all students
+    // Se a pesquisa estiver vazia ou contiver apenas espaços, retorna todos os estudantes
     return students.value;
   }
 
+  // Filtra os estudantes com base no nome ou username que inclui o texto de pesquisa (case insensitive)
   return students.value.filter(student =>
     student.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     student.username.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
 
+// Função para selecionar um estudante na aplicação
 const selectStudent = (student) => {
-  selectedStudent.value = student;
+  selectedStudent.value = student; // Define o estudante selecionado
 };
 </script>
 
 <style scoped>
-/* Style for all table headers in the current component - NÃO FUNCIONA */
+/* Estilo para os cabeçalhos da tabela */
 th {
   color: #424242;
-  font-family: 'Kumbh Sans', sans-serif;
+  font-family: 'Kumbh Sans', sans-serif; 
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 600; 
 }
 
-/* Style for all table to apply truncation for cells - NÃO FUNCIONA */
+/* Estilo para células da tabela */
 th, td {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 150px; 
+  white-space: nowrap; /* Impede a quebra de linha */
+  overflow: hidden; /* Oculta o texto excedente */
+  text-overflow: ellipsis; /* Adiciona reticências ao final do texto */
+  max-width: 150px; /* Define uma largura máxima para as células */
 }
 
+/* Estilo principal do container da aplicação de estudantes */
 .student-app-container {
-  background: #FFFFFF;
-  display: flex;
+  background: #FFFFFF; 
+  display: flex; 
   flex-direction: column; 
-  width: 100%;
-  margin: auto;
+  width: 100%; 
+  margin: auto; 
   padding: 60px 50px 50px 50px;
 }
 
+/* Estilo para o cabeçalho fixo */
 .header {
-  position: sticky;
-  top: 0;
+  position: sticky; 
+  top: 0; 
   z-index: 10;
-  display: flex;
-  justify-content: space-between;
+  display: flex; 
+  justify-content: space-between; 
   align-items: center;
-  margin-bottom: 1.5rem; 
+  margin-bottom: 1.5rem;
 }
 
+/* Estilo para o container da barra de pesquisa */
 .search-container {
-  position: relative;
-  background-color: #EBF6FF; 
-  position: relative;
-  width: 87%; 
+  position: relative; /* Necessário para posicionar o ícone corretamente */
+  background-color: #EBF6FF; /* Cor de fundo */
+  width: 87%; /* Ajuste para ocupar toda a largura disponível */
   max-width: 1500px; 
   height: 49px; 
-  border-radius: 8px; 
+  border-radius: 8px;
+  padding: 0 16px;
+  display: flex; 
+  align-items: center; 
+  gap: 10px; /* Espaçamento entre ícone e input */
   padding: 16px, 20px, 16px, 16px; 
 }
 
 .search-icon {
   position: absolute;
-  color: #8A8A8A;
-  position: absolute;
-  top: 50%;
-  left: 20px;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
+  color: #8A8A8A; 
+  top: 50%; 
+  left: 20px; 
+  transform: translateY(-50%); /* Ajusta o ícone para o centro verticalmente */
+  width: 16px; 
+  height: 16px; 
 }
 
 .search-bar {
-  color: #8A8A8A;
+  width: calc(100% - 40px); /* Ajusta o input para não ocupar o espaço do ícone */
   width: 100%;
-  height: 49px;
+  height: 100%; 
   padding: 16px 20px 16px 50px;
-  border: none;
-  border-radius: 8px;
+  border: none; 
+  border-radius: 8px; 
+  padding-left: 40px; /* Espaço suficiente para o ícone */
   font-family: 'Kumbh Sans', sans-serif;
-  font-size: 14px; 
+  font-size: 14px;
   font-weight: 500;
-  line-height: 17.36px; 
-  background-color: #EBF6FF;
+  background-color: #EBF6FF; 
+  color: #8A8A8A; 
 }
 
 .btn-banned {
-  width: 120px;
-  height: 41px;
-  background-color: #509CDB;
-  color: #FFFFFF;
+  width: 120px; 
+  height: 41px; 
+  background-color: #509CDB; 
+  color: #FFFFFF; 
   border: none; 
-  border-radius: 4px;
-  padding: 12px 0px;
+  border-radius: 4px; 
+  padding: 12px 0px; 
   cursor: pointer;
   font-family: 'Kumbh Sans', sans-serif; 
-  font-weight: 600; 
-  font-size: 14px;
+  font-weight: 600;
+  font-size: 14px; 
   line-height: 17.36px; 
   text-align: center; 
   display: flex;
@@ -424,15 +497,43 @@ th, td {
   align-items: center; 
 }
 
+.overlay {
+  position: fixed; /* Garante que o overlay cubra toda a janela */
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%; 
+  background-color: rgba(0, 0, 0, 0.5); /* Sombra */
+  z-index: 10; /* Garante que o overlay fique acima de outros elementos */
+}
+
 .banned-popup {
+  z-index: 20; /* Popup deve estar acima do overlay */
   display: flex;
   justify-content: center;
   align-items: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Ajusta a posição para centralizar o popup */
 }
+
+.banned-popup .popup-content {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  max-width: 800px;
+  position: relative;
+}
+
 
 .banned-popup > div {
   width: 100%;
   max-width: 950px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
 }
 
 .banned-popup h2 {
@@ -456,27 +557,29 @@ th, td {
 
 .icon-combination {
   position: relative;
-  width: 36px;
+  width: 36px; 
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #509CDB; 
+  border-radius: 8px; 
+  cursor: pointer;
 }
 
-.icon-base {
-  width: 100%;
-  height: 100%;
-  position: relative;
+.icon-base img {
+  width: 20px; 
+  height: 20px;
 }
 
 .icon-overlay {
   position: absolute;
-  top: 50%; 
+  top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 70%;
-  height: 70%;
-  z-index: 1;
+  transform: translate(-50%, -50%); 
+  width: 14px; 
+  height: 14px;
+  z-index: 1; 
 }
 
 .content {
@@ -547,6 +650,12 @@ th, td {
   text-align: center; 
   max-height: 100vh;
   overflow-y: auto; 
+  position: relative; /* Torna a posição do botão relativa ao container */
+}
+
+.student-detail h3, .student-detail .username {
+  white-space: normal; /* Permite várias linhas de texto */
+  overflow: visible; /* Garante que o texto não será oculto */
 }
 
 h3 {
@@ -568,10 +677,11 @@ h3 {
   font-weight: 800;
   text-align: center;
   margin-bottom: 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%; 
+  white-space: nowrap; /* Evita quebra de linha */
+  overflow: hidden; /* Oculta o texto excedente */
+  text-overflow: ellipsis; /* Adiciona reticências ao final do texto excedente */
+  max-width: 100%; /* Limita a largura máxima ao tamanho do container */
+  display: block; /* Garante que as propriedades de texto sejam aplicadas */
 }
 
 .role {
