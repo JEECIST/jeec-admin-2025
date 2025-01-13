@@ -87,34 +87,36 @@ const tablePref = {
     <div class="table">
         <div class="topbar">
             <form>
-                        <label>
-                        <img src="../../assets/search.svg">
-                        </label>
-                        <input v-model="message" placeholder="Search for a bill">
-                    </form>
+                <label>
+                <img src="../../assets/search.svg">
+                </label>
+                <input v-model="message" placeholder="Search for a bill">
+            </form>
 
-                    <button class="topbtn" @click="toggleModal">Add Bill</button>
-                    <button class="topbtn" @click="">Refresh</button>
-                    <Transition name="fade" appear>
-                        <AddBillPopup :isOpen="isModalOpened" @modal-close="toggleModal"></AddBillPopup>
-                    </Transition>
+            <button class="topbtn" @click="toggleModal">Add Bill</button>
+            <button class="topbtn" @click="">Refresh</button>
+            <Transition name="fade" appear>
+                <AddBillPopup :isOpen="isModalOpened" @modal-close="toggleModal"></AddBillPopup>
+            </Transition>
 
-                </div>
-                <div v-if="!isDataBEmpty()">
-                    <TheTable
-                    :data="datab"
-                    :tableHeaders="tablePref"
-                    :searchInput="message"
-                    @onRowSelect="selectCallback"
-                    ></TheTable>
-                </div>
-            </div>
-            <div class="right-popup-placeholder" v-show="popupShow">
-                <div class="items">
-                    <div class="prize-photo">No Photo</div>
-                    <h3 class="text1">{{ selectedRowData.date }}</h3>
-                    <p class="text2 title">Bill</p>
-                    <div class="btns-row">
+        </div>
+        <div v-if="!isDataBEmpty()">
+            <TheTable
+                :data="datab"
+                :tableHeaders="tablePref"
+                :searchInput="message"
+                @onRowSelect="selectCallback"
+            ></TheTable>
+        </div>
+    </div>
+        <div class="right-popup-placeholder" v-show="popupShow">
+            <div class="items">
+                <div class="prize-photo">No Photo</div>
+
+                <h3 class="text1">{{ selectedRowData.date }}</h3>
+                <p class="text2 title">Bill</p>
+
+                <div class="btns-row">
                     <button class="btn" @click="openOtherModal">
                         <img src="../../assets/pencil.svg">
                     </button>
@@ -124,8 +126,9 @@ const tablePref = {
                     <button class="btn">
                         <img src="../../assets/trash.svg">
                     </button>
-                    </div>
-                    <div id="info">
+                </div>
+
+                <div id="info">
                     <p>Value</p>
                     <p class="text2">{{ selectedRowData.value }}</p>
 
@@ -134,18 +137,37 @@ const tablePref = {
 
                     <div class="row">
                         <div class="col">
-                        <p>Status</p>
-                        <p class="text2">{{ selectedRowData.status }}</p>
+                            <p>Status</p>
+                            <p class="text2">{{ selectedRowData.status }}</p>
                         </div>
                         <div class="col">
-                        <p>Paid</p>
-                        <p class="text2">{{ selectedRowData.is_paid }}</p>
+                            <p>Paid</p>
+                            <p class="text2">{{ selectedRowData.is_paid }}</p>
                         </div>
                     </div>
-                    </div>
                 </div>
+
             </div>
         </div>
     </div>
+</div>
 
 </template>
+<style>
+.wrapper {
+  display: flex;
+  position: relative;
+  justify-content: space-around;
+  height: calc(100dvh - var(--header-height));
+  padding: 5ch 3ch 3ch 3ch;
+  overflow-y: hidden;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  width: 75%;
+  gap: 3ch;
+  padding-right: 3ch;
+}
+</style>

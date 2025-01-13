@@ -1,6 +1,5 @@
 <script setup>
 // Imports
-import TheTable from '../../global-components/TheTable.vue';
 import AddBillPopup from './AddBillPopup.vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
