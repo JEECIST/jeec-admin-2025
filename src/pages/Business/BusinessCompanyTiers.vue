@@ -19,6 +19,7 @@
                 :data="tiers"
                 :tableHeaders="tablePref"
                 :searchInput="message"
+                :key="tableKey"
                 
                 @onRowSelect="selectCallback"
             ></TheTable>
@@ -29,7 +30,7 @@
                 <div class="btn-cancel" @click="selectCallback(selectedRow.value)"> X </div>
                 <div class="conteiner">
                     <div class="conteiner2">
-                        <img :src=selectedRow.tier alt="Profile Image" class="pimg">
+                        <img src="../../assets/JEEC2024.png" alt="Profile Image" class="pimg">
                         <h2>{{ selectedRow.name }}</h2>
                         <p>Company Tier</p>
                         <div class="butoes">
@@ -50,7 +51,7 @@
                             </div>
                             <div class="box">
                                 <div class="title"># Companies</div>
-                                <div class="info">{{ selectedRow.cnumber }}</div>
+                                <div class="info">{{ selectedRow.number }}</div>
                             </div>
                         </div>
                         <div class="line">
@@ -89,8 +90,8 @@
                                 <div class="info">{{ selectedRow.post }}</div>
                             </div>
                             <div class="box">
-                                <div class="title">Included Medal</div>
-                                <div class="info">{{ selectedRow.medal }}</div>
+                                <div class="title">Included Meal</div>
+                                <div class="info">{{ selectedRow.meal }}</div>
                             </div>
                         </div>
                     </div>
@@ -100,30 +101,155 @@
     </div>
   
     <div v-if="showAddTierModal || showEditTierModal" class="modal-overlay">
-        <div class="modal">
+        <form class="modal">
             <div class="btn-cancel" @click="closeModal()"> X </div>
-            <div class="header">
-                <h1 v-if="showAddTierModal">Add Tier</h1>
-                <h1 v-if="showEditTierModal">Edit Tier</h1>
-            </div>
             <button v-if="showAddTierModal" class="btn-primary" @click="addTier()">Add</button>
             <button v-if="showEditTierModal" class="btn-primary" @click="editTier()">Edit</button>
 
-
-        </div>
+            <div class="modal-aux">
+                <div class="header">
+                    <h1 v-if="showAddTierModal">Add Tier</h1>
+                    <h1 v-if="showEditTierModal">Edit Tier</h1>
+                </div>
+                <div class="body">
+                    <div class="line">
+                        <div class="element" id="name">
+                            <label>Name</label>
+                            <input type="text" required v-model="newTier.name">
+                        </div>
+                        <div class="element" id="priority">
+                            <label>Priority</label>
+                            <input type="text" required v-model="newTier.priority">
+                        </div>
+                    </div>
+                    <div class="line">
+                        <div class="element" id="meal">
+                            <label>Included Meal</label>
+                            <div class="line" style="width: 100%; margin-left: 10px; height: 40px;">
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="meal" type="radio" value="Yes" v-model="newTier.meal"/>
+                                    <span style="margin-left: 10px;">Yes</span>
+                                </label>
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="meal" type="radio" value="No" v-model="newTier.meal"/>
+                                    <span style="margin-left: 10px;">No</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="element" id="website">
+                            <label>Show in Website</label>
+                            <div class="line" style="width: 100%; margin-left: 10px; height: 40px;">
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="website" type="radio" value="Yes" v-model="newTier.website"/>
+                                    <span style="margin-left: 10px;">Yes</span>
+                                </label>
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="website" type="radio" value="No" v-model="newTier.website"/>
+                                    <span style="margin-left: 10px;">No</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="element" id="social">
+                            <label>Social Media</label>
+                            <div class="line" style="width: 100%; margin-left: 10px; height: 40px;">
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="social" type="radio" value="Yes" v-model="newTier.social"/>
+                                    <span style="margin-left: 10px;">Yes</span>
+                                </label>
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="social" type="radio" value="No" v-model="newTier.social"/>
+                                    <span style="margin-left: 10px;">No</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line">
+                        <div class="element" id="canvas">
+                            <label>Logo in Canvas</label>
+                            <div class="line" style="width: 100%; margin-left: 10px; height: 40px;">
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="canvas" type="radio" value="Yes" v-model="newTier.canvas"/>
+                                    <span style="margin-left: 10px;">Yes</span>
+                                </label>
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="canvas" type="radio" value="No" v-model="newTier.canvas"/>
+                                    <span style="margin-left: 10px;">No</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="element" id="posters">
+                            <label>Logo in Posters</label>
+                            <div class="line" style="width: 100%; margin-left: 10px; height: 40px;">
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="poster" type="radio" value="Yes" v-model="newTier.poster"/>
+                                    <span style="margin-left: 10px;">Yes</span>
+                                </label>
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="poster" type="radio" value="No" v-model="newTier.poster"/>
+                                    <span style="margin-left: 10px;">No</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="element" id="video">
+                            <label>Exclusive Video</label>
+                            <div class="line" style="width: 100%; margin-left: 10px; height: 40px;">
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="video" type="radio" value="Yes" v-model="newTier.video"/>
+                                    <span style="margin-left: 10px;">Yes</span>
+                                </label>
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="video" type="radio" value="No" v-model="newTier.video"/>
+                                    <span style="margin-left: 10px;">No</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line">
+                        <div class="element" id="teaser">
+                            <label>Teaser</label>
+                            <div class="line" style="width: 100%; margin-left: 10px; height: 40px;">
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="teaser" type="radio" value="Yes" v-model="newTier.teaser"/>
+                                    <span style="margin-left: 10px;">Yes</span>
+                                </label>
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="teaser" type="radio" value="No" v-model="newTier.teaser"/>
+                                    <span style="margin-left: 10px;">No</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="element" id="post">
+                            <label>Exclusive Posts</label>
+                            <div class="line" style="width: 100%; margin-left: 10px; height: 40px;">
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="post" type="radio" value="Yes" v-model="newTier.post"/>
+                                    <span style="margin-left: 10px;">Yes</span>
+                                </label>
+                                <label style="width: 50%;">
+                                    <input class="with-gap" name="post" type="radio" value="No" v-model="newTier.post"/>
+                                    <span style="margin-left: 10px;">No</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
     <div v-if="showTierCompaniesModal" class="modal-overlay">
         <div class="modal">
             <div class="btn-cancel" @click="showTierCompaniesModal = false"> X </div>
-            <div class="header">
-                <h1>{{ selectedRow.name }} Companies</h1>
-            </div>
-            <div class="conteiner">
-                <div class="div-grid">
-                    <!-- Utiliza v-for para iterar sobre os dados dos indivíduos -->
-                    <div v-for="company in companies.filter(companies => companies.tier == selectedRow.name)" :key="index" class="element">
-                        <div class="compimg"></div>
-                        {{ company.name }}
+            <div class="modal-aux">
+                <div class="header">
+                    <h1>{{ selectedRow.name }} Companies</h1>
+                </div>
+                <div class="body">
+                    <div class="div-grid">
+                        <!-- Utiliza v-for para iterar sobre os dados dos indivíduos -->
+                        <div v-for="company in companies.filter(companies => companies.tier == selectedRow.name)" :key="index" class="element">
+                            <div class="compimg"></div>
+                            {{ company.name }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -132,9 +258,35 @@
 </template>
   
 <script setup>
+import axios from 'axios';
 import TheTable from '../../global-components/TheTable.vue';
-import { ref } from 'vue';
-import { companies as companiesData, tiers as tiersData } from './companies.js';
+import { ref, onMounted } from 'vue';
+
+let companies = ref([]); 
+let tiers = ref([]);
+
+const tableKey = ref(0);
+
+const fetchCompanies = async () => {
+  console.log("Teste")
+  axios
+  .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  })
+  .then((response)=>{
+    tiers.value = response.data.tiers
+    console.log(tiers.value)
+  })
+  .catch((error)=>{
+    console.log(error)
+  })
+};
+
+// Chamando a função assim que o componente for montado
+onMounted(fetchCompanies);
+
 
 const message = ref('');
 const showAddTierModal = ref(false);
@@ -143,26 +295,22 @@ const showTierCompaniesModal = ref(false);
 const newTier = ref({
     name: '',
     priority: '',
-    cnumber: '',
-    medal: '',
-    website: '',
-    social: '',
-    canvas: '',
-    poster: '',
-    video: '',
-    teaser: '',
-    post: ''
+    website: 'No',
+    social: 'No',
+    canvas: 'No',
+    poster: 'No',
+    video: 'No',
+    post: 'No',
+    teaser: 'No',
+    meal: 'No'
 });
 
 const selectedRow = ref(null);
 
-const companies = ref([...companiesData]); 
-const tiers = ref([...tiersData]);
-
 const tablePref = {
     name: "Name",
-    cnumber: "# Companies",
-    medal: "Included Medals"
+    number: "# Companies",
+    meal: "Included Meals"
 };
   
 function selectCallback(row) {
@@ -170,54 +318,124 @@ function selectCallback(row) {
         selectedRow.value = null;
     } else {
         selectedRow.value = row;
+        console.log(selectedRow.value)
     }
 }
 
 function addTier() {
-  
-  closeModal();
+
+    const new_tier = new FormData();
+
+    new_tier.append('name', newTier.value.name)
+    new_tier.append('priority', newTier.value.priority)
+    new_tier.append('website', newTier.value.website)
+    new_tier.append('social', newTier.value.social)
+    new_tier.append('canvas', newTier.value.canvas)
+    new_tier.append('poster', newTier.value.poster)
+    new_tier.append('video', newTier.value.video)
+    new_tier.append('post', newTier.value.post)
+    new_tier.append('teaser', newTier.value.teaser)
+    new_tier.append('meal', newTier.value.meal)
+
+    axios
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/new-tier-vue',new_tier,{auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+    })
+    .then(response => {
+            this.error = response.data
+        })
+
+    setTimeout(fetchCompanies, 100);
+
+    closeModal();
 }
 
 function openEdit() {
-    newTier.value.id = selectedRow.value.id;
     newTier.value.name = selectedRow.value.name;
-    newTier.value.tier = selectedRow.value.tier;
-    newTier.value.username = selectedRow.value.username;
-    newTier.value.jeec = selectedRow.value.jeec;
-    newTier.value.web = selectedRow.value.web;
-    newTier.value.email = selectedRow.value.email;
-    newTier.value.event = selectedRow.value.event;
-    newTier.value.cv = selectedRow.value.cv;
-    newTier.value.password = selectedRow.value.password;
-    newTier.value.img = selectedRow.value.img;
-    newTier.value.days = selectedRow.value.days;
+    newTier.value.priority = selectedRow.value.priority;
+    newTier.value.website = selectedRow.value.website;
+    newTier.value.social = selectedRow.value.social;
+    newTier.value.canvas = selectedRow.value.canvas;
+    newTier.value.poster = selectedRow.value.poster;
+    newTier.value.video = selectedRow.value.video;
+    newTier.value.post = selectedRow.value.post;
+    newTier.value.teaser = selectedRow.value.teaser;
+    newTier.value.meal = selectedRow.value.meal;
     showEditTierModal.value = true;
 }
 
 function editTier() {
-    selectedRow.value.id = newTier.value.id;
-    selectedRow.value.name = newTier.value.name;
-    selectedRow.value.tier = newTier.value.tier;
-    selectedRow.value.username = newTier.value.username;
-    selectedRow.value.jeec = newTier.value.jeec;
-    selectedRow.value.web = newTier.value.web;
-    selectedRow.value.email = newTier.value.email;
-    selectedRow.value.event = newTier.value.event;
-    selectedRow.value.cv = newTier.value.cv;
-    selectedRow.value.password = newTier.value.password;
-    selectedRow.value.img = newTier.value.img;
-    selectedRow.value.days = newTier.value.days;
+
+    const new_tier = new FormData();
+
+    new_tier.append('name', newTier.value.name)
+    new_tier.append('priority', newTier.value.priority)
+    new_tier.append('website', newTier.value.website)
+    new_tier.append('social', newTier.value.social)
+    new_tier.append('canvas', newTier.value.canvas)
+    new_tier.append('poster', newTier.value.poster)
+    new_tier.append('video', newTier.value.video)
+    new_tier.append('post', newTier.value.post)
+    new_tier.append('teaser', newTier.value.teaser)
+    new_tier.append('meal', newTier.value.meal)
+    new_tier.append('external_id', selectedRow.value.external_id)
+
+    axios
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/tier/update',new_tier,{auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+    })
+    .then(response => {
+            this.error = response.data
+        })
+
+    setTimeout(fetchCompanies, 100);
+
     closeModal();
+
+    selectedRow.value = null;
 }
 
 function removeTier(row) {
-    
+
+    const delete_tier = new FormData();
+
+    delete_tier.append('external_id', selectedRow.value.external_id)
+
+    axios
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/tier/delete',delete_tier,{auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+    })
+    .then(response => {
+            this.error = response.data
+        })
+
+    selectedRow.value = null;
+
+    setTimeout(fetchCompanies, 100);
+
 };
 
 function closeModal() {
     showAddTierModal.value = false;
     showEditTierModal.value = false;
-    newTier.value = { name: '', prioriry: '', cnumber: '', medal: '', website: '', social: '', canvas: '', poster: '', video: '', teaser: '', post: '' };
+    newTier.value = {
+        name: '',
+        priority: '',
+        website: 'No',
+        social: 'No',
+        canvas: 'No',
+        poster: 'No',
+        video: 'No',
+        post: 'No',
+        teaser: 'No',
+        meal: 'No'
+    };
 }
 
 </script>
@@ -225,5 +443,58 @@ function closeModal() {
 <style scoped>
 
 @import './companies.css';
+
+#name {
+  width: 50%;
+  padding-right: 20px;
+}
+
+#priority {
+  width: 50%;
+  padding-left: 20px;
+}
+
+#meal {
+  width: 33%;
+  padding-right: 10px;
+}
+
+#website {
+  width: 33%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#social {
+  width: 33%;
+  padding-left: 10px;
+}
+
+#canvas {
+  width: 33%;
+  padding-right: 10px;
+}
+
+#posters {
+  width: 33%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#video {
+  width: 33%;
+  padding-left: 10px;
+}
+
+#teaser {
+  width: 33%;
+  padding-right: 10px;
+}
+
+#post {
+  width: 33%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
 
 </style>

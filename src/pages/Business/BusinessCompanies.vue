@@ -12,7 +12,7 @@
             </div>
             <select class="select" v-model="selectedEvent">
               <option v-for="event in events">
-                {{ event }}
+                {{ event.name }}
               </option>
             </select>
           </div>
@@ -22,7 +22,7 @@
           </div>
         </form>
         <TheTable
-          :data="companies.filter(companies => companies.event == selectedEvent)"
+          :data="companies"
           :tableHeaders="tablePref"
           :searchInput="message"
           
@@ -96,22 +96,100 @@
   </div>
 
   <div v-if="showAddCompanyModal || showEditCompanyModal" class="modal-overlay">
-    <div class="modal">
+    <form class="modal">
       <div class="btn-cancel" @click="closeModal()"> X </div>
-      <div class="header">
-        <h1 v-if="showAddCompanyModal">Add Company</h1>
-        <h1 v-if="showEditCompanyModal">Edit Company</h1>
-      </div>
       <button v-if="showAddCompanyModal" class="btn-primary" @click="addCompany()">Add</button>
       <button v-if="showEditCompanyModal" class="btn-primary" @click="editCompany()">Edit</button>
 
-      <form class="popup_form" >
-
-
-        
-      </form>
-
-    </div>
+      <div class="modal-aux">
+        <div class="header">
+          <h1 v-if="showAddCompanyModal">Add Company</h1>
+          <h1 v-if="showEditCompanyModal">Edit Company</h1>
+        </div>
+        <div class="body">
+          <div class="line">
+            <div class="element" id="name">
+              <label>Name</label>
+              <input type="text" required v-model="newCompany.name">
+            </div>
+            <div class="element" id="event">
+              <label>Event</label>
+              <select class="sele" v-model="newCompany.event" required>
+                <option v-for="event in events">
+                  {{ event.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="line">
+            <div class="element" id="email">
+              <label>Email</label>
+              <input type="text" required v-model="newCompany.email">
+            </div>
+            <div class="element" id="website">
+              <label>Website</label>
+              <input type="text" required v-model="newCompany.website">
+            </div>
+          </div>
+          <div class="line">
+            <div class="direita">
+              <label>Logo</label>
+            </div>
+            <div class="esquerda">
+              <div class="line">
+                <div class="element" id="username">
+                  <label>Username</label>
+                  <input type="text" required v-model="newCompany.username">
+                </div>
+              </div>
+              <div class="line">
+                <div class="element" id="cv">
+                  <label>CV acess</label>
+                  <div class="line" style="width: 100%; margin-left: 10px; height: 40px;">
+                    <label style="width: 50%;">
+                      <input class="with-gap" name="cvs_access" type="radio" value="True" v-model="newCompany.cv"/>
+                      <span style="margin-left: 5px;">Yes</span>
+                    </label>
+                    <label style="width: 50%;">
+                      <input class="with-gap" name="cvs_access" type="radio" value="False" checked v-model="newCompany.cv"/>
+                      <span style="margin-left: 5px;">No</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="element" id="tier">
+                  <label>Tier</label>
+                  <select class="sele" v-model="newCompany.tier" required>
+                    <option v-for="tier in tiers">
+                      {{ tier.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="line">
+                <div class="element" id="jeec">
+                  <label>JEEC Responsible</label>
+                  <select class="sele" v-model="newCompany.jeec">
+                    <option v-for="resp in resps">
+                      {{ resp }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="line">
+                <div class="element" id="days">
+                  <label>Job Fair Days</label>
+                  <select class="sele" v-model="newCompany.days">
+                    <option v-for="day in jobdays">
+                      {{ day }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
 
 </template>
@@ -119,31 +197,54 @@
 <script setup>
 import axios from 'axios';
 import TheTable from '../../global-components/TheTable.vue';
-import { ref } from 'vue';
-import { companies as companiesData, events as eventsData, days as daysData, tiers as tiersData, responsibles as responsiblesData } from './companies.js';
+import { ref, onMounted } from 'vue';
+import {days as daysData, tiers as tiersData, responsibles as responsiblesData } from './companies.js';
+
+let companies = ref([]); 
+const events = ref([]);
+
+const fetchCompanies = async () => {
+  console.log("Teste")
+  axios
+  .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  })
+  .then((response)=>{
+
+    const data = response.data;
+
+    events.value = data.events;
+    companies.value = data.companies
+
+    console.log("Company:", companies.value);
+
+  })
+  .catch((error)=>{
+    console.log(error)
+  })
+};
+
+// Chamando a função assim que o componente for montado
+onMounted(fetchCompanies);
 
 const message = ref('');
 const showAddCompanyModal = ref(false);
 const showEditCompanyModal = ref(false);
 const newCompany = ref({
-  id: '',
   name: '',
   tier: '',
   username: '',
-  jeec: '', web: '',
   email: '',
   event: '',
-  cv: '',
-  password: '',
-  img: '',
-  days: '' 
+  cv: 'No',
+  website: '',
 });
 
 const selectedRow = ref(null);
-const selectedEvent = ref('JEEC25');
+const selectedEvent = ref('teste');
 
-let companies = ref([...companiesData]); 
-const events = ref([...eventsData]);
 const days = ref([...daysData]); 
 const tiers = ref([...tiersData]);
 const responsibles = ref([...responsiblesData]); 
@@ -156,25 +257,6 @@ const tablePref = {
   jeec: "JEEC Responsible"
 };
 
-/*
-if (tabela.offsetWidth > 400) {
-  tablePref = {
-    id: "ID",
-    name: "Name",
-    tier: "Tier",
-    username: "Username",
-    jeec: "JEEC Responsible"
-  };
-} else {
-  tablePref = {
-    //id: "ID",
-    name: "Name",
-    tier: "Tier",
-    //username: "Username",
-    jeec: "JEEC Responsible"
-  };
-}*/
-
 function selectCallback(row) {
   if (selectedRow.value == row) {
     selectedRow.value = null;
@@ -185,6 +267,28 @@ function selectCallback(row) {
 
 function addCompany() {
   
+  const new_company = new FormData();
+
+  new_company.append('name', newCompany.value.name)
+  new_company.append('tier', newCompany.value.tier)
+  new_company.append('username', newCompany.value.username)
+  new_company.append('email', newCompany.value.email)
+  new_company.append('event', newCompany.value.event)
+  new_company.append('cv', newCompany.value.cv)
+  new_company.append('link', newCompany.value.website)
+
+  axios
+  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/new-company-vue',new_company,{auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+  })
+  .then(response => {
+          this.error = response.data
+      })
+
+  setTimeout(fetchCompanies, 100);
+
   closeModal();
 }
 
@@ -244,5 +348,47 @@ function closeModal() {
 <style scoped>
 
 @import './companies.css';
+
+#name {
+  width: 70%;
+  margin-right: 20px;
+}
+
+#event {
+  width: 30%;
+  margin-left: 20px;
+}
+
+#email {
+  width: 50%;
+  margin-right: 20px;
+}
+
+#website {
+  width: 50%;
+  margin-left: 20px;
+}
+
+#username {
+  width: 100%;
+}
+
+#cv {
+  width: 50%;
+  margin-right: 20px;
+}
+
+#tier {
+  width: 100%;
+  margin-left: 20px;
+}
+
+#jeec {
+  width: 100%;
+}
+
+#days {
+  width: 60%;
+}
 
 </style>

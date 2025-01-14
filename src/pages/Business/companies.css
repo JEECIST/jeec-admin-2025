@@ -293,15 +293,59 @@ form .first-div > select {
   width: 90%;
   max-width: 950px;
   height: 80%;
-  display: flex;
-  flex-direction: column;
   position: relative;
   z-index: 21;
+  padding: 50px 50px 100px 50px;
+  gap: 0;
 }
 
-.modal .header {
-  padding-top: 50px;
-  padding-left: 50px;
+.modal-aux{
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.modal .body{
+  width: 100%;
+  flex-grow: 1;
+}
+
+.modal .body .line {
+  display: flex;
+}
+
+.modal .body .line .element{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 60px;
+  margin-top: 15px;
+}
+
+.modal .body .line .element > label{
+  color: var(--c-ft-semi-light);
+  height: 10px;
+  line-height: 0px;
+  font-size: 0.9rem;
+}
+
+.modal .body .line .element > input,
+.modal .body .line .element > select{
+  width: 100%;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--c-ft-semi-light);
+  border: '4px solid var(--c-ft-semi-light)';
+  border-radius: 6px;
+  height: 40px;
+}
+
+.modal .body .direita {
+  width: 35%;
+}
+
+.modal .body .esquerda {
+  flex: 1;
 }
 
 .modal .btn-primary {
@@ -329,14 +373,14 @@ form .first-div > select {
   margin-bottom: 70px;
 }
 
-.modal .conteiner .div-grid {
+.modal .body .div-grid {
   width: 85%;
   display: grid;
   grid-template-columns: repeat(2, 1fr);;  /* Duas colunas de largura igual */
   grid-template-rows: auto;    /* Linha com altura automática */
 }
 
-.modal .conteiner .div-grid .element {
+.modal .body .div-grid .element {
   display: flex; /* Ativa o layout flexbox */
   justify-content: flex-start; /* Alinha os elementos à esquerda */
   align-items: center; /* Centraliza verticalmente */
@@ -356,7 +400,7 @@ form .first-div > select {
 }
 
 @media (max-width: 600px) {
-  .modal .conteiner .div-grid {
+  .modal .body .div-grid {
     grid-template-columns: 1fr;
   }
   .div-grid .element:nth-child(2n+1) {
