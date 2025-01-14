@@ -1,11 +1,15 @@
 <template>
+  <!-- Container principal da aplicação para squads -->
   <div class="squads-app-container">
-    <!-- Fixed header for search -->
+    <!-- Cabeçalho fixo com barra de pesquisa -->
     <div class="header">
+      <!-- Container da barra de pesquisa -->
       <div class="search-container">
+        <!-- Ícone de lupa para indicar pesquisa -->
         <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10.5 17a6.5 6.5 0 100-13 6.5 6.5 0 000 13z" />
         </svg>
+        <!-- Input da barra de pesquisa ligado ao modelo `searchQuery` -->
         <input 
           type="text" 
           placeholder="Search for a squad" 
@@ -16,43 +20,64 @@
     </div>
 
     <div class="content">
-      <!-- Scrollable table for squads -->
+      <!-- Tabela com rolagem para exibir squads -->
       <div class="squads-table-container">
         <div class="table-header-fixed">
+          <!-- Componente de tabela reutilizável -->
           <TheTable
-            :data="filteredSquads"
+            :data="filteredSquads" 
             :tableHeaders="tableHeaders"
             :buttons="tableButtons"
-            :searchInput="searchQuery"
-            @onRowSelect="selectSquad"
+            :searchInput="searchQuery" 
+            @onRowSelect="selectSquad" 
           />
         </div>
+        <!-- Mensagem exibida caso não existam squads no filtro -->
         <div v-if="!filteredSquads.length" class="no-squads">
           No Squads found
         </div>
       </div>
 
-      <!-- Squad details -->
+      <!-- Detalhes de uma squad selecionada -->
       <div class="squad-detail" v-if="selectedSquad">
+        <!-- Botão para fechar os detalhes da squad -->
+        <button @click="closeSquadDetail" class="close-button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <!-- Nome ou "grito" da squad -->
         <p class="squad-name">{{ selectedSquad.scream }}</p>
-        <img class="squad-pic" src="../../assets/StudentApp/example_squad_photo.svg" alt="Squad Picture" />
+        <!-- Imagem representativa da squad -->
+        <img class="squad-pic" :src="selectedSquad.squadPic" alt="Squad Picture" />
+        <!-- Nome da squad -->
         <h3>{{ selectedSquad.name }}</h3>
+        <!-- Papel fixo: Squad -->
         <p class="role">Squad</p>
+        <!-- Ações disponíveis para a squad -->
         <div class="squad-actions">
+          <!-- Botão com ícones sobrepostos -->
           <div class="action-button icon-combination">
             <img class="icon-base" src="../../assets/StudentApp/students3.svg" alt="Icon Base">
             <img class="icon-overlay" src="../../assets/StudentApp/squads1.svg" alt="Icon Overlay">
           </div>
+          <!-- Botão adicional com um único ícone -->
           <div class="action-button">
             <img src="../../assets/StudentApp/students4.svg" alt="Icon 2">
           </div>
         </div>
+        <!-- Informação do capitão da squad -->
         <p class="captain-username">Captain Username</p>
         <p class="captain">{{ selectedSquad.captainUsername }}</p>
+        <!-- Lista de membros da squad -->
         <p class="members-username">Members Usernames</p>
         <div class="members">
+          <!-- Loop para exibir todos os membros -->
           <p v-for="(member, index) in selectedSquad.members" :key="index">{{ member }}</p>
         </div>
+        <!-- Pontuação da squad -->
         <div class="points">
           <div>
             <p class="points-title">Daily Points</p>
@@ -69,14 +94,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import TheTable from '../../global-components/TheTable.vue';
+// Importação de dependências e componentes
+import { ref, computed } from 'vue'; // `ref` e `computed` são utilizados para estados reativos e propriedades computadas
+import TheTable from '../../global-components/TheTable.vue'; // Importa o componente de tabela reutilizável
+import examplePhoto from '../../assets/StudentApp/example_squad_photo.svg'; // Importa uma imagem exemplo para squads
 
+// Lista de squads
 const squads = ref([
   {
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
@@ -86,6 +115,7 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangersssssss',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delasssssssssssssssssssssssss'],
@@ -95,6 +125,7 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
@@ -104,6 +135,7 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
@@ -113,6 +145,7 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
@@ -122,6 +155,7 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
@@ -131,6 +165,7 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
@@ -140,6 +175,7 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
@@ -149,6 +185,7 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
@@ -158,6 +195,7 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
@@ -167,6 +205,7 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
@@ -176,6 +215,7 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
@@ -185,6 +225,7 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
@@ -194,6 +235,7 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
@@ -203,43 +245,57 @@ const squads = ref([
     id: 1,
     name: 'Interracial Rangers',
     captainUsername: 'marco_looongo',
+    squadPic: examplePhoto,
     dailyPoints: 420,
     totalPoints: 11111,
     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
     scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
   },
+  // Adicionar squads
 ]);
 
+// Variável reativa para armazenar o texto de pesquisa inserido pelo utilizador
 const searchQuery = ref('');
+
+// Variável reativa para armazenar o squad atualmente selecionado
 const selectedSquad = ref(null);
 
+// Estrutura dos cabeçalhos da tabela que exibe os dados dos squads
 const tableHeaders = {
-  id: "ID",
-  name: "Name",
-  captainUsername: "Captain Username",
-  dailyPoints: "Daily Points",
-  totalPoints: "Total Points"
+  id: "ID", 
+  name: "Name", 
+  captainUsername: "Captain Username", 
+  dailyPoints: "Daily Points", 
+  totalPoints: "Total Points" 
 };
 
+// Computed property que filtra os squads com base no texto de pesquisa
 const filteredSquads = computed(() => {
   if (!searchQuery.value.trim()) {
-    // If the search query is empty or just spaces, return all squads
+    // Se a pesquisa estiver vazia ou contiver apenas espaços, retorna todos os squads
     return squads.value;
   }
 
+  // Filtra os squads com base no nome ou no username do capitão que inclui o texto de pesquisa (case insensitive)
   return squads.value.filter(squad =>
     squad.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     squad.captainUsername.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
 
+// Função para selecionar um squad na aplicação
 const selectSquad = (squad) => {
-  selectedSquad.value = squad;
+  selectedSquad.value = squad; // Define o squad selecionado
+};
+
+// Função para fechar os detalhes do squad selecionado
+const closeSquadDetail = () => {
+  selectedSquad.value = null; // Remove a seleção do squad
 };
 </script>
 
 <style scoped>
-/* Style for all table headers in the current component - NÃO FUNCIONA */
+/* Estilo para os cabeçalhos da tabela */
 th {
   color: #424242;
   font-family: 'Kumbh Sans', sans-serif;
@@ -247,13 +303,14 @@ th {
   font-weight: 600;
 }
 
-/* Style for all table to apply truncation for cells - NÃO FUNCIONA */
+/* Estilo para células da tabela */
 th, td {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 150px; 
+  white-space: nowrap; /* Impede a quebra de linha */
+  overflow: hidden; /* Oculta o texto excedente */
+  text-overflow: ellipsis; /* Adiciona reticências ao final do texto */
+  max-width: 150px; /* Define uma largura máxima para as células */
 }
+
 .squads-app-container {
   background: #FFFFFF;
   display: flex;
@@ -370,7 +427,7 @@ th, td {
   height: 70%;
   top: 50%; 
   left: 50%;
-  transform: translate(-50%, -50%); /* Center the overlay icon */
+  transform: translate(-50%, -50%);
 }
 
 .no-squads {
@@ -390,19 +447,28 @@ th, td {
   box-sizing: border-box; 
 }
 
+.squad-scream {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .squad-detail {
+  position: relative; /* Necessário para posicionar o botão de fechar */
   display: flex;
-  background-color: #EBF6FF;
-  width: 323px;
-  height: calc(100vh - 300px); 
-  border-radius: 16px;
-  padding: 35px;
   flex-direction: column;
   align-items: center;
-  margin: 0; 
-  text-align: center; 
-  max-height: 100vh;
-  overflow-y: auto; 
+  padding: 20px;
+  background-color: #EBF6FF;
+  border-radius: 16px;
+  max-height: calc(100vh - 200px);
+  width: 323px;
+  overflow-y: auto;
 }
 
 .squad-pic {
@@ -421,16 +487,6 @@ h3 {
   line-height: 29.77px; 
   margin-top: 10px;
 }
-
-/* .squad-name {
-  color: #424242;
-  font-size: 24px;
-  font-weight: 800;
-  text-align: center;
-  margin-bottom: 10px;
-  word-wrap: break-word;
-  max-width: 100%;
-} */
 
 .squad-name {
   color: #424242;
@@ -474,15 +530,15 @@ h3 {
   margin: 5px 0;
 }
   
-  .members {
-    color: #A7A7A7;
-    font-size: 14px;
-    text-align: left; 
-    width: 100%;
-    font-weight: 500;
-    margin: 5px 0;
-    word-wrap: break-word;
-  }
+.members {
+  color: #A7A7A7;
+  font-size: 14px;
+  text-align: left; 
+  width: 100%;
+  font-weight: 500;
+  margin: 5px 0;
+  word-wrap: break-word;
+}
 
 .members p {
   color: #A7A7A7;
@@ -514,5 +570,24 @@ h3 {
   font-size: 14px;
   font-weight: 500;
   margin: 5px 0;
+}
+
+.close-button {
+  z-index: 3;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.close-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.squad-detail {
+  position: relative; /* Necessário para posicionar o botão de fechar */
 }
 </style>
