@@ -3,7 +3,7 @@ import axios from 'axios';
 // Constants
 const brain_url = import.meta.env.VITE_APP_JEEC_BRAIN_URL;
 const brain_user = import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME;
-const brain_pass = import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME;
+const brain_pass = import.meta.env.VITE_APP_JEEC_WEBSITE_KEY;
 const auth = {
       username: brain_user,
       password: brain_pass
@@ -12,6 +12,7 @@ const auth = {
 
 export const GET = async (route, params = {}) => {  
   const url = brain_url + route;
+  
   params = {
     ...params,
     auth:auth 

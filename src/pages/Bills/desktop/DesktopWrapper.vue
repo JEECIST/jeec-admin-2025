@@ -16,22 +16,15 @@ const isOtherModalOpened = ref(false);
 const openOtherModal = () => {
     isOtherModalOpened.value = true;
 };
-const closeOtherModal = () => {
-    isOtherModalOpened.value = false;
-};
 
 
 const router = useRouter();
 
 const message = ref();
-
+const table_data = ref()
 
 function selectCallback(row) {
-    console.log("\nSPLIT\n");
-
-    console.log(row)
     popupShow.value = true;
-    console.log(selectedRowData.value);
     selectedRowData.value = row
 
     console.log(selectedRowData.value);

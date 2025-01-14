@@ -1,14 +1,28 @@
 <script setup>
 // Imports
 import AddBillPopup from './AddBillPopup.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import * as httpAdmin from '@utils/http-admin';
 import { isMobile } from '@utils/utils';
 import DesktopWrapper from './desktop/DesktopWrapper.vue';
 import MobileWrapper from './mobile/MobileWrapper.vue';
 
 // Router
 const router = useRouter();
+
+// Get all Bills
+const bills_data = ref();
+async function getBills(){
+    const response = await httpAdmin.GET('/bills');
+    console.log(response.data.bills);
+    bills_data.value = response.data.bills;
+    console.log(bills_data.value);
+    
+}
+
+
+onMounted(getBills);
 
 </script>
 
