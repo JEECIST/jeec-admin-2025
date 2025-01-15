@@ -1,6 +1,6 @@
 <script setup>
 // Imports
-import AddBillPopup from './AddBillPopup.vue';
+import AddBillPopup from './components/AddBillPopup.vue';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import * as httpAdmin from '@utils/http-admin';
@@ -8,17 +8,18 @@ import { isMobile } from '@utils/utils';
 import DesktopWrapper from './desktop/DesktopWrapper.vue';
 import MobileWrapper from './mobile/MobileWrapper.vue';
 
+
+const loaded = ref(false)
+const bills_data = ref(null)
+
 // Router
 const router = useRouter();
 
 // Get all Bills
-const bills_data = ref();
 async function getBills(){
     const response = await httpAdmin.GET('/bills');
-    console.log(response.data.bills);
-    bills_data.value = response.data.bills;
-    console.log(bills_data.value);
-    
+    bills_data.value = await response.data.bills;
+    loaded.value=true; 
 }
 
 
@@ -29,10 +30,10 @@ onMounted(getBills);
 
 <!-- ----------------------------------------- TEMPLATE ---------------------------------------- -->
 <template>
-
-<DesktopWrapper v-if="!isMobile()"></DesktopWrapper>
-<MobileWrapper v-else></MobileWrapper>
-
+<div v-if="loaded">
+  <DesktopWrapper :table_data="bills_data" v-if="!isMobile()"></DesktopWrapper>
+  <MobileWrapper v-else></MobileWrapper>
+</div>
 </template>
 
 <!-- ----------------------------------------- STYLING ---------------------------------------- -->
@@ -136,15 +137,7 @@ form > input::placeholder {
   color: var(--c-ft-semi-light)
 }
 
-.right-popup-placeholder {
-  position: sticky;
-  top: 0;
-  right: 0;
-  width: 500px;
-  border-radius: 30px;
-  background-color: var(--c-accent);
-  height: 100%;
-}
+
 
 .right-popup-placeholder-mobile {
   width: 94.5vw;
@@ -155,92 +148,9 @@ form > input::placeholder {
 
 }
 
-.items {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    margin-top: 7vh;
-}
 
-.prize-photo {
-    height: 165px;
-    width: 165px;
-    background-color: var(--c-select);
-    border-radius: 100%;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    color: white;
 
-}
 
-.text1 {
-    color: black;
-    font-size: x-large;
-}
-
-.text2 {
-    color: var(--c-ft-semi-light);
-}
-
-.title {
-    font-size: larger;
-    font-weight: 550;
-}
-
-.row {
-    display: flex;
-    flex-direction: row;
-    gap: 3.5vw;
-}
-
-.col {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-#info {
-    margin-left: -2.5vw;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 1.3vh;
-}
-
-.btns-row {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
-}
-
-.btn {
-    width: 36px;
-    height: 36px;
-    background: #FFFFFF;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-p {
-    color: black;
-    font-weight: 500;
-    font-size: small;
-}
-
-select {
-    border-style: solid;
-    border-width: thin;
-    border-radius: 7px;
-    height: 50px;
-    padding: 12px;
-    opacity: 60%;
-    border-color: #8a8a8a;
-    background-color: white;
-}
 
 .topbtn {
     background-color: var(--c-select);

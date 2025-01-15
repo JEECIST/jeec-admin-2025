@@ -19,22 +19,33 @@ export const GET = async (route, params = {}) => {
   }
 
   try {
-    const response = await axios.get( url, {params} );
+    const response = await axios.get( url, params );
     return response;
   } catch (e) {
     handleError(e)
   }
 }
 
-export const POST = async (route, data = {}) => {  
+export const POST = async (route, data = {}, headers = {}) => {  
   const url = brain_url + route;
-  data = {
-    ...params,
-    auth:auth 
+  
+  const request_data = {}
+
+  if (data instanceof FormData) {
+    data.append("auth",auth);
+  } else {
+    data = {
+      ...data,
+      auth:auth 
+    }
   }
 
+  
+  console.log(data);
+  
+
   try {
-    const response = await axios.post( url, data );
+    const response = await axios.post( url, data, {headers:headers});
     return response;
   } catch (e) {
     handleError(e)

@@ -1,6 +1,8 @@
 <script setup>
 import { defineEmits, ref } from "vue";
 import { isMobile } from "@utils/utils";
+import Form from "./Form.vue";
+import * as HttpAdmin from "@utils/http-admin";
 
 const props = defineProps({
     isOpen: Boolean,
@@ -9,23 +11,46 @@ const props = defineProps({
 const emit = defineEmits(["modal-close"]);
 
 function submitAddBill(e) {
-    console.log(e)
-    console.log(form_data);
+    const formData = new FormData();
+    formData.append("bill_image_binary", bill_image_binary.value);
+    formData.append("is_paid", is_paid.value);
+    formData.append("status", status.value);
+    formData.append("shop", shop.value);
+    formData.append("date", date.value);
+    formData.append("value", value.value);
+    
+
+    const response = HttpAdmin.POST("/insert-bill", formData);
+    console.log(response);
+    
+};
+
+function handleFileChange(e) {
+    const file = e.target.files[0];
+    
+    
+    if (file){
+        bill_image_binary.value = file;
+        // const reader = new FileReader();
+
+        // reader.readAsArrayBuffer(file);
+
+        // reader.onload = async () => {
+        //     bill_image_path = reader.result;
+        // }
+    };
     
 }
 
-let value = ref()
-let date = ref()
-let shop = ref()
-let status = ref()
-let is_paid = ref()
-let form_data = {    
-    "value": value,
-    "date": date,
-    "shop": shop,
-    "status": status,
-    "is_paid": is_paid
-}
+let value = ref();
+let date = ref();
+let shop = ref();
+let status = ref();
+let is_paid = ref();
+let bill_image_binary = ref();
+
+
+
 </script>
 
 <template>
@@ -43,7 +68,7 @@ let form_data = {
                             <div class="flex-1-row-1">
                                 <div class="labels" id="value">
                                     <label for="value">Value</label>
-                                    <input required type="text" placeholder=""  id="value" v-model="value">
+                                    <input required type="number" step="0.01" min="0"  placeholder="0.00"  id="value" v-model="value">
                                 </div>
                                 <div class="labels" id="date">
                                     <label for="date">Date</label>
@@ -83,16 +108,9 @@ let form_data = {
                         <br>
                         <div class="flex-1">
                             <div class="flex-1-row-1">
-                                <div class="labels" id="logo">
-                                    <label for="logo">Image<!--Delicious Di.. ahm Chamuça Pick --></label>
-                                    <input type="file" name="logo" id="input-logo" accept="image/*" >
-                                </div> 
-                            </div>
-                            <br>
-                            <div class="flex-1-row-1">
                                 <div class="labels" id="bill">
                                     <label for="bill">Bill<!--Delicious Di.. ahm Chamuça Pick --></label>
-                                    <input type="file" name="bill" id="input-bill" accept="image/*" >
+                                    <input type="file" name="bill" id="input-bill" accept="image/*" @change="handleFileChange">
                                 </div> 
                             </div>
                        </div>
@@ -102,64 +120,7 @@ let form_data = {
                     </div>
                 </div>
             </div>
-        </div>
-
-
-        <div class="mobile" v-else>
-            <div class="mobile-wrapper-wrapper">
-                <div class="popup-wrapper" ref="target">
-                    <h1>Add Prize</h1>
-                    <div class="stuff-inside">
-                        <div class="mobile-flex-1 popup-adjust">
-                            <div class="flex-1-row-1">
-                                <div class="mobile-labels" id="value">
-                                    <label for="value">value</label>
-                                    <input type="text" placeholder="" id="value">
-                                </div>
-                                <div class="mobile-labels" id="type">
-                                    <label for="type">Type</label>
-                                    <select placeholder="" id="type">
-                                        <option value="null" disabled selected hidden></option>
-                                        <option>type test</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="flex-1-row-3">
-                                <div class="mobile-labels" id="shop">
-                                    <label for="shop">shop</label>
-                                    <input type="text" placeholder="" id="shop">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mobile-flex-2">
-                            <div class="labels" id="chamucapic">
-                                <label for="chamucapic">Image<!--Delicious Di.. ahm Chamuça Pick --></label>
-                                <p class="prize-pic">
-                                    No image selected yet
-                                </p>
-                                <button id="coolbutton">Add New Image</button>
-                            </div>
-                            <div class="flex-1-row-1">
-                                <div class="labels" id="approved">
-                                    <label for="approved">approved</label>
-                                    <input type="text" placeholder="" id="approved">
-                                </div>
-                            </div>
-                            <div class="flex-1-row-1">
-                                <div class="labels" id="link">
-                                    <label for="link">Link</label>
-                                    <input type="text" placeholder="" id="link">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mobile-btns">
-                        <button class="mobile-add" @click.stop="emit('modal-close')">Add</button>
-                        <button class="mobile-add" @click.stop="emit('modal-close')">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </div> 
     </div>
 </template>
 

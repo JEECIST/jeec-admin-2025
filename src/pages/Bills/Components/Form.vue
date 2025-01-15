@@ -24,7 +24,7 @@ props.inputs.forEach( (input) => {
    formData[input.id] = ''; 
 });
 
-
+const emits = defineEmits(["modal-close"])
 </script>
 
 <template>
