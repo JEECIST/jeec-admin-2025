@@ -49,10 +49,10 @@
           <template #unban="{ row }">
             <div class="icon-combination" @click="unbanStudent(row)">
               <div class="icon-base">
-                <img src="../../assets/StudentApp/students4.svg" alt="Trash Icon" />
+                <img src="../../assets/StudentApp/students4.svg" alt="Ícone de Lixo" />
               </div>
               <div class="icon-overlay">
-                <img src="../../assets/StudentApp/squads1.svg" alt="Circle X Icon" />
+                <img src="../../assets/StudentApp/squads1.svg" alt="Ícone X" />
               </div>
             </div>
           </template>
@@ -88,24 +88,24 @@
         <!-- Nome de utilizador do estudante -->
         <p class="username">{{ selectedStudent.username }}</p>
         <!-- Foto de perfil do estudante -->
-        <img class="profile-pic" :src="selectedStudent.profilePic" alt="Profile Picture" />
+        <img class="profile-pic" :src="selectedStudent.profilePic" alt="Foto de Perfil" />
         <!-- Nome do estudante -->
         <h3>{{ selectedStudent.name }}</h3>
-        <!-- Papel do estudante (fixo como "Student") -->
+        <!-- Papel do estudante (fixo como "Estudante") -->
         <p class="role">Student</p>
         <!-- Botões de ações do estudante -->
         <div class="student-actions">
           <div class="action-button">
-            <img src="../../assets/StudentApp/students1.svg" alt="Icon 1">
+            <img src="../../assets/StudentApp/students1.svg" alt="Ícone 1">
           </div>
           <div class="action-button">
-            <img src="../../assets/StudentApp/students2.svg" alt="Icon 2">
+            <img src="../../assets/StudentApp/students2.svg" alt="Ícone 2">
           </div>
           <div class="action-button">
-            <img src="../../assets/StudentApp/students3.svg" alt="Icon 3">
+            <img src="../../assets/StudentApp/students3.svg" alt="Ícone 3">
           </div>
           <div class="action-button">
-            <img src="../../assets/StudentApp/students4.svg" alt="Icon 4">
+            <img src="../../assets/StudentApp/students4.svg" alt="Ícone 4">
           </div>
         </div>
         <!-- Informações do estudante -->
@@ -145,9 +145,36 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'; // Importação de funcionalidades da Vue (reactividade e computação)
+import { ref, computed, onMounted } from 'vue'; // Importação de funcionalidades da Vue (reactividade e computação)
 import TheTable from '../../global-components/TheTable.vue'; // Importa o componente reutilizável de tabela
 import examplePhoto from '../../assets/StudentApp/example_students_photo.svg'; // Importa uma imagem exemplo para perfis
+import axios from 'axios'; // Biblioteca para fazer chamadas HTTP
+
+// Função para buscar os dados dos estudantes da API
+const fetchData = () => {
+  axios
+    .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/studentsAll', {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, // Nome de utilizador para autenticação
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY, // Palavra-passe para autenticação
+      },
+    })
+    .then((response) => {
+      console.log('Dados recebidos da API:', response.data); // Log dos dados recebidos
+      if (response.data && Array.isArray(response.data.students)) {
+        // Verifica se os dados recebidos são uma lista de estudantes
+        students.value = response.data.students;
+      } else {
+        console.error('Estrutura inesperada dos dados da API:', response.data);
+      }
+    })
+    .catch((error) => {
+      console.error('Erro ao buscar dados dos estudantes:', error); // Log do erro
+    });
+};
+
+// Executa a função `fetchData` ao montar o componente
+onMounted(fetchData);
 
 // Variável reativa para controlar a exibição do popup de estudantes banidos
 const showBannedPopup = ref(false);
@@ -157,12 +184,28 @@ const toggleBannedPopup = () => {
   showBannedPopup.value = !showBannedPopup.value;
 };
 
-// Dados fictícios de estudantes banidos (exemplo)
-const bannedStudents = ref([
-  { id: 1, name: 'André Santos', username: 'andregay', email: 'parkour_is_gay@proton.me' }, // Estudante 1
-  { id: 2, name: 'André Santos 2', username: 'andregay 2', email: 'parkour_is_gay2@proton.me' }, // Estudante 2
-  { id: 3, name: 'André Santos 3', username: 'andregay 3', email: 'parkour_is_gay3@proton.me' }, // Estudante 3
-]);
+// Variável reativa para armazenar os estudantes banidos
+const bannedStudents = ref([]); // Inicialmente vazio
+
+// Função para buscar os estudantes banidos da API
+const fetchBannedStudents = () => {
+  axios
+    .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/bannedStudents', {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, // Nome de utilizador para autenticação
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY, // Palavra-passe para autenticação
+      },
+    })
+    .then((response) => {
+      bannedStudents.value = response.data; // Armazena os dados retornados
+    })
+    .catch((error) => {
+      console.error('Erro ao buscar estudantes banidos:', error); // Log do erro
+    });
+};
+
+// Executa a função para buscar os estudantes banidos ao montar o componente
+onMounted(fetchBannedStudents);
 
 // Estrutura dos cabeçalhos para a tabela de estudantes banidos
 const bannedTableHeaders = {
@@ -182,8 +225,25 @@ const unbanButtons = {
 
 // Função que desbane um estudante
 const unbanStudent = (student) => {
-  // Lógica para desbanir o estudante (atualmente apenas exibe no console)
-  console.log('Unbanning student:', student);
+  axios
+    .post(
+      import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/unbanStudent', 
+      { id: student.id }, 
+      {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+      }
+    )
+    .then(() => {
+      // Remove o estudante da lista de banidos localmente
+      bannedStudents.value = bannedStudents.value.filter((s) => s.id !== student.id);
+      console.log('Estudante desbanido com sucesso:', student);
+    })
+    .catch((error) => {
+      console.error('Erro ao desbanir o estudante:', error); // Log do erro
+    });
 };
 
 // Função para fechar o popup de estudantes banidos
@@ -192,177 +252,25 @@ const closePopup = () => {
 };
 
 // Lista de estudantes
-const students = ref([
-  {
-    id: '1',
-    name: 'André Santos',
-    username: 'andregay',
-    profilePic: examplePhoto,
-    squad: 'parkour_is_gayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
-    dailyPoints: -1,
-    totalPoints: -2,
-    email: 'andregay@proton.me',
-    linkedin: 'https://www.linkedin.com/andregay',
-    currentPoints: 66,
-    cvStatus: 'Approved',
-    degree: 'BSc/IST',
-  },
-  {
-    id: 2,
-    name: 'André Santos Gonçalves Ferreira',
-    username: 'andregay2andregay2andregay2',
-    profilePic: examplePhoto,
-    squad: 'parkour_is_gay2_parkour_is_gay2',
-    dailyPoints: -1,
-    totalPoints: -2,
-    email: 'andregay2andregay2andregay2@proton.me',
-    linkedin: 'https://www.linkedin.com/andregay2andregay2',
-    currentPoints: 66,
-    cvStatus: 'Approved',
-    degree: 'BSc/IST',
-  },
-  {
-    id: 3,
-    name: 'Luna Ferreira',
-    username: 'lunaferreira',
-    profilePic: examplePhoto,
-    squad: 'lu',
-    dailyPoints: 5,
-    totalPoints: 18,
-    email: 'luna@ferreira.com.pt',
-    linkedin: 'https://www.linkedin.com/lunaferreira',
-    currentPoints: 87,
-    cvStatus: 'Approved',
-    degree: 'BSc/IST',
-  },
-  {
-    id: 4,
-    name: 'André Santos',
-    username: 'andregay',
-    profilePic: examplePhoto,
-    squad: 'parkour_is_gay',
-    dailyPoints: 43,
-    totalPoints: 12,
-    email: 'andregay@proton.me',
-    linkedin: 'https://www.linkedin.com/andregay',
-    currentPoints: 6896,
-    cvStatus: 'Approved',
-    degree: 'BSc/IST',
-  },
-  {
-    id: 5,
-    name: 'André Santos Gonçalves Ferreira',
-    username: 'andregay2andregay2andregay2',
-    profilePic: examplePhoto,
-    squad: 'parkour_is_gay2_parkour_is_gay2',
-    dailyPoints: -731,
-    totalPoints: 0,
-    email: 'andregay2andregay2andregay2@proton.me',
-    linkedin: 'https://www.linkedin.com/andregay2andregay2',
-    currentPoints: 413,
-    cvStatus: 'Approved',
-    degree: 'BSc/IST',
-  },
-  {
-    id: 6,
-    name: 'Luna Ferreira',
-    username: 'lunaferreira',
-    profilePic: examplePhoto,
-    squad: 'lu',
-    dailyPoints: 5652,
-    totalPoints: 1,
-    email: 'luna@ferreira.com.pt',
-    linkedin: 'https://www.linkedin.com/lunaferreira',
-    currentPoints: 90,
-    cvStatus: 'Approved',
-    degree: 'BSc/IST',
-  },
-  {
-    id: 7,
-    name: 'André Santos',
-    username: 'andregay',
-    profilePic: examplePhoto,
-    squad: 'parkour_is_gay',
-    dailyPoints: -1,
-    totalPoints: -2,
-    email: 'andregay@proton.me',
-    linkedin: 'https://www.linkedin.com/andregay',
-    currentPoints: 66,
-    cvStatus: 'Approved',
-    degree: 'BSc/IST',
-  },
-  {
-    id: 8,
-    name: 'André Santos Gonçalves Ferreira',
-    username: 'andregay2andregay2andregay2',
-    profilePic: examplePhoto,
-    squad: 'parkour_is_gay2_parkour_is_gay2',
-    dailyPoints: -1,
-    totalPoints: -2,
-    email: 'andregay2andregay2andregay2@proton.me',
-    linkedin: 'https://www.linkedin.com/andregay2andregay2',
-    currentPoints: 66,
-    cvStatus: 'Approved',
-    degree: 'BSc/IST',
-  },
-  {
-    id: 9,
-    name: 'Luna Ferreira',
-    username: 'lunaferreira',
-    profilePic: examplePhoto,
-    squad: 'lu',
-    dailyPoints: 5,
-    totalPoints: 18,
-    email: 'luna@ferreira.com.pt',
-    linkedin: 'https://www.linkedin.com/lunaferreira',
-    currentPoints: 87,
-    cvStatus: 'Approved',
-    degree: 'BSc/IST',
-  },
-  {
-    id: 10,
-    name: 'André Santos',
-    username: 'andregay',
-    profilePic: examplePhoto,
-    squad: 'parkour_is_gay',
-    dailyPoints: -1,
-    totalPoints: -2,
-    email: 'andregay@proton.me',
-    linkedin: 'https://www.linkedin.com/andregay',
-    currentPoints: 66,
-    cvStatus: 'Approved',
-    degree: 'BSc/IST',
-  },
-  {
-    id: 11,
-    name: 'André Santos Gonçalves Ferreira',
-    username: 'andregay2andregay2andregay2',
-    profilePic: examplePhoto,
-    squad: 'parkour_is_gay2_parkour_is_gay2',
-    dailyPoints: -1,
-    totalPoints: -2,
-    email: 'andregay2andregay2andregay2@proton.me',
-    linkedin: 'https://www.linkedin.com/andregay2andregay2',
-    currentPoints: 66,
-    cvStatus: 'Approved',
-    degree: 'BSc/IST',
-  },
-  {
-    id: 12,
-    name: 'Luna Ferreira',
-    username: 'lunaferreira',
-    profilePic: examplePhoto,
-    squad: 'lu',
-    dailyPoints: 5,
-    totalPoints: 18,
-    email: 'luna@ferreira.com.pt',
-    linkedin: 'https://www.linkedin.com/lunaferreira',
-    currentPoints: 87,
-    cvStatus: 'Approved',
-    degree: 'BSc/IST',
-  },
-  // Adicionar estudantes
-]);
+const students = ref([]); // Inicialmente vazio, os dados serão buscados pela API
+
+// const students = ref([
+//   {
+//     id: '1',
+//     name: 'André Santos',
+//     username: 'andregay',
+//     profilePic: examplePhoto,
+//     squad: 'parkour_is_gay',
+//     dailyPoints: -1,
+//     totalPoints: -2,
+//     email: 'andregay@proton.me',
+//     linkedin: 'https://www.linkedin.com/andregay',
+//     currentPoints: 66,
+//     cvStatus: 'Approved',
+//     degree: 'BSc/IST',
+//   },
+//   // Adicionar estudantes
+// ]);
 
 // Variável reativa para armazenar o texto de pesquisa inserido pelo utilizador
 const searchQuery = ref('');
