@@ -1,12 +1,14 @@
 <script setup>
 import TheTable from '../../../global-components/TheTable.vue';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import * as httpAdmin from '@utils/http-admin';
 import TopBar from './components/TopBar.vue';
 import BillCard from './components/BillCard.vue';
 
 const popupShow = ref(false);
 const message = ref('');
+const table_data = ref();
 const selectedRow = ref({
     id: "",
     value: "",
@@ -16,9 +18,11 @@ const selectedRow = ref({
     is_paid: ""
 });
 
-const props = defineProps({
-    table_data: Array
-})
+const loaded = ref(false);
+const filteredTableData = computed(() => 
+    table_data.value.map(({bill_image_binary, ...rest}) => rest) 
+);
+
 
 
 const tablePref = {
@@ -30,9 +34,16 @@ const tablePref = {
     is_paid: "Paid"
 };
 
+async function getBills(){
+    const response = await httpAdmin.GET('/bills');
+    table_data.value = await response.data.bills;
+    loaded.value=true; 
+}
 
-
-
+function reloadPage(){
+    sessionStorage.setItem('message', message.value);
+    location.reload();
+}
 
 function selectCallback(row) {
     popupShow.value = true;
@@ -41,33 +52,43 @@ function selectCallback(row) {
 };
 
 function isDataBEmpty(){
-    return props.table_data.length === 0;
+    return table_data.length === 0;
 };
 
+onMounted(() => {
+    getBills()
+    
+    const savedMessage = sessionStorage.getItem('message');
+    if( savedMessage !== null){
+        message.value = savedMessage;
+    }
+});
 </script>
 
 
 <template>
-<div class="desktop">
+<div v-if="loaded" class="desktop">
     <div class="wrapper">
         <div class="table">
-            <TopBar v-model="message"></TopBar>
+            <TopBar v-model:message="message" v-model:table_data="table_data"></TopBar>
         
             <div v-if="!isDataBEmpty()">
                 <TheTable
-                    :data="props.table_data"
+                    :data="filteredTableData"
                     :tableHeaders="tablePref"
                     :searchInput="message"
                     @onRowSelect="selectCallback"
                 ></TheTable>
             </div>
         </div>
-        <BillCard :selectedRowData="selectedRow" v-show="popupShow"></BillCard>
+        <BillCard :selectedRowData="selectedRow" v-show="popupShow" @delete-bill="reloadPage"></BillCard>
 
     </div>
 </div>
-
 </template>
+
+
+
 <style>
 .wrapper {
   display: flex;

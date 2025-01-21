@@ -1,37 +1,18 @@
 <script setup>
 // Imports
-import AddBillPopup from './components/AddBillPopup.vue';
-import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import * as httpAdmin from '@utils/http-admin';
 import { isMobile } from '@utils/utils';
 import DesktopWrapper from './desktop/DesktopWrapper.vue';
 import MobileWrapper from './mobile/MobileWrapper.vue';
 
 
-const loaded = ref(false)
-const bills_data = ref(null)
-
-// Router
-const router = useRouter();
-
-// Get all Bills
-async function getBills(){
-    const response = await httpAdmin.GET('/bills');
-    bills_data.value = await response.data.bills;
-    loaded.value=true; 
-}
-
-
-onMounted(getBills);
 
 </script>
 
 
 <!-- ----------------------------------------- TEMPLATE ---------------------------------------- -->
 <template>
-<div v-if="loaded">
-  <DesktopWrapper :table_data="bills_data" v-if="!isMobile()"></DesktopWrapper>
+<div>
+  <DesktopWrapper v-if="!isMobile()"></DesktopWrapper>
   <MobileWrapper v-else></MobileWrapper>
 </div>
 </template>

@@ -8,9 +8,9 @@ const props = defineProps({
     isOpen: Boolean,
 });
 
-const emit = defineEmits(["modal-close"]);
+const emit = defineEmits(["modal-close","modal-submit"]);
 
-function submitAddBill(e) {
+async function submitAddBill(e) {
     const formData = new FormData();
     formData.append("bill_image_binary", bill_image_binary.value);
     formData.append("is_paid", is_paid.value);
@@ -20,9 +20,12 @@ function submitAddBill(e) {
     formData.append("value", value.value);
     
 
-    const response = HttpAdmin.POST("/insert-bill", formData);
-    console.log(response);
-    
+    const response = await HttpAdmin.POST("/insert-bill", formData);
+    if(response.request.status != 200){ 
+        alert("Someting went wrong when creating a new bill...")
+    }
+    emit('modal-close');
+    emit('modal-submit');
 };
 
 function handleFileChange(e) {
@@ -31,13 +34,6 @@ function handleFileChange(e) {
     
     if (file){
         bill_image_binary.value = file;
-        // const reader = new FileReader();
-
-        // reader.readAsArrayBuffer(file);
-
-        // reader.onload = async () => {
-        //     bill_image_path = reader.result;
-        // }
     };
     
 }
@@ -116,7 +112,7 @@ let bill_image_binary = ref();
                        </div>
                     </div>
                     <div class="btns">
-                        <button class="add" @click="submitAddBill" @click.stop="emit('modal-close')">Add</button>
+                        <button class="add" @click="submitAddBill" >Add</button>
                     </div>
                 </div>
             </div>

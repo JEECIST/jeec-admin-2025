@@ -1,20 +1,24 @@
 <script setup>
 import { ref } from 'vue';
-import Form from '../../components/Form.vue'
 import AddBillPopup from '../../components/AddBillPopup.vue';
 import * as httpAdmin from '@utils/http-admin'
 
+
 const isModalOpened = ref(false);
 
-const toggleModal = () => {  
+const toggleModal = (e) => {  
     isModalOpened.value = !isModalOpened.value;
+    console.log(e);
+    
 };
  async function getBills(){
     const response = await httpAdmin.GET('/bills');
-    bills_data.value = await response.data.bills;
-    loaded.value=true; 
+    if( response.status == 200){
+        table_data.value = response.data.bills;
+    }
 }
-const message = defineModel();
+const message = defineModel('message');
+const table_data = defineModel('table_data')
 
 </script>
 
@@ -33,7 +37,7 @@ const message = defineModel();
     <button class="topbtn" @click="getBills">Refresh</button>
 
     <Transition name="fade" appear>
-        <AddBillPopup :isOpen="isModalOpened" @modal-close="toggleModal"></AddBillPopup>
+        <AddBillPopup :isOpen="isModalOpened" @modal-submit="getBills" @modal-close="toggleModal"></AddBillPopup>
     </Transition>
 
 </div>

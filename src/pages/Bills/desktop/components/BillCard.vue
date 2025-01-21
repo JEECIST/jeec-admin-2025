@@ -1,13 +1,26 @@
 <script setup>
 import { ref } from 'vue';
 import * as HttpAdmin from "@utils/http-admin"
+
+
 const props = defineProps({
     selectedRowData: Object,
 })
 
+const emit = defineEmits(['delete-bill'])
+
 const openOtherModal = () => {
     isOtherModalOpened.value = true;
 };
+
+async function deleteBill(id) {
+    const bill_id = id;
+    const response = await HttpAdmin.POST("/delete-bill", {"id": bill_id})
+
+    if(response.request.status != 200){
+        alert("Something went wrong while trying to delete bill with id: " + bill_id);
+    }
+}
 
 function downloadBillImage() {
     const bill_id = props.selectedRowData.id;
@@ -42,7 +55,7 @@ function downloadBillImage() {
             <button class="btn" @click="downloadBillImage">
                 <img src="../../../../assets/sheet.svg">
             </button>
-            <button class="btn">
+            <button class="btn" @click="deleteBill(props.selectedRowData.id)" @click.stop="emit('delete-bill')">
                 <img src="../../../../assets/trash.svg">
             </button>
         </div>
@@ -132,7 +145,6 @@ function downloadBillImage() {
 }
 
 #info {
-    margin-left: -2.5vw;
     display: flex;
     flex-direction: column;
     gap: 12px;
