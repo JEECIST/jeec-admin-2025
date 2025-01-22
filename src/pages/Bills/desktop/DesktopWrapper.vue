@@ -1,10 +1,10 @@
 <script setup>
 import TheTable from '../../../global-components/TheTable.vue';
 import { computed, onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
 import * as httpAdmin from '@utils/http-admin';
 import TopBar from './components/TopBar.vue';
 import BillCard from './components/BillCard.vue';
+import BillPopup from '../components/BillPopup.vue';
 
 const popupShow = ref(false);
 const message = ref('');
@@ -24,6 +24,12 @@ const filteredTableData = computed(() =>
 );
 
 
+const isModalOpened = ref(false);
+const toggleModal = (e) => {  
+    isModalOpened.value = !isModalOpened.value;
+    console.log(e);
+    
+};
 
 const tablePref = {
     id: "ID",
@@ -70,7 +76,12 @@ onMounted(() => {
 <div v-if="loaded" class="desktop">
     <div class="wrapper">
         <div class="table">
-            <TopBar v-model:message="message" v-model:table_data="table_data"></TopBar>
+            <TopBar 
+                v-model:message="message" 
+                v-model:table_data="table_data"
+                @refresh-bills="getBills"
+                @toggle-modal="toggleModal"
+            ></TopBar>
         
             <div v-if="!isDataBEmpty()">
                 <TheTable
@@ -81,8 +92,15 @@ onMounted(() => {
                 ></TheTable>
             </div>
         </div>
-        <BillCard :selectedRowData="selectedRow" v-show="popupShow" @delete-bill="reloadPage"></BillCard>
-
+        <BillCard 
+            :selectedRowData="selectedRow" 
+            v-show="popupShow" 
+            @delete-bill="reloadPage"
+            @toggle-modal="toggleModal"
+        ></BillCard>
+        <Transition appear>
+            <BillPopup :isOpen="isModalOpened" @modal-submit="reloadPage" @modal-close="toggleModal"></BillPopup>
+        </Transition>
     </div>
 </div>
 </template>

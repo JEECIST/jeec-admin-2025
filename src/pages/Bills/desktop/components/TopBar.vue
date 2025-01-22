@@ -1,24 +1,7 @@
 <script setup>
-import { ref } from 'vue';
-import AddBillPopup from '../../components/AddBillPopup.vue';
-import * as httpAdmin from '@utils/http-admin'
 
-
-const isModalOpened = ref(false);
-
-const toggleModal = (e) => {  
-    isModalOpened.value = !isModalOpened.value;
-    console.log(e);
-    
-};
- async function getBills(){
-    const response = await httpAdmin.GET('/bills');
-    if( response.status == 200){
-        table_data.value = response.data.bills;
-    }
-}
+const emit = defineEmits(['toggle-add-bill','refresh-bills'])
 const message = defineModel('message');
-const table_data = defineModel('table_data')
 
 </script>
 
@@ -28,17 +11,13 @@ const table_data = defineModel('table_data')
 <div class="topbar">
     <form>
         <label>
-        <img src="../../../../assets/search.svg">
+            <img src="../../../../assets/search.svg">
         </label>
         <input v-model="message" placeholder="Search for a bill">
     </form>
 
-    <button class="topbtn" @click="toggleModal">Add Bill</button>
-    <button class="topbtn" @click="getBills">Refresh</button>
-
-    <Transition name="fade" appear>
-        <AddBillPopup :isOpen="isModalOpened" @modal-submit="getBills" @modal-close="toggleModal"></AddBillPopup>
-    </Transition>
+    <button class="topbtn" @click="emit('toggle-add-bill')">Add Bill</button>
+    <button class="topbtn" @click="emit('refresh-bills')">Refresh</button>
 
 </div>
 </template>

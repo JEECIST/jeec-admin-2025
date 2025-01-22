@@ -1,11 +1,12 @@
 <script setup>
 import { defineEmits, ref } from "vue";
 import { isMobile } from "@utils/utils";
-import Form from "./Form.vue";
 import * as HttpAdmin from "@utils/http-admin";
 
 const props = defineProps({
     isOpen: Boolean,
+    function: String,
+    data: Object
 });
 
 const emit = defineEmits(["modal-close","modal-submit"]);
@@ -30,7 +31,6 @@ async function submitAddBill(e) {
 
 function handleFileChange(e) {
     const file = e.target.files[0];
-    
     
     if (file){
         bill_image_binary.value = file;

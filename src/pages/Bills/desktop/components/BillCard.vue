@@ -7,7 +7,7 @@ const props = defineProps({
     selectedRowData: Object,
 })
 
-const emit = defineEmits(['delete-bill'])
+const emit = defineEmits(['delete-bill','toggle-modal'])
 
 const openOtherModal = () => {
     isOtherModalOpened.value = true;
@@ -49,7 +49,7 @@ function downloadBillImage() {
         <p class="text2 title">Bill</p>
 
         <div class="btns-row">
-            <button class="btn" @click="openOtherModal">
+            <button class="btn" @click="emit('toggle-modal')">
                 <img src="../../../../assets/pencil.svg">
             </button>
             <button class="btn" @click="downloadBillImage">
