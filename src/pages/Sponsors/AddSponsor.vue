@@ -19,7 +19,7 @@
           <div class="event-filter">
             <label for="event">Event</label>
             <select class="selection-box" v-model="eventselected">
-              <option v-for="event in events" :key="event.id" :value="event.id">{{ event.name }}</option>
+                <option v-for="event in events" :key="event.id" :value="{ id: event.id, name: event.name }">{{ event.name }}</option>
             </select>  
           </div>
         </div>
@@ -133,7 +133,8 @@ function addingSponsor(e) {
         if (fileToUpload.value) fd.append('logo_image', fileToUpload.value)
         fd.append('name', name.value)
         fd.append('description', description.value)
-        fd.append('event_id', eventselected.value)
+        fd.append('event_id', eventselected.value.id)
+        fd.append('event_name', eventselected.value.name)
         console.log("Event id",eventselected.value)
         fd.append('show_in_website', show_in_website.value)
         fd.append('tier_id', tier.value)
@@ -342,7 +343,7 @@ input[type="radio"] {
   display: flex;
   flex-direction: column;
   align-content: center;
-  object-fit: cover;
+  object-fit: scale-down;
 }
 /* Hide the file input */
 #logo-upload {
@@ -387,6 +388,7 @@ input[type="radio"] {
 .logo-image {
   max-width: 100%;
   max-height: 100%;
+  object-fit: scale-down;
 }
 
 .button-add-logo {

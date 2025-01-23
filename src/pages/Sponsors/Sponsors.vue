@@ -51,14 +51,14 @@
       </button>
       <div class="sponsor-card-header">
         <h1 class="card-tier">{{ selectedRow.tier_name }}</h1>
-        <img v-if="selectedRow.logo" class='sponsor-logo' :src=selectedRow.logo alt="sponsor logo" />
+        <img v-if="selectedRow.logo" class='sponsor-logo' :src="'http://127.0.0.1:8081'+selectedRow.logo" alt="sponsor logo" />
         <div v-else class='sponsor-no-logo'>No logo</div>
         <div class="card-title">
           <p class="card-name">{{ selectedRow.name }}</p>
           <p class="card-subtitle">Sponsor</p>
         </div>
         <div class="card-buttons">
-          <button @click="editRow(selectedRow)" class="icon-button">
+          <button @click="toogleedit()" class="icon-button">
             <img :src="pencilIcon" alt="edit" class="icon" />
           </button>
           <button @click="deleteRow(selectedRow)" class="icon-button">
@@ -85,14 +85,14 @@
     </div>
 
     <AddSponsor v-if="isaddsponsor" @close="toogleadd" :events="events" :tiers="tiers" :isOpen="isaddsponsor"/>
-    <EditSponsor v-if="iseditsponsor" @close="editRow(selectedRow)" :sponsorData="selectedRow" :isOpen="iseditsponsor"/>
+    <EditSponsor v-if="iseditsponsor" @close="toogleedit" :sponsorData="selectedRow" :isOpen="iseditsponsor"/>
    
   </div>
   
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import TheTable from '../../global-components/TheTable.vue';
 import AddSponsor from './AddSponsor.vue';
@@ -112,13 +112,16 @@ const fetchData = () => {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }}).then((response)=>{
-      originalTableData.value = response.data.sponsors
-      tableData.value = response.data.sponsors
-      console.log("Sponsors",tableData.value)
       events.value = response.data.events
       console.log("Events",events.value)
       tiers.value = response.data.tiers
       console.log("Tiers",tiers.value)
+      originalTableData.value = response.data.sponsors
+      tableData.value = response.data.sponsors
+      console.log("Sponsors",tableData.value)
+      if (response.data.error == 'No sponsors found'){
+        noSponsors.value = true
+      }
     }).catch((error)=>{
       console.log(error)
     })
@@ -137,12 +140,33 @@ const headers = {
 // Function to filter the table data by event
 function filterByEvent() {
   const selectedEvent = eventselected.value;
-  if (selectedEvent === 'all') {
+  if (selectedEvent == 'all') {
     tableData.value =  originalTableData.value
   } else {
     tableData.value =  originalTableData.value.filter(sponsor => sponsor.event_name === selectedEvent);
     console.log("Filtered Sponsors", tableData.value);
   }
+}
+
+function fetchSponsorDetails(){
+  console.log('Fetching sponsor details')
+  const sponsorName = selectedRow.value.name;
+  const eventName = selectedRow.value.event_name;
+
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get_image_sponsor', {
+    sponsor_name: sponsorName,
+    event_name: eventName
+  }, {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then((response) => {
+    console.log(response.data);
+    selectedRow.value.logo = response.data.image; // Update the logo in the selectedRow
+  }).catch((error) => {
+    console.log(error);
+  });
 }
 
 const tableButtons = '';
@@ -152,6 +176,13 @@ const cardDisplaying = ref(false);
 // Search query for filtering the rows
 const searchQuery = ref('');
 const selectedRow = ref(null);
+
+// Watch for changes in selectedRow and fetch sponsor details
+watch(selectedRow, (newValue, oldValue) => {
+  if (newValue) {
+    fetchSponsorDetails();
+  }
+});
 
 // Event handler for row selection
 function handleRowSelect(row) {
@@ -177,6 +208,24 @@ function editRow(row) {
 }
 
 function deleteRow(row) {
+  if (confirm('Are you sure you want to delete this sponsor?')) {
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/delete_sponsor', {
+      sponsor_id: selectedRow.value.id,
+      event_name: selectedRow.value.event_name
+    }, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    }).then((response) => {
+      console.log('Sponsor deleted', response.data);
+      unselectRow();
+      fetchData();
+      filterByEvent();
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
   console.log('Delete button clicked for row:', row);
 }
 
@@ -187,6 +236,14 @@ const iseditsponsor= ref(false);
 function toogleadd() {
   isaddsponsor.value = !isaddsponsor.value;
   if (!isaddsponsor.value) {
+    fetchData();
+    filterByEvent();
+  }
+}
+
+function toogleedit() {
+  iseditsponsor.value = !iseditsponsor.value;
+  if (!iseditsponsor.value) {
     fetchData();
     filterByEvent();
   }
@@ -243,19 +300,18 @@ const eventselected = ref('');
 }
 
 .sponsor-logo {
-  width: 10vh;
-  height: 10vh;
+  width: 18vh;
+  height: 18vh;
   min-height: 70px;
   min-width: 70px;
-  max-width: 100px;
-  max-height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
+  max-width: 150px;
+  max-height: 150px;
+  object-fit: scale-down; /* Ensure the whole image is visible */
 }
 
 .sponsor-no-logo {
-  width: 10vh;
-  height: 10vh;
+  width: 18vh;
+  height: 18vh;
   min-height:100px;
   min-width: 100px;
   max-width: 150px;
