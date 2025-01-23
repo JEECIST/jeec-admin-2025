@@ -18,11 +18,9 @@
           </div>
           <div class="event-filter">
             <label for="event">Event</label>
-            <select class="selection-box" v-model="event_id">
-              <option value="all">All</option>
-              <option value="JEEC 23/24">JEEC 23/24</option>
-              <option value="2">JEEC 24/25</option>
-            </select>   
+            <select class="selection-box" v-model="eventselected">
+              <option v-for="event in events" :key="event.id" :value="event.id">{{ event.name }}</option>
+            </select>  
           </div>
         </div>
         <div class="form-line">
@@ -34,11 +32,10 @@
         <div class="form-columns">
           <div class="logo">
             
-            <div class="blue-square" v-if="fileSelected">
+            <div class="blue-square" v-if="logo_image">
               <!-- Display the selected image -->
-              <img :src="fileSelected" alt="Logo" class="logo-image" />
+              <img :src="logo_image" alt="Logo" class="logo-image" />
             </div>
-            
             <div class="blue-square" v-else>
               <!-- Display this text when no logo is selected -->
               <p>No logo selected yet</p>
@@ -51,8 +48,7 @@
             <div class="form-line">
               <div class="inputjeec">
                 <label for="jeecresponsible">JEEC Responsible</label>
-                <select class="selection-box-jeec">
-                  <option value="all">All</option>
+                <select class="selection-box-jeec" v-model="jeec_responsible">
                   <option value="Maria">Maria</option>
                   <option value="Francisca">Francisca</option>
                 </select>
@@ -74,10 +70,8 @@
 
               <div class="inputtier">
                 <label for="Tier">Tier</label>
-                <select class="selection-box-tier">
-                  <option value="Gold">Gold</option>
-                  <option value="Bronze">Bronze</option>
-                  <option value="Sliver">Silver</option>
+                <select class="selection-box-tier" v-model="tier">
+                  <option v-for="tier_ in tiers" :key="tier_.id" :value="tier_.id">{{ tier_.name }}</option>
                 </select>
               </div>
             </div>
@@ -102,17 +96,20 @@ emit('close');
 }
 
 const props = defineProps({
-  foo: String
+  events: Array,
+  tiers: Array
 })
+
+
 
 const name = ref('')
 const description = ref('')
-const event_id = ref('all')
-const tier = ref('')
+const eventselected = ref(null)
+const tier = ref(null)
 const jeec_responsible = ref('')
-
-const fileSelected = null
-const fileToUpload = null
+var error_response = ref('error')
+var fileSelected = ref(null)
+var fileToUpload = ref(null)
 const show_in_website = ref('False')
 const logo_image = ref('')
 
@@ -121,31 +118,39 @@ const logo_image = ref('')
 
 
 function onLogoSelected(event){
-  this.fileSelected = event.target.files[0].name;
-  this.fileToUpload = event.target.files[0];
+  fileSelected.value = event.target.files[0].name;
+  fileToUpload.value = event.target.files[0];
+  logo_image.value = URL.createObjectURL(event.target.files[0]);
+  console.log(fileSelected.value)
 }
 
 function addingSponsor(e) {
       console.log('adding sponsor')
         e.preventDefault()
 
+
         const fd = new FormData();
-        if (fileToUpload) fd.append('logo_image', fileToUpload.value)
+        if (fileToUpload.value) fd.append('logo_image', fileToUpload.value)
         fd.append('name', name.value)
         fd.append('description', description.value)
-        fd.append('event_id', event_id.value)
+        fd.append('event_id', eventselected.value)
+        console.log("Event id",eventselected.value)
         fd.append('show_in_website', show_in_website.value)
-        fd.append('tier', tier.value)
+        fd.append('tier_id', tier.value)
+        console.log("Tier id",tier.value)
         fd.append('jeec_responsible', jeec_responsible.value)
 
-        axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add_sponsors_vue',{auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add-sponsor-vue',fd,{auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }}).then(response => {
           console.log(response)
-          this.error = response.data.error
-          if(this.error==''){
+          error_response = response.data.error
+          if(error_response==''){
             closePopup()
+          }
+          else{
+            console.log('error on adding sponsor: ', error_response)
           }
         })
         

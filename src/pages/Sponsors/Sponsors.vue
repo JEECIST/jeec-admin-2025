@@ -13,12 +13,11 @@
             v-model="searchQuery"
           />
         </div>
-      <div class="event-filter">
+      <div class="event-filter">  
         <p>Event</p>
-        <select class="selection-box" v-model="eventselected">
+        <select class="selection-box" v-model="eventselected" @change="filterByEvent">
           <option value="all">All</option>
-          <option value="JEEC 23/24">JEEC 23/24</option>
-          <option value="JEEC 24/25">JEEC 24/25</option>
+          <option v-for="event in events" :key="event.id" :value="event.name">{{ event.name }}</option>
         </select>   
       </div>
       <button class="button-add-sponsor" @click="toogleadd">Add Sponsor</button>
@@ -85,8 +84,9 @@
       </div>
     </div>
 
-    <AddSponsor v-if="isaddsponsor" @close="toogleadd"/>
+    <AddSponsor v-if="isaddsponsor" @close="toogleadd" :events="events" :tiers="tiers" :isOpen="isaddsponsor"/>
     <EditSponsor v-if="iseditsponsor" @close="editRow(selectedRow)" :sponsorData="selectedRow" :isOpen="iseditsponsor"/>
+   
   </div>
   
 </template>
@@ -102,22 +102,26 @@ import trashIcon from '../../assets/trash.svg'
 
 // Example data to be displayed in the table
 const tableData = ref([])
+const originalTableData = ref([])
 
-const events = ref('')
+const events = ref([])
+const tiers = ref([])
 
 const fetchData = () => {
-    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/sponsors_vue',{auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        }}).then((response)=>{
-          const data = response.data
-          tableData.value = response.data.sponsors
-          console.log("Sponsors",tableData.value)
-          events.value = response.data.events
-          console.log("Events",events.value)
-        }).catch((error)=>{
-          console.log(error)
-        })
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/sponsors_vue',{auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }}).then((response)=>{
+      originalTableData.value = response.data.sponsors
+      tableData.value = response.data.sponsors
+      console.log("Sponsors",tableData.value)
+      events.value = response.data.events
+      console.log("Events",events.value)
+      tiers.value = response.data.tiers
+      console.log("Tiers",tiers.value)
+    }).catch((error)=>{
+      console.log(error)
+    })
 }
 
 onMounted(fetchData)
@@ -129,6 +133,17 @@ const headers = {
   tier_name: 'Tier',
   jeec_responsible: 'JEEC Responsible',
 };
+
+// Function to filter the table data by event
+function filterByEvent() {
+  const selectedEvent = eventselected.value;
+  if (selectedEvent === 'all') {
+    tableData.value =  originalTableData.value
+  } else {
+    tableData.value =  originalTableData.value.filter(sponsor => sponsor.event_name === selectedEvent);
+    console.log("Filtered Sponsors", tableData.value);
+  }
+}
 
 const tableButtons = '';
 const noSponsors = ref(false);
@@ -169,10 +184,12 @@ function deleteRow(row) {
 const isaddsponsor= ref(false);
 const iseditsponsor= ref(false);
 
-function toogleadd()
-{
-  isaddsponsor.value= !isaddsponsor.value
-  console.log(isaddsponsor.value)
+function toogleadd() {
+  isaddsponsor.value = !isaddsponsor.value;
+  if (!isaddsponsor.value) {
+    fetchData();
+    filterByEvent();
+  }
 }
 
 
@@ -405,7 +422,7 @@ const eventselected = ref('');
   font-size: 10px;
   gap: 2px;
   height: 50px;
-  min-width: 30px; 
+  min-width: 40px; 
 }
 
 .selection-box {

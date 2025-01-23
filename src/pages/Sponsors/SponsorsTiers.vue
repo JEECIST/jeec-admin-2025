@@ -83,7 +83,7 @@
       <div class="card-collumn">
           <div class="card-paragraph">
             <h1># Sponsors</h1>
-            <p>{{ selectedRow.sponsors }}</p>
+            <p>{{ selectedRow.numberOfSponsors }}</p>
           </div>
           <div class="card-paragraph">
             <h1>Social Media</h1>
@@ -141,7 +141,7 @@ const fetchData = () => {
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }}).then((response)=>{
           const data = response.data
-          tableData.value = response.data.sponsors_tiers
+          tableData.value = response.data.tiers
           console.log("Sponsor Tiers",tableData.value)
           events.value = response.data.events
           console.log("Events",events.value)
@@ -158,8 +158,7 @@ onMounted(fetchData)
 const headers = {
   name: 'Name',
   priority: 'Priority',
-  sponsors: '# Sponsors',
-  includemeal: 'Include Meal',
+  numberOfSponsors: '# Sponsors'
 };
 
 const tableButtons = '';
@@ -424,16 +423,7 @@ function tooglelist()
   flex-grow: 1;
 }
 
-.event-filter {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  font-size: 0.6em;
-  gap: 2px;
-  width: 16%;
-  height: 50px;
-  min-width: 95px; 
-}
+
 
 .selection-box {
   width: 100%;
