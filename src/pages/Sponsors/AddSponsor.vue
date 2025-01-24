@@ -59,10 +59,10 @@
               <div class="radio-label">
                 <label for="show_in_website">Show in Website</label>
                 <div class="radio">
-                  <input type="radio" id="yes" :name="show_in_website" value="True"/>
+                  <input type="radio" id="yes" v-model="show_in_website" value="true"/>
                   <label for="yes">Yes</label>
 
-                  <input type="radio" id="no" :name="show_in_website" value="False"/>
+                  <input type="radio" id="no" v-model="show_in_website" value="false"/>
                   <label for="no">No</label>
                 </div>
               </div>
@@ -110,7 +110,7 @@ const jeec_responsible = ref('')
 var error_response = ref('error')
 var fileSelected = ref(null)
 var fileToUpload = ref(null)
-const show_in_website = ref('False')
+const show_in_website = ref('false')
 const logo_image = ref('')
 
 
@@ -137,6 +137,7 @@ function addingSponsor(e) {
         fd.append('event_name', eventselected.value.name)
         console.log("Event id",eventselected.value)
         fd.append('show_in_website', show_in_website.value)
+        console.log("Show in website",show_in_website.value)
         fd.append('tier_id', tier.value)
         console.log("Tier id",tier.value)
         fd.append('jeec_responsible', jeec_responsible.value)
