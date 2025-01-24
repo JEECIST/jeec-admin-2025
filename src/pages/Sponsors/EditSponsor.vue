@@ -14,29 +14,27 @@
         <div class="form-line">
           <div class="inputname">
             <label for="name">Name</label>
-            <input type="text" v-model="name"/>
+            <input type="text" v-model="sponsorData.name"/>
           </div>
           <div class="event-filter">
             <label for="event">Event</label>
-            <select class="selection-box" v-model="eventselected">
-              <option value="all">All</option>
-              <option value="JEEC 23/24">JEEC 23/24</option>
-              <option value="JEEC 24/25">JEEC 24/25</option>
-            </select>   
+            <select class="selection-box" v-model="selectedEvent">
+              <option v-for="event in events" :key="event.id" :value="event">{{ event.name }}</option>
+            </select>  
           </div>
         </div>
         <div class="form-line">
           <div class="inputdescription">
           <label for="description">Description</label>
-          <textarea class="description" v-model="description"></textarea>
+          <textarea class="description" v-model="sponsorData.description"></textarea>
           </div>
         </div>
         <div class="form-columns">
           <div class="logo">
             
-            <div class="blue-square" v-if="logo">
+            <div class="blue-square" v-if="sponsorData.logo">
               <!-- Display the selected image -->
-              <img :src="logo" alt="Logo" class="logo-image" />
+              <img :src="'http://127.0.0.1:8081' + sponsorData.logo" alt="Logo" class="logo-image" />
             </div>
             
             <div class="blue-square" v-else>
@@ -51,8 +49,7 @@
             <div class="form-line">
               <div class="inputjeec">
                 <label for="jeecresponsible">JEEC Responsible</label>
-                <select class="selection-box-jeec">
-                  <option value="all">All</option>
+                <select class="selection-box-jeec" v-model="sponsorData.jeec_responsible">
                   <option value="Maria">Maria</option>
                   <option value="Francisca">Francisca</option>
                 </select>
@@ -63,10 +60,10 @@
               <div class="radio-label">
                 <label for="show">Show in Website</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="True"/>
+                  <input type="radio" id="yes" v-model="sponsorData.show_in_website" value="true"/>
                   <label for="yes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="False"/>
+                  <input type="radio" id="no" v-model="sponsorData.show_in_website" value="false"/>
                   <label for="no">No</label>
                 </div>
               </div>
@@ -74,33 +71,64 @@
 
               <div class="inputtier">
                 <label for="Tier">Tier</label>
-                <select class="selection-box-tier">
-                  <option value="Gold">Gold</option>
-                  <option value="Bronze">Bronze</option>
-                  <option value="Sliver">Silver</option>
-                </select>
+              <select class="selection-box-tier" v-model="selectedTier">
+                <option v-for="tier in tiers" :key="tier.id" :value="tier">{{ tier.name }}</option>
+              </select>
               </div>
             </div>
           </div>
             
         </div>
       </form>
-      <button class="button-add-sponsor">Add</button>
+      <button class="button-add-sponsor" @click="updateSponsor">Update</button>
     </div>
   </div>
   
 </template>
 
 <script setup>
+import { ref, watch } from 'vue';
 const emit = defineEmits(['close'])
 
 function closePopup() {
-emit('close');
+  emit('close');
 }
 
 const props = defineProps({
-  foo: String
+  sponsorData: Object,
+  events: Array,
+  tiers: Array
 })
+
+const selectedEvent = ref(null);
+const selectedTier = ref(null);
+
+
+// Initialize selectedEvent with sponsorData
+watch(() => props.sponsorData, (newVal) => {
+  if (newVal) {
+    console.log(newVal);
+    selectedEvent.value = {
+      id: newVal.event_id,
+      name: newVal.event_name
+    };
+    const tier = props.tiers.find(t => t.name === newVal.tier_name);
+    if (tier) {
+      selectedTier.value = tier;
+    }
+  }
+}, { immediate: true });
+
+function onLogoSelected(event){
+  const file = event.target.files[0];
+  if (file) {
+    sponsorData.logo = URL.createObjectURL(file);
+  }
+}
+
+function updateSponsor() {
+  // Update sponsor logic here
+}
 </script>
 
 <style scoped>
@@ -287,7 +315,7 @@ input[type="radio"] {
   display: flex;
   flex-direction: column;
   align-content: center;
-  object-fit: cover;
+  object-fit: scale-down;
 }
 /* Hide the file input */
 #logo-upload {
@@ -332,6 +360,7 @@ input[type="radio"] {
 .logo-image {
   max-width: 100%;
   max-height: 100%;
+  object-fit: scale-down;
 }
 
 .button-add-logo {
