@@ -85,7 +85,7 @@
     </div>
 
     <AddSponsor v-if="isaddsponsor" @close="toogleadd" :events="events" :tiers="tiers" :isOpen="isaddsponsor"/>
-    <EditSponsor v-if="iseditsponsor" @close="toogleedit" :sponsorData="selectedRow" :isOpen="iseditsponsor"/>
+    <EditSponsor v-if="iseditsponsor" @close="toogleedit" :sponsorData="selectedRow" :events="events" :tiers="tiers" :isOpen="iseditsponsor"/>
    
   </div>
   
@@ -141,8 +141,10 @@ const headers = {
 function filterByEvent() {
   const selectedEvent = eventselected.value;
   if (selectedEvent == 'all') {
+    unselectRow();
     tableData.value =  originalTableData.value
   } else {
+    unselectRow();
     tableData.value =  originalTableData.value.filter(sponsor => sponsor.event_name === selectedEvent);
     console.log("Filtered Sponsors", tableData.value);
   }
