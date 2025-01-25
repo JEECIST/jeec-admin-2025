@@ -3,6 +3,7 @@ import TheTable from '../../global-components/TheTable.vue';
 import { ref, computed } from 'vue';
 import EditPrizePopup from './EditPrizeShopPopup.vue';
 import AddPrizePopup from './AddPrizeShopPopup.vue';
+import dropdown from '../../global-components/dropdown.vue';
 
 const popupShow = ref(false);
 
@@ -24,6 +25,24 @@ const closeOtherModal = () => {
   isOtherModalOpened.value = false;
 };
 
+
+const rewards = ref(["Pack Duplo Vertigem", "E-voucher (1p)", "Pack Duplo Pura Adrenalina", "Pack STREET ART FOR ALL", "Passeio golfinhos (2p)"]);
+
+const dailyRewards = ref([
+  { date: "19/02", reward: "Pack Duplo Vertigem", winner: "davidovich.fer" },
+  { date: "20/02", reward: "E-voucher (1p)", winner: "davidovich.fer" },
+  { date: "21/02", reward: "Pack Duplo Pura Adrenalina", winner: null },
+  { date: "22/02", reward: "Pack STREET ART FOR ALL", winner: "di.shadow99" },
+  { date: "23/02", reward: "Passeio golfinhos (2p)", winner: null },
+]);
+
+const weeklyRewards = ref([
+  { place: 1, reward: "Apple iPad", winner: "inesabrantes24" },
+  { place: 2, reward: "Apple Smart Watch", winner: "" },
+  { place: 3, reward: "Monitor MITSAI MC24", winner: "" },
+]);
+
+
 function isMobile() {
    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
      return true;
@@ -33,63 +52,19 @@ function isMobile() {
    }
 }
 
-const message = ref();
-
-function selectCallback(row) {
-  console.log(row)
-  popupShow.value = true;
-}
-
-const datab = [
-  {
-    date:   "19/02",
-    reward: ["Pack Duplo Vertigem", "EU TU ELE"],
-    winner: "K",
-  },
-  {
-    date:   "20/02",
-    reward: ["E-Voucher", "LOL"],
-    winner: "Y",
-  },
-  {
-    date:   "21/02",
-    reward: ["Pack Duplo Pura Adrenalina", "HEHE"],
-    winner: null,
-  },
-  {
-    date:   "22/02",
-    reward: ["Pack STREET ART FOR ALL (Boost)", "JWAD"],
-    winner: false,
-  },
-  {
-    date:   "23/02",
-    reward: ["Passeio golfinhos", "ASDSA"],
-    winner: "",
-  },
-];
-
-const processedData = computed(() =>
-  datab.map((item) => ({
-    ...item,
-    hasWinner: !!item.winner,
-  }))
-);
-
-const claimReward = (reward) => {
-  alert(`Claiming reward: ${reward}`);
-};
-
-
-const tablePref = {
-  date: "date",
-  reward: "reward",
-  winner: "winner",
-};
-
 
 const uniqueRewards = computed(() => {
   return [...new Set(datab.flatMap(item => item.reward))]; // Get unique rewards from the datab
 });
+
+const mappedWinner = (reward) => {
+  if (reward.winner){
+      return reward.winner
+  }else{
+    return "Button"
+  }
+
+}
 
 
 </script>
@@ -97,260 +72,155 @@ const uniqueRewards = computed(() => {
 <template>
 <div id="rewards">
   <h2>Daily Rewards</h2>
-  <div class="desktop" v-if="!isMobile()">
-    <div class="wrapper">
-        <div class="table">
-          <div class="topbar">
-          
-          <label for="reward">Filter by Reward:</label>
-            <select v-model="selectedReward" @change="filterRewards">
-              <option value="">All Rewards</option>
-              <option v-for="reward in uniqueRewards" :key="reward" :value="reward">{{ reward }}</option>
-            </select>
-        
-          <Transition name="fade" appear>
-              <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-          </Transition>
-          <Transition name="fade" appear>
-              <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-          </Transition>
-          </div>
-            <TheTable
-              :data="processedData"
-              :tableHeaders="tablePref"
-              :searchInput="message"
-              @onRowSelect="selectCallback"
-            >
-            <template #column-winner="{ row }">
-              <div>
-                <span v-if="row.hasWinner">{{ row.winner }}</span>
-                <button v-else class="claim-btn">
-                  Claim Reward
-                </button>
-              </div>
-            </template>
-          </TheTable>
-          </div>
+  <div class="desktop">
+    <div class="table-container">
+      <div class="section">
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Reward</th>
+              <th>Winner</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(reward, index) in dailyRewards" :key="index">
+              <td>{{ reward.date }}</td>
+              <td>
+                <dropdown
+                  :options="rewards"
+                />
+              </td>
+              <td>
+                <div v-if="reward.winner">{{ reward.winner }}</div>
+                <div v-else>
+                  <button class="genButton" onclick="alert('This gens a winner')">Lets Roll it</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2>Weekly Rewards</h2>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Reward</th>
+              <th>Winner</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(reward, index) in dailyRewards" :key="index">
+              <td>{{ reward.date }}</td>
+              <td>
+                <dropdown
+                  :options="rewards"
+                />
+              </td>
+              <td>
+                <div v-if="reward.winner">{{ reward.winner }}</div>
+                <div v-else>
+                  <button class="genButton" onclick="alert('This gens a winner')">Lets Roll it</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
-
-
-
-  <div class="mobile" v-else>
-  <div class="mobile-wrapper">
-      <div class="table">
-        <TheTable
-          :data="datab"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
     </div>
-  </div>
+
 </div>
 
-<div id="rewards">
-  <h2>Weekly Rewards</h2>
-  <div class="desktop" v-if="!isMobile()">
-    <div class="wrapper">
-        <div class="table">
-          <div class="topbar">
-          <form>
-            <label>
-              <img src="../../assets/search.svg">
-            </label>
-            <input v-model="message" placeholder="Search for a prize">
-          </form>
-        
-          <button class="topbtn" @click="openModal">Add Prize</button>
-          <Transition name="fade" appear>
-              <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-          </Transition>
-          <Transition name="fade" appear>
-              <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-          </Transition>
-          </div>
-            <TheTable
-              :data="datab"
-              :tableHeaders="tablePref"
-              :searchInput="message"
-              @onRowSelect="selectCallback"
-            ></TheTable>
-          </div>
-      </div>
-    </div>
-
-
-
-  <div class="mobile" v-else>
-  <div class="mobile-wrapper">
-      <div class="table">
-        <TheTable
-          :data="datab"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="rewards">
-  <h2>CV Rewards</h2>
-  <div class="desktop" v-if="!isMobile()">
-    <div class="wrapper">
-        <div class="table">
-          <div class="topbar">
-          <form>
-            <label>
-              <img src="../../assets/search.svg">
-            </label>
-            <input v-model="message" placeholder="Search for a prize">
-          </form>
-        
-          <button class="topbtn" @click="openModal">Add Prize</button>
-          <Transition name="fade" appear>
-              <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-          </Transition>
-          <Transition name="fade" appear>
-              <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-          </Transition>
-          </div>
-            <TheTable
-              :data="datab"
-              :tableHeaders="tablePref"
-              :searchInput="message"
-              @onRowSelect="selectCallback"
-            ></TheTable>
-          </div>
-      </div>
-    </div>
-
-
-
-  <div class="mobile" v-else>
-  <div class="mobile-wrapper">
-      <div class="table">
-        <TheTable
-          :data="datab"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="rewards">
-  <h2>Squad Rewards</h2>
-  <div class="desktop" v-if="!isMobile()">
-    <div class="wrapper">
-        <div class="table">
-          <div class="topbar">
-          <form>
-            <label>
-              <img src="../../assets/search.svg">
-            </label>
-            <input v-model="message" placeholder="Search for a prize">
-          </form>
-        
-          <button class="topbtn" @click="openModal">Add Prize</button>
-          <Transition name="fade" appear>
-              <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-          </Transition>
-          <Transition name="fade" appear>
-              <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-          </Transition>
-          </div>
-            <TheTable
-              :data="datab"
-              :tableHeaders="tablePref"
-              :searchInput="message"
-              @onRowSelect="selectCallback"
-            ></TheTable>
-          </div>
-      </div>
-    </div>
-
-
-
-  <div class="mobile" v-else>
-  <div class="mobile-wrapper">
-      <div class="table">
-        <TheTable
-          :data="datab"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="rewards">
-  <h2>Individual Rewards</h2>
-  <div class="desktop" v-if="!isMobile()">
-    <div class="wrapper">
-        <div class="table">
-          <div class="topbar">
-          <form>
-            <label>
-              <img src="../../assets/search.svg">
-            </label>
-            <input v-model="message" placeholder="Search for a prize">
-          </form>
-        
-          <button class="topbtn" @click="openModal">Add Prize</button>
-          <Transition name="fade" appear>
-              <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-          </Transition>
-          <Transition name="fade" appear>
-              <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-          </Transition>
-          </div>
-            <TheTable
-              :data="datab"
-              :tableHeaders="tablePref"
-              :searchInput="message"
-              @onRowSelect="selectCallback"
-            ></TheTable>
-          </div>
-      </div>
-    </div>
-
-
-
-  <div class="mobile" v-else>
-  <div class="mobile-wrapper">
-      <div class="table">
-        <TheTable
-          :data="datab"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
-    </div>
-  </div>
-</div>
 
 </template>
 
 
 <style scoped>
 
+
+.genButton {
+    background-color: var(--c-select);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    align-items: center;
+    height: 45px;
+    font-weight: 500;
+    font-size: small;
+    flex-grow: 1;
+    width: 30%;
+    cursor: pointer;
+}
+
+td {
+  text-align: center;
+}
+
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 8px 12px;
+}
+
+.styled-table th {
+  background-color: #f9f9f9;
+  font-weight: bold;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+
+.styled-table tbody tr {
+  border-bottom: none;
+}
+
+.styled-table tbody tr:nth-child(even) {
+  background-color: #eaf4fc; /* Light blue */
+}
+
+.styled-table tbody tr:hover {
+  background-color: #d6eaff; /* Slightly darker blue for hover */
+}
+
+.styled-table td select {
+  width: 100%;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+th {
+  text-align: center !important;
+}
+
+thead {
+  background-color: white;
+}
+
 .desktop{
   width: 75%;
 }
 
 #rewards > h2 {
-
   font-weight: bold;
   font-size: 2rem;
+}
+
+.section > h2 {
+  font-weight: bold;
+  font-size: 2rem;
+  text-align: center;
+  padding-top: 5%;
 }
 
 #rewards {
@@ -358,7 +228,8 @@ const uniqueRewards = computed(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 50vh;
+  height: 80vh;
+  padding-top: 30%;
 }
 
 .mobile-wrapper {

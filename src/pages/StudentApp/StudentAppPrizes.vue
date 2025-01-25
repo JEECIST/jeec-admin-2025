@@ -41,7 +41,7 @@ function goToPrizeShop() {
 }
 
 function goToPrizeSpecial() {
-  router.push("/student-app/special");
+  router.push("/student-app/prizes/special");
 }
 
 const message = ref();
