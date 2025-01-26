@@ -59,10 +59,10 @@
               <div class="radio-label">
                 <label for="show_in_website">Show in Website</label>
                 <div class="radio">
-                  <input type="radio" id="yes" v-model="show_in_website" value="true"/>
+                  <input type="radio" id="yes" v-model="show_in_website" :value="true"/>
                   <label for="yes">Yes</label>
 
-                  <input type="radio" id="no" v-model="show_in_website" value="false"/>
+                  <input type="radio" id="no" v-model="show_in_website" :value="false"/>
                   <label for="no">No</label>
                 </div>
               </div>
@@ -92,7 +92,7 @@ const emit = defineEmits(['close'])
 
 
 function closePopup() {
-emit('close');
+  emit('close');
 }
 
 const props = defineProps({
