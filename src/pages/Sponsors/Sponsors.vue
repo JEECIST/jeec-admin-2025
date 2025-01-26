@@ -51,7 +51,7 @@
       </button>
       <div class="sponsor-card-header">
         <h1 class="card-tier">{{ selectedRow.tier_name }}</h1>
-        <img v-if="selectedRow.logo" class='sponsor-logo' :src="'http://127.0.0.1:8081'+selectedRow.logo" alt="sponsor logo" />
+        <img v-if="selectedRow.logo" class='sponsor-logo' :src="selectedRow.logo" alt="sponsor logo" />
         <div v-else class='sponsor-no-logo'>No logo</div>
         <div class="card-title">
           <p class="card-name">{{ selectedRow.name }}</p>
@@ -164,8 +164,13 @@ function fetchSponsorDetails(){
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
   }).then((response) => {
-    console.log(response.data);
-    selectedRow.value.logo = response.data.image; // Update the logo in the selectedRow
+    if (!response.data.error) {
+      console.log('Sponsor details fetched', response.data);
+      selectedRow.value.logo = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image; // Update the logo in the selectedRow
+      console.log(selectedRow.value.logo);
+    } else {
+      console.log('Error fetching sponsor details', response.data.error);
+    }
   }).catch((error) => {
     console.log(error);
   });

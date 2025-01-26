@@ -34,7 +34,7 @@
             
             <div class="blue-square" v-if="sponsorData.logo">
               <!-- Display the selected image -->
-              <img :src="'http://127.0.0.1:8081' + sponsorData.logo" alt="Logo" class="logo-image" />
+              <img :src="sponsorData.logo" alt="Logo" class="logo-image" />
             </div>
             
             <div class="blue-square" v-else>
@@ -43,7 +43,7 @@
             </div>
             <!-- Hidden file input -->
             <label for="logo-upload" class="custom-logo-label">Add new Logo</label>
-            <input id="logo-upload" type="file" @change="onLogoSelected" class="button-add-logo" accept="image/*" />
+            <input id="logo-upload" name ="fileSelected" type="file" @change="onLogoSelected" class="button-add-logo" accept="image/*" />
           </div>
           <div class="second-column">
             <div class="form-line">
@@ -88,8 +88,10 @@
 
 <script setup>
 import { ref, watch } from 'vue';
+import axios from 'axios';
 const emit = defineEmits(['close'])
-
+var fileSelected = ref(null);
+var fileToUpload = ref(null);
 function closePopup() {
   emit('close');
 }
@@ -100,8 +102,16 @@ const props = defineProps({
   tiers: Array
 })
 
+function onLogoSelected(event){
+  fileSelected.value = event.target.files[0].name;
+  fileToUpload.value = event.target.files[0];
+  props.sponsorData.logo = URL.createObjectURL(event.target.files[0]);
+  console.log(fileSelected.value)
+}
+
 const selectedEvent = ref(null);
 const selectedTier = ref(null);
+
 
 
 // Initialize selectedEvent with sponsorData
@@ -119,16 +129,37 @@ watch(() => props.sponsorData, (newVal) => {
   }
 }, { immediate: true });
 
-function onLogoSelected(event){
-  const file = event.target.files[0];
-  if (file) {
-    sponsorData.logo = URL.createObjectURL(file);
-  }
-}
 
 function updateSponsor() {
   // Update sponsor logic here
+  console.log('Update sponsor');
+  const fd = new FormData();
+    if (fileToUpload.value) fd.append('logo_image', fileToUpload.value)
+    fd.append('sponsor_id', props.sponsorData.id)
+    fd.append('name', props.sponsorData.name)
+    fd.append('description', props.sponsorData.description)
+    fd.append('event_id', selectedEvent.value.id)
+    fd.append('event_name', selectedEvent.value.name)
+    fd.append('show_in_website', props.sponsorData.show_in_website)
+    fd.append('tier_id', selectedTier.value.id)
+    fd.append('jeec_responsible', props.sponsorData.jeec_responsible)
+
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/update-sponsor-vue',fd,{auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then(response => {
+          console.log(response)
+          const error_response = response.data.error
+          if(error_response==''){
+            closePopup()
+          }
+          else{
+            console.log('error on adding sponsor: ', error_response)
+          }
+        })
 }
+
+
 </script>
 
 <style scoped>
