@@ -207,13 +207,6 @@ function unselectRow() {
   selectedRow.value = null;
 }
 
-// Event handlers for button clicks
-function editRow(row) {
-  iseditsponsor.value= !iseditsponsor.value
-  console.log(iseditsponsor.value)
-  console.log('Edit button clicked for row:', row);
-}
-
 function deleteRow(row) {
   if (confirm('Are you sure you want to delete this sponsor?')) {
     axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/delete_sponsor', {
