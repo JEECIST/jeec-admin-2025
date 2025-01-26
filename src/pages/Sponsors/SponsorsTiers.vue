@@ -192,10 +192,6 @@ function editRow(row) {
   console.log('Edit button clicked for row:', row);
 }
 
-function deleteRow(row) {
-  console.log('Delete button clicked for row:', row);
-}
-
 const isaddsponsortier= ref(false);
 const iseditsponsortier= ref(false);
 const listsponsors= ref(false);
@@ -213,6 +209,26 @@ function tooglelist()
 {
   listsponsors.value= !listsponsors.value
   console.log(listsponsors.value)
+}
+
+function deleteRow(row) {
+  if (confirm('Are you sure you want to delete this sponsor tier?')) {
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/delete_sponsor_tier', {
+      tier_id: selectedRow.value.id
+    }, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    }).then((response) => {
+      console.log('Sponsor tier deleted', response.data);
+      unselectRow();
+      fetchData();
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+  console.log('Delete button clicked for row:', row);
 }
 
 
