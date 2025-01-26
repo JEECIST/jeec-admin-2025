@@ -206,6 +206,7 @@ function toogleadd()
 {
   isaddsponsortier.value= !isaddsponsortier.value
   console.log(isaddsponsortier.value)
+  fetchData()
 }
 
 function tooglelist()
