@@ -1,8 +1,8 @@
 <template>
   <div class="backdrop">
-    <div class="tier-pop-up">
+    <div class="tier-pop-up"> 
       <div class="header">
-        <h1>{{type}} Sponsors</h1>
+        <h1>{{tier.name}} Sponsors</h1>
         <button @click="closePopup" class="close-button">
           <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -13,7 +13,8 @@
 
       <div class="sponsors-grid">
         <div v-for="(sponsor, index) in data" :key="index" class="sponsor-item">
-          <img class="sponsor-logo" :src="sponsor.logo" alt="sponsor logo">
+          <img v-if="sponsor.logo" class="sponsor-logo" :src="sponsor.logo" alt="sponsor logo">
+          <div v-else class="default-logo"></div>
           <span>{{ sponsor.name }}</span>
         </div>
       </div>
@@ -25,33 +26,41 @@
 import { defineProps, defineEmits, ref } from 'vue';
 
 const emit = defineEmits(['close']);
+const data = ref([]); // Make data reactive
 
 function closePopup() {
   emit('close');
 }
 
-const data = ref([
-  { name: 'Galp', logo: "../src/assets/Galp.png" },
-  { name: 'EDP', logo: "../src/assets/Galp.png" },
-  { name: 'JEEC', logo: "../src/assets/JEEC.png" },
-  { name: 'Galp', logo: "../src/assets/Galp.png" },
-  { name: 'EDP', logo: "../src/assets/Galp.png" },
-  { name: 'JEEC', logo: "../src/assets/JEEC.png" },
-  { name: 'Galp', logo: "../src/assets/Galp.png" },
-  { name: 'EDP', logo: "../src/assets/Galp.png" },
-  { name: 'JEEC', logo: "../src/assets/JEEC.png" },
-  { name: 'Galp', logo: "../src/assets/Galp.png" },
-  { name: 'EDP', logo: "../src/assets/Galp.png" },
-  { name: 'JEEC', logo: "../src/assets/JEEC.png" },
-  { name: 'JEEC', logo: "../src/assets/JEEC.png" }
-]);
-
 const props = defineProps({
-  foo: String,
-  type: {
-    type: String,
-    required: true
-  },
+  tier: Object
+});
+
+import axios from 'axios';
+import { onMounted } from 'vue';
+
+onMounted(async () => {
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/sponsors_tiers_list_vue', {
+    params: {
+      tier_id: props.tier.id
+    },
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then((response) => {
+    data.value = response.data.sponsors
+      .filter(sponsor => sponsor !== null) // Filter out null values
+      .map(sponsor => {
+        if (sponsor.logo) {
+          sponsor.logo = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + sponsor.logo;
+        }
+        return sponsor;
+      });
+    console.log(data.value);
+  }).catch((error) => {
+    console.log(error);
+  });
 });
 </script>
 
@@ -113,10 +122,10 @@ const props = defineProps({
 .sponsor-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
   padding: 6px 10px;
   box-sizing: border-box;
-  height: 50px;
+  height: 60px;
 }
 
 /* Alternating background color for two-column rows */
@@ -131,12 +140,21 @@ const props = defineProps({
 }
 
 .sponsor-logo {
-  width: 2vw;
-  height: 2vw;
-  min-width: 20px;
-  min-height: 20px;
+  width: 3vw;
+  height: 3vw;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: 50%;
-  object-fit: cover;
+  object-fit: scale-down;
+}
+
+.default-logo {
+  width: 3vw;
+  height: 3vw;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  background-color: var(--c-select);
 }
 
 @media (max-width: 700px) {

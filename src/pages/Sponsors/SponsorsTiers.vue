@@ -69,15 +69,15 @@
           </div>
           <div class="card-paragraph">
             <h1>Logo in Canvas</h1>
-            <p>{{ selectedRow.logoincanvas }}</p>
+            <p>{{ selectedRow.logoInCanvas }}</p>
           </div>
           <div class="card-paragraph">
             <h1>Exclusive Video</h1>
-            <p>{{ selectedRow.exclusivevideo }}</p>
+            <p>{{ selectedRow.exclusiveVideo }}</p>
           </div>
           <div class="card-paragraph">
             <h1>Exclusive Posts</h1>
-            <p>{{ selectedRow.exclusiveposts }}</p>
+            <p>{{ selectedRow.exclusivePosts }}</p>
           </div>
       </div>
       <div class="card-collumn">
@@ -87,11 +87,11 @@
           </div>
           <div class="card-paragraph">
             <h1>Social Media</h1>
-            <p>{{ selectedRow.socialmedia }}</p>
+            <p>{{ selectedRow.socialMedia }}</p>
           </div>
           <div class="card-paragraph">
             <h1>Logo in Posters</h1>
-            <p>{{ selectedRow.logoinposters }}</p>
+            <p>{{ selectedRow.logoInPosters }}</p>
           </div>
           <div class="card-paragraph">
             <h1>Teaser</h1>
@@ -99,7 +99,7 @@
           </div>
           <div class="card-paragraph">
             <h1>Included Meal</h1>
-            <p>{{ selectedRow.includemeal }}</p>
+            <p>{{ selectedRow.includedMeal }}</p>
           </div>
       </div>
         
@@ -107,7 +107,7 @@
       </div>
     </div>
 
-    <SponsorsList v-if="listsponsors" @close="tooglelist" :type="selectedRow.name" />
+    <SponsorsList v-if="listsponsors" @close="tooglelist" :tier="selectedRow" />
     <AddSponsorTier v-if="isaddsponsortier" @close="toogleadd"/>
     <EditSponsorTier v-if="iseditsponsortier" @close="editRow(selectedRow)" :sponsorData="selectedRow" :isOpen="iseditsponsor"/>
   </div>
@@ -152,6 +152,10 @@ const fetchData = () => {
 
 onMounted(fetchData)
 
+const isaddsponsortier= ref(false);
+const iseditsponsortier= ref(false);
+const listsponsors= ref(false);
+const cardDisplaying = ref(false);
 
 
 // Headers to map the data keys to table headers
@@ -192,10 +196,6 @@ function editRow(row) {
   console.log('Edit button clicked for row:', row);
 }
 
-const isaddsponsortier= ref(false);
-const iseditsponsortier= ref(false);
-const listsponsors= ref(false);
-const cardDisplaying = ref(false);
 
 
 function toogleadd()

@@ -2,7 +2,7 @@
   <div class="backdrop">
     <div class="tier-pop-up">
       <div class="header">
-        <h1>Edit Sponsor Tier</h1>
+        <h1>Update Sponsor Tier</h1>
         <button @click="closePopup" class="close-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
           <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -14,122 +14,157 @@
         <div class="form-line">
           <div class="inputname">
             <label for="name">Name</label>
-            <input type="text" v-model="name"/>
+            <input type="text" v-model="sponsorData.name"/>
           </div>
           <div class="inputname">
             <label for="Priority">Priority</label>
-            <input type="text" v-model="priority"/>
+            <input type="text" v-model="sponsorData.priority"/>
           </div>
         </div>
         <div class="form-columns">
           
           <div class="second-column">
               <div class="radio-label">
-                <label for="show">Included Meal</label>
+                <label for="includedMeal">Included Meal</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
+                  <input type="radio" id="includedMealYes" v-model="sponsorData.includedMeal" :value="true"/>
+                  <label for="includedMealYes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
+                  <input type="radio" id="includedMealNo" v-model="sponsorData.includedMeal" :value="false"/>
+                  <label for="includedMealNo">No</label>
                 </div>
               </div>
               <div class="radio-label">
-                <label for="show">Logo in Canvas</label>
+                <label for="logoInCanvas">Logo in Canvas</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
+                  <input type="radio" id="logoInCanvasYes" v-model="sponsorData.logoInCanvas" :value="true"/>
+                  <label for="logoInCanvasYes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
+                  <input type="radio" id="logoInCanvasNo" v-model="sponsorData.logoInCanvas" :value="false"/>
+                  <label for="logoInCanvasNo">No</label>
                 </div>
               </div>
               <div class="radio-label">
-                <label for="show">Teaser</label>
+                <label for="teaser">Teaser</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
+                  <input type="radio" id="teaserYes" v-model="sponsorData.teaser" :value="true"/>
+                  <label for="teaserYes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
-                </div>
-              </div>
-          </div>
-          <div class="second-column">
-              <div class="radio-label">
-                <label for="show">Show in Website</label>
-                <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
-
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
-                </div>
-              </div>
-              <div class="radio-label">
-                <label for="show">Logo in posters</label>
-                <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
-
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
-                </div>
-              </div>
-              <div class="radio-label">
-                <label for="show">Exclusive Posts</label>
-                <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
-
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
+                  <input type="radio" id="teaserNo" v-model="sponsorData.teaser" :value="false"/>
+                  <label for="teaserNo">No</label>
                 </div>
               </div>
           </div>
           <div class="second-column">
               <div class="radio-label">
-                <label for="show">Social Media</label>
+                <label for="showInWebsite">Show in Website</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
+                  <input type="radio" id="showInWebsiteYes" v-model="sponsorData.showInWebsite" :value="true"/>
+                  <label for="showInWebsiteYes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
+                  <input type="radio" id="showInWebsiteNo" v-model="sponsorData.showInWebsite" :value="false"/>
+                  <label for="showInWebsiteNo">No</label>
                 </div>
               </div>
               <div class="radio-label">
-                <label for="show">Exclusive Video</label>
+                <label for="logoInPosters">Logo in posters</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
+                  <input type="radio" id="logoInPostersYes" v-model="sponsorData.logoInPosters" :value="true"/>
+                  <label for="logoInPostersYes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
+                  <input type="radio" id="logoInPostersNo" v-model="sponsorData.logoInPosters" :value="false"/>
+                  <label for="logoInPostersNo">No</label>
+                </div>
+              </div>
+              <div class="radio-label">
+                <label for="exclusivePosts">Exclusive Posts</label>
+                <div class="radio">
+                  <input type="radio" id="exclusivePostsYes" v-model="sponsorData.exclusivePosts" :value="true"/>
+                  <label for="exclusivePostsYes">Yes</label>
+
+                  <input type="radio" id="exclusivePostsNo" v-model="sponsorData.exclusivePosts" :value="false"/>
+                  <label for="exclusivePostsNo">No</label>
+                </div>
+              </div>
+          </div>
+          <div class="second-column">
+              <div class="radio-label">
+                <label for="socialMedia">Social Media</label>
+                <div class="radio">
+                  <input type="radio" id="socialMediaYes" v-model="sponsorData.socialMedia" :value="true"/>
+                  <label for="socialMediaYes">Yes</label>
+
+                  <input type="radio" id="socialMediaNo" v-model="sponsorData.socialMedia" :value="false"/>
+                  <label for="socialMediaNo">No</label>
+                </div>
+              </div>
+              <div class="radio-label">
+                <label for="exclusiveVideo">Exclusive Video</label>
+                <div class="radio">
+                  <input type="radio" id="exclusiveVideoYes" v-model="sponsorData.exclusiveVideo" :value="true"/>
+                  <label for="exclusiveVideoYes">Yes</label>
+
+                  <input type="radio" id="exclusiveVideoNo" v-model="sponsorData.exclusiveVideo" :value="false"/>
+                  <label for="exclusiveVideoNo">No</label>
                 </div>
               </div>
           </div>
             
         </div>
       </form>
-      <button class="button-add-sponsor">Add</button>
+      <button class="button-add-sponsor" @click="updateSponsorTier">Update</button>
       
     </div>
   </div>
   
 </template>
 
+
 <script setup>
 const emit = defineEmits(['close'])
+import { defineProps } from 'vue';
+import axios from 'axios';
 
 function closePopup() {
-emit('close');
+  emit('close');
 }
 
 const props = defineProps({
-  foo: String
-
+  sponsorData: Object
 })
+
+
+function updateSponsorTier() {
+  // Update sponsor tier logic here
+  console.log('Update sponsor tier');
+  const fd = new FormData();
+  fd.append('tier_id', props.sponsorData.id);
+  fd.append('name', props.sponsorData.name);
+  fd.append('priority', props.sponsorData.priority);
+  fd.append('included_meal', props.sponsorData.includedMeal);
+  fd.append('logo_in_canvas', props.sponsorData.logoInCanvas);
+  fd.append('teaser', props.sponsorData.teaser);
+  fd.append('show_in_website', props.sponsorData.showInWebsite);
+  fd.append('logo_in_posters', props.sponsorData.logoInPosters);
+  fd.append('exclusive_posts', props.sponsorData.exclusivePosts);
+  fd.append('social_media', props.sponsorData.socialMedia);
+  fd.append('exclusive_video', props.sponsorData.exclusiveVideo);
+
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/update-sponsor-tier-vue', fd, {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then(response => {
+    console.log(response);
+    const error_response = response.data.error;
+    if (error_response == '') {
+      closePopup();
+    } else {
+      console.log('error on updating sponsor tier: ', error_response);
+    }
+  });
+}
 </script>
 
 <style scoped>
