@@ -1,6 +1,6 @@
 <script setup>
 
-const emit = defineEmits(['toggle-add-bill','refresh-bills'])
+const emit = defineEmits(['toggle-add-modal','refresh-bills'])
 const message = defineModel('message');
 
 </script>
@@ -16,7 +16,7 @@ const message = defineModel('message');
         <input v-model="message" placeholder="Search for a bill">
     </form>
 
-    <button class="topbtn" @click="emit('toggle-add-bill')">Add Bill</button>
+    <button class="topbtn" @click="emit('toggle-add-modal')">Add Bill</button>
     <button class="topbtn" @click="emit('refresh-bills')">Refresh</button>
 
 </div>

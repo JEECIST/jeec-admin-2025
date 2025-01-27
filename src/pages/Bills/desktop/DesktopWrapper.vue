@@ -4,7 +4,8 @@ import { computed, onMounted, ref } from 'vue';
 import * as httpAdmin from '@utils/http-admin';
 import TopBar from './components/TopBar.vue';
 import BillCard from './components/BillCard.vue';
-import BillPopup from '../components/BillPopup.vue';
+import CreateBillPopup from '../components/CreateBillPopup.vue';
+import UpdateBillPopup from '../components/UpdateBillPopup.vue';
 
 const popupShow = ref(false);
 const message = ref('');
@@ -23,12 +24,16 @@ const filteredTableData = computed(() =>
     table_data.value.map(({bill_image_binary, ...rest}) => rest) 
 );
 
+const isAddModalOpened = ref(false);
+const toggleAddModal = (e) => {  
+    isAddModalOpened.value = !isAddModalOpened.value;
+};
 
-const isModalOpened = ref(false);
-const toggleModal = (e) => {  
-    isModalOpened.value = !isModalOpened.value;
-    console.log(e);
-    
+
+
+const isUpdateModalOpened = ref(false);
+const toggleUpdateModal = (e) => {  
+    isUpdateModalOpened.value = !isUpdateModalOpened.value;
 };
 
 const tablePref = {
@@ -80,7 +85,7 @@ onMounted(() => {
                 v-model:message="message" 
                 v-model:table_data="table_data"
                 @refresh-bills="getBills"
-                @toggle-modal="toggleModal"
+                @toggle-add-modal="toggleAddModal"
             ></TopBar>
         
             <div v-if="!isDataBEmpty()">
@@ -91,15 +96,24 @@ onMounted(() => {
                     @onRowSelect="selectCallback"
                 ></TheTable>
             </div>
+            <div v-else>
+                <h3>No data...</h3>
+            </div>
         </div>
+        
         <BillCard 
             :selectedRowData="selectedRow" 
             v-show="popupShow" 
             @delete-bill="reloadPage"
-            @toggle-modal="toggleModal"
+            @toggle-modal="toggleUpdateModal"
         ></BillCard>
+        
         <Transition appear>
-            <BillPopup :isOpen="isModalOpened" @modal-submit="reloadPage" @modal-close="toggleModal"></BillPopup>
+            <CreateBillPopup :isOpen="isAddModalOpened" @modal-submit="reloadPage" @modal-close="toggleAddModal"></CreateBillPopup>
+        </Transition>
+        
+        <Transition appear>
+            <UpdateBillPopup :isOpen="isUpdateModalOpened" :bill_data="selectedRow" @modal-update="reloadPage" @modal-close="toggleUpdateModal"></UpdateBillPopup>
         </Transition>
     </div>
 </div>

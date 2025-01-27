@@ -1,12 +1,10 @@
 <script setup>
-import { defineEmits, ref } from "vue";
+import { ref } from "vue";
 import { isMobile } from "@utils/utils";
 import * as HttpAdmin from "@utils/http-admin";
 
 const props = defineProps({
     isOpen: Boolean,
-    function: String,
-    data: Object
 });
 
 const emit = defineEmits(["modal-close","modal-submit"]);
@@ -50,7 +48,7 @@ let bill_image_binary = ref();
 </script>
 
 <template>
-    <div v-if="isOpen" class="modal-mask">
+    <div v-if="props.isOpen" class="modal-mask">
         <div class="desktop" v-if="!isMobile()">
             <div class="wrapper-wrapper">
                 <div class="popup-wrapper" ref="target">
