@@ -121,7 +121,7 @@ onMounted(() => {
 
 
 
-<style>
+<style scoped>
 .wrapper {
   display: flex;
   position: relative;

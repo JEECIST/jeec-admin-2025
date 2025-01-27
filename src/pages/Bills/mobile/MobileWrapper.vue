@@ -1,74 +1,40 @@
 <script setup>
 import TheTable from '../../../global-components/TheTable.vue';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router'
+import { computed, onMounted, ref } from 'vue';
+import * as httpAdmin from '@utils/http-admin';
+import TopBar from './components/TopBar.vue';
+import BillCard from './components/BillCard.vue';
+import CreateBillPopup from '../components/CreateBillPopup.vue';
+import UpdateBillPopup from '../components/UpdateBillPopup.vue';
 
 const popupShow = ref(false);
-
-const isModalOpened = ref(false);
-
-const toggleModal = () => {  
-    isModalOpened.value = !isModalOpened.value;
-};
-
-const isOtherModalOpened = ref(false);
-
-const openOtherModal = () => {
-    isOtherModalOpened.value = true;
-};
-const closeOtherModal = () => {
-    isOtherModalOpened.value = false;
-};
-
-
-const router = useRouter();
-
-const message = ref();
-
-
-function selectCallback(row) {
-    console.log("\nSPLIT\n");
-
-    console.log(row)
-    popupShow.value = true;
-    console.log(selectedRowData.value);
-    selectedRowData.value = row
-
-    console.log(selectedRowData.value);
-}
-
-function isDataBEmpty(){
-    return datab.length === 0;
-}
-
-const selectedRowData = ref({
+const message = ref('');
+const table_data = ref();
+const selectedRow = ref({
     id: "",
     value: "",
     date: "",
     shop: "",
     status: "",
     is_paid: ""
-})
+});
+
+const loaded = ref(false);
+const filteredTableData = computed(() => 
+    table_data.value.map(({bill_image_binary, ...rest}) => rest) 
+);
+
+const isAddModalOpened = ref(false);
+const toggleAddModal = (e) => {  
+    isAddModalOpened.value = !isAddModalOpened.value;
+};
 
 
-const datab = [
-        {
-            id: "1",
-            value: "1.50",
-            date: "12-01-2024",
-            shop: "Pingo Doce",
-            status: "Approved",
-            is_paid: "Yes"
-        },
-        {
-            id: "2",
-            value: "15.00",
-            date: "22-01-2024",
-            shop: "Social",
-            status: "Rejected",
-            is_paid: "No"
-        },
-    ];
+
+const isUpdateModalOpened = ref(false);
+const toggleUpdateModal = (e) => {  
+    isUpdateModalOpened.value = !isUpdateModalOpened.value;
+};
 
 const tablePref = {
     id: "ID",
@@ -78,69 +44,96 @@ const tablePref = {
     status: "Status",
     is_paid: "Paid"
 };
+
+async function getBills(){
+    const response = await httpAdmin.GET('/bills');
+    table_data.value = await response.data.bills;
+    loaded.value=true; 
+}
+
+function reloadPage(){
+    sessionStorage.setItem('message', message.value);
+    location.reload();
+}
+
+function selectCallback(row) {
+    popupShow.value = true;
+    selectedRow.value = row;
+    console.log(selectedRow.value);
+};
+
+function isDataBEmpty(){
+    return table_data.length === 0;
+};
+
+onMounted(() => {
+    getBills()
+    
+    const savedMessage = sessionStorage.getItem('message');
+    if( savedMessage !== null){
+        message.value = savedMessage;
+    }
+});
 </script>
 
+
 <template>
-
-<div class="mobile">
-  <div class="mobile-wrapper">
-      <div class="table">
-        <div class="mobile-topbar">
-        <form>
-          <label>
-            <img src="../../assets/search.svg">
-          </label>
-          <input v-model="message" placeholder="Search for a prize">
-        </form>
-
-        <div class="imsosickofdivs">
-        <button class="topbtn" @click="toggleModal">Add Prize</button>
-      <Transition name="fade" appear>
-          <AddBillPopup :isOpen="isModalOpened" @modal-close="toggleModal"></AddBillPopup>
-      </Transition>
-      </div>
-      <div class="right-popup-placeholder-mobile" v-show="popupShow">
-          <div class="items">
-            <h1>SHOP</h1>
-            <div class="prize-photo">Insert PPPPPrize Photo</div>
-            <h3 class="text1">Chamuça</h3>
-            <p class="text2 title">Prize</p>
-            <div class="btns-row">
-              <button class="btn" @click="openOtherModal">
-                  <img src="../../assets/pencil.svg">
-              </button>
-              <button class="btn">
-                  <img src="../../assets/sheet.svg">
-              </button>
-              <button class="btn">
-                  <img src="../../assets/trash.svg">
-              </button>
+<div v-if="loaded" class="mobile">
+    <div class="wrapper">
+        <div class="table">
+            <TopBar 
+                v-model:message="message" 
+                v-model:table_data="table_data"
+                @refresh-bills="getBills"
+                @toggle-add-modal="toggleAddModal"
+            ></TopBar>
+        
+            <div v-if="!isDataBEmpty()">
+                <TheTable
+                    :data="filteredTableData"
+                    :tableHeaders="tablePref"
+                    :searchInput="message"
+                    @onRowSelect="selectCallback"
+                ></TheTable>
             </div>
-            <div id="info">
-              <p>Description</p>
-              <p class="text2">Vinda do ROSE STUPAA GOOAT</p>
-              <div class="row">
-                <div class="col">
-                  <p>Initial Amount</p>
-                  <p class="text2">69</p>
-                </div>
-                <div class="col">
-                  <p>Current Amount</p>
-                  <p class="text2">6</p>
-                </div>
-              </div>
+            <div v-else>
+                <h3>No data...</h3>
             </div>
-          </div>
         </div>
-        <TheTable
-          :data="datab"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
+        
+        <BillCard 
+            :selectedRowData="selectedRow" 
+            v-show="popupShow" 
+            @delete-bill="reloadPage"
+            @toggle-modal="toggleUpdateModal"
+        ></BillCard>
+        
+        <Transition appear>
+            <CreateBillPopup :isOpen="isAddModalOpened" @modal-submit="reloadPage" @modal-close="toggleAddModal"></CreateBillPopup>
+        </Transition>
+        
+        <Transition appear>
+            <UpdateBillPopup :isOpen="isUpdateModalOpened" :bill_data="selectedRow" @modal-update="reloadPage" @modal-close="toggleUpdateModal"></UpdateBillPopup>
+        </Transition>
     </div>
-  </div>
 </div>
-
 </template>
+
+
+
+<style scoped>
+.wrapper {
+  display: flex;
+  position: relative;
+  justify-content: space-around;
+  height: calc(100dvh - var(--header-height));
+  padding: 3ch 0ch;
+  overflow-y: hidden;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+}
+</style>
