@@ -72,23 +72,23 @@ main {
     height: 100dvh;
     background-color: #000000e6;
     opacity: 0;
-    transition: transform 0.5s ease-in;
+    transition: transform 0.25s ease-in;
   }
 
   .nav-backdrop.open {
     opacity: 1;
-    transition: opacity 0.5s ease-out
+    transition: opacity 0.25s ease-out
   }
 
   .nav {
     transform: translateX(-100%);
-    transition: transform 0.5s ease-in;
+    transition: transform 0.25s ease-in;
   }
 
   .nav.open {
     visibility: visible;
     transform: translateX(0);
-    transition: transform 0.5s ease-out;
+    transition: transform 0.25s ease-out;
   }
 }
 </style>
