@@ -20,10 +20,7 @@ async function updateBill(e) {
     formData.append("shop", updated_bill_data.value.shop);
     formData.append("date", updated_bill_data.value.date);
     formData.append("value", updated_bill_data.value.value);
-    
-    for (let values of formData.values()) {
-        console.log(values);
-    }
+
     
 
     const response = await HttpAdmin.POST("/update-bill", formData);
@@ -36,8 +33,6 @@ async function updateBill(e) {
 };
 
 watch(() => props.isOpen, (open) => {
-    console.log(open);
-    
     if(open){
         updated_bill_data.value = {...props.bill_data};
     }

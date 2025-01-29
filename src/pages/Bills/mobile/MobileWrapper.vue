@@ -64,13 +64,9 @@ function selectCallback(row) {
 };
 
 function closePopup(){
-  console.log(popupShow.value);
-  
   if(popupShow.value){
-
     popupShow.value = false;
   }  
-   
 }
 
 function isDataBEmpty(){
@@ -112,7 +108,8 @@ onMounted(() => {
             </div>
             
             <BillCard 
-                :selectedRowData="selectedRow" 
+                :selectedRowData="selectedRow"
+                :popupShow="popupShow" 
                 v-show="popupShow" 
                 @delete-bill="reloadPage"
                 @toggle-update-modal="toggleUpdateModal"

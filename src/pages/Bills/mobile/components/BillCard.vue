@@ -1,15 +1,16 @@
 <script setup>
-import { ref } from 'vue';
-import * as HttpAdmin from "@utils/http-admin"
+import { ref, watch } from 'vue';
+import * as httpAdmin from "@utils/http-admin"
 
 
 const props = defineProps({
     selectedRowData: Object,
     popupShow: Boolean
-})
+ })
 
 const emit = defineEmits(['delete-bill','toggle-update-modal','close-modal'])
 
+const blob_url = ref();
 
 async function deleteBill(id) {
     const bill_id = id;
@@ -20,15 +21,23 @@ async function deleteBill(id) {
     }
 }
 
+function getBillImage(){
+    const bill_id = props.selectedRowData.id;
+    
+    httpAdmin.GET( "/get-image-by-bill-id" , { params:{"id":bill_id, "download":false}, responseType: 'blob', } ).then( (response) => { 
+        blob_url.value = window.URL.createObjectURL(new Blob([response.data], {type: 'image/webp'}));
+        console.log(blob_url.value);
+    });
+}
+
 function downloadBillImage() {
     const bill_id = props.selectedRowData.id;
-    HttpAdmin.GET( "/get-image-by-bill-id" , { params:{"id":bill_id}, responseType: 'blob', } ).then( (response) => {
-        
-        const url = window.URL.createObjectURL(new Blob([response.data], {type: 'image/png'}));
+    httpAdmin.GET( "/get-image-by-bill-id" , { params:{"id":bill_id, "download":true}, responseType: 'blob', } ).then( (response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data], {type: 'image/webp'}));
 
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', "bill-" + bill_id + ".png")
+        link.setAttribute('download', "bill-" + bill_id + ".webp")
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link)
@@ -37,6 +46,15 @@ function downloadBillImage() {
     });
 };
 
+watch(() => props.popupShow, (open) => {
+    console.log(open);
+    
+    if(open){
+        getBillImage();
+    } else {
+        blob_url.value=null;
+    }
+})
 
 </script>
 
@@ -44,12 +62,14 @@ function downloadBillImage() {
 
 <div class="popup-card" > 
     <div class="items">
-        <div class="close-row">
-            <button class="close-btn" @click="emit('close-modal')">x</button>
-        </div>   
+        <div class="upper-half">
+            <div class="close-row">
+                <button class="close-btn" @click="emit('close-modal')">x</button>
+            </div>   
+            
+            <img  class="prize-photo" :src="blob_url"></img>
+        </div>
         
-        <div class="prize-photo">No Photo</div>
-
         <h3 class="text1">{{ props.selectedRowData.date }}</h3>
         <p class="text2 title">Bill</p>
 
@@ -110,6 +130,13 @@ function downloadBillImage() {
     gap: 20px;
 }
 
+.upper-half{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
 .close-row{
     display: flex;
     flex-direction: row;
@@ -124,15 +151,11 @@ function downloadBillImage() {
 }
 
 .prize-photo {
-    height: 128px;
-    width: 128px;
-    background-color: var(--c-select);
-    border-radius: 100%;
+    max-height: 33vh;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     text-align: center;
-    color: white;
-
 }
 
 .text1 {

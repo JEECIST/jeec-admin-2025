@@ -1,21 +1,19 @@
 <script setup>
-import { ref } from 'vue';
-import * as HttpAdmin from "@utils/http-admin"
+import { ref, watch } from 'vue';
+import * as httpAdmin from "@utils/http-admin"
 
 
 const props = defineProps({
     selectedRowData: Object,
+    blob_url: String,
+    popupShow: Boolean
 })
 
 const emit = defineEmits(['delete-bill','toggle-update-modal'])
 
-const openOtherModal = () => {
-    isOtherModalOpened.value = true;
-};
-
 async function deleteBill(id) {
     const bill_id = id;
-    const response = await HttpAdmin.POST("/delete-bill", {"id": bill_id})
+    const response = await httpAdmin.POST("/delete-bill", {"id": bill_id})
 
     if(response.request.status != 200){
         alert("Something went wrong while trying to delete bill with id: " + bill_id);
@@ -24,13 +22,12 @@ async function deleteBill(id) {
 
 function downloadBillImage() {
     const bill_id = props.selectedRowData.id;
-    HttpAdmin.GET( "/get-image-by-bill-id" , { params:{"id":bill_id}, responseType: 'blob', } ).then( (response) => {
-        
-        const url = window.URL.createObjectURL(new Blob([response.data], {type: 'image/png'}));
+    httpAdmin.GET( "/get-image-by-bill-id" , { params:{"id":bill_id, "download":true}, responseType: 'blob', } ).then( (response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data], {type: 'image/webp'}));
 
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', "bill-" + bill_id + ".png")
+        link.setAttribute('download', "bill-" + bill_id + ".webp")
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link)
@@ -38,12 +35,13 @@ function downloadBillImage() {
 
     });
 };
+
 </script>
 
 <template>
 <div class="popup-card" >
     <div class="items">
-        <div class="prize-photo">No Photo</div>
+        <img class="prize-photo" :src="props.blob_url"></img>
 
         <h3 class="text1">{{ props.selectedRowData.date }}</h3>
         <p class="text2 title">Bill</p>
@@ -94,28 +92,24 @@ function downloadBillImage() {
   border-radius: 30px;
   background-color: var(--c-accent);
   height: 100%;
-  padding: 20px 50px;
-}
+  padding: 1.5rem 2.5rem;
+  }
 
 .items {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    margin-top: 7vh;
+     gap: 20px;
 }
 
 
 .prize-photo {
-    height: 165px;
-    width: 165px;
-    background-color: var(--c-select);
-    border-radius: 100%;
+    max-height: 30vh;
+    max-width: 150px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     text-align: center;
-    color: white;
-
 }
 
 .text1 {

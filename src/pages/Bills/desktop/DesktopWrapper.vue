@@ -9,8 +9,9 @@ import EditBillPopup from '../components/EditBillPopup.vue';
 
 const popupShow = ref(false);
 const message = ref('');
+const blob_url= ref();
 const table_data = ref();
-const selectedRow = ref({
+ const selectedRow = ref({
     id: "",
     value: "",
     date: "",
@@ -56,10 +57,16 @@ function reloadPage(){
     location.reload();
 }
 
+function getBillImage(bill_id){
+    httpAdmin.GET( "/get-image-by-bill-id" , { params:{"id":bill_id, "download":false}, responseType: 'blob', } ).then( (response) => { 
+        blob_url.value = window.URL.createObjectURL(new Blob([response.data], {type: 'image/webp'}));
+    });
+}
+
 function selectCallback(row) {
     popupShow.value = true;
     selectedRow.value = row;
-    console.log(selectedRow.value);
+    getBillImage(selectedRow.value.id)
 };
 
 function isDataBEmpty(){
@@ -103,6 +110,7 @@ onMounted(() => {
         
         <BillCard 
             :selectedRowData="selectedRow" 
+            :blob_url="blob_url"
             v-show="popupShow" 
             @delete-bill="reloadPage"
             @toggle-update-modal="toggleUpdateModal"
