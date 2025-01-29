@@ -5,13 +5,11 @@ import * as HttpAdmin from "@utils/http-admin"
 
 const props = defineProps({
     selectedRowData: Object,
+    popupShow: Boolean
 })
 
-const emit = defineEmits(['delete-bill','toggle-modal'])
+const emit = defineEmits(['delete-bill','toggle-update-modal','close-modal'])
 
-const openOtherModal = () => {
-    isOtherModalOpened.value = true;
-};
 
 async function deleteBill(id) {
     const bill_id = id;
@@ -38,18 +36,25 @@ function downloadBillImage() {
 
     });
 };
+
+
 </script>
 
 <template>
-<div class="right-popup-placeholder" >
+
+<div class="popup-card" > 
     <div class="items">
+        <div class="close-row">
+            <button class="close-btn" @click="emit('close-modal')">x</button>
+        </div>   
+        
         <div class="prize-photo">No Photo</div>
 
         <h3 class="text1">{{ props.selectedRowData.date }}</h3>
         <p class="text2 title">Bill</p>
 
         <div class="btns-row">
-            <button class="btn" @click="emit('toggle-modal')">
+            <button class="btn" @click="emit('toggle-update-modal')">
                 <img src="../../../../assets/pencil.svg">
             </button>
             <button class="btn" @click="downloadBillImage">
@@ -60,25 +65,24 @@ function downloadBillImage() {
             </button>
         </div>
 
-        <div id="info">
-            <p>Value</p>
-            <p class="text2">{{ props.selectedRowData.value }}</p>
-
-            <p>Shop</p>
-            <p class="text2">{{ props.selectedRowData.shop }}</p>
-
-            <div class="row">
-                <div class="col">
-                    <p>Status</p>
-                    <p class="text2">{{ props.selectedRowData.status }}</p>
-                </div>
-                <div class="col">
-                    <p>Paid</p>
-                    <p class="text2">{{ props.selectedRowData.is_paid }}</p>
-                </div>
+        <div class="grid-container">
+            <div class="grid-item">
+                <p class="">Value</p>
+                <p class="text2">{{ props.selectedRowData.value }}</p>
+            </div>
+            <div class="grid-item">
+                <p class="">Shop</p>
+                <p class="text2">{{ props.selectedRowData.shop }}</p>
+            </div>
+            <div class="grid-item">
+                <p class="">Status</p>
+                <p class="text2">{{ props.selectedRowData.status }}</p>
+            </div>
+            <div class="grid-item">
+                <p class="">Is Paid?</p>
+                <p class="text2">{{ props.selectedRowData.is_paid }}</p>
             </div>
         </div>
-
     </div>
 </div>
 </template>
@@ -86,29 +90,42 @@ function downloadBillImage() {
 
 
 <style scoped>
-.right-popup-placeholder {
+.popup-card {
   position: sticky;
+  margin-top: 10px;
   top: 0;
   right: 0;
-  max-width: 400px;
+  width: 100%;
   border-radius: 30px;
   background-color: var(--c-accent);
-  height: 100%;
-  padding: 20px 50px;
+  height: auto;
+  padding: 16px 10px;
 }
 
 .items {
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    margin-top: 7vh;
 }
 
+.close-row{
+    display: flex;
+    flex-direction: row;
+    justify-content:end ;
+    width: 100%;
+}
+
+.close-btn{
+    border-radius: 100%;
+    width: 24px;
+    height: 24px;
+}
 
 .prize-photo {
-    height: 165px;
-    width: 165px;
+    height: 128px;
+    width: 128px;
     background-color: var(--c-select);
     border-radius: 100%;
     display: flex;
@@ -144,13 +161,29 @@ function downloadBillImage() {
     gap: 12px;
 }
 
-#info {
+#info-grid {
     display: flex;
     flex-direction: column;
     gap: 12px;
     margin-top: 1.3vh;
 }
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    grid-template-rows: auto auto;    
+    gap: 10px; /* Spacing between cells (optional) */
+}
 
+.grid-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border: 2px solid white;
+    border-radius: 25px;
+    height: auto; /* Fixed height for demo purposes */
+    padding: 2px 8px;
+    gap: 2px 4px;
+}
 .btns-row {
     display: flex;
     flex-direction: row;
@@ -158,10 +191,10 @@ function downloadBillImage() {
 }
 
 .btn {
-    width: 36px;
-    height: 36px;
+    width: 28x;
+    height: 28px;
     background: #FFFFFF;
-    border-radius: 8px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -170,7 +203,7 @@ function downloadBillImage() {
 p {
     color: black;
     font-weight: 500;
-    font-size: small;
+    font-size: 1.0em;
 }
 
 select {

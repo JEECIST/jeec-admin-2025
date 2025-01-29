@@ -49,8 +49,8 @@ let bill_image_binary = ref();
 
 <template>
     <div v-if="props.isOpen" class="modal-mask">
-        <div class="desktop" v-if="!isMobile()">
-            <div class="wrapper-wrapper">
+        <div class="desktop">
+            <div class="wrapper-wrapper" :class="{'mobile': isMobile()}">
                 <div class="popup-wrapper" ref="target">
                     <div class="popupHeader">
                         <h1>Add Bill</h1>
@@ -129,24 +129,6 @@ let bill_image_binary = ref();
     background-color: rgba(0, 0, 0, 0.425);
 }
 
-.mobile-wrapper-wrapper {
-    display: flex;
-    justify-content: center;
-    background-color: white;
-    width: 94.5vw;
-    height: 95%;
-    position: absolute;
-    top: 50%;
-    left: 46.5%;
-    translate: -50% -50%;
-}
-
-.prize-pic {
-    width: 100%;
-    /* height: 100%; */
-}
-
-
 .wrapper-wrapper {
     display: flex;
     justify-content: center;
@@ -158,6 +140,10 @@ let bill_image_binary = ref();
     left: 50%;
     translate: -50% -50%;
     padding: 15px;
+}
+
+.wrapper-wrapper.mobile {
+    width: 90vw;
 }
 
 .popupHeader {
@@ -185,10 +171,6 @@ h1 {
     color: #515151;
 }
 
-.popup-adjust {
-    margin-right: 5% !important;
-}
-
 
 .flex-1,
 h1 {
@@ -196,7 +178,7 @@ h1 {
     flex-direction: column;
     justify-content: space-between;
     margin-left: 5%;
-    margin-right: 15%;
+    margin-right: 5%;
     gap: 1.5vh;
 }
 

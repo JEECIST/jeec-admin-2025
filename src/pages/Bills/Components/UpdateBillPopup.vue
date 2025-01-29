@@ -48,7 +48,7 @@ watch(() => props.isOpen, (open) => {
 
 <template>
     <div v-if="props.isOpen" class="modal-mask">
-        <div class="desktop" v-if="!isMobile()">
+        <div class="desktop" >
             <div class="wrapper-wrapper">
                 <div class="popup-wrapper" ref="target">
                     <div class="popupHeader">

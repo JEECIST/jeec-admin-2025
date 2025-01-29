@@ -1,12 +1,12 @@
 <template>
-  <header :class="{'mobile': isMobile}">
-  <div class="header-wrapper" :class="{'mobile': isMobile}">
+  <header :class="{'mobile': isMobile()}">
+  <div class="header-wrapper" :class="{'mobile': isMobile()}">
       <div class="left-wrapper">
         <button class="nav-button" @click="stateStore.sideNavOpen = !stateStore.sideNavOpen">
           <img src="/src/assets/nav-menu.svg" alt="Menu">
         </button>
         
-        <h1 v-if="!isMobile">{{ title }}</h1>
+        <h1 v-if="!isMobile()">{{ title }}</h1>
         <h3 v-else>{{ title }}</h3>
       </div>
       <div class="user">

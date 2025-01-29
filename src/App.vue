@@ -10,7 +10,7 @@
       <TheNav class="nav" :class="{ open: stateStore.sideNavOpen }"></TheNav>
       <TheHeader class="header"></TheHeader>
     </template>
-    <main :class="{'mobile': isMobile}">
+    <main :class="{'mobile': isMobile()}">
       <router-view :key="$route.fullPath"/>
     </main>
   </div>

@@ -4,8 +4,8 @@ import { computed, onMounted, ref } from 'vue';
 import * as httpAdmin from '@utils/http-admin';
 import TopBar from './components/TopBar.vue';
 import BillCard from './components/BillCard.vue';
-import CreateBillPopup from '../components/CreateBillPopup.vue';
-import UpdateBillPopup from '../components/UpdateBillPopup.vue';
+import AddBillPopup from '../components/AddBillPopup.vue';
+import EditBillPopup from '../components/EditBillPopup.vue';
 
 const popupShow = ref(false);
 const message = ref('');
@@ -105,15 +105,15 @@ onMounted(() => {
             :selectedRowData="selectedRow" 
             v-show="popupShow" 
             @delete-bill="reloadPage"
-            @toggle-modal="toggleUpdateModal"
+            @toggle-update-modal="toggleUpdateModal"
         ></BillCard>
         
         <Transition appear>
-            <CreateBillPopup :isOpen="isAddModalOpened" @modal-submit="reloadPage" @modal-close="toggleAddModal"></CreateBillPopup>
+            <AddBillPopup :isOpen="isAddModalOpened" @modal-submit="reloadPage" @modal-close="toggleAddModal"></AddBillPopup>
         </Transition>
         
         <Transition appear>
-            <UpdateBillPopup :isOpen="isUpdateModalOpened" :bill_data="selectedRow" @modal-update="reloadPage" @modal-close="toggleUpdateModal"></UpdateBillPopup>
+            <EditBillPopup :isOpen="isUpdateModalOpened" :bill_data="selectedRow" @modal-update="reloadPage" @modal-close="toggleUpdateModal"></EditBillPopup>
         </Transition>
     </div>
 </div>
