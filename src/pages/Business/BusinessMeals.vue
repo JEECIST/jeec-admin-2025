@@ -120,7 +120,8 @@
 
 
 <script setup>
-import { ref } from 'vue';
+import axios from 'axios';
+import { ref, onMounted } from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
 
 const message = ref('');
@@ -133,7 +134,19 @@ const newUser = ref({
   dishes: ['']  // Initially one dish input field
 });
 const selectedRow = ref(null);  // Track the selected row
+const fetchData = () => {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss',{auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then((response)=>{
+          const data = response.data
+          datab.value = response.data.users
+          console.log(datab.value)
+        })
+        .catch(error => console.error('Fetch error:', error)); 
+}
 
+onMounted(fetchData)
 
 // Callback for row selection in the table
 function selectCallback(row) {

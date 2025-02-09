@@ -19,7 +19,14 @@
         :searchInput="message"
         :buttons="tableButtons"
         @onRowSelect="selectCallback"
-      ></TheTable>
+        @notFound="handleNotFound"
+      />
+      <div v-if="noResultsFound" class = "tableBackground">
+        <p class="no-users-found">No Team Users found</p>
+      </div>
+      
+
+
     </div>
     
     <!-- Conditionally render the right popup placeholder -->
@@ -96,10 +103,40 @@ function selectCallback(row) {
   selectedRow.value = row;  // Set the selected row
 }
 
-function addUser() {
-  datab.value.push({ id: 1, user: newUser.value.username, role: newUser.value.role, name: newUser.value.username });
-  closeModal();
-}
+
+// async function addUser() {
+  
+  
+//   try {
+//     console.log('Sending user to backend:', newUser.value);
+
+//     // Make a POST request to the backend to add the new user
+//     const response = await axios.post(
+//       import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss',
+//       newUser.value,
+//       {
+//         auth: {
+//           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+//           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+//         }
+//       }
+//     );
+
+//     // The backend should return the created user
+//     const createdUser = response.data;
+
+//     // Optionally add the new user to `datab` for instant UI updates
+//     datab.value.push(createdUser);
+
+//     // Reset the form and close the modal
+//     closeModal();
+//     console.log('User added successfully:', createdUser);
+//   } catch (error) {
+//     console.log('valores: ', newUser.value);
+//     console.error('Error adding user to backend:', error);
+//     alert('Failed to add user. Please try again.');
+//   }
+// }
 
 function closeModal() {
   showAddUserModal.value = false;
@@ -111,10 +148,13 @@ function closeCardInfo(){
 const datab = ref([{
   id: null,
   name: null,
-  company: null,
-  country: null,
+  user: null,
+  role: null,
 }])
-
+const noResultsFound = ref(false);
+function handleNotFound(isEmpty) {
+  noResultsFound.value = isEmpty;
+}
 
 const fetchData = () => {
     axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss',{auth: {
@@ -125,6 +165,7 @@ const fetchData = () => {
           datab.value = response.data.users
           console.log(datab.value)
         })
+        .catch(error => console.error('Fetch error:', error)); 
 }
 
 onMounted(fetchData)
@@ -137,6 +178,16 @@ const tablePref = {
   
 };
 
+
+function addUser(){
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+ '/student_rewards/update',
+  
+  {auth:{
+    username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+    password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+  },role: newUser.role, username: newUser.username})
+  closeModal()
+}
 </script>
 
 
@@ -458,6 +509,24 @@ form > button {
         color: #333;
     }
 
+.tableBackground {
+  background-color: var(--c-accent);
+  border-radius: 6px;
+  min-height: 70%;
+  
+  display: flex;
+  justify-content: center;  /* Centers horizontally */
+  align-items: center;  /* Centers vertically */
+}
+
+.no-users-found {
+  font-weight: 700;
+  text-align: center;
+  font-size: 1.2rem;
+  color: darkgray;
+}
+
+
 @media (max-width: 768px) {
   .wrapper {
   display: flex;
@@ -535,5 +604,13 @@ form > button {
     display: none;
   
   }
+  .no-users-found {
+  text-align: center;
+  font-size: 1.2rem;
+  color: gray;
+  margin-top: 20px;
 }
+
+}
+
 </style>
