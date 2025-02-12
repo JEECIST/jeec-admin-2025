@@ -3,7 +3,7 @@ import axios from 'axios';
 // Constants
 const brain_url = import.meta.env.VITE_APP_JEEC_BRAIN_URL;
 const brain_user = import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME;
-const brain_pass = import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME;
+const brain_pass = import.meta.env.VITE_APP_JEEC_WEBSITE_KEY;
 const auth = {
       username: brain_user,
       password: brain_pass
@@ -12,28 +12,40 @@ const auth = {
 
 export const GET = async (route, params = {}) => {  
   const url = brain_url + route;
+  
   params = {
     ...params,
     auth:auth 
   }
 
   try {
-    const response = await axios.get( url, {params} );
+    const response = await axios.get( url, params );
     return response;
   } catch (e) {
     handleError(e)
   }
 }
 
-export const POST = async (route, data = {}) => {  
+export const POST = async (route, data = {}, headers = {}) => {  
   const url = brain_url + route;
-  data = {
-    ...params,
-    auth:auth 
+  
+  const request_data = {}
+
+  if (data instanceof FormData) {
+    data.append("auth",auth);
+  } else {
+    data = {
+      ...data,
+      auth:auth 
+    }
   }
 
+  
+  console.log(data);
+  
+
   try {
-    const response = await axios.post( url, data );
+    const response = await axios.post( url, data, {headers:headers});
     return response;
   } catch (e) {
     handleError(e)
