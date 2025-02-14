@@ -582,6 +582,18 @@ const eventselected = ref('');
     background: rgba(0,0,0,0.5);
   }
 
+  .search-container {
+    width: 100%;
+  }
+
+  .button-sponsor-tiers{
+    flex-grow: 1;
+  }
+
+  .button-add-sponsor {
+    flex-grow: 1;
+  }
+
   .backdrop{
     position: fixed;
     top: 0;
@@ -629,12 +641,12 @@ const eventselected = ref('');
   }
 
   .sponsor-logo {
-    width: 40vw;
-    height: 40vw;
+    width: 18vh;
+    height: 18vh;
     max-width: 150px;
     max-height: 150px;
     border-radius: 50%;
-    object-fit: cover;
+    object-fit: scale-down; /* Ensure the whole image is visible */
   }
 
   .icon-button {
