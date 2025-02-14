@@ -49,9 +49,8 @@
             <div class="form-line">
               <div class="inputjeec">
                 <label for="jeecresponsible">JEEC Responsible</label>
-                <select class="selection-box-jeec" v-model="sponsorData.jeec_responsible">
-                  <option value="Maria">Maria</option>
-                  <option value="Francisca">Francisca</option>
+                <select class="selection-box-jeec" v-model="selectedColaborator">  
+                  <option v-for="responsible in colaborators" :key="responsible.id" :value="{id :responsible.id, name: responsible.name}">{{ responsible.name }}</option>
                 </select>
               </div>
             </div>
@@ -99,7 +98,8 @@ function closePopup() {
 const props = defineProps({
   sponsorData: Object,
   events: Array,
-  tiers: Array
+  tiers: Array,
+  colaborators: Array
 })
 
 function onLogoSelected(event){
@@ -111,6 +111,7 @@ function onLogoSelected(event){
 
 const selectedEvent = ref(null);
 const selectedTier = ref(null);
+const selectedColaborator = ref(null);
 
 
 
@@ -125,6 +126,10 @@ watch(() => props.sponsorData, (newVal) => {
     const tier = props.tiers.find(t => t.name === newVal.tier_name);
     if (tier) {
       selectedTier.value = tier;
+    }
+    const responsible = props.colaborators.find(c => c.name === newVal.jeec_responsible);
+    if (responsible) {
+      selectedColaborator.value = responsible;
     }
   }
 }, { immediate: true });
@@ -142,7 +147,7 @@ function updateSponsor() {
     fd.append('event_name', selectedEvent.value.name)
     fd.append('show_in_website', props.sponsorData.show_in_website)
     fd.append('tier_id', selectedTier.value.id)
-    fd.append('jeec_responsible', props.sponsorData.jeec_responsible)
+    fd.append('jeec_responsible',selectedColaborator.value.id)
 
     axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/update-sponsor-vue',fd,{auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 

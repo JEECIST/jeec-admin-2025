@@ -483,10 +483,10 @@ const eventselected = ref('');
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  font-size: 10px;
+  font-size: 11px;
   gap: 2px;
   height: 50px;
-  min-width: 40px; 
+  min-width: 70px; 
 }
 
 .selection-box {
@@ -496,7 +496,7 @@ const eventselected = ref('');
   border-radius: 4px;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
-  padding: 1px 1px;
+  padding: 3px 3px;
   font-size: 1em;
   color: #8A8A8A;
   background-color: #FFFFFF;
