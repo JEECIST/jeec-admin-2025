@@ -48,9 +48,8 @@
             <div class="form-line">
               <div class="inputjeec">
                 <label for="jeecresponsible">JEEC Responsible</label>
-                <select class="selection-box-jeec" v-model="jeec_responsible">
-                  <option value="Maria">Maria</option>
-                  <option value="Francisca">Francisca</option>
+                <select class="selection-box-jeec" v-model="jeec_responsible">  
+                  <option v-for="responsible in colaborators" :key="responsible.id" :value="{ id: responsible.id, name: responsible.name }">{{ responsible.name }}</option>
                 </select>
               </div>
             </div>
@@ -97,7 +96,8 @@ function closePopup() {
 
 const props = defineProps({
   events: Array,
-  tiers: Array
+  tiers: Array,
+  colaborators: Array
 })
 
 
@@ -106,7 +106,7 @@ const name = ref('')
 const description = ref('')
 const eventselected = ref(null)
 const tier = ref(null)
-const jeec_responsible = ref('')
+const jeec_responsible = ref({ id: null, name: '' })
 var error_response = ref('error')
 var fileSelected = ref(null)
 var fileToUpload = ref(null)
@@ -140,7 +140,9 @@ function addingSponsor(e) {
         console.log("Show in website",show_in_website.value)
         fd.append('tier_id', tier.value)
         console.log("Tier id",tier.value)
-        fd.append('jeec_responsible', jeec_responsible.value)
+        fd.append('jeec_responsible_id', jeec_responsible.value.id)
+        fd.append('jeec_responsible_name', jeec_responsible.value.name)
+        console.log("JEEC responsible",jeec_responsible.value.id)
 
         axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add-sponsor-vue',fd,{auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
