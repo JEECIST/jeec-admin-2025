@@ -13,9 +13,9 @@
         @QrRead="activateReader">
       </TheTable>
     </div>
-    <!-- <div v-if="QR_enable">
+    <div v-if="QR_enable">
       <QrcodeStream @decode="onDecode" @init="onInit" @error="onError"></QrcodeStream>
-    </div> -->
+    </div>
   </div>
 </template>
 
@@ -24,7 +24,7 @@ import TheTable from '../../global-components/TheTable.vue';
 import { ref, onMounted } from 'vue';
 import qrImage from '../../assets/pages/qrcodes.svg';
 import axios from 'axios';
-import { QrcodeStream } from 'vue-qrcode-reader';
+import { QrcodeStream } from 'vue3-qrcode-reader';
 
 const QR_Activities = ref([]);
 
@@ -63,8 +63,13 @@ const tableButtons = [{
 
 function activateReader() {
   console.log("Activating QR Reader");
-  QR_enable.value = !QR_enable.value;
+  QR_enable.value = true;
 };
+
+function deactivateReader() {
+  console.log("Deactivating QR Reader");
+  QR_enable.value = false;
+}
 
 function onDecode(content){
   console.log("QR Code Content:", content);
@@ -81,7 +86,7 @@ function onError(error) {
 }
 
 onMounted(() => {
-  console.log("Entrou!")
+  console.log("QR codes")
   axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/activities_vue_for_qr', {auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
