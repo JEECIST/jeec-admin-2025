@@ -21,98 +21,103 @@ function isMobile() {
 <template>
     <div v-if="isOpen" class="modal-mask">
         <div class="desktop" v-if="!isMobile()">
-            <div class="wrapper">
+            <div class="wrapper-wrapper">
                 <div class="popup-wrapper" ref="target">
-                    <div class="header">
-                        <h1 class="not-mobile-h1">Add Speaker</h1>
-                        <button class="close" @click.stop="emit('modal-close')">X</button>
-                    </div>
-                    <div class="elements">
+                    <h1>Add Event</h1>
+                    <div class="stuff-inside">
                         <div class="flex-1">
                             <div class="flex-1-row-1">
                                 <div class="labels" id="name">
                                     <label for="name">Name</label>
                                     <input type="text" placeholder="" id="name">
                                 </div>
-                                <div class="labels" id="event">
-                                    <label for="event">Event</label>
-                                    <select placeholder="Choose Event" id="event">
+                                <div class="labels" id="startdate">
+                                    <label for="startdate">Start date</label>
+                                    <select placeholder="Choose Event" id="startdate">
+                                        <option value="null" disabled selected hidden></option>
+                                        <option>event test</option>
+                                    </select>
+                                </div>
+                                <div class="labels" id="enddate">
+                                    <label for="enddate">End date</label>
+                                    <select placeholder="Choose Event" id="enddate">
                                         <option value="null" disabled selected hidden></option>
                                         <option>event test</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="flex-1-row-2">
-                                <div class="labels" id="linkedin">
-                                    <label for="linkedin">LinkedIn</label>
-                                    <input type="text" placeholder="" id="linkedin">
+                                <div class="labels" id="email">
+                                    <label for="email">Email</label>
+                                    <input type="text" placeholder="" id="email">
                                 </div>
-                                <div class="labels" id="type">
-                                    <label for="type">Type</label>
-                                    <select placeholder="" id="type">
-                                        <option value="null" disabled selected hidden></option>
-                                        <option>type test</option>
-                                    </select>
+                                <div class="labels" id="location">
+                                    <label for="location">Location</label>
+                                    <input type="text" placeholder="" id="location">
                                 </div>
                             </div>
                             <div class="flex-1-row-3">
-                                <div class="labels" id="biography">
-                                    <label for="biography">Biography</label>
-                                    <input type="text" placeholder="" id="biography">
+                                <div class="labels" id="cvsubstart">
+                                    <label for="cvsubstart">CV's submission start</label>
+                                    <select placeholder="Choose Event" id="cvsubstart">
+                                        <option value="null" disabled selected hidden></option>
+                                        <option>event test</option>
+                                    </select>
+                                </div>
+                                <div class="labels" id="cvsubend">
+                                    <label for="cvsubend">CV's submission end</label>
+                                    <select placeholder="Choose Event" id="cvsubend">
+                                        <option value="null" disabled selected hidden></option>
+                                        <option>event test</option>
+                                    </select>
+                                </div>
+                                <div class="labels" id="cvaccstart">
+                                    <label for="cvaccstart">CV's access start</label>
+                                    <select placeholder="Choose Event" id="cvaccstart">
+                                        <option value="null" disabled selected hidden></option>
+                                        <option>event test</option>
+                                    </select>
+                                </div>
+                                <div class="labels" id="cvaccend">
+                                    <label for="cvaccend">CV's access end</label>
+                                    <select placeholder="Choose Event" id="cvaccend">
+                                        <option value="null" disabled selected hidden></option>
+                                        <option>event test</option>
+                                    </select>
+                                </div>
+                                <div class="labels" id="endgame">
+                                    <label for="endgame">End game date</label>
+                                    <select placeholder="Choose Event" id="endgame">
+                                        <option value="null" disabled selected hidden></option>
+                                        <option>event test</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="flex-1-row-4">
-                                <div class="labels" id="company">
-                                    <label for="company">Company</label>
-                                    <input type="text" placeholder="" id="company">
+                                <div class="check" id="purged">
+                                    <label for="purged">CV's purged</label>
+                                    <div class="radios">
+                                        <input type="radio" name="perfectpuppy" id="purged">Yes
+                                        <input type="radio" name="perfectpuppy" id="purged">No
+                                    </div>
                                 </div>
-                                <div class="labels" id="position">
-                                    <label for="position">Position</label>
-                                    <input type="text" placeholder="" id="position">
+                                <div class="labels" id="facebook">
+                                    <label for="facebook">Facebook event</label>
+                                    <input type="text" placeholder="" id="facebook">
                                 </div>
-                            </div>
-                            <div class="flex-1-row-5">
-                                <div class="labels" id="website">
-                                    <label for="website">Company Website</label>
-                                    <input type="text" placeholder="" id="website">
-                                </div>
-                                <div class="labels" id="country">
-                                    <label for="country">Country</label>
-                                    <input type="text" placeholder="" id="country">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-2">
-                            <div class="labels" id="speakerdickpic">
-                                <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
-                                <p class="idk">
-                                    No picture selected yet
-                                </p>
-                                <button id="coolbutton">Add Pic</button>
-                            </div>
-                            <div class="labels" id="companylogo">
-                                <label for="companylogo">Company Logo</label>
-                                <p class="idk">
-                                    No logo selected yet
-                                </p>
-                                <button id="coolbutton">Add New Logo</button>
-                            </div>
-                            <div class="irresponsible">
-                                <div class="labels" id="responsible">
-                                    <label for="responsible">JEEC Responsible</label>
-                                    <select id="responsible">
-                                        <option value="0" disabled selected hidden></option>
-                                        <option value="1">LARA</option>
-                                        <option value="2">ZE</option>
-                                        <option value="3">EMO LARA</option>
-                                        <option value="4">AFONSO VILELA</option>
-                                    </select>
+                                <div class="check" id="default">
+                                    <label for="default">Default event</label>
+                                    <div class="radios">
+                                        <input type="radio" name="bigbear" id="default">Yes
+                                        <input type="radio" name="bigbear" id="default">No
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="btns">
                         <button class="add" @click.stop="emit('modal-close')">Add</button>
+                        <button class="add" @click.stop="emit('modal-close')">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -120,13 +125,10 @@ function isMobile() {
 
 
         <div class="mobile" v-else>
-            <div class="mobile-wrapper">
+            <div class="mobile-wrapper-wrapper">
                 <div class="popup-wrapper" ref="target">
-                    <div class="header">
-                        <h1 class="mobile-title">Add Speaker</h1>
-                        <button class="mobile-close" @click.stop="emit('modal-close')">X</button>
-                    </div>
-                    <div class="elements">
+                    <h1>Add Speaker</h1>
+                    <div class="stuff-inside">
                         <div class="mobile-flex-1">
                             <div class="flex-1-row-1">
                                 <div class="mobile-labels" id="name">
@@ -185,9 +187,9 @@ function isMobile() {
                             <div class="labels" id="speakerdickpic">
                                 <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
                                 <p class="idk">
-                                    No picture selected yet
+                                    No picture selected yet<!-- Size too small please insert larger dick 🥺 -->
                                 </p>
-                                <button id="coolbutton">Add Pic</button>
+                                <button id="coolbutton">Add <!--Dic-->Pic</button>
                             </div>
                             <div class="labels" id="companylogo">
                                 <label for="companylogo">Company Logo</label>
@@ -212,6 +214,7 @@ function isMobile() {
                     </div>
                     <div class="mobile-btns">
                         <button class="mobile-add" @click.stop="emit('modal-close')">Add</button>
+                        <button class="mobile-add" @click.stop="emit('modal-close')">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -230,61 +233,44 @@ function isMobile() {
     background-color: rgba(0, 0, 0, 0.425);
 }
 
-.mobile-wrapper {
+.mobile-wrapper-wrapper {
     display: flex;
     justify-content: center;
     background-color: white;
-    width: 90vw;
-    height: 70%;
+    width: 94.5vw;
+    height: 95%;
     position: absolute;
     top: 50%;
     left: 50%;
     translate: -50% -50%;
-    overflow-y: auto;
-    overflow-x: hidden;
 }
 
-.wrapper {
+.wrapper-wrapper {
     display: flex;
     justify-content: center;
     background-color: white;
     width: 60vw;
-    height: 70%;
+    height: 70vh;
     position: absolute;
     top: 50%;
     left: 50%;
     translate: -50% -50%;
-    overflow-y: auto;
-    overflow-x: hidden;
 }
 
-.header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.not-mobile-h1 {
+h1 {
     margin-bottom: 2%;
     margin-top: 2%;
     color: #515151;
+}
+
+.flex-1,
+h1 {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     margin-left: 5%;
     margin-right: 15%;
-    gap: 1.5vh;
-}
-
-
-.mobile-title {
-    margin-bottom: 5%;
-    margin-top: 2%;
-    color: #515151;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 1.5vh;
+    gap: 5vh;
 }
 
 .flex-1-row-1,
@@ -336,10 +322,6 @@ function isMobile() {
     gap: 4vw;
 }
 
-.flex-1 {
-    margin-left: 5%;
-}
-
 input {
     color: #515151;
     border-style: solid;
@@ -383,9 +365,6 @@ select {
     width: 26vw;
 }
 
-.labels>#event {
-    width: 13.32vw;
-}
 
 .mobile-flex-1>.labels>#event {
     width: 60vw;
@@ -396,10 +375,6 @@ select {
     width: 80vw;
 }
 
-#biography {
-    height: 20vh;
-    width: 48vw;
-}
 
 .mobile-labels>#company {
     width: 38vw;
@@ -425,65 +400,41 @@ select {
     width: 38vw;
 }
 
-.labels>#company,
-#position,
-#website,
-#country,
-#linkedin,
-#type {
+.labels>#email,
+#location,
+#name {
     width: 22vw;
 }
 
-.flex-2,
-.mobile-flex-2 {
+.labels>#startdate,
+#enddate {
+    width: 9vw;
+}
+
+.labels>#cvsubstart,
+#cvsubend,
+#cvaccstart,
+#cvaccend {
+    width: 6vw;
+}
+
+.labels>#facebook {
+    width: 24vw;
+}
+
+.check {
     display: flex;
-    flex-direction: row;
-    margin-right: 9vw;
-    margin-left: 3vw;
-    margin-top: 1.5vh;
-    gap: 1.5vw;
-    justify-content: space-between;
-
+    flex-direction: column;
+    gap: 0.5vh;
+    color: #515151;
+    font-size: small;
 }
 
-.mobile-flex-2>#speakerdickpic {
-    width: 20vw;
-    height: 20vh;
-}
-
-.mobile-flex-2>#companylogo {
-    width: 20vw;
-    height: 20vh;
-}
-
-#speakerdickpic,
-#companylogo {
-    width: 12.60vw;
-    height: 22vh;
-}
-
-.mobile-flex-2>.irresponsible {
-    width: 15vw;
-}
-
-.irresponsible {
-    width: 20.40vw;
-}
-
-#coolbutton {
-    background-color: #509cdb;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    width: 8.4vw;
-    height: 3.5vh;
-    margin-top: 1vh;
-    font-size: smaller;
-    display: inline-block;
-    text-align: center;
-    vertical-align: middle;
-    justify-content: center;
-    cursor: pointer;
+.radios {
+    display: flex;
+    justify-content: left;
+    gap: 1.3vw;
+    align-items: center;
 }
 
 p {
@@ -504,7 +455,7 @@ p {
     border-radius: 5px;
     border: none;
     margin-right: 3vw;
-    margin-top: 2%;
+    margin-top: 7%;
     margin-bottom: 2%;
     display: flex;
     width: 8.4vw;
@@ -515,25 +466,14 @@ p {
     cursor: pointer;
 }
 
-.close {
-    background-color: #152259;
-    color: white;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    width: 2vw;
-    height: 3.5vh;
-    margin-bottom: 2%;
-    margin-top: 2%;
-    margin-right: 2%;
-}
-
 .mobile-add {
     background-color: #152259;
     color: white;
     border-radius: 5px;
     border: none;
-    margin-bottom: 4%;
+    margin-right: 3vw;
+    margin-top: 2%;
+    margin-bottom: 2%;
     display: flex;
     width: 16vw;
     height: 3.5vh;
@@ -541,17 +481,6 @@ p {
     justify-content: center;
     gap: 10vh;
     cursor: pointer;
-}
-
-.mobile-close {
-    background-color: #152259;
-    color: white;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    width: 7.5vw;
-    height: 3.5vh;
-    margin-top: 4%;
 }
 
 .btns {
@@ -570,13 +499,5 @@ p {
     margin-top: 4vh;
     justify-content: right;
     gap: 0.1%;
-}
-
-.labels>#name {
-    width: 31.08vw;
-}
-
-.labels>#event {
-    width: 13.32vw;
 }
 </style>

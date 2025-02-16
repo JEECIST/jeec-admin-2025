@@ -11,12 +11,11 @@ const routes = [
   },
   {
     path: "/dashboard",
-    alias: "/",
     name: "dashboard",
     component: Dashboard,
     meta: { 
       title: "Dashboard",
-      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams"],
+      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts"],
     },
   },
   {
@@ -163,14 +162,8 @@ const routes = [
     name: "studentapp",
     component: Dashboard,
     meta: {
-      title: "Student App", children: ["studentapp-points", "studentapp-prizes", "studentapp-squads", "studentapp-students"]
+      title: "Student App", children: ["studentapp-prizes", "studentapp-prizes-shop", "studentapp-prizes-special", "studentapp-squads", "studentapp-students"]
     },
-  },
-  {
-    path: "/student-app/points",
-    name: "studentapp-points",
-    meta: { title: "Points" },
-    component: () => import("../pages/StudentApp/StudentAppPoints.vue"),
   },
   {
     path: "/student-app/students",
@@ -191,10 +184,16 @@ const routes = [
     component: () => import("../pages/StudentApp/StudentAppPrizes.vue"),
   },
   {
-    path: "/student-app/types",
-    name: "studentapp-types",
-    meta: { title: "Prize Types" },
-    component: () => import("../pages/StudentApp/StudentAppPrizeTypes.vue"),
+    path: "/student-app/prizes/special",
+    name: "studentapp-prizes-special",
+    meta: { title: "Special Prizes" },
+    component: () => import("../pages/StudentApp/StudentAppPrizesSpecial.vue"),
+  },
+  {
+    path: "/student-app/prizes/shop",
+    name: "studentapp-prizes-shop",
+    meta: { title: "Shop" },
+    component: () => import("../pages/StudentApp/StudentAppPrizesShop.vue"),
   },
   {
     path: "/teams",
@@ -207,6 +206,12 @@ const routes = [
     name: "teams-members",
     meta: { title: "Team Members" },
     component: () => import("../pages/Teams/TeamMembers.vue"),
+  },
+  {
+    path: "/user-shifts",
+    name: "usershifts",
+    meta: { title: "Team Shifts", children: false },
+    component: () => import("../pages/UserShifts/UserShifts.vue"),
   },
   {
     path: "/:pathMatch(.*)*",

@@ -17,6 +17,7 @@ export const useUserStore = defineStore("user", {
       sponsors: true,
       studentapp: true,
       teams: true,
+      usershifts: true,
     },
   }),
   actions: {

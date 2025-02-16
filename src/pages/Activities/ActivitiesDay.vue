@@ -362,7 +362,7 @@ button:hover {
   right: 2%;
   background: none;
   border: none;
-  font-size: 1.5vw;
+  font-size: 20px;
   color: #333;
   cursor: pointer;
   font-weight: bold;

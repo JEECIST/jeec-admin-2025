@@ -1,7 +1,13 @@
 <template>
   <div class="wrapper">
-    <div class="no-events-message" v-if="tableData.length === 0">
-      <p>No Event Days found</p>
+    <div class="no-events" v-if="tableData.length === 0">
+      <div class="buttons">
+          <button class="add-btn" @click="addPopUp">Add Activity</button>
+          <button class="types-btn" @click="goToActivitiesTypes">Activity Types ></button>
+      </div>
+      <div class="no-events-message">
+        <p>No Event Days found</p>
+      </div>
     </div>
     <div class="left-container">
       <div class="table-with-buttons" v-if="tableData.length > 0 && !(isMobile && showDashboard)">
@@ -68,9 +74,9 @@
             <label for="activity-type">Activity Type:</label>
             <select id="activity-type" name="activity-type" v-model="newActivity.type">
               <option value="" selected disabled hidden>Select Activity</option>
-              <option value="Nhe">Nhe</option>
-              <option value="Fixe">Fixe</option>
-              <option value="Muito Louco">Muito Louco</option>
+              <option v-for="type in activityTypes" :key="type" :value="type">
+                  git config --global pull.rebase false{{ type }}
+              </option>
             </select>
         </div>
 
@@ -122,17 +128,106 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import TheTable from '../../global-components/TheTable.vue';
 
+const tableData = ref([
+
+]);
+
+/*const fetchData = () => {
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities_vue', {
+          event_id:"31cd68cf-ac76-4ae5-b9f3-434988d2556f",
+          username:"Rafa",
+          start_date:"19-02-2025",
+          end_date:"23-02-2025"
+        },{
+          auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then((response)=>{
+          const activities = response.data.real_activities;
+
+          tableData.value = activities.map(activity => ({
+            Date: activity.date, 
+            Weekday: activity.weekday, 
+            NumberActivities: activity.number_of_activities, 
+            NumberJobFair: activity.number_of_job_fair,
+            Logo: "src/assets/wrizz.jpg"
+        }));
+        console.log("Dados carregados:", tableData.value);
+      }).catch(error => {
+        console.error("Erro ao buscar os dados:", error);
+    });
+};*/
+
+const activityTypes = ref([]);
+
+const fetchActivityTypes = () => {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/typess', {
+        auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }}).then((response) => {
+        activityTypes.value = response.data.types; //Vetor com os tipos de atividades
+      }).catch((error) => {
+        console.error("Erro ao buscar tipos de atividades:", error);
+    });
+};
+
+
 const fetchData = () => {
-    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities_vue', {event_id:"31cd68cf-ac76-4ae5-b9f3-434988d2556f",username:"Rafa"},{auth: {
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities_vue', {
+          event_id:"31cd68cf-ac76-4ae5-b9f3-434988d2556f",
+          username:"Rafa",
+        },{
+          auth: {
           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }}).then((response)=>{
           const data = response.data
-          console.log(response.data.real_activities)
+          console.log(data)
         })
 }
 
-onMounted(fetchData)
+const addNewActivity = async () => {
+  if (!newActivity.value.name || !newActivity.value.type || !newActivity.value.description ||
+      !newActivity.value.day || !newActivity.value.startTime || !newActivity.value.endTime || 
+      !newActivity.value.qrCode) {
+        alert('Please fill out all fields.');
+        return;
+  }
+
+  try {
+    const response = await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add_activity', {
+      event_id: "31cd68cf-ac76-4ae5-b9f3-434988d2556f", // ID do evento
+      day: newActivity.value.day, // Dia selecionado
+      name: newActivity.value.name,
+      type: newActivity.value.type,
+      description: newActivity.value.description,
+      start_time: newActivity.value.startTime,
+      end_time: newActivity.value.endTime,
+      qr_code: newActivity.value.qrCode
+    }, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    });
+
+    console.log('Activity added:', response.data);
+    alert('Activity added successfully!');
+
+    fetchData();
+
+    closePopUp();
+  } catch (error) {
+    console.error('Error adding activity:', error);
+    alert('Failed to add activity.');
+  }
+}
+
+onMounted(() => {
+    fetchData();
+    fetchActivityTypes();
+});
 
 const router = useRouter();
 
@@ -143,14 +238,6 @@ function goToActivitiesTypes() {
 function goToActivitiesDay(){
   router.push("/activities/day");
 }
-
-const tableData = ref([
-  { Date: '19-02-2024', Weekday: 'Monday',    NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-  { Date: '20-02-2024', Weekday: 'Tuesday',   NumberActivities: 9, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-  { Date: '21-02-2024', Weekday: 'Wednesday', NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-  { Date: '22-02-2024', Weekday: 'Thursday',  NumberActivities: 9, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-  { Date: '23-02-2024', Weekday: 'Friday',    NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-]);
 
 const headers = computed(() => {
   if (isMobile.value) {
@@ -211,18 +298,6 @@ function closePopUp() {
   newActivity.value = { name: '', type: '', description: '' };
 }
 
-function addNewActivity() {
-  if (!newActivity.value.name || !newActivity.value.type || !newActivity.value.description ||
-      !newActivity.value.day || !newActivity.value.startTime || !newActivity.value.endTime || 
-      !newActivity.value.qrCode) 
-      {
-        alert('Please fill out all fields.');
-  } else {
-    console.log('New Activity:', newActivity.value);
-    closePopUp();
-  }
-}
-
 function handleRowSelect(row) {
   console.log('Row selected:', row);
   selectedRow.value = row;
@@ -257,15 +332,25 @@ function deleteRow(row) {
   overflow: hidden;
 }
 
+.no-events{
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+}
+
 .no-events-message{
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
+  height: 100%;
   font-size: 25px;
   color: #4F4F4F;
   background-color: #EBF6FF;
   font-weight: 500; 
+  padding: 20px;
 }
 
 .table-with-buttons{
@@ -347,7 +432,7 @@ button:hover {
   right: 2%;
   background: none;
   border: none;
-  font-size: 1.5vw;
+  font-size: 20px;
   color: #333;
   cursor: pointer;
   font-weight: bold;

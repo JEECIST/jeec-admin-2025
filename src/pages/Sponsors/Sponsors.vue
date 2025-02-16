@@ -1,6 +1,7 @@
 <template>
+  <div class="backdrop" v-if="cardDisplaying"></div>
   <div class="sponsors-container">
-    <div class="sponsors-table">
+    <div class="sponsors-table" :class="{ 'hide-on-mobile': cardDisplaying }">
       <div class="header">
         <div class="search-container">
           <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -21,11 +22,11 @@
         </select>   
       </div>
       <button class="button-add-sponsor" @click="toogleadd">Add Sponsor</button>
-      <button class="button-sponsor-tiers" @click="toogleTiers">Sponsor Tiers
+      <router-link to="/sponsors/tiers" class="button-sponsor-tiers" style="text-decoration: none;">Sponsor Tiers
         <svg xmlns="http://www.w3.org/2000/svg" class="chevron-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
-      </button>
+      </router-link>
       </div>
       <div class="table-container">
         <TheTable 
@@ -35,13 +36,20 @@
           :searchInput="searchQuery"
           :isSelectable="true"
           @onRowSelect="handleRowSelect"
+          @notFound="handleNosponsors"
           class="table"
         />
-        <div class="nosponsors" v-if="tableData.length == 0">No Sponsors Found</div>
       </div>
+      <div class="nosponsors" v-if=noSponsors>No Sponsors Found</div>
     </div>
 
     <div v-if="selectedRow" class="sponsor-card">
+      <button @click="unselectRow" class="close-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
       <div class="sponsor-card-header">
         <h1 class="card-tier">{{ selectedRow.tier }}</h1>
         <img class='sponsor-logo' :src=selectedRow.logo alt="sponsor logo" />
@@ -51,33 +59,10 @@
         </div>
         <div class="card-buttons">
           <button @click="editRow(selectedRow)" class="icon-button">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="icon" width="16" height="16">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20h9M16.5 3.5l4 4L7 21H3v-4L16.5 3.5z" />
-            </svg>
+            <img :src="pencilIcon" alt="edit" class="icon" />
           </button>
           <button @click="deleteRow(selectedRow)" class="icon-button">
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 25 24.8" style="enable-background:new 0 0 25 24.8;" xml:space="preserve" data-ember-action="" data-ember-action-1015="1015">
-              <g class="icon">
-                <path d="M6.8,8.8h11L17,22.6
-                        H7.6L6.8,8.8z 
-                        M4.9,7l1,17.4h12.8
-                        l1-17.4
-                        H4.9z"></path>
-                <polygon points="13.6,10.3 13.1,21.2 14.9,21.2 15.4,10.3 "></polygon>
-                <polygon points="11.5,21.2 11,10.3 9.2,10.3 9.7,21.2 "></polygon>
-                <path d="M20.4,4h-4.8l-0.5-1.6
-                        H9.5L9,4
-                        H4.2
-                        L3.5,8.6h17.6
-                        L20.4,4z 
-                        
-                        M9.9,3.2h4.8
-                        L14.9,3.9h-5.2z
-                        
-                        M5.6,6.7l0.2-1 h13l0.2,1
-                        H5.6z"></path>
-              </g>
-            </svg>
+            <img :src="trashIcon" alt="delete" class="icon" />
           </button>
         </div>
         
@@ -93,13 +78,14 @@
         </div>
         <div class="card-paragraph">
           <h1>Event</h1>
-          <p>{{ selectedRow.event }}</p>
+          <p>{{ selectedRow.eventselected }}</p>
         </div>
         
       </div>
     </div>
 
     <AddSponsor v-if="isaddsponsor" @close="toogleadd"/>
+    <EditSponsor v-if="iseditsponsor" @close="editRow(selectedRow)" :sponsorData="selectedRow" :isOpen="iseditsponsor"/>
   </div>
   
 </template>
@@ -108,12 +94,25 @@
 import { ref } from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
 import AddSponsor from './AddSponsor.vue';
+import EditSponsor from './EditSponsor.vue';
+import pencilIcon from '../../assets/pencil.svg'
+import trashIcon from '../../assets/trash.svg'
 
 // Example data to be displayed in the table
 const tableData = ref([
-  { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio', event: 'JEEC 23/24' },
-  { id: 2, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', event: 'JEEC 23/24' },
-  { id: 3, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', event: 'JEEC 23/24'},
+  { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk', eventselected: 'JEEC 23/24', showInWebsite: false },
+  { id: 2, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
+  { id: 3, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
+  { id: 4, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv', eventselected: 'JEEC 23/24', showInWebsite: false },
+  { id: 5, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
+  { id: 6, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
+  { id: 7, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv', eventselected: 'JEEC 23/24', showInWebsite: false },
+  { id: 8, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
+  { id: 9, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
+  { id: 10, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv ', eventselected: 'JEEC 23/24', showInWebsite: false },
+  { id: 11, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
+  { id: 12, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
+
 ]);
 
 // Headers to map the data keys to table headers
@@ -125,6 +124,8 @@ const headers = {
 };
 
 const tableButtons = '';
+const noSponsors = ref(false);
+const cardDisplaying = ref(false);
 
 // Search query for filtering the rows
 const searchQuery = ref('');
@@ -132,11 +133,24 @@ const selectedRow = ref(null);
 
 // Event handler for row selection
 function handleRowSelect(row) {
+  cardDisplaying.value = true;
   selectedRow.value = row;
+}
+
+function handleNosponsors(isEmpty){
+  console.log('No sponsors found', isEmpty);
+  noSponsors.value = isEmpty;
+}
+
+function unselectRow() {
+  cardDisplaying.value = false;
+  selectedRow.value = null;
 }
 
 // Event handlers for button clicks
 function editRow(row) {
+  iseditsponsor.value= !iseditsponsor.value
+  console.log(iseditsponsor.value)
   console.log('Edit button clicked for row:', row);
 }
 
@@ -144,14 +158,9 @@ function deleteRow(row) {
   console.log('Delete button clicked for row:', row);
 }
 
-const issponsorstier= ref(false);
-const isaddsponsor= ref(false);
 
-function toogleTiers()
-{
-  issponsorstier.value = !issponsorstier.value
-  console.log(issponsorstier.value)
-}
+const isaddsponsor= ref(false);
+const iseditsponsor= ref(false);
 
 function toogleadd()
 {
@@ -159,7 +168,9 @@ function toogleadd()
   console.log(isaddsponsor.value)
 }
 
+
 const eventselected = ref('');
+
 
 </script>
 
@@ -171,8 +182,8 @@ const eventselected = ref('');
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  height: 100%;
-  padding: 3vh 2vw;
+  padding: 34px 40px 40px 40px;
+  gap: 15px;
 }
 
 .sponsor-card{
@@ -180,12 +191,18 @@ const eventselected = ref('');
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding: 3vh 2.5vw;
-  max-height: max-content;
-  width: 25vw;
+  overflow-y: auto;
+  padding: 10px 10px 10px 10px;
+  align-self: flex-start;
+  height: fit-content;
+  max-height: calc(75vh - 14px);
+  width: 20%;
+  min-width: 250px;
   background-color: var(--c-accent);
-  border-radius: 2vh;
-  gap:1.8vh;
+  border-radius: 10px;
+  gap: 10px;
+  z-index: 3;
+  margin-top: 13px;
 }
 
 .sponsor-card-header {
@@ -194,18 +211,23 @@ const eventselected = ref('');
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 0.5vw 1vw;
-  gap:1vw;
+  gap:10px;
 }
 
 .card-tier{
   text-transform: uppercase;
-  font-size: 1.7vw;
+  font-size: 1.6em;
 }
 
 .sponsor-logo {
-  width: 11vw;
-  height: 11vw;
+  width: 8vw;
+  height: 8vw;
+  min-height: 50px;
+  min-width: 50px;
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .card-title{
@@ -219,12 +241,12 @@ const eventselected = ref('');
 .card-name{
   font-weight: 800;
   color: var(--c-ft-dark);
-  font-size:1.5vw;
+  font-size:1.3em;
 }
 
 .card-subtitle{
   color: var(--c-ft-semi-light);
-  font-size:1.1vw;
+  font-size:1em;
 }
 
 .card-buttons {
@@ -232,25 +254,35 @@ const eventselected = ref('');
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0.5vw 1vw;
-  gap: 1vw;
+  min-width: 30px;
+  padding: 1px 1px;
+  gap: 10px;
 }
 
 .sponsor-card-body{
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
   width: 100%;
-  gap: 1.5vh;
+  padding: 10px 10px 10px 10px;
+  gap: 10px;
+
+}
+
+.card-paragraph{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap:5px;
 }
 .sponsor-card-body h1{
   color: var(--c-ft-dark);
-  font-size: 0.9vw;
+  font-size: 0.9em;
   font-weight: 700;
 }
 .sponsor-card-body p{
-  font-size: 0.8vw;
+  font-size: 0.8em;
+  color: var(--c-ft-semi-light);
 }
 
 .sponsors-table {
@@ -258,40 +290,51 @@ const eventselected = ref('');
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  width: 100%;
+  height: 75vh;
+  width: 80%;
+  min-width: 300px;
+  overflow: hidden;
+  flex-grow: 1;
+  gap: 4px;
 }
 
 .table-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2vh 2vw;
+  justify-content: flex-start;
+  align-items: flex-start;
   width: 100%;
+  overflow: hidden;
 }
 
 .table{
   width: 100%;
   height: 100%;
+  font-size: 0.8em;
 }
 
 .nosponsors{
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 2vw;
+  font-size: 1em;
   color: var(--c-tf);
   background-color: var(--c-accent);
-  font-weight: 500; 
+  font-weight: 600; 
 }
 
 .header {
+  top:0;
+  position: sticky;
   width: 100%;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: end;
-  padding: 0vh 2vw; 
-  gap: 1vw;
+  gap: 7px;
   color: #8A8A8A;
 }
 
@@ -299,33 +342,31 @@ const eventselected = ref('');
   display: flex;
   align-content: center;
   position: relative;
-  min-width: 19vw;
-  height: 3vw; 
+  min-height: 36px;
+  width: 30px;
   background-color: #EBF6FF; 
-  border-radius: 1vh; 
-  flex-grow: 4;
+  border-radius: 4px; 
+  flex-grow: 1;
 }
 
 .search-icon {
   position: absolute;
   top: 50%;
-  left: 1vw;
+  left: 4px;
   transform: translateY(-50%);
-  width: 1.33vw;
-  height: 3.5vh;
+  width: 15px;
+  height: 15px;
   color: #8A8A8A;
 }
 
 .search-bar {
-  width: 100%;
-  height: 100%;
-  padding: 0.5vh 1vw 0.5vh 4vw;
+  padding: 0.5px 1px 0.5px 24px;
   border: none;
-  border-radius: 1vh;
+  border-radius: 4px;
   outline-color: var(--c-select);
   color: #8A8A8A;
   font-family: 'Kumbh Sans', sans-serif;
-  font-size: 1vw;
+  font-size: 0.7em;
   font-weight: 500;
   line-height: 2.67vh;
   background-color: #EBF6FF;
@@ -336,60 +377,62 @@ const eventselected = ref('');
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  font-size: 0.8vw;
-  gap: 0.5vh;
-  width: 7vw; 
+  font-size: 10px;
+  gap: 2px;
+  height: 50px;
+  min-width: 30px; 
 }
 
 .selection-box {
   width: 100%;
-  height: 3vw; 
+  height: 100%;
   border: 1px solid #8A8A8A;
-  border-radius: 0.7vh;
+  border-radius: 4px;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
-  padding: 0.5vh 0.5vw;
-  font-size: 0.8vw;
+  padding: 1px 1px;
+  font-size: 1em;
   color: #8A8A8A;
   background-color: #FFFFFF;
 }
 
 .button-add-sponsor {
-  max-width: 9vw;
-  height: 3vw; 
+  min-width: 80px;
+  height: 36px; 
   border: none;
-  border-radius: 0.7vh;
+  border-radius: 4px;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
-  font-size: 0.9vw;
-  font-weight: 500;
+  font-size: 0.7em;
+  font-weight: 400;
   color: #FFFFFF;
   background-color: var(--c-select);
-  padding: 0.2vw 1vw;
+  padding: 4px 4px;
   cursor: pointer;
 }
 
 .button-sponsor-tiers {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  max-width: 12vw;
-  height: 3vw; 
+  justify-content: center;
+  gap:2px;
+  min-width: 95px;
+  height: 36px; 
   border: none;
-  border-radius: 0.7vh;
+  border-radius: 4px;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
-  font-size: 0.9vw;
-  font-weight: 500;
+  font-size: 0.7em;
+  font-weight: 400;
   color: #FFFFFF;
   background-color: var(--c-select);
-  padding: 0.2vw 1vw;
+  padding: 4px 4px;
   cursor: pointer;
 }
 
 .chevron-icon {
-  height: 1.5vw;
-  width: 1.5vw;
+  height: 15px;
+  width: 15px;
 }
 
 .icon-button {
@@ -398,16 +441,105 @@ const eventselected = ref('');
   border-radius: 20%;
   cursor: pointer;
   align-content: space-between;
-  width:  2vw;
-  height: 2vw;
+  width:  8vw;
+  height: 8vw;
+  min-width: 20px;
+  min-height: 20px;
+  max-height: 25px;
+  max-width: 25px;
   display:flex;
   justify-content: center;
-  padding: 1%;
+  align-items: center;
+  padding: 2px 2px 2px 2px;
 }
 .icon {
-  width: 1.5vw;
-  height: 1.5vw;
+  width: 6.5vw;
+  height: 6.5vw;
+  max-width: 25px;
+  max-height: 15px;
   color: var(--c-ft-dark);
+}
+
+.close-button{
+  z-index: 3;
+  background: none;
+  border: none;
+  cursor: pointer;
+  align-self: flex-end;
+  margin-bottom: -20px;
+}
+
+@media (max-width: 700px) {
+
+  .hide-on-mobile {
+    display: none;
+    background: rgba(0,0,0,0.5);
+  }
+
+  .backdrop{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+  }
+
+  .container {
+    flex-direction: column; /* Stack the elements vertically */
+  }
+
+  .sponsors-table {
+    max-height: 700px;
+    height: 78vh;
+  }
+
+  .sponsor-card {
+    position: absolute; /* Position the sponsor card absolutely */
+    top: 118px; /* Position the sponsor card 50px below the center */
+    width: 90vw; /* Set the width to 100% */
+    max-height: 80vh;
+    height: fit-content; /* Set the height to 100% */
+    margin-top: 0;
+  }
+  .sponsor-card-body h1{
+    font-size: 1em;
+  }
+  .sponsor-card-body p{
+    font-size: 0.9em;
+  }
+
+  .card-name{
+    font-size:1.9em;
+  }
+
+  .card-subtitle{
+    font-size:1.3em;
+  }
+
+  .card-tier{
+    font-size: 1.9em;
+  }
+
+  .sponsor-logo {
+    width: 40vw;
+    height: 40vw;
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .icon-button {
+    max-height: 40px;
+    max-width: 40px;
+  }
+
+  .icon {
+    max-width: 35px;
+    max-height: 20px;
+  }
+
 }
 
 
