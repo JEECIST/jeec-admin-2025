@@ -1,11 +1,46 @@
 <script setup>
-import { defineProps, defineEmits, ref } from "vue";
+import { defineProps, defineEmits, ref} from "vue";
+import axios from "axios";
+
+const prizes = ref([])
 
 const props = defineProps({
   isOpen: Boolean,
 });
 
+const logo = ref(null);
+
+const onLogoSelected = (event) => {
+    const file = event.target.files[0]; // Get the uploaded file
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            logo.value = reader.result; // Store the image data as a base64 URL
+        };
+        reader.readAsDataURL(file); // Convert file to a data URL
+    }
+};
+
+function addPrize(name, desc, amount, link) {
+
+
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add-prizes', {auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }, 
+    name: name,
+    description: desc,
+    link: link,
+    amount: amount,
+    imgPath: logo.value
+
+    }).then(response => {
+            prizes.value = response.data.prizes
+    })
+    }
+
 const emit = defineEmits(["modal-close"]);
+
 
 function isMobile() {
    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -32,7 +67,7 @@ function isMobile() {
                 <div class="flex-1-row-1">
                     <div class="labels" id="name">
                         <label for="name">Name</label>
-                        <input type="text" placeholder="" id="name">
+                        <input type="text" placeholder="" id="name" v-model="name">
                     </div>
                     <div class="labels" id="type">
                         <label for="type">Type</label>
@@ -45,35 +80,43 @@ function isMobile() {
                 <div class="flex-1-row-3">
                     <div class="labels" id="description">
                         <label for="description">Description</label>
-                        <input type="text" placeholder="" id="description">
+                        <input type="text" placeholder="" id="description" v-model="description">
                     </div>
                 </div>
             </div>
             <div class="flex-2">
                 <div class="labels" id="chamucapic">
                     <label for="chamucapic">Image<!--Delicious Di.. ahm Chamuça Pick --></label>
-                    <p class="prize-pic">
-                        No image selected yet
-                    </p>
-                    <button id="coolbutton">Add New Image</button>
+                    <div class="blue-square" v-if="logo">
+                        <!-- Display the selected image -->
+                        <img :src="logo" alt="Logo" class="logo-image" />
+                    </div>
+                    <div class="blue-square" v-else>
+                        <!-- Display this text when no logo is selected -->
+                        <p>No image selected yet</p>
+                    </div>
+                    <!-- Hidden file input -->
+                    <label for="logo-upload" class="custom-logo-label">Add new Image</label>
+                    <input id="logo-upload" type="file" @change="onLogoSelected" class="coolbutton" accept="image/*" />
+
                 </div>
                 <div class="flex-1-row-1">
                     <div class="labels" id="amount">
                         <label for="amount">Amount</label>
-                        <input type="text" placeholder="" id="amount">
+                        <input type="text" placeholder="" id="amount" v-model="amount">
                     </div>
                 </div>
                 <div class="flex-1-row-1">
                     <div class="labels" id="link">
                         <label for="link">Link</label>
-                        <input type="text" placeholder="" id="link">
+                        <input type="text" placeholder="" id="link" v-model="link">
                     </div>
                 </div>
                 
             </div>
         </div>
         <div class="btns">
-            <button class="add" @click.stop="emit('modal-close')">Add</button>
+            <button class="add" @click="addPrize(name, description, amount, link)" @click.stop="emit('modal-close')">Add</button>
         </div>
         </div>
         </div>
@@ -379,19 +422,44 @@ select {
 }
 
 #coolbutton {
-    background-color: #509cdb;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    width: 8.4vw;
-    height: 3.5vh;
-    margin-top: 1vh;
-    font-size: smaller;
-    display: inline-block;
-    text-align: center;
-    vertical-align: middle;
-    justify-content: center;
-    cursor: pointer;
+    align-self: center;
+  min-width: 100px;
+  max-width: 150px;
+  min-height: 30px;
+  width: 27vh; 
+  border: none;
+  border-radius: 0.7vh;
+  outline-color: var(--c-select);
+  font-family: 'Kumbh Sans', sans-serif;
+  font-size: 0.6em;
+  font-weight: 500;
+  color: #FFFFFF;
+  background-color: var(--c-select);
+  padding: 0.2vw 1vw;
+  cursor: pointer;
+}
+
+.custom-logo-label {
+  background-color: #152259;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block;
+  margin-top: 10px;
+  align-self: center;
+}
+
+/* Hide the file input */
+#logo-upload {
+  display: none;
+}
+
+.logo-image {
+  width: 150px; /* Adjust as needed */
+  height: 150px;
+  object-fit: cover; /* Ensures the image is cropped instead of stretched */
+  border-radius: 8px; /* Optional: for rounded corners */
 }
 
 p {

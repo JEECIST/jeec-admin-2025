@@ -199,7 +199,7 @@ const routes = [
     path: "/student-app/prizes/shop",
     name: "studentapp-prizes-shop",
     meta: { title: "Shop" },
-    component: () => import("../pages/StudentApp/StudentAppPrizesShop.vue"),
+    component: () => import("../pages/StudentApp/StudentAppPrizeShop.vue"),
   },
   {
     path: "/teams",

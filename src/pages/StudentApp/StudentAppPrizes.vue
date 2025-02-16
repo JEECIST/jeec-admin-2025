@@ -1,12 +1,13 @@
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from "axios"
 import { useRouter } from 'vue-router';
 import AddPrizePopup from './AddPrizePopup.vue';
 import EditPrizePopup from './EditPrizePopup.vue';
 
 const popupShow = ref(false);
-
+const selectedRow = ref(null);
 const isModalOpened = ref(false);
 
 const openModal = () => {
@@ -37,7 +38,7 @@ function isMobile() {
 const router = useRouter();
 
 function goToPrizeShop() {
-  router.push("/student-app/shop");
+  router.push("/student-app/prizes/shop");
 }
 
 function goToPrizeSpecial() {
@@ -47,14 +48,27 @@ function goToPrizeSpecial() {
 const message = ref();
 
 function selectCallback(row) {
-  console.log(row)
   popupShow.value = true;
+  selectedRow.value = row
 }
 
 function isDataBEmpty(){
     return datab.length === 0;
 }
 
+const prizes = ref([])
+
+onMounted(() => {
+  
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/get-prizes', {auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }}).then(response => {
+    console.log(response.data)
+    prizes.value = response.data
+    console.log(prizes)
+  })
+}); 
 
 const datab = [
   {
@@ -178,23 +192,23 @@ const tablePref = {
           <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
       </Transition>
       <Transition name="fade" appear>
-          <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
+          <EditPrizePopup :selectedRow="selectedRow" :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
       </Transition>
       </div>
         <div v-if="!isDataBEmpty()">
             <TheTable
-            :data="datab"
+            :data="prizes"
             :tableHeaders="tablePref"
             :searchInput="message"
             @onRowSelect="selectCallback"
             ></TheTable>
         </div>
       </div>
-      <div class="right-popup-placeholder" v-show="popupShow">
+      <div class="right-popup-placeholder" v-if="selectedRow">
           <div class="items">
             <h1>SHOP</h1>
             <div class="prize-photo">Insert PPPPPrize Photo</div>
-            <h3 class="text1">Chamuça</h3>
+            <h3 class="text1">{{ selectedRow.name }}</h3>
             <p class="text2 title">Prize</p>
             <div class="btns-row">
               <button class="btn" @click="openOtherModal">
@@ -209,15 +223,15 @@ const tablePref = {
             </div>
             <div id="info">
               <p>Description</p>
-              <p class="text2">Vinda do ROSE STUPAA GOOAT</p>
+              <p class="text2">{{ selectedRow.description }}</p>
               <div class="row">
                 <div class="col">
                   <p>Initial Amount</p>
-                  <p class="text2">69</p>           
+                  <p class="text2">{{ selectedRow.initialAmount }}</p>           
                 </div>
                 <div class="col">
                   <p>Current Amount</p>
-                  <p class="text2">6</p>
+                  <p class="text2">{{ selectedRow.currentAmount }}</p>
                 </div>
               </div>
             </div>

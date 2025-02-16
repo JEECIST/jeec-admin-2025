@@ -1,8 +1,9 @@
 <script setup>
-import { defineProps, defineEmits, ref } from "vue";
+import { defineProps, defineEmits, ref, onMounted } from "vue";
 
 const props = defineProps({
   isOpen: Boolean,
+  selectedRow: Object,
 });
 
 const emit = defineEmits(["modal-close"]);
@@ -16,8 +17,11 @@ function isMobile() {
    }
 }
 
-</script>
+onMounted(() => {
+    console.log(selectedRow)
+})
 
+</script>
 <template>
     <div v-if="isOpen" class="modal-mask">
       <div class="desktop" v-if="!isMobile()">
@@ -32,7 +36,7 @@ function isMobile() {
                 <div class="flex-1-row-1">
                     <div class="labels" id="name">
                         <label for="name">Name</label>
-                        <input type="text" placeholder="" id="name">
+                        <input type="text" placeholder=""  id="name">
                     </div>
                     <div class="labels" id="type">
                         <label for="type">Type</label>
@@ -166,7 +170,7 @@ function isMobile() {
     justify-content: center;
     background-color: white;
     width: 60vw;
-    height: 95%;
+    height: 70%;
     position: absolute;
     top: 50%;
     left: 50%;
