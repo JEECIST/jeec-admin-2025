@@ -38,7 +38,7 @@
         </div>
         
           <img src="../../assets/wrizz.jpg" alt="Profile Image" class="pfp">
-          <p class="cardUsername">{{ selectedRow.user }}</p>
+          <p class="cardUsername">{{ selectedRow.username }}</p>
           <p class="cardUseless">Team User</p>
           <div class="cardActions">
             <button class="edit-button"><img src="../../assets/pencil.svg"></button>
@@ -51,8 +51,8 @@
             </div>
               
             <div class = "cardInfoMember"> 
-              <p class="cardInfoLabel">PASSWORD</p>
-              <p> Placeholder for password from database</p>
+              <p class="cardInfoLabel">Password</p>
+              <p> ****************</p>
             </div>
 
             
@@ -76,9 +76,15 @@
         <div class="formRole">
           <label for="role">Role</label>
           <select v-model="newUser.role" id="role" required>
+            
+            <option value="Webdev">Webdev</option>
+            <option value="Business">Business</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Coordination">Coordination</option>
+            <option value="Partnership">Partnership</option>
             <option value="Admin">Admin</option>
-            <option value="User">User</option>
-            <option value="Viewer">Viewer</option>
+            <option value="Team">Team</option>
+
           </select>
         </div>
         <div class="modal-actions">
@@ -91,6 +97,7 @@
 
 <script setup>
 import axios from 'axios';
+import CryptoJS from "crypto-js";
 import TheTable from '../../global-components/TheTable.vue';
 import { ref, onMounted } from 'vue';
 
@@ -140,15 +147,14 @@ function selectCallback(row) {
 
 function closeModal() {
   showAddUserModal.value = false;
-  newUser.value = { username: '', role: '' };
 }
 function closeCardInfo(){
   selectedRow.value = null;
 }
 const datab = ref([{
-  id: null,
-  name: null,
   user: null,
+  name: null,
+  username: null,
   role: null,
 }])
 const noResultsFound = ref(false);
@@ -161,7 +167,6 @@ const fetchData = () => {
           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }}).then((response)=>{
-          const data = response.data
           datab.value = response.data.users
           console.log(datab.value)
         })
@@ -170,24 +175,52 @@ const fetchData = () => {
 
 onMounted(fetchData)
 const tablePref = {
-  id: "ID",
-  user: "Username",
+  user: "ID",
+  username: "Username",
   role: "Role",
   name: "Member"
   
   
-};
-
-
-function addUser(){
-  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+ '/student_rewards/update',
-  
-  {auth:{
-    username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-    password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-  },role: newUser.role, username: newUser.username})
-  closeModal()
 }
+
+function generateSecurePassword(length = 16) {
+  const array = new Uint8Array(length);
+  window.crypto.getRandomValues(array);
+  return btoa(String.fromCharCode(...array)).slice(0, length);
+}
+
+function addUser() {
+
+  let password = generateSecurePassword(16);
+  let encryptedPassword = CryptoJS.AES.encrypt(password, import.meta.env.VITE_APP_API_KEY).toString();
+
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/user/addteamuser',
+  { 
+    user: { 
+      name: "katem",
+      username: newUser.value.username, 
+      role: newUser.value.role,
+      password: encryptedPassword
+    }
+  }, 
+  { 
+    auth: { 
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
+    }
+  })
+  .then(() => {
+    fetchData();
+    closeModal();
+  })
+  .catch(error => {
+    console.error("Failed to add user :<");
+  });
+}
+
+
+
+
 </script>
 
 
