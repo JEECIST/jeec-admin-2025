@@ -10,10 +10,25 @@
         </div>
       </form>
       <TheTable :data="QR_Activities" :tableHeaders="tablePref" :searchInput="message" :buttons="tableButtons"
-        @QrRead="activateReader">
+        @QrRead="activateReader" @onRowSelect="selectCallback">
       </TheTable>
     </div>
-    <div v-if="QR_enable">
+    <div class="scanner" v-if="QR_enable">
+      <button @click="deactivateReader" class="closeQR-button">
+        <img src="../../assets/CloseQR.png">
+      </button>
+      <div v-if="scanned_flag" class="scanned-pop-up">
+        <p>Successfully added points to {{ student_username }}</p>
+        <button @click="scannedPopUp">
+          <img src="../../assets/check.svg">
+        </button> 
+      </div>
+      <div v-if="error_flag" class="scanned-pop-up">
+        <p>Failed to add points</p>
+        <button @click="errorPopUp">
+          <img src="../../assets/check.svg">
+        </button> 
+      </div>
       <QrcodeStream @decode="onDecode" @init="onInit" @error="onError"></QrcodeStream>
     </div>
   </div>
@@ -29,24 +44,26 @@ import { QrcodeStream } from 'vue3-qrcode-reader';
 const QR_Activities = ref([]);
 
 const QR_enable = ref(false);
+const scanned_flag = ref(false);
+const error_flag = ref(false);
+const student_username = ref("");
 
-
-const datab = ref([
-  {
-    id: "1",
-    name: "Workshop Delloite",
-    time: "11:00",
-    end_time: "12:00",
-    outra: "coisa aleatoria",
-  },
-  {
-    id: "2",
-    name: "Main Speaker - Wagas",
-    time: "12:00",
-    end_time: "13:00",
-    outra: "coisa aleatoria",
-  },
-]);
+// const datab = ref([
+//   {
+//     id: "1",
+//     name: "Workshop Delloite",
+//     time: "11:00",
+//     end_time: "12:00",
+//     outra: "coisa aleatoria",
+//   },
+//   {
+//     id: "2",
+//     name: "Main Speaker - Wagas",
+//     time: "12:00",
+//     end_time: "13:00",
+//     outra: "coisa aleatoria",
+//   },
+// ]);
 
 const tablePref = {
   id: "ID",
@@ -61,6 +78,12 @@ const tableButtons = [{
   icon: qrImage
 }];
 
+const selectedRow = ref(null);  // Track the selected row
+
+function selectCallback(row) {
+  selectedRow.value = row;  // Set the selected row
+}
+
 function activateReader() {
   console.log("Activating QR Reader");
   QR_enable.value = true;
@@ -71,9 +94,42 @@ function deactivateReader() {
   QR_enable.value = false;
 }
 
-function onDecode(content){
-  console.log("QR Code Content:", content);
+function scannedPopUp() {
+  scanned_flag.value = false;
+  student_username.value = "";
 }
+
+function errorPopUp() {
+  error_flag.value = false;
+}
+
+function onDecode(student_external_id) {
+  console.log("QR Code Content:", student_external_id);
+  console.log("Activity:", selectedRow.value.external_id);
+  let debug = "28a0b7f0-bb3a-4b91-b230-adce4e729eb8"; 
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activitiesdashboard_vue/activity/activity_external_idistid', {
+    student_external_id: debug,  
+    activity_external_id: selectedRow.value.external_id,
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  })
+  .then(response => {
+    console.log(response.data);
+    if (response.data.errorQR == "") {
+      scanned_flag.value = true;
+      student_username.value = response.data.student_username;
+    }else{
+      error_flag.value = true;
+    }
+  })
+  .catch(error => {
+    console.error("Error scanning QR Code:", error);
+    error_flag.value = true;
+  });
+}
+
 
 function onInit(promise) {
   promise.catch(error => {
@@ -101,7 +157,7 @@ onMounted(() => {
 
 <style scoped>
 .wrapper {
-  display: flex;
+  /* display: flex; */
   position: relative;
   height: calc(100dvh - var(--header-height));
   padding: 5ch 3ch 3ch 3ch;
@@ -171,5 +227,51 @@ form {
 
 .search_style input::placeholder {
   color: var(--c-ft-semi-light);
+}
+
+.scanner {
+  max-width: 800px;
+  height: 100%;
+}
+
+.closeQR-button {
+  position: absolute;
+  z-index: 1000;
+  margin-top: 10px;
+  margin-left: 10px;
+  border: none;
+  background: transparent;
+}
+
+.closeQR-button > img {
+  height: 3vh;
+  width: 3vh;
+}
+
+.scanned-pop-up {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  position: absolute;
+  z-index: 1000;
+  margin-top: 30vh;
+  left: 0; 
+  right: 0; 
+  margin-inline: auto; 
+  width: fit-content;
+  background-color: var(--c-bg-light);
+  border-radius: 10px;
+  height: 10%;
+  width: 50%;
+  opacity: 80%;
+}
+
+.scanned-pop-up > button {
+  border: none;
+  border-radius: 10px;
+  height: 2.5rem;
+  width: 2.5rem;
+  background-color: var(--c-select);
 }
 </style>
