@@ -15,6 +15,7 @@ const openModal = () => {
 };
 const closeModal = () => {
   isModalOpened.value = false;
+  getPrizes();
 };
 
 const isOtherModalOpened = ref(false);
@@ -22,8 +23,10 @@ const isOtherModalOpened = ref(false);
 const openOtherModal = () => {
   isOtherModalOpened.value = true;
 };
+
 const closeOtherModal = () => {
   isOtherModalOpened.value = false;
+  getPrizes();
 };
 
 function isMobile() {
@@ -37,6 +40,26 @@ function isMobile() {
 
 const router = useRouter();
 
+function removePrize(selectedRow){
+
+  const idSelectedRow = selectedRow['id']
+  selectedRow.value = null;
+
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/delete-prize', {auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }, 
+    id: idSelectedRow,
+
+    }).then(response => {
+        if (response.data == "Success"){
+             getPrizes();
+        }
+
+    })
+    
+}
+
 function goToPrizeShop() {
   router.push("/student-app/prizes/shop");
 }
@@ -47,126 +70,50 @@ function goToPrizeSpecial() {
 
 const message = ref();
 
+const updateSelectedRow = (newValueRow) => { // Required para dar updated à selected row sem eu ter de clicar denovo numa row para atualizar a info
+  selectedRow.value.name = newValueRow["name"]
+  selectedRow.value.Type = newValueRow["Type"]
+  selectedRow.value.description = newValueRow["description"]
+  selectedRow.value.initialAmount = newValueRow["initialAmount"]
+  selectedRow.value.currentAmount = newValueRow["currentAmount"]
+  selectedRow.value.cost = newValueRow["cost"]
+  selectedRow.value.link = newValueRow["link"]
+}
+
 function selectCallback(row) {
   popupShow.value = true;
   selectedRow.value = row
 }
 
-function isDataBEmpty(){
-    return datab.length === 0;
+function isPrizesEmpty(){
+    return prizes.length === 0;
 }
 
 const prizes = ref([])
 
+function openLink(){
+  window.open(selectedRow.value.link);
+}
+
+
+function getPrizes(){
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/get-prizes', {auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then(response => {
+
+      prizes.value = response.data
+    })
+}
+
 onMounted(() => {
-  
-  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/get-prizes', {auth: {
-        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      }}).then(response => {
-    console.log(response.data)
-    prizes.value = response.data
-    console.log(prizes)
-  })
+  getPrizes();
 }); 
-
-const datab = [
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    initialAmount: "69",
-    currentAmount: "6"
-  },
-
-];
 
 const tablePref = {
   id: "ID",
   name: "Name",
+  Type: "Type",
   initialAmount: "Initial Amount",
   currentAmount: "Current Amount"
 };
@@ -174,6 +121,7 @@ const tablePref = {
 </script>
 
 <template>
+  <button @click=""> TESTES</button>
 <div class="desktop" v-if="!isMobile()">
   <div class="wrapper">
     <div class="table">
@@ -192,10 +140,10 @@ const tablePref = {
           <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
       </Transition>
       <Transition name="fade" appear>
-          <EditPrizePopup :selectedRow="selectedRow" :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
+          <EditPrizePopup :selectedRow="selectedRow" :isOpen="isOtherModalOpened" @updateSelectedRow="updateSelectedRow" @modal-close="closeOtherModal"></EditPrizePopup>
       </Transition>
       </div>
-        <div v-if="!isDataBEmpty()">
+        <div v-if="!isPrizesEmpty()">
             <TheTable
             :data="prizes"
             :tableHeaders="tablePref"
@@ -211,13 +159,13 @@ const tablePref = {
             <h3 class="text1">{{ selectedRow.name }}</h3>
             <p class="text2 title">Prize</p>
             <div class="btns-row">
-              <button class="btn" @click="openOtherModal">
+              <button class="btn" @click="openOtherModal()">
                   <img src="../../assets/pencil.svg">
               </button>
-              <button class="btn">
+              <button class="btn" @click="openLink()">
                   <img src="../../assets/internet.svg">
               </button>
-              <button class="btn">
+              <button class="btn" @click="removePrize(selectedRow)">
                   <img src="../../assets/trash.svg">
               </button>
             </div>
@@ -298,7 +246,7 @@ const tablePref = {
           </div>
         </div>
         <TheTable
-          :data="datab"
+          :data="prizes"
           :tableHeaders="tablePref"
           :searchInput="message"
           @onRowSelect="selectCallback"

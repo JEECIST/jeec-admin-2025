@@ -1,12 +1,16 @@
 <script setup>
-import { defineProps, defineEmits, ref, onMounted } from "vue";
+import { defineProps, defineEmits, ref, watch, onMounted} from "vue";
+import axios from "axios"
 
 const props = defineProps({
   isOpen: Boolean,
   selectedRow: Object,
 });
 
-const emit = defineEmits(["modal-close"]);
+const emit = defineEmits(["modal-close", "updateSelectedRow"]);
+const prizeToEdit = ref({});
+const prizeData = ref({});
+const logo = ref(null);
 
 function isMobile() {
    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -17,9 +21,113 @@ function isMobile() {
    }
 }
 
-onMounted(() => {
-    console.log(selectedRow)
-})
+const onLogoSelected = (event) => {
+    const file = event.target.files[0]; // Get the uploaded file
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            logo.value = reader.result; // Store the image data as a base64 URL
+        };
+        reader.readAsDataURL(file); // Convert file to a data URL
+    }
+};
+
+async function getPrizeByID(){ // PARA TER ACESSO AOS VALORES DO PRIZE EDIT ASSIM QUE FOR POPULATED
+ 
+    try {
+        const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get-prize-ID', {
+        auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+        params: {
+            id: rowData.value.id,
+        },
+        });
+        
+        prizeToEdit.value = response.data;
+        prizeToEdit.value = prizeToEdit.value[0]; // Simplificar sintaxe de acesso simplesmente
+    } catch (error) {
+        console.error('Error fetching prize:', error);
+    }
+}
+
+const changeRowInfo = (id, name, desc, cost, initialAmount, currentAmount, link, selectedType, amountPerDay, lastUnits) => {
+    let rowInfo = {
+        "id": id,
+        "name": name,
+        "Type": selectedType,
+        "description": desc,
+        "initialAmount": initialAmount,
+        "currentAmount": currentAmount,
+        "link": link,
+        "amountPerDay": amountPerDay,
+        "lastUnits": lastUnits,
+        "cost": cost
+    }
+
+    emit('updateSelectedRow', rowInfo);
+}
+
+function updatePrize(id, name, desc, cost, initialAmount, currentAmount, link, selectedType, amountPerDay, lastUnits) {
+
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/update-prize', {auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }, 
+    id: id,
+    name: name,
+    Type: selectedType,
+    description: desc,
+    cost: cost,
+    link: link,
+    initialAmount: initialAmount,
+    currentAmount: currentAmount,
+    amountPerDay: amountPerDay,
+    lastUnit: lastUnits,
+    imgPath: logo.value
+
+    }).then(response => {
+        console.log(response)
+        if (response.data == "Success"){
+           changeRowInfo(prizeData.value.id, prizeData.value.name, prizeData.value.description, prizeData.value.cost, prizeData.value.initialAmount, prizeData.value.currentAmount, prizeData.value.link, prizeData.value.Type, prizeData.value.amountPerDay, prizeData.value.lastUnits)
+        }
+
+    })
+}
+
+
+const rowData = ref({}); // Reactive object for storing row data
+watch(
+  () => props.isOpen,
+  async (newVal) => {
+    if (newVal) {
+      rowData.value = props.selectedRow || {}; // Update rowData when modal opens
+      console.log("Row Data Updated");
+      await getPrizeByID(); // PARA TER ACESSO AOS VALORES DO PRIZE EDIT ASSIM QUE FOR POPULATED
+      
+      console.log(prizeToEdit.value);
+      
+      prizeData.value = {
+        id: prizeToEdit.value.id,
+        name: prizeToEdit.value.name,
+        Type: prizeToEdit.value.Type,
+        description: prizeToEdit.value.description,
+        link: prizeToEdit.value.link,
+        cost: prizeToEdit.value.cost,
+        initialAmount: prizeToEdit.value.initialAmount,
+        currentAmount: prizeToEdit.value.currentAmount,
+        amountPerDay: prizeToEdit.value.amountPerDay,
+        lastUnits: prizeToEdit.value.lastUnits
+      };
+    }
+  }
+);
+
+function ConsoleThat(){
+    console.log(prizeData.value.cost)
+}
+
 
 </script>
 <template>
@@ -27,6 +135,7 @@ onMounted(() => {
       <div class="desktop" v-if="!isMobile()">
         <div class="wrapper-wrapper">
         <div class="popup-wrapper" ref="target">
+            <button @click="ConsoleThat()">LOOLOLOLO</button>
             <div class = "popupHeader">
                 <h1>Edit Prize</h1>
                 <button id = "closeButton" @click.stop="emit('modal-close')">X</button>
@@ -35,49 +144,86 @@ onMounted(() => {
             <div class="flex-1">
                 <div class="flex-1-row-1">
                     <div class="labels" id="name">
-                        <label for="name">Name</label>
-                        <input type="text" placeholder=""  id="name">
+                        <label for="name">Name </label>
+                        <input type="text" placeholder="" v-model="prizeData.name" id="name">
                     </div>
                     <div class="labels" id="type">
                         <label for="type">Type</label>
-                        <select placeholder="" id="type">
-                            <option value="null" disabled selected hidden></option>
-                            <option>type test</option>
+                        <select placeholder="" id="type" v-model="prizeData.Type">
+                            <option value="null" disabled selected hidden>{{ prizeData.Type }}</option>
+                            <option>CV</option>
+                            <option>Individual</option>
+                            <option>Squad</option>
+                            <option>Shop</option>
                         </select>
                     </div>
                 </div>
                 <div class="flex-1-row-3">
                     <div class="labels" id="description">
                         <label for="description">Description</label>
-                        <input type="text" placeholder="" id="description">
+                        <input type="text" placeholder="" v-model="prizeData.description" id="description">
                     </div>
                 </div>
             </div>
+            
             <div class="flex-2">
                 <div class="labels" id="chamucapic">
-                    <label for="chamucapic">Image<!--Delicious Di.. ahm Chamuça Pick --></label>
-                    <p class="idk">
-                        No image selected yet
-                    </p>
-                    <button id="coolbutton">Add New Image</button>
-                </div>
-                <div class="flex-1-row-1">
-                    <div class="labels" id="amount">
-                        <label for="amount">Amount</label>
-                        <input type="text" placeholder="" id="amount">
+                    <label for="chamucapic">Image<!--Delicious Di.. ahm Chamuça Pick --></label> 
+                    <div class="blue-square" v-if="logo">
+                        <!-- Display the selected image -->
+                        <img :src="logo" alt="Logo" class="logo-image" />
                     </div>
+                    <div class="blue-square" v-else>
+                        <!-- Display this text when no logo is selected -->
+                        <p>No image selected yet</p>
+                    </div>
+                    <!-- Hidden file input -->
+                    <label for="logo-upload" class="custom-logo-label">Add new Image</label>
+                    <input id="logo-upload" type="file" @change="onLogoSelected" class="coolbutton" accept="image/*" />
+
                 </div>
-                <div class="flex-1-row-1">
-                    <div class="labels" id="link">
-                        <label for="link">Link</label>
-                        <input type="text" placeholder="" id="link">
+                <div class="wrap-options">
+                    <div id="main-options"> 
+                        <div class="flex-1-row-1">
+                            <div class="labels" id="amount">
+                                <label for="amount">Amount</label>
+                                <input type="text" placeholder="" v-model="prizeData.currentAmount" id="amount">
+                            </div>
+                        </div>
+                        <div class="flex-1-row-1">
+                            <div class="labels" id="link">
+                                <label for="link">Link</label>
+                                <input type="text" placeholder="" v-model="prizeData.link" id="link">
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="rowData.Type == 'Shop'" id="shop-options"> 
+                        <div class="flex-1-row-1">
+                            <div class="labels" id="amount-per-day">
+                                <label for="amount">Amount per day</label>
+                                <input type="number" placeholder="" id="amount-per-day" v-model="prizeData.amountPerDay">
+                            </div>
+                        </div>
+                        <div class="flex-1-row-1">
+                            <div class="labels" id="last-units">
+                                <label for="link">Last units</label>
+                                <input type="number" placeholder="" id="last-units" v-model="prizeData.lastUnits">
+                            </div>
+                        </div>
+                        <div class="flex-1-row-1">
+                            <div class="labels" id="cost">
+                                <label for="cost">Cost</label>
+                                <input type="number" placeholder="" id="cost" v-model="prizeData.cost">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
             </div>
+
         </div>
         <div class="btns">
-            <button class="add" @click.stop="emit('modal-close')">Add</button>
+            <button class="add" @click="updatePrize(prizeData.id, prizeData.name, prizeData.description, prizeData.cost, prizeData.initialAmount, prizeData.currentAmount, prizeData.link, prizeData.Type, prizeData.amountPerDay, prizeData.lastUnits)" @click.stop="emit('modal-close')">Edit</button>
         </div>
         </div>
         </div>
@@ -163,6 +309,53 @@ onMounted(() => {
     top: 50%;
     left: 46.5%;
     translate: -50% -50%;
+}
+
+#shop-options{
+    display: flex;
+    flex-direction: row;
+}
+
+#shop-options  input {
+    width: 105%;
+}
+
+.wrap-options{
+    display: flex;
+    flex-direction: column;
+}
+
+#main-options{
+    display: flex;
+    flex-direction: row;
+}
+
+#main-options > .flex-1-row-1{
+    padding-bottom: 5%;
+}
+
+input{
+    font-size: 1.2rem;
+    font-weight: bolder;
+    text-indent: 2%;
+}
+
+.custom-logo-label {
+  background-color: #152259;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block;
+  margin-top: 10px;
+  align-self: center;
+}
+
+.logo-image {
+  width: 150px; /* Adjust as needed */
+  height: 150px;
+  object-fit: cover; /* Ensures the image is cropped instead of stretched */
+  border-radius: 8px; /* Optional: for rounded corners */
 }
 
 .wrapper-wrapper {
@@ -465,5 +658,11 @@ p {
 .labels > #amount {
     width: 15vw;
 }
+
+/* Hide the file input */
+#logo-upload {
+  display: none;
+}
+
 
 </style>

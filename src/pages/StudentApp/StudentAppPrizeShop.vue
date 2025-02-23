@@ -1,11 +1,13 @@
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import EditPrizePopup from './EditPrizeShopPopup.vue';
 import AddPrizePopup from './AddPrizeShopPopup.vue';
+import axios from "axios"
 
 const popupShow = ref(false);
-
+const prizesShop = ref([])
+const selectedRow = ref(null);
 const isModalOpened = ref(false);
 
 const openModal = () => {
@@ -24,6 +26,30 @@ const closeOtherModal = () => {
   isOtherModalOpened.value = false;
 };
 
+function removePrize(selectedRow){
+
+const idSelectedRow = selectedRow['id']
+selectedRow.value = null;
+
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/delete-prize', {auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+  }, 
+  id: idSelectedRow,
+
+  }).then(response => {
+      if (response.data == "Success"){
+           getPrizes();
+      }
+
+  })
+  
+}
+
+function openLink(){
+  window.open(selectedRow.value.link);
+}
+
 function isMobile() {
    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
      return true;
@@ -33,118 +59,35 @@ function isMobile() {
    }
 }
 
+// TODOOO OLHAR PARA O EDIT DISTO E POR SE PRECISO
+
 const message = ref();
 
 function selectCallback(row) {
-  console.log(row)
+  selectedRow.value = row;
   popupShow.value = true;
 }
 
-const datab = [
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
+function getPrizes(){
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/get-prizes-shop', {auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then(response => {
 
-];
+      prizesShop.value = response.data
+    })
+}
+
+onMounted(() => {
+  getPrizes();
+});
 
 const tablePref = {
   id: "ID",
   name: "Name",
-  price: "Price",
-  limitPurchases: "Limit Purchases"
+  cost: "Price",
+  amountPerDay: "Limit Purchases",
+  lastUnits: "Last Units"
 };
 
 </script>
@@ -161,7 +104,6 @@ const tablePref = {
         <input v-model="message" placeholder="Search for a prize">
       </form>
     
-     <button class="topbtn" @click="openModal">Add Prize</button>
      <Transition name="fade" appear>
         <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
      </Transition>
@@ -170,45 +112,45 @@ const tablePref = {
      </Transition>
      </div>
       <TheTable
-        :data="datab"
+        :data="prizesShop"
         :tableHeaders="tablePref"
         :searchInput="message"
         @onRowSelect="selectCallback"
       ></TheTable>
     </div>
-    <div class="right-popup-placeholder" v-show="popupShow">
-        <div class="items">
-          <h1>SHOP</h1>
-          <div class="prize-photo">Insert PPPPPrize Photo</div>
-          <h3 class="text1">Chamuça</h3>
-          <p class="text2 title">Prize</p>
-          <div class="btns-row">
-            <button class="btn" @click="openOtherModal">
-                <img src="../../assets/pencil.svg">
-            </button>
-            <button class="btn">
-                <img src="../../assets/internet.svg">
-            </button>
-            <button class="btn">
-                <img src="../../assets/trash.svg">
-            </button>
-          </div>
-          <div id="info">
-            <p>Description</p>
-            <p class="text2">Vinda do ROSE STUPAA GOOAT</p>
-            <div class="row">
-              <div class="col">
-                <p>Initial Amount</p>
-                <p class="text2">69</p>           
-              </div>
-              <div class="col">
-                <p>Current Amount</p>
-                <p class="text2">6</p>
+    <div class="right-popup-placeholder" v-if="selectedRow">
+          <div class="items">
+            <h1>SHOP</h1>
+            <div class="prize-photo">Insert PPPPPrize Photo</div>
+            <h3 class="text1">{{ selectedRow.name }}</h3>
+            <p class="text2 title">Prize</p>
+            <div class="btns-row">
+              <button class="btn" @click="openOtherModal()">
+                  <img src="../../assets/pencil.svg">
+              </button>
+              <button class="btn" @click="openLink()">
+                  <img src="../../assets/internet.svg">
+              </button>
+              <button class="btn" @click="removePrize(selectedRow)">
+                  <img src="../../assets/trash.svg">
+              </button>
+            </div>
+            <div id="info">
+              <p>Description</p>
+              <p class="text2">{{ selectedRow.description }}</p>
+              <div class="row">
+                <div class="col">
+                  <p>Initial Amount</p>
+                  <p class="text2">{{ selectedRow.initialAmount }}</p>           
+                </div>
+                <div class="col">
+                  <p>Current Amount</p>
+                  <p class="text2">{{ selectedRow.currentAmount }}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
   </div>
 </div>
 
@@ -263,6 +205,7 @@ const tablePref = {
 </template>
 
 <style scoped>
+
 .mobile-wrapper {
   display: flex;
   flex-direction: column;

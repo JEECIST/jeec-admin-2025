@@ -1,14 +1,21 @@
 <script setup>
-import { defineProps, defineEmits, ref} from "vue";
+import { defineProps, defineEmits, ref } from "vue";
 import axios from "axios";
-
-const prizes = ref([])
 
 const props = defineProps({
   isOpen: Boolean,
 });
 
 const logo = ref(null);
+const name = ref("");
+const selectedType = ref("");
+const description = ref("");
+const amount = ref(null);
+const cost = ref(null);
+const link = ref("");
+const amountPerDay = ref(null);
+const lastUnits= ref(null);
+
 
 const onLogoSelected = (event) => {
     const file = event.target.files[0]; // Get the uploaded file
@@ -21,8 +28,7 @@ const onLogoSelected = (event) => {
     }
 };
 
-function addPrize(name, desc, amount, link) {
-
+function addPrize(name, desc, amount, link, selectedType, amountPerDay, lastUnits, cost) {
 
     axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add-prizes', {auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
@@ -30,14 +36,26 @@ function addPrize(name, desc, amount, link) {
     }, 
     name: name,
     description: desc,
+    Type: selectedType,
     link: link,
     amount: amount,
+    cost: cost,
+    amountDay: amountPerDay,
+    lastUnit: lastUnits,
     imgPath: logo.value
 
     }).then(response => {
-            prizes.value = response.data.prizes
+        console.log(response)
+        if (response.data == "Success"){
+             
+        }
+
     })
-    }
+
+    // Need to Reset values
+
+
+}
 
 const emit = defineEmits(["modal-close"]);
 
@@ -71,10 +89,14 @@ function isMobile() {
                     </div>
                     <div class="labels" id="type">
                         <label for="type">Type</label>
-                        <select placeholder="" id="type">
-                            <option value="null" disabled selected hidden></option>
-                            <option>type test</option>
+                        <select placeholder="" id="type" v-model="selectedType">
+                            <option value="" disabled selected hidden>Select a type</option>
+                            <option>CV</option>
+                            <option>Individual</option>
+                            <option>Squad</option>
+                            <option>Shop</option>
                         </select>
+
                     </div>
                 </div>
                 <div class="flex-1-row-3">
@@ -100,23 +122,47 @@ function isMobile() {
                     <input id="logo-upload" type="file" @change="onLogoSelected" class="coolbutton" accept="image/*" />
 
                 </div>
-                <div class="flex-1-row-1">
-                    <div class="labels" id="amount">
-                        <label for="amount">Amount</label>
-                        <input type="text" placeholder="" id="amount" v-model="amount">
+                <div class="wrap-options">
+                    <div id="main-options">
+                        <div class="flex-1-row-1">
+                            <div class="labels" id="amount">
+                                <label for="amount">Amount</label>
+                                <input type="number" placeholder="" id="amount" v-model="amount">
+                            </div>
+                        </div>
+                        <div class="flex-1-row-1">
+                            <div class="labels" id="link">
+                                <label for="link">Link</label>
+                                <input type="text" placeholder="" id="link" v-model="link">
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="flex-1-row-1">
-                    <div class="labels" id="link">
-                        <label for="link">Link</label>
-                        <input type="text" placeholder="" id="link" v-model="link">
+                    <div v-if="selectedType == 'Shop'" id="shop-options">
+                        <div class="flex-1-row-1">
+                            <div class="labels" id="amount-per-day">
+                                <label for="amount-per-day">Amount per day</label>
+                                <input type="number" placeholder="" id="amount-per-day" v-model="amountPerDay">
+                            </div>
+                        </div>
+                        <div class="flex-1-row-1">
+                            <div class="labels" id="last-units">
+                                <label for="last-units">Last units</label>
+                                <input type="number" placeholder="" id="last-units" v-model="lastUnits">
+                            </div>
+                        </div>
+                        <div class="flex-1-row-1">
+                            <div class="labels" id="cost">
+                                <label for="cost">Cost</label>
+                                <input type="number" placeholder="" id="cost" v-model="cost">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
             </div>
         </div>
         <div class="btns">
-            <button class="add" @click="addPrize(name, description, amount, link)" @click.stop="emit('modal-close')">Add</button>
+            <button class="add" @click="addPrize(name, description, amount, link, selectedType, amountPerDay, lastUnits, cost)" @click.stop="emit('modal-close')">Add</button>
         </div>
         </div>
         </div>
@@ -182,6 +228,19 @@ function isMobile() {
 </template>
 
 <style scoped>
+
+#chamucapic {
+    max-width: 140%;
+    margin-right: 10%;
+}
+
+
+
+.flex-2{
+    gap: 0 !important;
+}
+
+
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -190,6 +249,22 @@ function isMobile() {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.425);
+}
+
+
+input#description {
+    text-indent: 1%;
+    text-align: start;
+    vertical-align: top;
+}
+
+label{
+    font-size: 1rem;
+    margin-bottom: 0.5%;
+}
+
+option{
+    font-size: 1rem;
 }
 
 .mobile-wrapper-wrapper {
@@ -204,9 +279,36 @@ function isMobile() {
     translate: -50% -50%;
 }
 
+
+#shop-options{
+    display: flex;
+    flex-direction: row;
+}
+
+
+#main-options{
+    display: flex;
+    flex-direction: row;
+}
+
+#main-options > .flex-1-row-1{
+    padding-bottom: 5%;
+}
+
+input{
+    font-size: 1.2rem;
+    font-weight: bolder;
+    text-indent: 2%;
+}
+
 .prize-pic{
     width: 100%;
     /* height: 100%; */
+}
+
+.wrap-options{
+    display: flex;
+    flex-direction: column;
 }
 
 
@@ -398,6 +500,14 @@ select {
     height: 25vh;
 }
 
+
+.logo-image {
+  width: 150px; /* Adjust as needed */
+  height: 150px;
+  object-fit: cover; /* Ensures the image is cropped instead of stretched */
+  border-radius: 8px; /* Optional: for rounded corners */
+}
+
 #chamucapic,
 #companylogo {
     width: 22vw;
@@ -455,12 +565,6 @@ select {
   display: none;
 }
 
-.logo-image {
-  width: 150px; /* Adjust as needed */
-  height: 150px;
-  object-fit: cover; /* Ensures the image is cropped instead of stretched */
-  border-radius: 8px; /* Optional: for rounded corners */
-}
 
 p {
     display: flex;
