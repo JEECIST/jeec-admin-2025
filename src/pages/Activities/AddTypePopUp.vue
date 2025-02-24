@@ -14,15 +14,20 @@
                 <div class="row">
                     <div class="col">
                         <label for="name">Name</label>
-                        <input type="text" v-model="name" />
-                        <label for="name">Points</label>
-                        <input type="text" v-model="points" />
+                        <input id="name" type="text" v-model="name" />
+                        <label for="points">Points</label>
+                        <input id="points" type="text" v-model="points" />
                     </div>
                     <div class="col">
                         <label for="priority">Priority</label>
-                        <input type="text" v-model="priority" />
-                        <label for="priority">Location</label>
-                        <input type="text" v-model="priority" />
+                        <input id="priority" type="text" v-model="priority" />
+                        <label for="location">Location</label>
+                        <select id="location" name="options" v-model="selectedLoc">
+                            <option value="" disabled></option>
+                            <option v-for="(loc, index) in locArray" :key="index" :value="loc.name">
+                                {{ loc.name }}
+                            </option>
+                        </select>
                     </div>
                 </div>
                 <!-- Show in Website -->
@@ -31,10 +36,10 @@
                         <label>Show in Website</label>
                         <div class="radio-group">
                             <label>
-                                <input type="radio" name="website" value="Yes" />Yes
+                                <input type="radio" name="website-yes" v-model="showInWebsite" :value=true />Yes
                             </label>
                             <label>
-                                <input type="radio" name="website" value="No" />No
+                                <input type="radio" name="website-no" v-model="showInWebsite" :value=false />No
                             </label>
                         </div>
                     </div>
@@ -44,10 +49,10 @@
                         <label>Social Media</label>
                         <div class="radio-group">
                             <label>
-                                <input type="radio" name="social-media" value="Yes" />Yes
+                                <input type="radio" name="social-media-yes" v-model="socialMedia" :value=true />Yes
                             </label>
                             <label>
-                                <input type="radio" name="social-media" value="No" />No
+                                <input type="radio" name="social-media-no" v-model="socialMedia" :value=false />No
                             </label>
                         </div>
                     </div>
@@ -57,37 +62,37 @@
                         <label>Exclusive Video</label>
                         <div class="radio-group">
                             <label>
-                                <input type="radio" name="exclusive-video" value="Yes" />Yes
+                                <input type="radio" name="exclusive-video-yes" v-model="exclusiveVideos" :value=true />Yes
                             </label>
                             <label>
-                                <input type="radio" name="exclusive-video" value="No" />No
+                                <input type="radio" name="exclusive-video-no" v-model="exclusiveVideos" :value=false />No
                             </label>
                         </div>
                     </div>
                 </div>
                 <!-- Exclusive Posts -->
-                    <div class="option-group">
-                        <label>Exclusive Posts</label>
-                        <div class="radio-group">
-                            <label>
-                                <input type="radio" name="exclusive-posts" value="Yes" />Yes
-                            </label>
-                            <label>
-                                <input type="radio" name="exclusive-posts" value="No" />No
-                            </label>
-                        </div>
+                <div class="option-group">
+                    <label>Exclusive Posts</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="exclusive-posts-yes" v-model="exclusivePosts" :value=true />Yes
+                        </label>
+                        <label>
+                            <input type="radio" name="exclusive-posts-no" v-model="exclusivePosts" :value=false />No
+                        </label>
                     </div>
+                </div>
             </div>
             <div class="end_btn">
-                <button class="btn_add" @click="closePopup">Add</button>
-                <!-- function to add and save info v-model -->
+                <button class="btn_add" @click="addType">Add</button>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import axios from 'axios';
 
 /*export{
   data() {
@@ -100,7 +105,77 @@ import { ref } from "vue";
   }
 };*/
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'typeAdded'])
+
+// Inputs do formulário
+const name = ref("");
+const priority = ref();
+const points = ref();
+const selectedLoc = ref("");
+const showInWebsite = ref();
+const socialMedia = ref();
+const exclusiveVideos = ref();
+const exclusivePosts = ref();
+
+
+const locArray = ref([]);
+
+const fetchData = () => {
+    axios
+        .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/types/locations', {
+            auth: {
+                username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+                password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+            },
+        })
+        .then((response) => {
+            const data = response.data;
+            locArray.value = data.locations.map((location) => ({
+                name: location.name,
+            }));
+            console.log(locArray.value)
+        })
+        .catch((error) => {
+            console.error('Erro ao buscar os dados:', error);
+        });
+};
+
+onMounted(fetchData)
+
+function addType() {
+    if (!name.value.trim()) {
+        console.error("O campo 'Nome' não pode estar vazio.");
+        return;
+    }
+
+    const typeData = {
+        event_id: '',
+        name: name.value,
+        points: points.value,
+        location: selectedLoc.value,
+        priority: priority.value,
+        show_in_website: showInWebsite.value,
+        social_media: socialMedia.value,
+        exclusive_posts: exclusivePosts.value,
+        exclusive_videos: exclusiveVideos.value,
+    };
+
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + `/activities/types/add-activity-type`, typeData, {
+        auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+    })
+        .then(() => {
+            console.log("Atividade adicionada com sucesso!");
+            emit("typeAdded")
+            emit("close");
+        })
+        .catch(error => {
+            console.error("Erro ao adicionar atividade:", error.response?.data || error);
+        });
+}
+
 
 function closePopup() {
     emit('close');
@@ -110,8 +185,7 @@ const props = defineProps({
     foo: String
 })
 
-const name = ref('');
-const priority = ref('');
+
 
 </script>
 
@@ -196,31 +270,50 @@ input[type="text"] {
     color: #4f4f4f;
 }
 
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    margin-top: -20px;
+    color: #4f4f4f;
+    background-color: white;
+}
+
+select:focus {
+    outline: none;
+    border-color: #aaa;
+}
+
 .option-group {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .option-group label {
-  font-size: 14px;
-  color: #4f4f4f;
+    font-size: 14px;
+    color: #4f4f4f;
 }
 
 .radio-group {
-  display: flex;
-  gap: 15px;
+    display: flex;
+    gap: 15px;
 }
 
 .radio-group label {
-  font-size: 14px;
-  color: #4f4f4f;
+    font-size: 14px;
+    color: #4f4f4f;
 }
 
 .end_btn {
-    position: absolute; /* Altere para position: absolute */
-    bottom: 40px; /* Alinhe com a margem inferior */
-    right: 40px; /* Alinhe com a margem direita */
+    position: absolute;
+    /* Altere para position: absolute */
+    bottom: 40px;
+    /* Alinhe com a margem inferior */
+    right: 40px;
+    /* Alinhe com a margem direita */
     display: flex;
     justify-content: flex-end;
     width: auto;

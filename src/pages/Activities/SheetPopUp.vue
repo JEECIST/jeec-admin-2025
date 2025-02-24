@@ -21,23 +21,20 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref , onMounted} from "vue";
 import TheTable from "../../global-components/TheTable.vue";
+import axios from 'axios';
 
 const database_names = ref([
     {
-    1: "hello hello hello hello hello helasddddasdadasdadasdasdadasdasdasdasdasdasdasdasdasdadasdasd",
-    2: "hello hello hello hello hello hell",
-    },
-    {
-    1: "hello hello hello hello hello hel",
-    2: "hello hello hello hello hello hello",
-    },
+    name1: null,
+    name2: null,
+    }
 ]);
 
 const tableHeaders = {
-    1: "",
-    2: ""
+    name1: "",
+    name2: ""
 };
 
 const emit = defineEmits(['close'])
@@ -49,13 +46,40 @@ function closePopup() {
 const props = defineProps({
     foo: String,
     typeName: {
-    type: String,
-    default: '', // Valor padrão, caso nenhum nome seja passado
+        type: String,
+        default: '', // Valor padrão, caso nenhum nome seja passado
     },
 })
 
-const name = ref('');
-const priority = ref('');
+const fetchData = () => {
+  axios
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/types/sheet', {typename: props.typeName}, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
+    })
+    .then((response) => {
+      const data = response.data.activities;
+
+      let formattedData = [];
+
+      for (let i = 0; i < data.length; i += 2) {
+        formattedData.push({
+          name1: data[i]?.name || "", // Se existir, coloca em name1
+          name2: data[i + 1]?.name || "", // Se existir, coloca em name2
+        });
+      }
+
+      // Atualiza a variável reativa
+      database_names.value = formattedData;
+    })
+    .catch((error) => {
+      console.error('Erro ao buscar os dados:', error);
+    });
+};
+
+onMounted(fetchData)
 
 </script>
 
