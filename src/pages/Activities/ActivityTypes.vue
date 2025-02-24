@@ -16,16 +16,16 @@
       <div v-if="filteredActivityType.length === 0" class="no-act-type">
         No activity type found
       </div>
-      <AddTypePopUp v-if="isaddtype" @close="popup_addtype"></AddTypePopUp>
+      <AddTypePopUp v-if="isaddtype" @close="popup_addtype"  @typeAdded="fetchData"></AddTypePopUp>
     </div>
     <div class="right-popup-placeholder" v-if="selectedType && filteredActivityType.length > 0">
       <button class="btn_close_rpp" @click="close_rpp">
-          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
-            stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4f4f4f"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
       <div class="items">
         <img class="popup-logo" src="../../assets/wrizz.jpg" alt="Profile Image">
         <div class="popup-type">{{ selectedType.name }}</div>
@@ -34,37 +34,37 @@
           <button class="edit-btn" @click="popup_edittype">
             <img src="../../assets/pencil.svg">
           </button>
-          <button class="edit-btn" @click="popup_sheet">  
+          <button class="edit-btn" @click="popup_sheet">
             <img src="../../assets/sheet.svg">
           </button>
-          <button class="edit-btn">
+          <button class="edit-btn" @click="delete_type(selectedType.name)">
             <img src="../../assets/trash.svg">
           </button>
         </div>
-        <div class="info"> <!--FAZER-->
+        <div class="info">
           <div class="col">
             <p>Priority</p>
             <div class="text"> {{ selectedType.priority }}</div>
             <p>Points</p>
             <div class="text"> {{ selectedType.points }}</div>
             <p>Show in Website</p>
-            <div class="text">Yes</div>
+            <div class="text">{{ selectedType.show_in_website ? "Yes" : "No" }} </div>
             <p>Esclusive Video</p>
-            <div class="text">No</div>
+            <div class="text">{{ selectedType.exclusive_videos ? "Yes" : "No" }} </div>
           </div>
           <div class="col">
             <p># Activities</p>
-            <div class="text"> {{ selectedType.number_act }}</div>
+            <div class="text"> {{ selectedType.number_act ? selectedType.number_act : 0 }}</div>
             <p>Location</p>
             <div class="text"> {{ selectedType.location }}</div>
             <p>Show in Social Media</p>
-            <div class="text">Yes</div>
+            <div class="text">{{ selectedType.social_media ? "Yes" : "No" }} </div>
             <p>Esclusive Posts</p>
-            <div class="text">No</div>
+            <div class="text">{{ selectedType.exclusive_posts ? "Yes" : "No" }} </div>
           </div>
         </div>
       </div>
-      <EditTypePopUp v-if="isedittype" @close="popup_edittype"></EditTypePopUp>
+      <EditTypePopUp v-if="isedittype" :selectedType = "selectedType" @close="popup_edittype" @typeEdited = "updateSelectedType"></EditTypePopUp>
       <SheetPopUp v-if="issheet" :typeName="selectedType?.name" @close="popup_sheet"></SheetPopUp>
     </div>
   </div>
@@ -73,120 +73,56 @@
 
 <script setup>
 import axios from 'axios';
-import { ref, computed , onMounted, onUnmounted} from 'vue';
+import { ref, computed, onMounted, onUnmounted, onActivated } from 'vue';
 import { useRouter } from 'vue-router';
 import TheTable from '../../global-components/TheTable.vue';
 import AddTypePopUp from './AddTypePopUp.vue';
 import EditTypePopUp from './EditTypePopUp.vue';
 import SheetPopUp from './SheetPopUp.vue';
 
-const database_type = ref([
-  {
-    name: "Main Speaker1",
-    priority: 1,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker2",
-    priority: 2,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker3",
-    priority: 3,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker4",
-    priority: 4,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker2",
-    priority: 2,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker3",
-    priority: 3,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker4",
-    priority: 4,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker4",
-    priority: 4,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker2",
-    priority: 2,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker3",
-    priority: 3,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker4",
-    priority: 4,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker4",
-    priority: 4,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker2",
-    priority: 2,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker3",
-    priority: 3,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-  {
-    name: "Main Speaker4",
-    priority: 4,
-    number_act: 5,
-    points: 500,
-    location: "Main Stage"
-  },
-]);
+const emit = defineEmits(['close'])
+
+const database_type = ref([{
+  name: null,
+  priority: null,
+  number_act: null,
+  points: null,
+  location: null,
+  show_in_website: null,
+  social_media: null,
+  exclusive_posts: null,
+  exclusive_videos: null
+}])
+
+const fetchData = () => {
+  axios
+    .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/typess', {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
+    })
+    .then((response) => {
+      const data = response.data;
+      console.log(data)
+      database_type.value = data.types.map((type) => ({
+        name: type.name,
+        priority: type.priority,
+        number_act: type.activities ? type.activities.length : 0, // Contar atividades
+        points: type.points,
+        location: type.location,
+        show_in_website: type.show_in_website,
+        social_media: type.social_media,
+        exclusive_posts: type.exclusive_posts,
+        exclusive_videos: type.exclusive_videos,
+      }));
+    })
+    .catch((error) => {
+      console.error('Erro ao buscar os dados:', error);
+    });
+};
+
+onMounted(fetchData)
 
 const tableHeaders = computed(() => {
   if (isMobile.value) {
@@ -196,7 +132,6 @@ const tableHeaders = computed(() => {
       location: "Location"
     };
   }
-
   return {
     name: "Name",
     priority: "Priority",
@@ -206,35 +141,27 @@ const tableHeaders = computed(() => {
   };
 });
 
-
-const fetchData = () => {
-    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',{auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        }}).then((response)=>{
-          const data = response.data
-          console.log(response.data.speakers[0])
-        })
-}
-
-onMounted(fetchData)
+const selectedType = ref();
 
 
 const searchQuery = ref('');
-const selectedType = ref(null);
+//const selectedType = ref([null]);
 
 function selectType(row) {
   selectedType.value = row;
-  //console.log('Selected Row: ', row);
 }
 
 function close_rpp() {
   selectedType.value = null;
 }
+function updateSelectedType(updatedType) {
+  selectedType.value = null;
+  fetchData();
+}
 
 const filteredActivityType = computed(() => {
   if (!searchQuery.value) {
-    return database_type.value;
+    return database_type.value
   }
 
   const filtered = database_type.value.filter((activity) =>
@@ -249,7 +176,7 @@ const filteredActivityType = computed(() => {
 
   if (isMobile.value) {
     // Mostrar apenas algumas informações no modo mobile
-    return filtered.map(({ name,number_act ,location  }) => ({ name, number_act, location}));
+    return filtered.map(({ name, number_act, location }) => ({ name, number_act, location }));
   }
 
   return filtered;
@@ -272,10 +199,32 @@ function popup_addtype() {
 
 function popup_edittype() {
   isedittype.value = !isedittype.value;
+
 }
 
 function popup_sheet() {
   issheet.value = !issheet.value;
+}
+
+function delete_type(name){
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + `/activities/types/delete_type`, {name: name}, {
+        auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+    })
+    .then(() => {
+        console.log("Atividade removida com sucesso!");
+        fetchData();
+
+        if (selectedType.value && selectedType.value.name === name) {
+            selectedType.value = null;
+        }
+        //emit("close");
+    })
+    .catch(error => {
+        console.error("Erro ao adicionar atividade:", error.response?.data || error);
+    });
 }
 
 const isMobile = ref(false); // Declare o `isMobile` como uma referência reativa
@@ -455,7 +404,7 @@ onUnmounted(() => {
 
 .popup-title {
   color: #4F4F4F;
-  
+
 }
 
 .popup-btns {
