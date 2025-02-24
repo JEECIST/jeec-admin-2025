@@ -19,10 +19,8 @@
           <div class="event-filter">
             <label for="event">Event</label>
             <select class="selection-box" v-model="eventselected">
-              <option value="all">All</option>
-              <option value="JEEC 23/24">JEEC 23/24</option>
-              <option value="JEEC 24/25">JEEC 24/25</option>
-            </select>   
+                <option v-for="event in events" :key="event.id" :value="{ id: event.id, name: event.name }">{{ event.name }}</option>
+            </select>  
           </div>
         </div>
         <div class="form-line">
@@ -34,39 +32,36 @@
         <div class="form-columns">
           <div class="logo">
             
-            <div class="blue-square" v-if="logo">
+            <div class="blue-square" v-if="logo_image">
               <!-- Display the selected image -->
-              <img :src="logo" alt="Logo" class="logo-image" />
+              <img :src="logo_image" alt="Logo" class="logo-image" />
             </div>
-            
             <div class="blue-square" v-else>
               <!-- Display this text when no logo is selected -->
               <p>No logo selected yet</p>
             </div>
             <!-- Hidden file input -->
             <label for="logo-upload" class="custom-logo-label">Add new Logo</label>
-            <input id="logo-upload" type="file" @change="onLogoSelected" class="button-add-logo" accept="image/*" />
+            <input id="logo-upload" name ="fileSelected" type="file" @change="onLogoSelected" class="button-add-logo" accept="image/*" />
           </div>
           <div class="second-column">
             <div class="form-line">
               <div class="inputjeec">
                 <label for="jeecresponsible">JEEC Responsible</label>
-                <select class="selection-box-jeec">
-                  <option value="all">All</option>
-                  <option value="Maria">Maria</option>
-                  <option value="Francisca">Francisca</option>
+                <select class="selection-box-jeec" v-model="jeec_responsible">  
+                  <option v-for="responsible in colaborators" :key="responsible.id" :value="{ id: responsible.id, name: responsible.name }">{{ responsible.name }}</option>
                 </select>
               </div>
             </div>
           
             <div class="form-line">
               <div class="radio-label">
-                <label for="show">Show in Website</label>
+                <label for="show_in_website">Show in Website</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
+                  <input type="radio" id="yes" v-model="show_in_website" :value="true"/>
                   <label for="yes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
+                  <input type="radio" id="no" v-model="show_in_website" :value="false"/>
                   <label for="no">No</label>
                 </div>
               </div>
@@ -74,10 +69,8 @@
 
               <div class="inputtier">
                 <label for="Tier">Tier</label>
-                <select class="selection-box-tier">
-                  <option value="Gold">Gold</option>
-                  <option value="Bronze">Bronze</option>
-                  <option value="Sliver">Silver</option>
+                <select class="selection-box-tier" v-model="tier">
+                  <option v-for="tier_ in tiers" :key="tier_.id" :value="tier_.id">{{ tier_.name }}</option>
                 </select>
               </div>
             </div>
@@ -85,22 +78,88 @@
             
         </div>
       </form>
-      <button class="button-add-sponsor">Add</button>
+      <button class="button-add-sponsor" @click="addingSponsor">Add</button>
     </div>
   </div>
   
 </template>
 
 <script setup>
+import axios from 'axios';
+import { ref } from 'vue';
 const emit = defineEmits(['close'])
 
+
 function closePopup() {
-emit('close');
+  emit('close');
 }
 
 const props = defineProps({
-  foo: String
+  events: Array,
+  tiers: Array,
+  colaborators: Array
 })
+
+
+
+const name = ref('')
+const description = ref('')
+const eventselected = ref(null)
+const tier = ref(null)
+const jeec_responsible = ref({ id: null, name: '' })
+var error_response = ref('error')
+var fileSelected = ref(null)
+var fileToUpload = ref(null)
+const show_in_website = ref('false')
+const logo_image = ref('')
+
+
+
+
+
+function onLogoSelected(event){
+  fileSelected.value = event.target.files[0].name;
+  fileToUpload.value = event.target.files[0];
+  logo_image.value = URL.createObjectURL(event.target.files[0]);
+  console.log(fileSelected.value)
+}
+
+function addingSponsor(e) {
+      console.log('adding sponsor')
+        e.preventDefault()
+
+
+        const fd = new FormData();
+        if (fileToUpload.value) fd.append('logo_image', fileToUpload.value)
+        fd.append('name', name.value)
+        fd.append('description', description.value)
+        fd.append('event_id', eventselected.value.id)
+        fd.append('event_name', eventselected.value.name)
+        console.log("Event id",eventselected.value)
+        fd.append('show_in_website', show_in_website.value)
+        console.log("Show in website",show_in_website.value)
+        fd.append('tier_id', tier.value)
+        console.log("Tier id",tier.value)
+        fd.append('jeec_responsible_id', jeec_responsible.value.id)
+        fd.append('jeec_responsible_name', jeec_responsible.value.name)
+        console.log("JEEC responsible",jeec_responsible.value.id)
+
+        axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add-sponsor-vue',fd,{auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then(response => {
+          console.log(response)
+          error_response = response.data.error
+          if(error_response==''){
+            closePopup()
+          }
+          else{
+            console.log('error on adding sponsor: ', error_response)
+          }
+        })
+        
+      }
+
 </script>
 
 <style scoped>
@@ -287,7 +346,7 @@ input[type="radio"] {
   display: flex;
   flex-direction: column;
   align-content: center;
-  object-fit: cover;
+  object-fit: scale-down;
 }
 /* Hide the file input */
 #logo-upload {
@@ -332,6 +391,7 @@ input[type="radio"] {
 .logo-image {
   max-width: 100%;
   max-height: 100%;
+  object-fit: scale-down;
 }
 
 .button-add-logo {

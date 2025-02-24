@@ -13,12 +13,11 @@
             v-model="searchQuery"
           />
         </div>
-      <div class="event-filter">
+      <div class="event-filter">  
         <p>Event</p>
-        <select class="selection-box" v-model="eventselected">
+        <select class="selection-box" v-model="eventselected" @change="filterByEvent">
           <option value="all">All</option>
-          <option value="JEEC 23/24">JEEC 23/24</option>
-          <option value="JEEC 24/25">JEEC 24/25</option>
+          <option v-for="event in events" :key="event.id" :value="event.name">{{ event.name }}</option>
         </select>   
       </div>
       <button class="button-add-sponsor" @click="toogleadd">Add Sponsor</button>
@@ -51,14 +50,15 @@
         </svg>
       </button>
       <div class="sponsor-card-header">
-        <h1 class="card-tier">{{ selectedRow.tier }}</h1>
-        <img class='sponsor-logo' :src=selectedRow.logo alt="sponsor logo" />
+        <h1 class="card-tier">{{ selectedRow.tier_name }}</h1>
+        <img v-if="selectedRow.logo" class='sponsor-logo' :src="selectedRow.logo" alt="sponsor logo" />
+        <div v-else class='sponsor-no-logo'>No logo</div>
         <div class="card-title">
           <p class="card-name">{{ selectedRow.name }}</p>
           <p class="card-subtitle">Sponsor</p>
         </div>
         <div class="card-buttons">
-          <button @click="editRow(selectedRow)" class="icon-button">
+          <button @click="toogleedit()" class="icon-button">
             <img :src="pencilIcon" alt="edit" class="icon" />
           </button>
           <button @click="deleteRow(selectedRow)" class="icon-button">
@@ -70,7 +70,7 @@
       <div class="sponsor-card-body">
         <div class="card-paragraph">
           <h1>JEEC Responsible</h1>
-          <p>{{ selectedRow.jeecresponsible }}</p>
+          <p>{{ selectedRow.jeec_responsible }}</p>
         </div>
         <div class="card-paragraph">
           <h1>Description</h1>
@@ -78,20 +78,21 @@
         </div>
         <div class="card-paragraph">
           <h1>Event</h1>
-          <p>{{ selectedRow.eventselected }}</p>
+          <p>{{ selectedRow.event_name }}</p>
         </div>
         
       </div>
     </div>
 
-    <AddSponsor v-if="isaddsponsor" @close="toogleadd"/>
-    <EditSponsor v-if="iseditsponsor" @close="editRow(selectedRow)" :sponsorData="selectedRow" :isOpen="iseditsponsor"/>
+    <AddSponsor v-if="isaddsponsor" @close="toogleadd" :events="events" :tiers="tiers" :isOpen="isaddsponsor" :colaborators="colaborators"/>
+    <EditSponsor v-if="iseditsponsor" @close="toogleedit" :sponsorData="selectedRow" :events="events" :tiers="tiers" :isOpen="iseditsponsor" :colaborators="colaborators"/>
+   
   </div>
   
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import TheTable from '../../global-components/TheTable.vue';
 import AddSponsor from './AddSponsor.vue';
@@ -100,49 +101,87 @@ import pencilIcon from '../../assets/pencil.svg'
 import trashIcon from '../../assets/trash.svg'
 
 // Example data to be displayed in the table
-const tableData = ref([{
-  id: null,
-  name: null,
-  company: null,
-}])
+const tableData = ref([])
+const originalTableData = ref([])
 
+const events = ref([])
+const tiers = ref([])
+const colaborators = ref([])
 
 const fetchData = () => {
-    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/sponsors_vue',{auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        }}).then((response)=>{
-          const data = response.data
-          tableData.value = response.data.sponsors
-          console.log(tableData.value)
-        })
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/sponsors_vue',{auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }}).then((response)=>{
+      events.value = response.data.events
+      console.log("Events",events.value)
+
+      tiers.value = response.data.tiers
+      console.log("Tiers",tiers.value)
+
+      colaborators.value = response.data.colaborators
+      console.log("Colaborators",colaborators.value)
+
+      originalTableData.value = response.data.sponsors
+      tableData.value = response.data.sponsors
+      console.log("Sponsors",tableData.value)
+
+      if (response.data.error == 'No sponsors found'){
+        noSponsors.value = true
+      }
+    }).catch((error)=>{
+      console.log(error)
+    })
 }
 
 onMounted(fetchData)
-
-// const tableData = ref([
-//   { id: 1, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk', eventselected: 'JEEC 23/24', showInWebsite: false },
-//   { id: 2, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
-//   { id: 3, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-//   { id: 4, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv', eventselected: 'JEEC 23/24', showInWebsite: false },
-//   { id: 5, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
-//   { id: 6, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-//   { id: 7, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv', eventselected: 'JEEC 23/24', showInWebsite: false },
-//   { id: 8, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
-//   { id: 9, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-//   { id: 10, name: 'Galp', tier: 'Gold', jeecresponsible: 'Maria Francisca', logo:"src/assets/Galp.png", description:'Forneceu combustivel para o carro de apoio lkwnljQ J+EHOQW NEDQBEVFI +ehpndbfowpodsnk sdclsd sacsd sdv ', eventselected: 'JEEC 23/24', showInWebsite: false },
-//   { id: 11, name: 'Galp', tier: 'Silver', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Forneceu o pequeno almoço para a semana toda', eventselected: 'JEEC 23/24', showInWebsite: true },
-//   { id: 12, name: 'Galp', tier: 'Bronze', jeecresponsible: 'Maria Francisca', logo: "src/assets/Galp.png" , description:'Flopou não forneceu absolutamente nada', eventselected: 'JEEC 23/24', showInWebsite: true},
-
-// ]);
 
 // Headers to map the data keys to table headers
 const headers = {
   id: 'ID',
   name: 'Name',
-  tier: 'Tier',
-  jeecresponsible: 'JEEC Responsible',
+  tier_name: 'Tier',
+  jeec_responsible: 'JEEC Responsible',
 };
+
+// Function to filter the table data by event
+function filterByEvent() {
+  const selectedEvent = eventselected.value;
+  if (selectedEvent == 'all') {
+    unselectRow();
+    tableData.value =  originalTableData.value
+  } else {
+    unselectRow();
+    tableData.value =  originalTableData.value.filter(sponsor => sponsor.event_name === selectedEvent);
+    console.log("Filtered Sponsors", tableData.value);
+  }
+}
+
+function fetchSponsorDetails(){
+  console.log('Fetching sponsor details')
+  const sponsorName = selectedRow.value.name;
+  const eventName = selectedRow.value.event_name;
+
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get_image_sponsor', {
+    sponsor_name: sponsorName,
+    event_name: eventName
+  }, {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then((response) => {
+    if (!response.data.error) {
+      console.log('Sponsor details fetched', response.data);
+      selectedRow.value.logo = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image; // Update the logo in the selectedRow
+      console.log(selectedRow.value.logo);
+    } else {
+      console.log('Error fetching sponsor details', response.data.error);
+    }
+  }).catch((error) => {
+    console.log(error);
+  });
+}
 
 const tableButtons = '';
 const noSponsors = ref(false);
@@ -151,6 +190,13 @@ const cardDisplaying = ref(false);
 // Search query for filtering the rows
 const searchQuery = ref('');
 const selectedRow = ref(null);
+
+// Watch for changes in selectedRow and fetch sponsor details
+watch(selectedRow, (newValue, oldValue) => {
+  if (newValue) {
+    fetchSponsorDetails();
+  }
+});
 
 // Event handler for row selection
 function handleRowSelect(row) {
@@ -168,14 +214,25 @@ function unselectRow() {
   selectedRow.value = null;
 }
 
-// Event handlers for button clicks
-function editRow(row) {
-  iseditsponsor.value= !iseditsponsor.value
-  console.log(iseditsponsor.value)
-  console.log('Edit button clicked for row:', row);
-}
-
 function deleteRow(row) {
+  if (confirm('Are you sure you want to delete this sponsor?')) {
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/delete_sponsor', {
+      sponsor_id: selectedRow.value.id,
+      event_name: selectedRow.value.event_name
+    }, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    }).then((response) => {
+      console.log('Sponsor deleted', response.data);
+      unselectRow();
+      fetchData();
+      filterByEvent();
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
   console.log('Delete button clicked for row:', row);
 }
 
@@ -183,10 +240,20 @@ function deleteRow(row) {
 const isaddsponsor= ref(false);
 const iseditsponsor= ref(false);
 
-function toogleadd()
-{
-  isaddsponsor.value= !isaddsponsor.value
-  console.log(isaddsponsor.value)
+function toogleadd() {
+  isaddsponsor.value = !isaddsponsor.value;
+  if (!isaddsponsor.value) {
+    fetchData();
+    filterByEvent();
+  }
+}
+
+function toogleedit() {
+  iseditsponsor.value = !iseditsponsor.value;
+  if (!iseditsponsor.value) {
+    fetchData();
+    filterByEvent();
+  }
 }
 
 
@@ -202,7 +269,7 @@ const eventselected = ref('');
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  padding: 34px 40px 40px 40px;
+  padding: 15px 40px 15px 40px;
   gap: 15px;
 }
 
@@ -230,6 +297,7 @@ const eventselected = ref('');
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  margin-top: 20px;
   width: 100%;
   gap:10px;
 }
@@ -240,14 +308,30 @@ const eventselected = ref('');
 }
 
 .sponsor-logo {
-  width: 8vw;
-  height: 8vw;
-  min-height: 50px;
-  min-width: 50px;
-  max-width: 100px;
-  max-height: 100px;
+  width: 18vh;
+  height: 18vh;
+  min-height: 70px;
+  min-width: 70px;
+  max-width: 150px;
+  max-height: 150px;
+  object-fit: scale-down; /* Ensure the whole image is visible */
+}
+
+.sponsor-no-logo {
+  width: 18vh;
+  height: 18vh;
+  min-height:100px;
+  min-width: 100px;
+  max-width: 150px;
+  max-height: 150px;
   border-radius: 50%;
-  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  color: #888;
+  font-size: 14px;
+  text-align: center;
 }
 
 .card-title{
@@ -286,6 +370,7 @@ const eventselected = ref('');
   width: 100%;
   padding: 10px 10px 10px 10px;
   gap: 10px;
+  overflow: hidden;
 
 }
 
@@ -367,6 +452,7 @@ const eventselected = ref('');
   background-color: #EBF6FF; 
   border-radius: 4px; 
   flex-grow: 1;
+  padding: 1px 1px 1px 1px;
 }
 
 .search-icon {
@@ -397,10 +483,10 @@ const eventselected = ref('');
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  font-size: 10px;
+  font-size: 11px;
   gap: 2px;
   height: 50px;
-  min-width: 30px; 
+  min-width: 70px; 
 }
 
 .selection-box {
@@ -410,7 +496,7 @@ const eventselected = ref('');
   border-radius: 4px;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
-  padding: 1px 1px;
+  padding: 3px 3px;
   font-size: 1em;
   color: #8A8A8A;
   background-color: #FFFFFF;
@@ -496,6 +582,18 @@ const eventselected = ref('');
     background: rgba(0,0,0,0.5);
   }
 
+  .search-container {
+    width: 100%;
+  }
+
+  .button-sponsor-tiers{
+    flex-grow: 1;
+  }
+
+  .button-add-sponsor {
+    flex-grow: 1;
+  }
+
   .backdrop{
     position: fixed;
     top: 0;
@@ -518,6 +616,7 @@ const eventselected = ref('');
     position: absolute; /* Position the sponsor card absolutely */
     top: 118px; /* Position the sponsor card 50px below the center */
     width: 90vw; /* Set the width to 100% */
+    max-width: 500px;
     max-height: 80vh;
     height: fit-content; /* Set the height to 100% */
     margin-top: 0;
@@ -542,12 +641,12 @@ const eventselected = ref('');
   }
 
   .sponsor-logo {
-    width: 40vw;
-    height: 40vw;
+    width: 18vh;
+    height: 18vh;
     max-width: 150px;
     max-height: 150px;
     border-radius: 50%;
-    object-fit: cover;
+    object-fit: scale-down; /* Ensure the whole image is visible */
   }
 
   .icon-button {

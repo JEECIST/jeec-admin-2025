@@ -1,7 +1,7 @@
 <template>
   <div class="backdrop" v-if="cardDisplaying"></div>
   <div class="sponsors-container">
-    <div class="sponsors-table" :class="{'hide-on-mobile': cardDisplaying }">
+    <div class="sponsors-table" :class="{ 'hide-on-mobile': cardDisplaying }">
       <div class="header">
         <div class="search-container">
           <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -23,10 +23,11 @@
           :searchInput="searchQuery"
           :isSelectable="true"
           @onRowSelect="handleRowSelect"
+          @notFound="handleNosponsors"
           class="table"
         />
-        <div class="nosponsors" v-if="tableData.length == 0">No Tiers Found</div>
       </div>
+      <div class="nosponsors" v-if=noSponsors>No Tiers Found</div>
     </div>
 
     <div v-if="selectedRow" class="sponsor-card">
@@ -68,29 +69,29 @@
           </div>
           <div class="card-paragraph">
             <h1>Logo in Canvas</h1>
-            <p>{{ selectedRow.logoincanvas }}</p>
+            <p>{{ selectedRow.logoInCanvas }}</p>
           </div>
           <div class="card-paragraph">
             <h1>Exclusive Video</h1>
-            <p>{{ selectedRow.exclusivevideo }}</p>
+            <p>{{ selectedRow.exclusiveVideo }}</p>
           </div>
           <div class="card-paragraph">
             <h1>Exclusive Posts</h1>
-            <p>{{ selectedRow.exclusiveposts }}</p>
+            <p>{{ selectedRow.exclusivePosts }}</p>
           </div>
       </div>
       <div class="card-collumn">
           <div class="card-paragraph">
             <h1># Sponsors</h1>
-            <p>{{ selectedRow.sponsors }}</p>
+            <p>{{ selectedRow.numberOfSponsors }}</p>
           </div>
           <div class="card-paragraph">
             <h1>Social Media</h1>
-            <p>{{ selectedRow.socialmedia }}</p>
+            <p>{{ selectedRow.socialMedia }}</p>
           </div>
           <div class="card-paragraph">
             <h1>Logo in Posters</h1>
-            <p>{{ selectedRow.logoinposters }}</p>
+            <p>{{ selectedRow.logoInPosters }}</p>
           </div>
           <div class="card-paragraph">
             <h1>Teaser</h1>
@@ -98,7 +99,7 @@
           </div>
           <div class="card-paragraph">
             <h1>Included Meal</h1>
-            <p>{{ selectedRow.includemeal }}</p>
+            <p>{{ selectedRow.includedMeal }}</p>
           </div>
       </div>
         
@@ -106,7 +107,7 @@
       </div>
     </div>
 
-    <SponsorsList v-if="listsponsors" @close="tooglelist" :type="selectedRow.name" />
+    <SponsorsList v-if="listsponsors" @close="tooglelist" :tier="selectedRow" />
     <AddSponsorTier v-if="isaddsponsortier" @close="toogleadd"/>
     <EditSponsorTier v-if="iseditsponsortier" @close="editRow(selectedRow)" :sponsorData="selectedRow" :isOpen="iseditsponsor"/>
   </div>
@@ -114,7 +115,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 import TheTable from '../../global-components/TheTable.vue';
 import pencilIcon from '../../assets/pencil.svg'
 import trashIcon from '../../assets/trash.svg'
@@ -125,21 +127,47 @@ import briefcaseIcon from '../../assets/briefcase.svg'
 import SponsorsList from './SponsorsList.vue';
 
 // Example data to be displayed in the table
-const tableData = ref([
-  { name: 'Gold', priority: 1, sponsors: 3, includemeal:"Yes", showInWebsite: "No", socialmedia: "Yes", logoincanvas:"Yes", logoinposters:"Yes", exclusivevideo:"Yes", exclusiveposts: "Yes", teaser:"Yes" },
-  { name: 'Silver', priority: 2, sponsors: 15, includemeal:"Yes", showInWebsite: "No", socialmedia: "Yes", logoincanvas:"Yes", logoinposters:"Yes", exclusivevideo:"Yes", exclusiveposts: "Yes", teaser:"Yes" },
-  { name: 'Bronze', priority: 3, sponsors: 9, includemeal:"No", showInWebsite: "No", socialmedia: "Yes", logoincanvas:"Yes", logoinposters:"Yes", exclusivevideo:"Yes", exclusiveposts: "Yes", teaser:"Yes" },
-]);
+// const tableData = ref([
+//   { name: 'Gold', priority: 1, sponsors: 3, includemeal:"Yes", showInWebsite: "No", socialmedia: "Yes", logoincanvas:"Yes", logoinposters:"Yes", exclusivevideo:"Yes", exclusiveposts: "Yes", teaser:"Yes" },
+//   { name: 'Silver', priority: 2, sponsors: 15, includemeal:"Yes", showInWebsite: "No", socialmedia: "Yes", logoincanvas:"Yes", logoinposters:"Yes", exclusivevideo:"Yes", exclusiveposts: "Yes", teaser:"Yes" },
+//   { name: 'Bronze', priority: 3, sponsors: 9, includemeal:"No", showInWebsite: "No", socialmedia: "Yes", logoincanvas:"Yes", logoinposters:"Yes", exclusivevideo:"Yes", exclusiveposts: "Yes", teaser:"Yes" },
+// ]);
+
+const tableData = ref([]);
+
+const fetchData = () => {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/sponsors_tiers_vue',{auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then((response)=>{
+          const data = response.data
+          tableData.value = response.data.tiers
+          console.log("Sponsor Tiers",tableData.value)
+          events.value = response.data.events
+          console.log("Events",events.value)
+        }).catch((error)=>{
+          console.log(error)
+        })
+}
+
+onMounted(fetchData)
+
+const isaddsponsortier= ref(false);
+const iseditsponsortier= ref(false);
+const listsponsors= ref(false);
+const cardDisplaying = ref(false);
+
 
 // Headers to map the data keys to table headers
 const headers = {
   name: 'Name',
   priority: 'Priority',
-  sponsors: '# Sponsors',
-  includemeal: 'Include Meal',
+  numberOfSponsors: '# Sponsors'
 };
 
 const tableButtons = '';
+const noSponsors = ref(false);
+
 
 // Search query for filtering the rows
 const searchQuery = ref('');
@@ -149,6 +177,11 @@ const selectedRow = ref(null);
 function handleRowSelect(row) {
   cardDisplaying.value = true;
   selectedRow.value = row;
+}
+
+function handleNosponsors(isEmpty){
+  console.log('No sponsors found', isEmpty);
+  noSponsors.value = isEmpty;
 }
 
 function unselectRow() {
@@ -163,26 +196,39 @@ function editRow(row) {
   console.log('Edit button clicked for row:', row);
 }
 
-function deleteRow(row) {
-  console.log('Delete button clicked for row:', row);
-}
-
-const isaddsponsortier= ref(false);
-const iseditsponsortier= ref(false);
-const listsponsors= ref(false);
-const cardDisplaying = ref(false);
 
 
 function toogleadd()
 {
   isaddsponsortier.value= !isaddsponsortier.value
   console.log(isaddsponsortier.value)
+  fetchData()
 }
 
 function tooglelist()
 {
   listsponsors.value= !listsponsors.value
   console.log(listsponsors.value)
+}
+
+function deleteRow(row) {
+  if (confirm('Are you sure you want to delete this sponsor tier?')) {
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/delete_sponsor_tier', {
+      tier_id: selectedRow.value.id
+    }, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    }).then((response) => {
+      console.log('Sponsor tier deleted', response.data);
+      unselectRow();
+      fetchData();
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+  console.log('Delete button clicked for row:', row);
 }
 
 
@@ -197,7 +243,7 @@ function tooglelist()
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  padding: 20px 20px 20px 20px;
+  padding: 15px 40px 15px 40px;
   gap: 15px;
 }
 
@@ -279,7 +325,7 @@ function tooglelist()
   justify-content: space-between;
   width: 100%;
   padding: 15px 15px 15px 15px;
-  gap: 15px;
+  gap: 40px;
 
 }
 
@@ -310,7 +356,6 @@ function tooglelist()
   justify-content: flex-start;
   align-items: center;
   height: 75vh;
-  max-height: 460px;
   width: 80%;
   min-width: 300px;
   overflow: hidden;
@@ -333,13 +378,16 @@ function tooglelist()
 }
 
 .nosponsors{
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 0.6em;
+  font-size: 1em;
   color: var(--c-tf);
   background-color: var(--c-accent);
-  font-weight: 500; 
+  font-weight: 600; 
 }
 
 .header {
@@ -364,6 +412,7 @@ function tooglelist()
   background-color: #EBF6FF; 
   border-radius: 4px; 
   flex-grow: 4;
+  padding: 1px 1px 1px 1px;
 }
 
 .search-icon {
@@ -378,9 +427,9 @@ function tooglelist()
 
 .search-bar {
   height: 36px; 
-  padding: 0.5px 1px 0.5px 24px;
-  border: none;
+  padding: 5px 5px 5px 24px;
   border-radius: 4px;
+  border: none;
   outline-color: var(--c-select);
   color: #8A8A8A;
   font-family: 'Kumbh Sans', sans-serif;
@@ -391,16 +440,7 @@ function tooglelist()
   flex-grow: 1;
 }
 
-.event-filter {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  font-size: 0.6em;
-  gap: 2px;
-  width: 16%;
-  height: 50px;
-  min-width: 95px; 
-}
+
 
 .selection-box {
   width: 100%;
@@ -436,20 +476,18 @@ function tooglelist()
   align-items: center;
   justify-content: center;
   gap:2px;
-  width: 18%;
-  min-width: 80px;
+  min-width: 95px;
   height: 36px; 
   border: none;
   border-radius: 4px;
   outline-color: var(--c-select);
   font-family: 'Kumbh Sans', sans-serif;
-  font-size: 0.9em;
+  font-size: 0.7em;
   font-weight: 400;
   color: #FFFFFF;
   background-color: var(--c-select);
   padding: 4px 4px;
   cursor: pointer;
-  flex-grow: 1;
 }
 
 .chevron-icon {
@@ -512,11 +550,16 @@ function tooglelist()
     flex-direction: column; /* Stack the elements vertically */
   }
 
+  .sponsors-table {
+    max-height: 700px;
+    height: 78vh;
+  }
+
   .sponsor-card {
     position: absolute; /* Position the sponsor card absolutely */
     top: 120px; /* Position the sponsor card 50px below the center */
     width: 90vw; /* Set the width to 100% */
-    max-width: 600px;
+    max-width: fit-content;
     max-height: 600px;
     height: 80vh; /* Set the height to 100% */
   }
