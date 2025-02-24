@@ -9,13 +9,13 @@
             </svg>
             <input 
               type="text" 
-              placeholder="Search for a team" 
+              placeholder="Search for a member" 
               class="searchbar" 
               v-model="searchQuery" 
               @input="closePopupOnSearch"
             />
           </div>
-          <button class="add-team" @click="openAddPopup">Add Members</button>
+          <button class="add-team" @click="openAddPopup">Add Member</button>
         </div>
       </div>
 
@@ -39,7 +39,9 @@
               </h2>
               <button class="closeX" @click="closePopup">&times;</button>
               <div class="popup-content">
-                <div class="fotobola"></div>
+                <div class="fotobola">
+                  <img v-if="imageUrl" :src="imageUrl" alt="Member Image" />
+                </div>
                 <h2 class="subtitulo">{{ selectedMember.name }}</h2>
                 <p class="sub-subtitulo">{{ selectedMember.userRole }}</p>
                 <div class="display">
@@ -51,7 +53,7 @@
                       <img src="/home/code/jeec-admin-2025/src/assets/linkedin.svg" alt="Team" />
                     </a>
                   </button>
-                  <button class="edit" @click="deleteMember">
+                  <button class="edit" @click="deleteMember(selectedMember.id)">
                     <img src="/home/code/jeec-admin-2025/src/assets/trash.svg" alt="Delete" />
                   </button>
                 </div>
@@ -145,11 +147,10 @@
                           <label class="centrado">{{ selectedFile ? selectedFile.name : 'No picture selected' }}</label>
                         </div>
                         <div class="ultline">
-                          <button type="button" class="left-add">Add Picture</button>
-                          <button type="submit" class="right-add">Add</button>
+                          <button type="button" class="left-add" @click="triggerFileInput">Add Picture</button>
+                          <button type="submit" class="right-add">Save</button>
                         </div>
                       </label>
-                      <span v-if="selectedFile">{{ selectedFile.name }}</span>
                     </div>
                   </div>
                 </form>
@@ -160,17 +161,19 @@
       </div>
     </div>
 
-    <div v-if="filteredMembers.length === 0" class="form">
+    <!-- <div v-if="filteredMembers.length === 0" class="form">
       <label class="no-teams">No members found</label>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import TheTable from '../../global-components/TheTable.vue';
 
 export default {
   name: 'Members',
+  props: ["external_id"],
   components: {
     TheTable,
   },
@@ -178,28 +181,7 @@ export default {
     return {
       selectedEvent: 'Select an event',
       searchQuery: '',
-      members: [
-        { id: 1, name: 'Filipa', username: 'Pipinha', userRole: 'Admin', shifts: 69, email: 'filipa@example.com', linkedin: 'linkedin.com/in/filipa' },
-        { id: 2, name: 'Ricardo', username: 'ricardinho', userRole: 'User', shifts: 3, email: 'ricardo@example.com', linkedin: 'linkedin.com/in/ricardo' },
-        { id: 3, name: 'João', username: 'joãozinho', userRole: 'User', shifts: 1, email: 'joao@example.com', linkedin: 'linkedin.com/in/joao' },
-        { id: 4, name: 'Maria', username: 'mariazinha', userRole: 'User', shifts: 2, email: 'maria@example.com', linkedin: 'linkedin.com/in/maria' },
-        { id: 5, name: 'Ana', username: 'aninha', userRole: 'User', shifts: 3, email: 'ana@example.com', linkedin: 'linkedin.com/in/ana' },
-        { id: 6, name: 'Pedro', username: 'pedrinho', userRole: 'User', shifts: 1, email: 'pedro@example.com', linkedin: 'linkedin.com/in/pedro' },
-        { id: 7, name: 'Miguel', username: 'miguelzinho', userRole: 'User', shifts: 2, email: 'miguel@example.com', linkedin: 'linkedin.com/in/miguel' },
-        { id: 8, name: 'Sofia', username: 'sofinha', userRole: 'User', shifts: 3, email: 'sofia@example.com', linkedin: 'linkedin.com/in/sofia' },
-        { id: 9, name: 'Marta', username: 'martinha', userRole: 'User', shifts: 1, email: 'marta@example.com', linkedin: 'linkedin.com/in/marta' },
-        { id: 10, name: 'Rita', username: 'ritinha', userRole: 'User', shifts: 2, email: 'rita@example.com', linkedin: 'linkedin.com/in/rita' },
-        { id: 11, name: 'Filipa', username: 'filipinha', userRole: 'User', shifts: 3, email: 'filipa2@example.com', linkedin: 'linkedin.com/in/filipa2' },
-        { id: 12, name: 'Inês', username: 'inesinha', userRole: 'User', shifts: 1, email: 'ines@example.com', linkedin: 'linkedin.com/in/ines' },
-        { id: 13, name: 'Mariana', username: 'marianinha', userRole: 'User', shifts: 2, email: 'mariana@example.com', linkedin: 'linkedin.com/in/mariana' },
-        { id: 14, name: 'Carolina', username: 'carolininha', userRole: 'User', shifts: 3, email: 'carolina@example.com', linkedin: 'linkedin.com/in/carolina' },
-        { id: 15, name: 'Diana', username: 'dianinha', userRole: 'User', shifts: 1, email: 'diana@example.com', linkedin: 'linkedin.com/in/diana' },
-        { id: 16, name: 'Catarina', username: 'catarininha', userRole: 'User', shifts: 2, email: 'catarina@example.com', linkedin: 'linkedin.com/in/catarina' },
-        { id: 17, name: 'Margarida', username: 'margaridinha', userRole: 'User', shifts: 3, email: 'margarida@example.com', linkedin: 'linkedin.com/in/margarida' },
-        { id: 18, name: 'Beatriz', username: 'beatrizinha', userRole: 'User', shifts: 1, email: 'beatriz@example.com', linkedin: 'linkedin.com/in/beatriz' },
-        { id: 19, name: 'Sara', username: 'sarazinha', userRole: 'User', shifts: 2, email: 'sara@example.com', linkedin: 'linkedin.com/in/sara' },
-        { id: 20, name: 'Teresa', username: 'terezinha', userRole: 'User', shifts: 3, email: 'teresa@example.com', linkedin: 'linkedin.com/in/teresa' },
-      ],
+      members: [],
       showPopup: false,
       showEditPopup: false,
       showAddPopup: false,
@@ -211,6 +193,8 @@ export default {
       newMemberUserRole: '',
       newMemberShifts: '',
       selectedFile: null,
+      imageUrl: null,
+      selectedTeamId: null,
     };
   },
   computed: {
@@ -220,7 +204,23 @@ export default {
       );
     },
   },
+  mounted() {
+    this.fetchMembers();
+    console.log(external_id);
+  },
   methods: {
+    fetchMembers() {
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/members', { external_id : this.$route.params.external_id }, {
+      }, {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+      }).then(response => {
+        const data = response.data;
+        this.members = data.members;
+      });
+    },
     handleEventChange() {
       console.log(this.selectedEvent);
     },
@@ -240,22 +240,49 @@ export default {
       this.showEditPopup = true;
     },
     saveEdit() {
-      const index = this.members.findIndex(member => member.id === this.editMember.id);
-      if (index !== -1) {
-        this.members.splice(index, 1, this.editMember); 
-        this.selectedMember = { ...this.editMember }; 
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/updatemember', {
+        id: this.editMember.id,
+        name: this.editMember.name,
+        username: this.editMember.username,
+        email: this.editMember.email,
+        userRole: this.editMember.userRole,
+        shifts: this.editMember.shifts
+      }, {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+      }).then(response => {
+        const updatedMember = response.data.member;
+        const index = this.members.findIndex(member => member.id === updatedMember.id);
+        if (index !== -1) {
+          this.members.splice(index, 1, updatedMember);
+          this.selectedMember = { ...updatedMember };
+        } else {
+          this.members.push(updatedMember);
+        }
         this.showEditPopup = false;
         if (window.innerWidth <= 768) {
           this.showPopup = false;
         }
-      }
+      });
     },
     closeEditPopup() {
       this.showEditPopup = false;
     },
-    deleteMember() {
-      this.members = this.members.filter(member => member.id !== this.selectedMember.id);
-      this.closePopup();
+    deleteMember(memberId) {
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/delete_team_member', { id: memberId }, {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+      }).then(response => {
+        this.members = this.members.filter(member => member.id !== memberId);
+        this.fetchMembers();
+        this.closePopup();
+      }).catch(error => {
+        console.error('Error deleting member:', error);
+      });
     },
     TeamMembers() {
       console.log('Team Members');
@@ -267,20 +294,37 @@ export default {
       this.showAddPopup = false;
     },
     saveNewMember() {
-      const newMember = {
-        id: this.members.length + 1,
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/new-member', {
+        external_id: this.selectedTeamId,
         name: this.newMemberName,
         username: this.newMemberUsername,
-        email: this.newMemberEmail,
         userRole: this.newMemberUserRole,
         shifts: this.newMemberShifts,
-        linkedin: this.newMemberLinkedin,
-      };
-      this.members.push(newMember);
-      this.closeAddPopup(); 
+        email: this.newMemberEmail
+      }, {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+      }).then(response => {
+        const newMember = response.data.member;
+        this.members.push(newMember);
+        this.closeAddPopup();
+        this.newMemberName = '';
+        this.newMemberUsername = '';
+        this.newMemberEmail = '';
+        this.newMemberUserRole = '';
+        this.newMemberShifts = '';
+        this.selectedFile = null;
+        this.imageUrl = null;
+        this.fetchMembers();
+      }).catch(error => {
+        console.error('Error adding new member:', error);
+      });
     },
     handleFileChange(event) {
       this.selectedFile = event.target.files[0];
+      this.imageUrl = URL.createObjectURL(this.selectedFile);
     },
     triggerFileInput() {
       this.$refs.fileInput.click();
