@@ -58,16 +58,40 @@
         <p class="role">Squad</p>
         <!-- Ações disponíveis para a squad -->
         <div class="squad-actions">
-          <!-- Botão com ícones sobrepostos -->
-          <div class="action-button icon-combination">
+          <!-- Button for "Delete Squad and Ban Students" -->
+          <div class="action-button icon-combination" @click="confirmDeleteAndBanSquad(selectedSquad)">
             <img class="icon-base" src="../../assets/StudentApp/students3.svg" alt="Icon Base">
             <img class="icon-overlay" src="../../assets/StudentApp/squads1.svg" alt="Icon Overlay">
           </div>
           <!-- Botão adicional com um único ícone -->
-          <div class="action-button">
-            <img src="../../assets/StudentApp/students4.svg" alt="Icon 2">
+          <div class="action-button" @click="confirmDeleteSquad(selectedSquad)">
+            <img src="../../assets/StudentApp/students4.svg" alt="Trash Icon">
           </div>
         </div>
+
+        <!-- Popup para "Delete Squad and Ban Students" -->
+        <!-- Popup for confirming squad deletion and banning -->
+        <div v-if="showDeleteBanPopup" class="delete-popup-overlay">
+          <div class="delete-popup">
+            <h2>Delete Squad and Ban Students?</h2>
+            <div class="popup-buttons">
+              <button class="btn-cancel" @click="showDeleteBanPopup = false">Cancel</button>
+              <button class="btn-confirm" @click="deleteAndBanSquad">Confirm</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Popup for confirming squad deletion -->
+        <div v-if="showDeleteSquadPopup" class="delete-popup-overlay">
+          <div class="delete-popup">
+            <h2>Delete Squad?</h2>
+            <div class="popup-buttons">
+              <button class="btn-cancel" @click="showDeleteSquadPopup = false">Cancel</button>
+              <button class="btn-confirm" @click="deleteSquad">Confirm</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Informação do capitão da squad -->
         <p class="captain-username">Captain Username</p>
         <p class="captain">{{ selectedSquad.captainUsername }}</p>
@@ -95,170 +119,43 @@
 
 <script setup>
 // Importação de dependências e componentes
-import { ref, computed } from 'vue'; // `ref` e `computed` são utilizados para estados reativos e propriedades computadas
+import { ref, computed, onMounted, watch } from 'vue'; // `ref` e `computed` são utilizados para estados reativos e propriedades computadas
 import TheTable from '../../global-components/TheTable.vue'; // Importa o componente de tabela reutilizável
+import axios from 'axios';
 import examplePhoto from '../../assets/StudentApp/example_squad_photo.svg'; // Importa uma imagem exemplo para squads
+import { useRoute } from 'vue-router';
 
-// Lista de squads
-const squads = ref([
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangersssssss',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delasssssssssssssssssssssssss'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  {
-    id: 1,
-    name: 'Interracial Rangers',
-    captainUsername: 'marco_looongo',
-    squadPic: examplePhoto,
-    dailyPoints: 420,
-    totalPoints: 11111,
-    members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
-    scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
-  },
-  // Adicionar squads
-]);
+// Lista estática de squads
+// const squads = ref([
+//   {
+//     id: 1,
+//     name: 'Interracial Rangers',
+//     captainUsername: 'marco_looongo',
+//     squadPic: examplePhoto,
+//     dailyPoints: 420,
+//     totalPoints: 11111,
+//     members: ['andregay', 'joel_big_wang', 'paradela_o_rei_delas'],
+//     scream: 'AAAAAAAAAAAAAAAAAAAAAAA'
+//   },
+//   // Adicionar squads
+// ]);
+
+const tableButtons = ref([]);
+
+// Lista de squads (inicialmente vazia, preenchida com dados da API)
+const squads = ref([]);
 
 // Variável reativa para armazenar o texto de pesquisa inserido pelo utilizador
 const searchQuery = ref('');
 
 // Variável reativa para armazenar o squad atualmente selecionado
 const selectedSquad = ref(null);
+
+const showDeleteBanPopup = ref(false);
+const squadToDeleteAndBan = ref(null);
+
+const showDeleteSquadPopup = ref(false);
+const squadToDelete = ref(null);
 
 // Estrutura dos cabeçalhos da tabela que exibe os dados dos squads
 const tableHeaders = {
@@ -268,6 +165,58 @@ const tableHeaders = {
   dailyPoints: "Daily Points", 
   totalPoints: "Total Points" 
 };
+
+// Função para buscar os squads da API
+const fetchSquads = () => {
+
+  axios
+    .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/squadsAll", {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
+    })
+    .then((response) => {
+
+      if (response.data && Array.isArray(response.data.squads)) {
+        console.log("[DEBUG] Squads array received:", response.data.squads);
+
+        squads.value = response.data.squads.map(squad => {
+          console.log(`[DEBUG] Processing squad: ${squad.name}`, squad);
+          return {
+            id: squad.id,
+            name: squad.name,
+            captainUsername: squad.captain_username || squad.captain || squad.leader || "Not Assigned",
+            squadPic: squad.photo 
+              ? import.meta.env.VITE_APP_BASE_URL + "/uploads/" + squad.photo 
+              : examplePhoto,
+            dailyPoints: squad.daily_points || 0,
+            totalPoints: squad.total_points || 0,
+            members: squad.members || [],
+            scream: squad.scream && squad.scream.trim() !== "" ? squad.scream : "No Scream"
+          };
+        });
+
+        console.log("[DEBUG] Squads successfully stored:", squads.value);
+      } else {
+        console.error("[DEBUG] Unexpected API response structure:", response.data);
+      }
+    })
+    .catch((error) => {
+      console.error("[DEBUG] Error fetching squads:", error);
+      if (error.response) {
+        console.error("[DEBUG] Server response error:", error.response.status, error.response.data);
+      } else if (error.request) {
+        console.error("[DEBUG] No response received. Request:", error.request);
+      } else {
+        console.error("[DEBUG] Unexpected error:", error.message);
+      }
+    });
+};
+
+onMounted(() => {
+  fetchSquads();
+});
 
 // Computed property que filtra os squads com base no texto de pesquisa
 const filteredSquads = computed(() => {
@@ -292,6 +241,110 @@ const selectSquad = (squad) => {
 const closeSquadDetail = () => {
   selectedSquad.value = null; // Remove a seleção do squad
 };
+
+// Open the "Delete Squad and Ban Students?" confirmation popup
+const confirmDeleteAndBanSquad = (squad) => {
+  console.log("Confirming deletion and banning for squad:", squad);
+  if (!squad) {
+    console.error("No squad provided to delete and ban.");
+    return;
+  }
+  squadToDeleteAndBan.value = squad;
+  showDeleteBanPopup.value = true;
+};
+
+// Perform the deletion and banning operation
+const deleteAndBanSquad = async () => {
+  if (!squadToDeleteAndBan.value) return;
+
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/bansquad`,
+      { squad_id: squadToDeleteAndBan.value.id },
+      {
+        headers: { "Content-Type": "application/json" },
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+      }
+    );
+
+    if (response.status === 204) {
+      console.log(`Squad with ID ${squadToDeleteAndBan.value.id} deleted and students banned successfully.`);
+
+      // Remove the squad from the local state
+      squads.value = squads.value.filter((s) => s.id !== squadToDeleteAndBan.value.id);
+
+      // Close the popup
+      showDeleteBanPopup.value = false;
+      squadToDeleteAndBan.value = null;
+    } else {
+      console.error("Unexpected response status:", response.status);
+    }
+  } catch (error) {
+    console.error("Error deleting and banning squad:", error.response ? error.response.data : error);
+  }
+};
+
+
+const confirmDeleteSquad = (squad) => {
+  console.log("Confirming deletion for squad:", squad);
+  if (!squad) {
+    console.error("No squad provided to delete.");
+    return;
+  }
+  squadToDelete.value = squad;
+  showDeleteSquadPopup.value = true;
+};
+
+const deleteSquad = async () => {
+  if (!squadToDelete.value) return;
+
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/delete_squad`,
+      { squad_id: squadToDelete.value.id },
+      {
+        headers: { "Content-Type": "application/json" },
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+      }
+    );
+
+    if (response.status === 204) {
+      console.log(`Squad with ID ${squadToDelete.value.id} deleted successfully.`);
+
+      // Remove the squad from the local state
+      squads.value = squads.value.filter((s) => s.id !== squadToDelete.value.id);
+
+      // Close the popup
+      showDeleteSquadPopup.value = false;
+      squadToDelete.value = null;
+    } else {
+      console.error("Unexpected response status:", response.status);
+    }
+  } catch (error) {
+    console.error("Error deleting squad:", error.response ? error.response.data : error);
+  }
+};
+
+const route = useRoute();
+
+onMounted(() => {
+  fetchSquads(); // Load squads first
+
+  watch(() => squads.value, (newSquads) => {
+    if (route.query.squad && newSquads.length) {
+      const squadToOpen = newSquads.find(squad => squad.name === route.query.squad);
+      if (squadToOpen) {
+        selectedSquad.value = squadToOpen; // Automatically open squad popup
+      }
+    }
+  }, { immediate: true });
+});
 </script>
 
 <style scoped>
@@ -528,6 +581,8 @@ h3 {
   text-overflow: ellipsis;
   max-width: 100%; 
   margin: 5px 0;
+  display: block;
+  width: 100%;
 }
   
 .members {
@@ -589,5 +644,49 @@ h3 {
 
 .squad-detail {
   position: relative; /* Necessário para posicionar o botão de fechar */
+}
+
+.delete-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.delete-popup {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  width: 300px;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.btn-cancel, .btn-confirm {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.btn-cancel {
+  background: #ccc;
+}
+
+.btn-confirm {
+  background: #d9534f;
+  color: white;
 }
 </style>
