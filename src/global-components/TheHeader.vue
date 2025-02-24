@@ -5,9 +5,7 @@
         <button class="nav-button" @click="stateStore.sideNavOpen = !stateStore.sideNavOpen">
           <img src="/src/assets/nav-menu.svg" alt="Menu">
         </button>
-        
-        <h1 v-if="!isMobile()">{{ title }}</h1>
-        <h3 v-else>{{ title }}</h3>
+        <h1>{{ title }}</h1>
       </div>
       <div class="user">
         <div class="user-info">
@@ -63,6 +61,7 @@ header.mobile{
 
 .nav-button {
   display: none;
+  visibility: hidden;
 }
 
 .user {
@@ -112,6 +111,7 @@ header.mobile{
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 2ch;
   }
 
   .nav-button {
@@ -125,6 +125,20 @@ header.mobile{
 
   .nav-button>img {
     color: var(--c-ft);
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .left-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-basis: 100%;
+  }
+
+  .user {
+    display: none;
+    visibility: hidden;
   }
 }
 </style>

@@ -1,29 +1,48 @@
 <template>
   <aside class="sidenav">
-    <a class="logo" @click="Router.push({name: 'dashboard'})">
+    <a class="logo" @click="Router.push({ name: 'dashboard' })">
       <img src="../assets/brain.svg" alt="brain logo">
     </a>
     <nav>
       <ul>
         <li>
-          <button class="nav-link" @click="Router.go(-1)"><img src="/src/assets/back.svg" aria-hidden="true"><span>Back</span></button>
-          <router-link class="nav-link" activeClass="selected" :to="({ name: dashboardRoute.name })">
-            <img :src="'/src/assets/pages/' + dashboardRoute.name + '.svg'" aria-hidden="true"><span>{{ dashboardRoute.meta.title }}</span>
+          <button class="nav-link" @click="backCallback">
+            <img src="/src/assets/back.svg" aria-hidden="true"> <span>Back</span>
+          </button>
+        </li>
+        <li>
+          <router-link class="nav-link" activeClass="selected" @click="stateStore.sideNavOpen = false"
+            :to="({ name: dashboardRoute.name })">
+            <img :src="'/src/assets/pages/' + dashboardRoute.name + '.svg'" aria-hidden="true"><span>{{
+              dashboardRoute.meta.title }}</span>
           </router-link>
         </li>
+
         <template v-for="route in routes">
           <li v-if="userStore.accessList[route.name]">
-            <router-link class="nav-link" activeClass="selected" :to="({ name: route.name })">
-              <img :src="'/src/assets/pages/' + route.name + '.svg'" aria-hidden="true"><span>{{ route.meta.title }}</span>
+            <router-link class="nav-link" activeClass="selected" @click="stateStore.sideNavOpen = false"
+              :to="({ name: route.name })">
+              <img :src="'/src/assets/pages/' + route.name + '.svg'" aria-hidden="true">
+              <span>{{ route.meta.title}}</span>
             </router-link>
             <ul class="child-routes" v-if="parentRoute.name === route.name && parentRoute.meta.children !== false">
               <li v-for="child in childRoutes">
-                <router-link class="nav-link" activeClass="selected" :to="({ name: child.name })">{{ child.meta.title }}</router-link>
+                <router-link class="nav-link" activeClass="selected" :to="({ name: child.name })">{{ child.meta.title
+                }}</router-link>
               </li>
             </ul>
           </li>
         </template>
       </ul>
+
+      <div class="user">
+        <div class="user-info">
+          <p>{{ name }}</p>
+          <p>{{ role }}</p>
+        </div>
+        <button class="logout-button">Log out</button>
+      </div>
+
     </nav>
   </aside>
 </template>
@@ -32,11 +51,15 @@
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '../stores/user';
+import { useStateStore } from '../stores/state';
 
-const userStore = useUserStore();
+const stateStore = useStateStore();
 const Router = useRouter();
 const Route = useRoute();
 const dashboardRoute = Router.getRoutes().find(rte => rte.name === "dashboard");
+const userStore = useUserStore();
+const name = computed(() => userStore.name);
+const role = computed(() => userStore.role);
 
 const routes = computed(() => {
   let arr = [];
@@ -49,8 +72,8 @@ const routes = computed(() => {
 })
 
 const parentRoute = computed(() => {
-  if (Route.path === "/") 
-   return {}
+  if (Route.path === "/")
+    return {}
   else
     return Router.getRoutes().find(rte => rte.path === ('/' + Route.path.split('/')[1]))
 })
@@ -64,6 +87,10 @@ const childRoutes = computed(() => {
 
   return arr
 })
+
+function backCallback() {
+  (window.matchMedia("screen and (max-width: 700px)")) ? stateStore.sideNavOpen = false : Router.go(-1);
+}
 </script>
 
 <style scoped>
@@ -86,12 +113,12 @@ const childRoutes = computed(() => {
   margin: 2rem 0;
 }
 
-.logo > img {
+.logo>img {
   width: 100%;
   height: 100%;
 }
 
-.sidenav > nav {
+.sidenav>nav {
   width: 100%;
   font-size: 1.2rem;
   font-weight: 500;
@@ -129,7 +156,7 @@ const childRoutes = computed(() => {
   background-color: var(--c-select);
 }
 
-.nav-link > img {
+.nav-link>img {
   height: 1.3em;
   aspect-ratio: 1;
 }
@@ -141,5 +168,73 @@ const childRoutes = computed(() => {
 .child-routes .nav-link {
   font-size: 0.85em;
   padding: 0.4rem 2ch;
+}
+
+.user {
+  display: none;
+  visibility: hidden;
+  position: absolute;
+}
+
+.user>button {
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  background-color: var(--c-select);
+  border-radius: 10px;
+  color: var(--c-bg-light);
+  cursor: pointer;
+  padding: 0.5ch 3ch;
+}
+
+.mobile .user>button {
+  font-size: 0.75rem;
+  font-weight: 400;
+  border: none;
+  background-color: var(--c-select);
+  border-radius: 10px;
+  color: var(--c-bg-light);
+  cursor: pointer;
+  padding: 0.25ch 2ch;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: end;
+}
+
+.user-info>p:first-child {
+  font-size: 1.3rem;
+}
+
+.mobile .user-info>p:first-child {
+  font-size: 0.7rem;
+}
+
+@media screen and (max-width: 700px) {
+  .user {
+    padding: 2rem 0;
+    position: relative;
+    display: flex;
+    visibility: visible;
+    flex-direction: column;
+  }
+
+  .user-info>p:last-of-type {
+    font-weight: 300;
+  }
+
+  .user>button {
+    margin-top: 1rem;
+    padding: .6rem;
+  }
+}
+
+@media screen and (max-width: 460px) {
+  .sidenav {
+    width: 100%;
+  }
 }
 </style>
