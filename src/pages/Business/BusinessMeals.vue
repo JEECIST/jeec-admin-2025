@@ -58,7 +58,7 @@
             <label for="regDay">Registration Day</label>
             <input 
               type="date" 
-              v-model="newUser.regDay" 
+              v-model="newMeal.regDay" 
               id="regDay" 
               required 
               :min="minDate" 
@@ -69,7 +69,7 @@
             <label for="regHour">Registration Hour</label>
             <input 
               type="time" 
-              v-model="newUser.regHour" 
+              v-model="newMeal.regHour" 
               id="regHour" 
               required 
             />
@@ -78,10 +78,10 @@
 
         <!-- Dishes Section -->
         <div class="formRole">
-          <div v-for="(dish, index) in newUser.dishes" :key="index" class="form-group">
+          <div v-for="(dish, index) in newMeal.dishes" :key="index" class="form-group">
             <!-- Dynamic label for each dish -->
             <label :for="'dish' + index">Dish {{ index + 1 }}</label>
-            <input v-model="newUser.dishes[index]" :id="'dish' + index" placeholder="Enter Dish Name" required />
+            <input v-model="newMeal.dishes[index]" :id="'dish' + index" placeholder="Enter Dish Name" required />
           </div>
         </div>
 
@@ -120,27 +120,46 @@
 
 
 <script setup>
+
 import axios from 'axios';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
 
 const message = ref('');
-const editModal = ref(false);  // Modal visibility
+const editModal = ref(false);  
 const showMeal = ref(false);
-const newUser = ref({
+const newMeal = ref({
   regDay: '',
   regHour: '',
-  role: '',
-  dishes: ['']  // Initially one dish input field
+  dishes: [''] 
 });
-const selectedRow = ref(null);  // Track the selected row
+const selectedRow = ref(null);  
 const fetchData = () => {
-    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss',{auth: {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/event_day_meal',{auth: {
           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }}).then((response)=>{
-          const data = response.data
-          datab.value = response.data.users
+          datab.value = response.data.events_days.map((event) => {
+        return {
+          external_id: event.external_id, 
+          day: event.day,
+          weekday: event.weekday, 
+          registrationDay: event.meal_registration_datetime
+            ? event.meal_registration_datetime.split(" ")[0] // Extract Date
+            : null,
+          registrationTime: event.meal_registration_datetime
+            ? event.meal_registration_datetime.split(" ")[1] // Extract Time
+            : null,
+          registrationWeekday: event.meal_registration_datetime
+            ? new Date(
+                event.meal_registration_datetime.split(" ")[0]
+                  .split("-")
+                  .reverse()
+                  .join("-")
+              ).toLocaleDateString("en-US", { weekday: "long" }) 
+            : null
+        };
+      });
           console.log(datab.value)
         })
         .catch(error => console.error('Fetch error:', error)); 
@@ -148,28 +167,67 @@ const fetchData = () => {
 
 onMounted(fetchData)
 
-// Callback for row selection in the table
 function selectCallback(row) {
   selectedRow.value = row;
 
 }
 function addDish() {
-  newUser.value.dishes.push('');  // Add an empty string for a new dish input
-}
-// Function to handle adding a new user
-function addUser() {
-  closeModal();
+  newMeal.value.dishes.push('');  
 }
 
-// Function to close the modal
+const formattedRegDay = computed({
+      get: () => {
+        if (!newMeal.value.regDay) return "";
+        const [year, month, day] = newMeal.value.regDay.split("-");
+        return `${day}-${month}-${year}`;
+      },
+      set: (value) => {
+        if (!value) {
+          newMeal.value.regDay = "";
+          return;
+        }
+        const [day, month, year] = value.split("-");
+        newMeal.value.regDay = `${year}-${month}-${day}`;
+      }
+    });
+  
+function addUser() {
+
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/update_day_meal',
+  { 
+    form: { 
+      day: selectedRow.value.day,
+      registration_day: formattedRegDay.value, 
+      registration_time: newMeal.value.regHour, 
+      external_id: selectedRow.value.external_id,
+      
+    }
+    
+  }, 
+  { 
+    auth: { 
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
+    }
+  })
+  .then(() => {
+    
+    fetchData();
+    closeModal();
+  })
+  .catch(error => {
+    console.log(selectedRow.value.weekday);
+    console.log(newMeal.value.regDay);
+    console.log(newMeal.value.regHour);
+    console.log(selectedRow.value.external_id);
+    console.error("Failed to add meal :<");
+  });
+}
+
+
 function closeModal() {
   editModal.value = false;
- 
-  newUser.value = { regDay: '', regHour: '', role: '', dishes: [''] };  // Reset form fields
-}
-function closeMeal(){
   showMeal.value = false;
- 
 }
 
 function closeCardInfo(){
@@ -180,39 +238,12 @@ function closeCardInfo(){
 
 const datab = ref([
   {
-    day: "07-05-2025",
-    weekday: "Monday",
-    registrationDay: "--:--",
-    registrationTime: "--:--",
-    registrationWeekday: "--:--"    
-  },
-  {
-    day: "08-05-2025",
-    weekday: "Tuesday",
-    registrationDay: "--:--",
-    registrationTime: "--:--",
-    registrationWeekday: "--:--"    
-  },
-  {
-    day: "09-05-2025",
-    weekday: "Wednesday",
-    registrationDay: "--:--",
-    registrationTime: "--:--",
-    registrationWeekday: "--:--"    
-  },
-  {
-    day: "10-05-2025",
-    weekday: "Thursday",
-    registrationDay: "--:--",
-    registrationTime: "--:--",
-    registrationWeekday: "--:--"    
-  },
-  {
-    day: "11-05-2025",
-    weekday: "Friday",
-    registrationDay: "--:--",
-    registrationTime: "--:--",
-    registrationWeekday: "--:--"    
+    day: null,
+    weekday: null,
+    registrationDay: null,
+    registrationTime: null,
+    registrationWeekday: null,
+    external_id: null
   },
 ]);
 
@@ -519,28 +550,26 @@ input {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent gray */
-    z-index: 500; /* Behind the popup */
+    background-color: rgba(0, 0, 0, 0.5); 
+    z-index: 500; 
 }
-  /* Adjust the table to fit smaller screens */
   .table {
     width: 100%;
     padding-right: 1ch;
     gap: 1ch;
   }
 
-  /* Make the right popup stack below the table */
   .right-popup-placeholder {
-    position: fixed; /* Position the popup above the content */
-    top: 50%; /* Vertically center */
-    left: 50%; /* Horizontally center */
-    transform: translate(-50%, -50%); /* Adjust the position to be truly centered */
-    width: 90%; /* Adjust width to fit on smaller screens */
-    height: calc(97dvh - var(--header-height)); /* Let the height adapt to content */
-    background-color: #eef4fb; /* Add background for better visibility */
+    position: fixed; 
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%; 
+    height: calc(97dvh - var(--header-height)); 
+    background-color: #eef4fb;
     padding: 1rem;
-    box-shadow: 0px 4px 10px rgba(0.1, 0.1, 0.1, 0.1); /* Add shadow for a popup effect */
-    z-index: 1000; /* Ensure it stays above other content */
+    box-shadow: 0px 4px 10px rgba(0.1, 0.1, 0.1, 0.1);
+    z-index: 1000; 
   }
 
   .right-popup-placeholder .close-popup {
@@ -569,7 +598,6 @@ input {
     font-size: 0.9rem;
   }
 
-  /* Adjust modal width for mobile */
   .modal {
     width: 90%;
     max-width: none;
@@ -577,7 +605,7 @@ input {
   }
 
   .btn-primary, .btnCancel {
-    width: 100%;  /* Buttons span full width on mobile */
+    width: 100%;  
     margin-top: 10px;
   }
 
@@ -586,7 +614,6 @@ input {
     gap: 1rem;
   }
 
-  /* Adjust form inputs for smaller screens */
   input {
     width: 100%;
     padding: 8px;

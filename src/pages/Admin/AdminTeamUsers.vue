@@ -104,46 +104,11 @@ import { ref, onMounted } from 'vue';
 const message = ref('');
 const showAddUserModal = ref(false);
 const newUser = ref({ username: '', role: '' });
-const selectedRow = ref(null);  // Track the selected row
+const selectedRow = ref(null);  
 
 function selectCallback(row) {
-  selectedRow.value = row;  // Set the selected row
+  selectedRow.value = row;  
 }
-
-
-// async function addUser() {
-  
-  
-//   try {
-//     console.log('Sending user to backend:', newUser.value);
-
-//     // Make a POST request to the backend to add the new user
-//     const response = await axios.post(
-//       import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss',
-//       newUser.value,
-//       {
-//         auth: {
-//           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-//           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-//         }
-//       }
-//     );
-
-//     // The backend should return the created user
-//     const createdUser = response.data;
-
-//     // Optionally add the new user to `datab` for instant UI updates
-//     datab.value.push(createdUser);
-
-//     // Reset the form and close the modal
-//     closeModal();
-//     console.log('User added successfully:', createdUser);
-//   } catch (error) {
-//     console.log('valores: ', newUser.value);
-//     console.error('Error adding user to backend:', error);
-//     alert('Failed to add user. Please try again.');
-//   }
-// }
 
 function closeModal() {
   showAddUserModal.value = false;
@@ -197,7 +162,7 @@ function addUser() {
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/user/addteamuser',
   { 
     user: { 
-      name: "katem",
+      name: "nome",
       username: newUser.value.username, 
       role: newUser.value.role,
       password: encryptedPassword
@@ -573,8 +538,8 @@ form > button {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent gray */
-    z-index: 500; /* Behind the popup */
+    background-color: rgba(0, 0, 0, 0.5); 
+    z-index: 500; 
 }
   .table {
     width: 100%;
@@ -582,16 +547,16 @@ form > button {
     gap: 1ch;
   }
   .right-popup-placeholder {
-    position: fixed; /* Position the popup above the content */
-    top: 50%; /* Vertically center */
-    left: 43%; /* Horizontally center */
-    transform: translate(-50%, -50%); /* Adjust the position to be truly centered */
-    width: 90%; /* Adjust width to fit on smaller screens */
-    height: calc(97dvh - var(--header-height)); /* Let the height adapt to content */
-    background-color: #eef4fb; /* Add background for better visibility */
+    position: fixed; 
+    top: 50%; 
+    left: 43%;
+    transform: translate(-50%, -50%);
+    width: 90%; 
+    height: calc(97dvh - var(--header-height)); 
+    background-color: #eef4fb; 
     padding: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000; /* Ensure it stays above other content */
+    z-index: 1000; 
   }
 
 
