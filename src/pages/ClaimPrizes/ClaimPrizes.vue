@@ -1,16 +1,17 @@
 <template>
   <div class="wrapper">
     <div class="table">
-      <form>
+      <form @submit.prevent="search_student(student)">
         <div class="search_style">
           <label>
             <img src="../../assets/search.svg">
           </label>
-          <input v-model="message" placeholder="Search for a user" />
+          <input v-model="student" placeholder="Search for a user" />
         </div>
+        <button class="search_button" @click="search_student(student)">Search</button>
       </form>
-      <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" :buttons="tableButtons"
-        @QrRead="teste_merda">
+      <TheTable :data="student_prizes" :tableHeaders="tablePref" :buttons="tableButtons"
+         @onClaimPrize="claim_prize">
       </TheTable>
     </div>
   </div>
@@ -18,9 +19,13 @@
 
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import Check from '../../assets/check.svg';
-// import axios from 'axios';
+import axios from 'axios';
+
+const student_prizes = ref([]);
+
+const student = ref("");
 
 const datab = ref([
   {
@@ -36,26 +41,63 @@ const datab = ref([
 ]);
 
 const tablePref = {
-  id: "ID",
-  prize: "Prize",
-  student: "Student",
+  reward_name: "Prize",
+  student_id: "Student",
 };
 
 const tableButtons = [{
   name: "Claim",
-  eventName: "ClaimPrize",
+  eventName: "onClaimPrize",
   icon: Check
 }];
 
-function teste_merda() {
+function teste(teste) {
   console.log("merda");
+  console.log(teste);
 };
+
+function claim_prize(prize) {
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/student_rewards/update', {auth: {
+    username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+    password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+  }, external_id: prize.ext_id}).then(response => {
+    student_prizes.value = response.data.rewards
+  })
+}
+
+function search_student(student){
+  console.log(student)
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/student_rewards', {auth: {
+    username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+    password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+  }, search: student}).then(response => {
+    console.log(response.data)
+    student_prizes.value = response.data.rewards/*TODO OBJETO */
+    console.log(student_prizes)
+  });
+}
+
+onMounted(() => {
+  console.log("Claim Prizes")
+});
 
 
 
 </script>
 
 <style scoped>
+.search_button{
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  background-color: var(--c-select);
+  border-radius: 10px;
+  color: var(--c-bg-light);
+  cursor: pointer;
+  padding: 0.5ch 3ch;
+  height: 100%;
+}
+
 .wrapper {
   display: flex;
   position: relative;
