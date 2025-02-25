@@ -12,15 +12,15 @@
         <div class="row">
           <div class="col">
             <label for="name">Name</label>
-            <input type="text" v-model="name" />
+            <input id="name" type="text" v-model="name" />
           </div>
           <div class="col">
             <label for="priority">Priority</label>
-            <input type="text" v-model="priority" />
+            <input id="priority" type="text" v-model="priority" />
           </div>
         </div>
         <div class="end_btn">
-          <button class = "btn_add" @click="closePopup">Add</button> <!-- function to add and save info v-model -->
+          <button class = "btn_add" @click="addLoc">Add</button> <!-- function to add and save info v-model -->
         </div>
       </div>
     </div>
@@ -29,8 +29,43 @@
 
 <script setup>
 import { ref } from "vue";
+import axios from "axios";
 
-const emit = defineEmits(['close'])
+
+const emit = defineEmits(['close', 'locAdded'])
+
+// Inputs do formulário
+const name = ref("");
+const priority = ref();
+
+
+function addLoc() {
+    if (!name.value.trim()) {
+        console.error("O campo 'Nome' não pode estar vazio.");
+        return;
+    }
+
+    const locData = {
+        event_id: '',
+        name: name.value,
+        priority: priority.value,
+    };
+
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + `/activities/types/add-location`, locData, {
+        auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+    })
+        .then(() => {
+            console.log("Location adicionada com sucesso!");
+            emit("locAdded")
+            emit("close");
+        })
+        .catch(error => {
+            console.error("Erro ao adicionar location:", error.response?.data || error);
+        });
+}
 
 function closePopup() {
   emit('close');
@@ -39,9 +74,6 @@ function closePopup() {
 const props = defineProps({
   foo: String
 })
-
-const name = ref('');
-const priority = ref('');
 
 </script>
 

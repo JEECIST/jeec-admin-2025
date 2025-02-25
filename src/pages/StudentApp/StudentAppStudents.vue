@@ -23,6 +23,43 @@
       </button>
     </div>
 
+    <!-- Popup de Adicionar/Remover Pontos -->
+    <div v-if="showPointsPopup" class="points-popup-overlay">
+      <div class="points-popup">
+        <h2>Add Points</h2>
+        <input v-model="pointsAmount" type="number" class="points-input" placeholder="Enter points amount" min="-1000" />
+        <div class="popup-buttons">
+          <button class="btn-cancel" @click="showPointsPopup = false">Cancel</button>
+          <button class="btn-add" @click="updateStudentPoints(pointsAmount)">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popup do QR Code -->
+    <div v-if="showQrPopup" class="qr-popup-overlay">
+      <div class="qr-popup">
+        <h2>Student QR Code</h2>
+        <qrcode-vue :value="qrCodeValue" :size="200" level="H"></qrcode-vue>
+        <button class="close-button" @click="showQrPopup = false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Popup de confirmação de banimento -->
+    <div v-if="showDeletePopup" class="delete-popup-overlay">
+      <div class="delete-popup">
+        <h2>Ban Student?</h2>
+        <div class="popup-buttons">
+          <button class="btn-cancel" @click="showDeletePopup = false">Cancel</button>
+          <button class="btn-confirm" @click="banStudent">Confirm</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Overlay que sombreia o fundo quando o popup está visível -->
     <div class="overlay" v-if="showBannedPopup"></div>
 
@@ -38,6 +75,9 @@
         </button>
         <!-- Título do popup -->
         <h2>Banned Students</h2>
+        <div v-if="bannedStudents.length === 0" class="no-students">
+          No banned students.
+        </div>
         <!-- Tabela de estudantes banidos -->
         <TheTable
           :data="bannedStudents"
@@ -45,16 +85,11 @@
           :buttons="unbanButtons"
           @unban="unbanStudent"
         >
-          <!-- Botão personalizado para remover o banimento -->
+          <!-- Custom unban button -->
           <template #unban="{ row }">
-            <div class="icon-combination" @click="unbanStudent(row)">
-              <div class="icon-base">
-                <img src="../../assets/StudentApp/students4.svg" alt="Ícone de Lixo" />
-              </div>
-              <div class="icon-overlay">
-                <img src="../../assets/StudentApp/squads1.svg" alt="Ícone X" />
-              </div>
-            </div>
+            <button class="unban-button" @click="unbanStudent(row)">
+              <img src="../../assets/StudentApp/unban.svg" alt="Unban Icon" class="unban-icon" />
+            </button>
           </template>
         </TheTable>
       </div>
@@ -88,23 +123,23 @@
         <!-- Nome de utilizador do estudante -->
         <p class="username">{{ selectedStudent.username }}</p>
         <!-- Foto de perfil do estudante -->
-        <img class="profile-pic" :src="selectedStudent.profilePic" alt="Foto de Perfil" />
+        <img class="profile-pic" @click="console.log(selectedStudent.profilePic)"  :src="'data:image/png;base64,' + selectedStudent.profilePic" alt="Foto de Perfil" />
         <!-- Nome do estudante -->
         <h3>{{ selectedStudent.name }}</h3>
         <!-- Papel do estudante (fixo como "Estudante") -->
         <p class="role">Student</p>
         <!-- Botões de ações do estudante -->
         <div class="student-actions">
-          <div class="action-button">
+          <div class="action-button" @click="openPointsPopup(selectedStudent)">
             <img src="../../assets/StudentApp/students1.svg" alt="Ícone 1">
           </div>
-          <div class="action-button">
+          <div class="action-button" @click="openQrPopup(selectedStudent)">
             <img src="../../assets/StudentApp/students2.svg" alt="Ícone 2">
           </div>
-          <div class="action-button">
+          <div class="action-button" @click="goToSquad(selectedStudent.squad)">
             <img src="../../assets/StudentApp/students3.svg" alt="Ícone 3">
           </div>
-          <div class="action-button">
+          <div class="action-button" @click="confirmBanStudent(selectedStudent)">
             <img src="../../assets/StudentApp/students4.svg" alt="Ícone 4">
           </div>
         </div>
@@ -149,29 +184,166 @@ import { ref, computed, onMounted } from 'vue'; // Importação de funcionalidad
 import TheTable from '../../global-components/TheTable.vue'; // Importa o componente reutilizável de tabela
 import examplePhoto from '../../assets/StudentApp/example_students_photo.svg'; // Importa uma imagem exemplo para perfis
 import axios from 'axios'; // Biblioteca para fazer chamadas HTTP
+import QrcodeVue from 'qrcode.vue'; // Importando biblioteca de QR Code
+
+const tableButtons = ref([]);
+
+const showQrPopup = ref(false);
+const qrCodeValue = ref("");
+
+const showPointsPopup = ref(false);
+const pointsAmount = ref(0);
+const studentToModify = ref(null);
+
+const openQrPopup = (student) => {
+  selectedStudent.value = student;
+  qrCodeValue.value = `${student.externalId}`; 
+  showQrPopup.value = true;
+};
+
+// Abre o popup e define o estudante a modificar
+const openPointsPopup = (student) => {
+  studentToModify.value = student;
+  pointsAmount.value = 0; // Resetar o input
+  showPointsPopup.value = true;
+};
+
+// Função para adicionar ou remover pontos
+const updateStudentPoints = (points) => {
+  if (!studentToModify.value || isNaN(points)) return;
+
+  axios.post(
+    import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/add_points",
+    {
+      student_id: studentToModify.value.id,
+      xp: parseInt(points, 10)
+    },
+    {
+      headers: { "Content-Type": "application/json" },
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
+    }
+  )
+  .then(response => {
+    console.log("Points updated successfully:", response.data);
+
+    // Find the student in the students array and update reactively
+    const index = students.value.findIndex(s => s.id === studentToModify.value.id);
+    if (index !== -1) {
+      students.value[index] = {
+        ...students.value[index],
+        currentPoints: response.data.currentPoints,
+        dailyPoints: response.data.dailyPoints,
+        totalPoints: response.data.totalPoints
+      };
+    }
+
+    // Ensure selected student updates reactively
+    if (selectedStudent.value && selectedStudent.value.id === studentToModify.value.id) {
+      selectedStudent.value = { 
+        ...selectedStudent.value, 
+        currentPoints: response.data.currentPoints,
+        dailyPoints: response.data.dailyPoints,
+        totalPoints: response.data.totalPoints
+      };
+    }
+
+    showPointsPopup.value = false;
+  })
+  .catch(error => {
+    console.error("Error updating points:", error.response ? error.response.data : error);
+  });
+};
+
+const studentToBan = ref(null);
+
+const banStudent = () => {
+  if (!studentToBan.value) return;
+
+  axios.post(
+    `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/studentban`,
+    { banstudent: studentToBan.value.id },
+    {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
+    }
+  )
+  .then(() => {
+    console.log(`Student ${studentToBan.value.name} banned successfully.`);
+
+    // Remove banned student from the main student list
+    students.value = students.value.filter(s => s.id !== studentToBan.value.id);
+
+    // Add to banned students list
+    bannedStudents.value.push({
+      id: studentToBan.value.id,
+      name: studentToBan.value.name,
+      username: studentToBan.value.username,
+      email: studentToBan.value.email,
+      externalId: studentToBan.value.externalId
+    });
+
+    // Reset and close popup
+    studentToBan.value = null;
+    showDeletePopup.value = false;
+  })
+  .catch((error) => {
+    console.error("Error banning student:", error);
+  });
+};
+
+const confirmBanStudent = (student) => {
+  console.log("Student selected for banning:", student);
+  if (!student || (!student.externalId && !student.id)) {
+    console.error("Invalid student selected for banning:", student);
+    return;
+  }
+  studentToBan.value = student;
+  showDeletePopup.value = true; // This is now the ban confirmation popup
+};
 
 // Função para buscar os dados dos estudantes da API
 const fetchData = () => {
   axios
-    .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/studentsAll', {
+    .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/studentsAll", {
       auth: {
-        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, // Nome de utilizador para autenticação
-        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY, // Palavra-passe para autenticação
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
       },
     })
     .then((response) => {
-      console.log('Dados recebidos da API:', response.data); // Log dos dados recebidos
+      console.log("Dados recebidos da API:", response.data);
       if (response.data && Array.isArray(response.data.students)) {
-        // Verifica se os dados recebidos são uma lista de estudantes
-        students.value = response.data.students;
+        students.value = response.data.students.map(student => ({
+          id: student.id,
+          externalId: student.external_id,
+          name: student.name,
+          username: student.username,
+          squad: student.squad || "Not in a squad",
+          profilePic: student.photo,
+          email: student.email || "Not provided",
+          linkedin: student.linkedin || "Not provided",
+          currentPoints: student.current_points || 0,
+          dailyPoints: student.daily_points || 0,
+          totalPoints: student.total_points || 0,
+          cvStatus: student.cv_status || "Not provided",
+          degree: student.degree || "Not provided"
+        }));
       } else {
-        console.error('Estrutura inesperada dos dados da API:', response.data);
+        console.error("Estrutura inesperada dos dados da API:", response.data);
       }
     })
     .catch((error) => {
-      console.error('Erro ao buscar dados dos estudantes:', error); // Log do erro
+      console.error("Erro ao buscar dados dos estudantes:", error);
     });
 };
+
+const studentToDelete = ref(null);
+const showDeletePopup = ref(false);
 
 // Executa a função `fetchData` ao montar o componente
 onMounted(fetchData);
@@ -189,19 +361,33 @@ const bannedStudents = ref([]); // Inicialmente vazio
 
 // Função para buscar os estudantes banidos da API
 const fetchBannedStudents = () => {
-  axios
-    .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/bannedStudents', {
-      auth: {
-        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, // Nome de utilizador para autenticação
-        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY, // Palavra-passe para autenticação
-      },
-    })
-    .then((response) => {
-      bannedStudents.value = response.data; // Armazena os dados retornados
-    })
-    .catch((error) => {
-      console.error('Erro ao buscar estudantes banidos:', error); // Log do erro
-    });
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/banned-studentss", {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+    },
+  })
+  .then((response) => {    
+    console.log("[DEBUG] Raw API Response for Banned Students:", response.data);
+
+    if (response.data && Array.isArray(response.data.students)) {
+      bannedStudents.value = response.data.students.map(student => ({
+        id: student.id || student.external_id, 
+        name: student.name,
+        username: student.username || student.ist_id, 
+        email: student.email,
+        externalId: student.external_id
+      }));
+
+      console.log("[DEBUG] Processed Banned Students:", bannedStudents.value);
+
+    } else {
+      console.error("[DEBUG] Unexpected API response:", response.data);
+    }
+  })
+  .catch((error) => {
+    console.error("[DEBUG] Error fetching banned students:", error);
+  });
 };
 
 // Executa a função para buscar os estudantes banidos ao montar o componente
@@ -220,16 +406,22 @@ const bannedTableHeaders = {
 const unbanButtons = {
   name: "unban",
   eventName: "unban", 
-  icon: "../../assets/StudentApp/students1.svg",
+  icon: "../../assets/StudentApp/unban.svg",
 };
 
 // Função que desbane um estudante
 const unbanStudent = (student) => {
+  if (!student || !student.externalId) {
+    console.error("Invalid student data:", student);
+    return;
+  }
+
   axios
     .post(
-      import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/unbanStudent', 
-      { id: student.id }, 
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/unban`,
+      { unbanstudent: student.externalId },  
       {
+        headers: { "Content-Type": "application/json" },
         auth: {
           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
@@ -237,23 +429,42 @@ const unbanStudent = (student) => {
       }
     )
     .then(() => {
-      // Remove o estudante da lista de banidos localmente
-      bannedStudents.value = bannedStudents.value.filter((s) => s.id !== student.id);
-      console.log('Estudante desbanido com sucesso:', student);
+      console.log(`Student ${student.name} unbanned successfully.`);
+
+      // Remove student from the banned list
+      bannedStudents.value = bannedStudents.value.filter(s => s.externalId !== student.externalId);
+
+      // Add student back to the normal student list
+      students.value.push({
+        id: student.id,
+        externalId: student.externalId,
+        name: student.name,
+        username: student.username,
+        squad: student.squad || "Not in a squad",
+        profilePic: student.profilePic,
+        email: student.email || "Not provided",
+        linkedin: student.linkedin || "Not provided",
+        currentPoints: student.currentPoints || 0,
+        dailyPoints: student.dailyPoints || 0,
+        totalPoints: student.totalPoints || 0,
+        cvStatus: student.cvStatus || "Not provided",
+        degree: student.degree || "Not provided"
+      });
+
+      console.log("Student moved to normal list:", students.value);
     })
     .catch((error) => {
-      console.error('Erro ao desbanir o estudante:', error); // Log do erro
+      console.error("Error unbanning student:", error.response ? error.response.data : error);
     });
 };
+
 
 // Função para fechar o popup de estudantes banidos
 const closePopup = () => {
   showBannedPopup.value = false; // Define a variável para false, escondendo o popup
 };
 
-// Lista de estudantes
-const students = ref([]); // Inicialmente vazio, os dados serão buscados pela API
-
+// Lista estática de estudantes
 // const students = ref([
 //   {
 //     id: '1',
@@ -271,6 +482,9 @@ const students = ref([]); // Inicialmente vazio, os dados serão buscados pela A
 //   },
 //   // Adicionar estudantes
 // ]);
+
+// Lista de estudantes
+const students = ref([]); // Inicialmente vazio, os dados serão buscados pela API
 
 // Variável reativa para armazenar o texto de pesquisa inserido pelo utilizador
 const searchQuery = ref('');
@@ -305,6 +519,20 @@ const filteredStudents = computed(() => {
 // Função para selecionar um estudante na aplicação
 const selectStudent = (student) => {
   selectedStudent.value = student; // Define o estudante selecionado
+};
+
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const goToSquad = (squadName) => {
+  if (!squadName) {
+    console.error("Student is not in a squad");
+    return;
+  }
+
+  // Redirect to the Squads page and pass squad name as a query parameter
+  router.push({ path: '/student-app/squads', query: { squad: squadName } });
 };
 </script>
 
@@ -435,7 +663,6 @@ th, td {
   position: relative;
 }
 
-
 .banned-popup > div {
   width: 100%;
   max-width: 950px;
@@ -465,30 +692,44 @@ th, td {
 
 .icon-combination {
   position: relative;
-  width: 36px; 
+  width: 36px; /* Set a fixed size for the button */
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #509CDB; 
-  border-radius: 8px; 
+  background-color: #509CDB; /* Blue background */
+  border-radius: 8px;
   cursor: pointer;
 }
 
-.icon-base img {
-  width: 20px; 
-  height: 20px;
+.icon-base {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-base-img {
+  width: 22px; /* Adjust the trash icon size */
+  height: 22px;
 }
 
 .icon-overlay {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); 
-  width: 14px; 
-  height: 14px;
-  z-index: 1; 
+  width: 15px; /* Smaller overlay */
+  height: 15px;
+  transform: translate(-50%, -50%); /* Center it perfectly */
 }
+
+.icon-overlay-img {
+  width: 15px;
+  height: 15px;
+  opacity: 0.9; /* Optional: Slight transparency */
+}
+
 
 .content {
   display: flex;
@@ -592,6 +833,14 @@ h3 {
   display: block; /* Garante que as propriedades de texto sejam aplicadas */
 }
 
+.profile-pic {
+  width: 100px; /* Adjust size as needed */
+  height: 100px; /* Adjust size as needed */
+  border-radius: 50%; /* Makes the image circular */
+  object-fit: cover; /* Ensures the image fits well inside the circle */
+  border: 2px solid #ccc; /* Optional: Add a border */
+}
+
 .role {
   color: #A7A7A7;
   font-size: 18px;
@@ -660,5 +909,159 @@ h3 {
   text-align: left;
   width: 100%;
 }
+
+.points-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.points-popup {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  width: 300px;
+}
+
+.points-input {
+  width: 80%;
+  padding: 8px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.btn-cancel, .btn-add, .btn-remove {
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.btn-cancel {
+  background: #ccc;
+}
+
+.btn-add {
+  background: #28a745;
+  color: white;
+}
+
+.btn-remove {
+  background: #dc3545;
+  color: white;
+}
+
+/* Popup de QR Code */
+.qr-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.qr-popup {
+  position: relative;
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  width: 280px;
+}
+
+.qr-popup h2 {
+  margin-bottom: 20px;
+}
+
+.qr-popup .close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.delete-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.delete-popup {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  width: 300px;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.btn-cancel, .btn-confirm {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.btn-cancel {
+  background: #ccc;
+}
+
+.btn-confirm {
+  background: #d9534f;
+  color: white;
+}
+
+.unban-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unban-icon {
+  width: 24px; /* Adjust the size of the icon as needed */
+  height: 24px;
+}
+
 </style>
   

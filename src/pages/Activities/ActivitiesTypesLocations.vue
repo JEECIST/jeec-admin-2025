@@ -19,7 +19,7 @@
         <div v-if="filteredActivityLoc.length === 0" class="no-loc">
           No locations found
         </div>
-      <AddLocPopUp v-if="isaddloc" @close="popup_addloc" />
+      <AddLocPopUp v-if="isaddloc" @close="popup_addloc" @locAdded = "fetchData" />
     </div>
     <div class="right-popup-placeholder" v-if="selectedLoc && filteredActivityLoc.length > 0">
       <button class="btn_close_rpp" @click="close_rpp">
@@ -37,51 +37,80 @@
         <button class = "edit-btn" @click ="popup_editloc">
           <img src="../../assets/pencil.svg">
         </button>
-        <button class = "edit-btn">
+        <button class = "edit-btn" @click = "deleteLoc(selectedLoc.name)">
           <img src="../../assets/trash.svg">
         </button>
       </div>
     </div>
-    <EditLocPopUp v-if="iseditloc" @close="popup_editloc" />
+    <EditLocPopUp v-if="iseditloc" :selectedLoc = "selectedLoc" @locEdited = "updatedSelectedLoc" @close="popup_editloc" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed , onMounted} from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
 import AddLocPopUp from './AddLocPopUp.vue';
 import EditLocPopUp from './EditLocPopUp.vue';
+import axios from 'axios';
 
 const database_loc = ref([
   {
-    name: "Main Speaker1",
-    priority: 1,
-  },
-  {
-    name: "Main Speaker1",
-    priority: 2,
-  },
-  {
-    name: "Main Speaker1",
-    priority: 3,
-  },
-  {
-    name: "Main Speaker1",
-    priority: 4,
+    name: null,
+    priority: null,
   }
 ]);
-
 
 const tableHeaders = {
   name: "Name",
   priority: "Priority"
 }
 
+const fetchData = () => {
+  axios
+    .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/types/locations', {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
+    })
+    .then((response) => {
+      const data = response.data;
+      database_loc.value = data.locations.map((location) => ({
+        name: location.name,
+        priority: location.priority,
+      }));
+    })
+    .catch((error) => {
+      console.error('Erro ao buscar os dados:', error);
+    });
+};
+
+onMounted(fetchData)
+
 const searchQuery = ref('');
 const selectedLoc = ref(null);
 const tableButtons = '';
 
+function deleteLoc(name)  {
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + `/activities/types/delete_loc`, {name: name}, {
+        auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+    })
+    .then(() => {
+        console.log("Location removida com sucesso!");
+        fetchData();
+
+        if (selectedLoc.value && selectedLoc.value.name === name) {
+            selectedLoc.value = null;
+        }
+    })
+    .catch(error => {
+        console.error("Erro ao remover location:", error.response?.data || error);
+    });
+}
 function selectLoc(row) {
   selectedLoc.value = row;
   //console.log('Selected Row: ', row);
@@ -117,6 +146,11 @@ function popup_addloc() {
 
 function popup_editloc() {
   iseditloc.value = !iseditloc.value
+}
+
+function updatedSelectedLoc(updatedLoc){
+  selectedLoc.value = null;
+  fetchData();
 }
 
 </script>

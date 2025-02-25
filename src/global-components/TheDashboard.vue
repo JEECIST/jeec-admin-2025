@@ -62,4 +62,9 @@ function isAccessible(route) {
   filter: brightness(0.9);
 }
 
+@media screen and (max-width: 700px) {
+  .dashnav {
+    padding: 3rem 3rem;
+  }
+}
 </style>
