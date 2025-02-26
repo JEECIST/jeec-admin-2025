@@ -246,7 +246,7 @@
                 <div class="body">
                     <div class="div-grid">
                         <!-- Utiliza v-for para iterar sobre os dados dos indivíduos -->
-                        <div v-for="company in companies.filter(companies => companies.tier == selectedRow.name)" :key="index" class="element">
+                        <div v-for="company in companies.filter(company => company.tier_id === selectedRow.id)" :key="company.name" class="element">
                             <div class="compimg"></div>
                             {{ company.name }}
                         </div>
@@ -262,30 +262,34 @@ import axios from 'axios';
 import TheTable from '../../global-components/TheTable.vue';
 import { ref, onMounted } from 'vue';
 
-let companies = ref([]); 
 let tiers = ref([]);
+let companies = ref([]);
 
 const tableKey = ref(0);
 
-const fetchCompanies = async () => {
-  console.log("Teste")
+const fetchTiers = async () => {
   axios
-  .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{auth: {
+  .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/tiers_vue',{auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
   })
   .then((response)=>{
-    tiers.value = response.data.tiers
-    console.log(tiers.value)
+    const data = response.data
+
+    tiers.value = data.tiers;
+    companies.value = data.companies;
+
+    console.log(tiers.value);
+    console.log(companies.value);
   })
   .catch((error)=>{
-    console.log(error)
+    console.log(error);
   })
 };
 
 // Chamando a função assim que o componente for montado
-onMounted(fetchCompanies);
+onMounted(fetchTiers);
 
 
 const message = ref('');
@@ -338,7 +342,7 @@ function addTier() {
     new_tier.append('meal', newTier.value.meal)
 
     axios
-    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/new-tier-vue',new_tier,{auth: {
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/tier/create',new_tier,{auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }
@@ -347,7 +351,7 @@ function addTier() {
             this.error = response.data
         })
 
-    setTimeout(fetchCompanies, 100);
+    setTimeout(fetchTiers, 100);
 
     closeModal();
 }
@@ -392,7 +396,7 @@ function editTier() {
             this.error = response.data
         })
 
-    setTimeout(fetchCompanies, 100);
+    setTimeout(fetchTiers, 100);
 
     closeModal();
 
@@ -417,7 +421,7 @@ function removeTier(row) {
 
     selectedRow.value = null;
 
-    setTimeout(fetchCompanies, 100);
+    setTimeout(fetchTiers, 100);
 
 };
 
