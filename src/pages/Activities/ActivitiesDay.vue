@@ -1,3 +1,43 @@
+
+
+
+
+
+
+
+
+Ver se é preciso por o estilo dos botoes q pus no activities.vue
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <template>
   <div class="wrapper">
     <div class="no-events-message" v-if="tableDataActivities.length === 0 && tableDataJobFair.length === 0">
@@ -141,6 +181,9 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import TheTable from '../../global-components/TheTable.vue';
 
+const router = useRouter();
+const day = computed(() => router.params.day);
+const event = computed(() => router.params.event);
 
 const tableDataActivities = ref([
   { ID: '3',  StartTime: '10:00',    EndTime: "11:00", Name: "Como transformar o caos em ordem", Type: "Workshop",        Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
@@ -153,6 +196,54 @@ const tableDataActivities = ref([
   { ID: '7',  StartTime: '17:00',    EndTime: "18:30", Name: "YAPPING YAPPING YAPPING",          Type: "Main Speaker",    Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
   { ID: '29', StartTime: '18:30',    EndTime: "20:00", Name: "YAPPING YAPPING",                  Type: "Alumni Talks",    Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
 ]);
+
+const fetchData = () => {
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities_vue', {
+          day: day,
+          event: event,
+        },{
+          auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then((response)=>{
+          tableDataActivities.value = response.data.activities || [];
+          tableDataJobFair.value = response.data.jobFair || [];
+}).catch((error) => {
+  console.error("Error fetching activities:", error);
+})
+};
+
+const deleteRow = (selectedRow) => {
+    if (!selectedRow || !selectedRow.ID) return;
+
+    if (confirm(`Are you sure you want to delete activity: ${selectedRow.Name}?`)) {
+        axios.delete(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/delete_activity/${selectedRow.ID}`, {
+            auth: {
+                username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+                password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+            }
+        })
+        .then(() => {
+            // Remover do array local
+            if (selectedRow.Subtitle === "Activity") {
+              tableDataActivities.value = tableDataActivities.value.filter(activity => activity.ID !== selectedRow.ID);
+            } else if (selectedRow.Type === "Job Fair") {
+              tableDataJobFair.value = tableDataJobFair.value.filter(jobFair => jobFair.ID !== selectedRow.ID);
+            }
+            fetchData();
+            alert("Activity deleted successfully!");
+        })
+        .catch((error) => {
+            console.error("Error deleting activity:", error);
+            alert("Failed to delete activity.");
+        });
+    }
+};
+
+
+onMounted(() => {
+    fetchData();
+});
 
 const headersActivities = computed(() => {
   if (isMobile.value) {

@@ -2,8 +2,16 @@
   <div class="wrapper">
     <div class="no-events" v-if="tableData.length === 0">
       <div class="buttons">
-          <button class="add-btn" @click="addPopUp">Add Activity</button>
-          <button class="types-btn" @click="goToActivitiesTypes">Activity Types ></button>
+        <div class="event-label">
+          <p>Event</p>
+          <select class="selection-box" v-model="eventselected">
+            <option value="all">All</option>
+            <option value="JEEC 23/24">JEEC 23/24</option>
+            <option value="JEEC 24/25">JEEC 24/25</option>
+          </select>
+        </div>
+        <button class="add-btn" @click="addPopUp">Add Activity</button>
+        <button class="types-btn" @click="goToActivitiesTypes">Activity Types ></button>
       </div>
       <div class="no-events-message">
         <p>No Event Days found</p>
@@ -12,6 +20,14 @@
     <div class="left-container">
       <div class="table-with-buttons" v-if="tableData.length > 0 && !(isMobile && showDashboard)">
         <div class="buttons">
+          <div class="event-label">
+          <p>Event</p>
+          <select class="selection-box" v-model="eventselected">
+            <option value="all">All</option>
+            <option value="JEEC 23/24">JEEC 23/24</option>
+            <option value="JEEC 24/25">JEEC 24/25</option>
+          </select>
+          </div>
           <button class="add-btn" @click="addPopUp">Add Activity</button>
           <button class="types-btn" @click="goToActivitiesTypes">Activity Types ></button>
         </div>
@@ -35,14 +51,8 @@
             <p class="right-popup-subtitle">Activities</p>
           </div>
           <div class="right-popup-buttons">
-            <button @click="addPopUp/*editRow(selectedRow)*/" class="image-button">
-              <img src="../../assets/pencil.svg">
-            </button>
             <button @click="goToActivitiesDay" class="image-button">
               <img src="../../assets/sheet.svg">
-            </button>
-            <button @click="deleteRow(selectedRow)" class="image-button">
-              <img src="../../assets/trash.svg">
             </button>
           </div>
           <div class="right-popup-body">
@@ -74,9 +84,7 @@
             <label for="activity-type">Activity Type:</label>
             <select id="activity-type" name="activity-type" v-model="newActivity.type">
               <option value="" selected disabled hidden>Select Activity</option>
-              <option v-for="type in activityTypes" :key="type" :value="type">
-                  git config --global pull.rebase false{{ type }}
-              </option>
+              <option v-for="type in activityTypes" :key="type" :value="type">{{ type }}</option>
             </select>
         </div>
 
@@ -112,6 +120,38 @@
             <input type="text" id="qr-code" name="qr-code" v-model="newActivity.qrCode">
         </div>
 
+        <div class="form-group">
+            <label for="companies">Choose Companies:</label>
+            <select id="companies" name="companies" v-model="newActivity.companie">
+              <option value="" selected disabled hidden>Select Company</option>
+              <option v-for="name in companiesNames" :key="name" :value="name">{{ name }}</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="volunteers">Choose Volunteers:</label>
+            <select id="volunteers" name="volunteers" v-model="newActivity.volunteers">
+              <option value="" selected disabled hidden>Select Activity</option>
+              <option v-for="type in activityTypes" :key="type" :value="type">{{ type }}</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="speakers">Choose Speakers:</label>
+            <select id="speakers" name="speakers" v-model="newActivity.speakers">
+              <option value="" selected disabled hidden>Select Activity</option>
+              <option v-for="name in speakersNames" :key="name" :value="name">{{ name }}</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="reward">Choose Reward:</label>
+            <select id="reward" name="reward" v-model="newActivity.reward">
+              <option value="" selected disabled hidden>Select Activity</option>
+              <option v-for="type in activityTypes" :key="type" :value="type">{{ type }}</option>
+            </select>
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="pop-up-add-btn">Add</button>
         </div>
@@ -128,50 +168,20 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import TheTable from '../../global-components/TheTable.vue';
 
-const tableData = ref([
 
-]);
+// nomeDoEvento = "teste"; isto é important, mas esta a dar erro agr
 
-/*const fetchData = () => {
-    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities_vue', {
-          event_id:"31cd68cf-ac76-4ae5-b9f3-434988d2556f",
-          username:"Rafa",
-          start_date:"19-02-2025",
-          end_date:"23-02-2025"
-        },{
-          auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        }}).then((response)=>{
-          const activities = response.data.real_activities;
 
-          tableData.value = activities.map(activity => ({
-            Date: activity.date, 
-            Weekday: activity.weekday, 
-            NumberActivities: activity.number_of_activities, 
-            NumberJobFair: activity.number_of_job_fair,
-            Logo: "src/assets/wrizz.jpg"
-        }));
-        console.log("Dados carregados:", tableData.value);
-      }).catch(error => {
-        console.error("Erro ao buscar os dados:", error);
-    });
-};*/
+
+const tableData = ref([{ Date: '19-02-2024', Weekday: 'Monday',    NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
+  { Date: '20-02-2024', Weekday: 'Tuesday',   NumberActivities: 9, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
+  { Date: '21-02-2024', Weekday: 'Wednesday', NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
+  { Date: '22-02-2024', Weekday: 'Thursday',  NumberActivities: 9, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
+  { Date: '23-02-2024', Weekday: 'Friday',    NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},]);
 
 const activityTypes = ref([]);
-
-const fetchActivityTypes = () => {
-    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/typess', {
-        auth: {
-        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      }}).then((response) => {
-        activityTypes.value = response.data.types; //Vetor com os tipos de atividades
-      }).catch((error) => {
-        console.error("Erro ao buscar tipos de atividades:", error);
-    });
-};
-
+const companiesNames = ref([]);
+const speakersNames = ref([]);
 
 const fetchData = () => {
     axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities_vue', {
@@ -187,6 +197,113 @@ const fetchData = () => {
         })
 }
 
+const fetchActivityTypesNames = async () => {
+  try {
+    const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/get_name_types', {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    });
+
+    console.log('Activity Types:', response.data);
+    activityTypes.value = response.data.types; // Armazena os tipos de atividades
+
+    console.log(activityTypes.value); // Verifica se está preenchendo corretamente
+  } catch (error) {
+    console.error('Error fetching activity types:', error);
+  }
+}
+
+
+
+// const fetchCompaniesNames = async () => {
+//   try {
+//     const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies/companies/get_name', {
+//       auth: {
+//         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+//         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+//       }
+//     });
+
+//     console.log('Companies Names:', response.data);
+//     companiesNames.value = response.data.name;
+//     console.log(companiesNames.value);
+//   } catch (error) {
+//     console.error('Error fetching companies names:', error);
+//   }
+// }
+
+
+const fetchCompaniesNames = async () => {
+  try {
+    const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies/companies_vue', {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    });
+
+    console.log('Companies Names:', response.data);
+    companiesNames.value = response.data.company.name;
+    console.log(companiesNames.value);
+  } catch (error) {
+    console.error('Error fetching companies names:', error);
+  }
+}
+
+
+// const fetchActivityTypesNames = async () => {
+//   try {
+//     const [response1, response2] = await Promise.all([
+//       axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/get_name_types', {
+//         auth: {
+//           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+//           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+//         }
+//       }),
+//       axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies/companies_vue', {
+//         auth: {
+//           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+//           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+//         }
+//       })
+//     ]);
+
+//     console.log('Activity Types:', response1.data);
+//     activityTypes.value = response1.data.types; // Armazena os tipos de atividades
+//     console.log(activityTypes.value); // Verifica se está preenchendo corretamente
+    
+//     console.log('Companies Names:', response2.data);
+//     companiesNames.value = response2.data.types;
+//     console.log(companiesNames.value);
+
+//   } catch (error) {
+//     console.error('Error fetching data:', error);
+//   }
+// };
+
+
+
+const fetchSpeakersNames = async () => {
+  try {
+    const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakers/speakerss', {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    });
+
+    console.log('Speakers Names:', response.data);
+    speakersNames.value = response.data.speaker.name;
+    console.log(speakersNames.value);
+  } catch (error) {
+    console.error('Error fetching speakers names:', error);
+  }
+}
+
+
+
 const addNewActivity = async () => {
   if (!newActivity.value.name || !newActivity.value.type || !newActivity.value.description ||
       !newActivity.value.day || !newActivity.value.startTime || !newActivity.value.endTime || 
@@ -196,9 +313,9 @@ const addNewActivity = async () => {
   }
 
   try {
-    const response = await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add_activity', {
+    const response = await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/new-activity_vue', {
       event_id: "31cd68cf-ac76-4ae5-b9f3-434988d2556f", // ID do evento
-      day: newActivity.value.day, // Dia selecionado
+      //day: newActivity.value.day, // Dia selecionado
       name: newActivity.value.name,
       type: newActivity.value.type,
       description: newActivity.value.description,
@@ -226,7 +343,9 @@ const addNewActivity = async () => {
 
 onMounted(() => {
     fetchData();
-    fetchActivityTypes();
+    fetchActivityTypesNames();
+    fetchCompaniesNames();
+    fetchSpeakersNames();
 });
 
 const router = useRouter();
@@ -235,8 +354,8 @@ function goToActivitiesTypes() {
   router.push("/activities/types");
 }
 
-function goToActivitiesDay(){
-  router.push("/activities/day");
+function goToActivitiesDay() {
+  router.push({ name: "activities-day", params: { day: 1, event: nomeDoEvento } });/*variavel com o dia*/
 }
 
 const headers = computed(() => {
@@ -304,13 +423,6 @@ function handleRowSelect(row) {
   showDashboard.value = true;
 }
 
-function editRow(row) {
-  console.log('Edit button clicked for row:', row);
-}
-
-function deleteRow(row) {
-  console.log('Delete button clicked for row:', row);
-}
 </script>
 
 
@@ -329,13 +441,12 @@ function deleteRow(row) {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .no-events{
   display: flex;
   flex-direction: column;
-
   width: 100%;
   height: 100%;
 }
@@ -357,15 +468,53 @@ function deleteRow(row) {
   display: flex;
   flex-direction: column;
   width: 100%;
-  overflow-y: auto;
+}
+
+.selection-box{
+  height: 100%;
+  border: 1px solid #8A8A8A;
+  border-radius: 4px;
+  outline-color: var(--c-select);
+  font-family: 'Kumbh Sans', sans-serif;
+  padding: 1px 1px;
+  font-size: 1em;
+  color: #8A8A8A;
+  background-color: #FFFFFF
 }
 
 .buttons {
+  flex-direction: row;
   display: flex;
   justify-content: flex-end;
   gap: 16px;
-  margin-bottom: 1.5rem;
-  padding-right: 3ch;
+  margin-bottom: 1rem;
+  height: 55px;
+  align-items: flex-end;
+  overflow: visible;
+  align-items: bottom; 
+  position: relative;
+}
+
+.event-label{
+  flex-direction: column;
+  display: flex;
+  justify-content: flex-end;
+  height: 115%;
+}
+
+.selection-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.selection-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 2px;
+  text-align: left;
 }
 
 button {
@@ -378,6 +527,10 @@ button {
   cursor: pointer;
   font-family: 'Kumbh Sans', sans-serif;
   font-weight: 550;
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 button:hover {
@@ -625,10 +778,13 @@ form input, form select, form textarea {
 .pop-up-add-btn {
   background-color: #152259;
   color: white;
-  padding: 10px;
+  padding: 12px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .pop-up-add-btn:hover {
