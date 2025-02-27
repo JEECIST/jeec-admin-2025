@@ -124,7 +124,7 @@
             <label for="companies">Choose Companies:</label>
             <select id="companies" name="companies" v-model="newActivity.companie">
               <option value="" selected disabled hidden>Select Company</option>
-              <option v-for="name in companiesNames" :key="name" :value="name">{{ name }}</option>
+              <option v-for="company in companiesNames" :key="company.name" :value="company.name">{{ company.name }}</option>
             </select>
         </div>
 
@@ -182,6 +182,7 @@ const tableData = ref([{ Date: '19-02-2024', Weekday: 'Monday',    NumberActivit
 const activityTypes = ref([]);
 const companiesNames = ref([]);
 const speakersNames = ref([]);
+const name = ref("");
 
 const fetchData = () => {
     axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities_vue', {
@@ -243,9 +244,10 @@ const fetchCompaniesNames = async () => {
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }
     });
-
     console.log('Companies Names:', response.data);
-    companiesNames.value = response.data.company.name;
+    companiesNames.value = response.data.companies.map((vue_company) => ({
+       name: vue_company.name,
+    }));
     console.log(companiesNames.value);
   } catch (error) {
     console.error('Error fetching companies names:', error);
