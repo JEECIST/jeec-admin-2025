@@ -124,7 +124,7 @@
             <label for="companies">Choose Companies:</label>
             <select id="companies" name="companies" v-model="newActivity.companie">
               <option value="" selected disabled hidden>Select Company</option>
-              <option v-for="company in companiesNames" :key="company.name" :value="company.name">{{ company.name }}</option>
+              <option v-for="companies in companiesNames" :key="companies" :value="companies">{{ companies }}</option>
             </select>
         </div>
 
@@ -238,17 +238,19 @@ const fetchActivityTypesNames = async () => {
 
 const fetchCompaniesNames = async () => {
   try {
-    const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies/companies_vue', {
+    const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue', {
       auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }
     });
-    console.log('Companies Names:', response.data);
-    companiesNames.value = response.data.companies.map((vue_company) => ({
-       name: vue_company.name,
-    }));
-    console.log(companiesNames.value);
+    companiesNames.value = response.data.companies
+    console.log('Companies Names:', companiesNames.value);
+
+    // if (response.data.error == 'No sponsors found'){
+    //     noSponsors.value = true
+    //   }
+
   } catch (error) {
     console.error('Error fetching companies names:', error);
   }
