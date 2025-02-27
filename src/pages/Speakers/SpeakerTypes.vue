@@ -1,6 +1,9 @@
+<!-- falta meter parte "no speakers found" - ver codigo dos sponsors -->
+
+
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import AddSpeakerTypePopup from './AddSpeakerTypePopup.vue';
 import EditSpeakerTypePopup from './EditSpeakerTypePopup.vue';
 import ListSpeakerTypePopup from './ListSpeakerTypePopup.vue';
@@ -8,50 +11,23 @@ import TypeMobilePopup from './TypeMobilePopup.vue';
 
 const popupShow = ref(false);
 const isModalOpened = ref(false);
-
-const closePopup = () => {
-  popupShow.value = false;
-};
-
-const openModal = () => {
-  isModalOpened.value = true;
-};
-const closeModal = () => {
-  isModalOpened.value = false;
-};
-
 const isOtherModalOpened = ref(false);
-
-const openOtherModal = () => {
-  isOtherModalOpened.value = true;
-};
-const closeOtherModal = () => {
-  isOtherModalOpened.value = false;
-};
-
 const isAnotherModalOpened = ref(false);
-
-const openAnotherModal = () => {
-  isAnotherModalOpened.value = true;
-};
-const closeAnotherModal = () => {
-  isAnotherModalOpened.value = false;
-};
-
 const isMobileModalOpened = ref(false);
 
-const closeMobileModal = () => {
-  isMobileModalOpened.value = false;
-};
+const closePopup = () => { popupShow.value = false; };
+const openModal = () => { isModalOpened.value = true; };
+const closeModal = () => { isModalOpened.value = false; };
+const openOtherModal = () => { isOtherModalOpened.value = true; };
+const closeOtherModal = () => { isOtherModalOpened.value = false; };
+const openAnotherModal = () => { isAnotherModalOpened.value = true; };
+const closeAnotherModal = () => { isAnotherModalOpened.value = false; };
+const closeMobileModal = () => { isMobileModalOpened.value = false; };
 
-function isMobile() {
-  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
+const isMobile = ref();
+function updateIsMobile() { isMobile.value = window.innerWidth <= 800; }
+onMounted(() => { window.addEventListener('resize', updateIsMobile); });
+onUnmounted(() => { window.removeEventListener('resize', updateIsMobile); });
 
 
 const message = ref();
@@ -101,7 +77,7 @@ const tablePref = {
 </script>
 
 <template>
-  <div class="desktop" v-if="!isMobile()">
+  <div class="desktop" v-if="!isMobile">
     <div class="wrapper">
       <div class="table">
         <div class="topbar">

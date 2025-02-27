@@ -27,27 +27,34 @@ function selectCallback(row) {
 const datab = [
   {
     name: "Paulo Martins",
+    nameother: "André Gay"
   },
   {
     name: "Paulo Martins",
+    nameother: "André Gay"
   },
   {
     name: "Paulo Martins",
+    nameother: "André Gay"
   },
   {
     name: "Paulo Martins",
+    nameother: "André Gay"
   },
   {
     name: "Paulo Martins",
+    nameother: "André Gay"
   },
   {
     name: "Paulo Martins",
+    nameother: "André Gay"
   },
 
 ];
 
 const tablePref = {
   name: "",
+  nameother: "", 
 };
 
 </script>
@@ -121,6 +128,7 @@ const tablePref = {
   top: 50%;
   left: 50%;
   translate: -50% -50%;
+  border-radius: 15px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -170,6 +178,7 @@ h1 {
   left: 50%;
   translate: -50% -50%;
   width: 50vw;
+  padding-top: 5%;
 }
 
 .mobile-add {

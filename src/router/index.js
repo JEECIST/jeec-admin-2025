@@ -99,7 +99,7 @@ const routes = [
   {
     path: "/business/companies",
     name: "business-companies",
-    meta: { title: "Companies" },
+    meta: {title: "Companies" },
     component: () => import("../pages/Business/BusinessCompanies.vue"),
   },
   {
@@ -162,8 +162,14 @@ const routes = [
     name: "studentapp",
     component: Dashboard,
     meta: {
-      title: "Student App", children: ["studentapp-prizes", "studentapp-prizes-shop", "studentapp-prizes-special", "studentapp-squads", "studentapp-students"]
+      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students"]
     },
+  },
+  {
+    path: "/student-app/points",
+    name: "studentapp-points",
+    meta: { title: "Points" },
+    component: () => import("../pages/StudentApp/StudentAppPrizesSpecial.vue"),
   },
   {
     path: "/student-app/students",

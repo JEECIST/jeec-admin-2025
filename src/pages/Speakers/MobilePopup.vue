@@ -1,3 +1,6 @@
+<!-- falta meter ellipsis no text- ver codigo da tabela -->
+
+
 <script setup>
 import { defineProps, defineEmits, ref } from "vue";
 import EditSpeakerPopup from './EditSpeakerPopup.vue';
@@ -9,29 +12,20 @@ const props = defineProps({
 const emit = defineEmits(["modal-close"]);
 
 const isOtherModalOpened = ref(false);
-
-const openOtherModal = () => {
-    isOtherModalOpened.value = true;
-};
-const closeOtherModal = () => {
-    isOtherModalOpened.value = false;
-};
-
 const descriptionShow = ref(false);
-
-function showfunction() {
-  descriptionShow.value=true;
-}
-
-function closeDescription() {
-  descriptionShow.value=false;
-}
+const openOtherModal = () => { isOtherModalOpened.value = true; };
+const closeOtherModal = () => { isOtherModalOpened.value = false; };
+function showfunction() { descriptionShow.value = true; }
+function closeDescription() { descriptionShow.value = false; }
 
 </script>
 
 <template>
     <div v-if="isOpen" class="modal-mask">
         <div class="right-popup-placeholder-mobile">
+            <div class="close-wrapper">
+                <button class="close" @click.stop="emit('modal-close')">X</button>
+            </div>
             <div class="items">
                 <h1>SPEAKER TYPE</h1>
                 <div class="speaker-photo">Insert Speaker Photo</div>
@@ -98,7 +92,6 @@ function closeDescription() {
                     <p>JEEC Responsible</p>
                     <p class="text2">Francisco Rosa</p>
                 </div>
-                <button class="close" @click.stop="emit('modal-close')"> Close </button>
             </div>
         </div>
     </div>
@@ -116,14 +109,17 @@ function closeDescription() {
 }
 
 .right-popup-placeholder-mobile {
-    width: 90.5vw;
-    height: 88vh;
+    width: 350px;
+    height: 80vh;
     border-radius: 30px;
     background-color: var(--c-accent);
     position: absolute;
     top: 50%;
     left: 50%;
     translate: -50% -50%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 3%;
 
 }
 
@@ -204,55 +200,76 @@ button {
 }
 
 .popup-mask {
-  position: fixed;
-  z-index: 9998;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.425);
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.425);
 }
 
 .description-mobile {
-  display: flex;
-  justify-content: left;
-  background-color: white;
-  width: 90.5vw;
-  height: 80%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  translate: -50% -50%;
-  border-radius: 15px;
+    display: flex;
+    justify-content: left;
+    background-color: white;
+    width: 90.5vw;
+    height: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    border-radius: 15px;
 }
 
-.description-mobile > p {
-   display: flex;
-   align-items: center;
-   vertical-align: center;
-   justify-content: center;
-   padding: 3.5vw;
-   font-weight: 350;
-   color: (--c-ft-semi-light);
+.description-mobile>p {
+    display: flex;
+    align-items: center;
+    vertical-align: center;
+    justify-content: center;
+    padding: 3.5vw;
+    font-weight: 350;
+    color: (--c-ft-semi-light);
 }
 
 .mobile-closedescription {
-  background-color: #152259;
-  color: white;
+    background-color: #152259;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    margin-right: 3vw;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    display: flex;
+    margin-left: auto;
+    width: 90vw;
+    height: 3.5vh;
+    align-items: center;
+    justify-content: center;
+    gap: 10vh;
+    cursor: pointer;
+    padding: 0.5vw;
+}
+
+.close-wrapper {
+  display: flex;
+  justify-content: right;
+  margin-right: 2%;
+}
+
+.close {
+  background-color: var(--c-accent);
+  color: rgba(0, 0, 0, 0.710);
+  font-size: large;
+  font-weight: bolder;
   border-radius: 5px;
   border: none;
-  margin-right: 3vw;
-  margin-top: 2%;
-  margin-bottom: 2%;
-  display: flex;
-  margin-left: auto;
-  width: 90vw;
-  height: 3.5vh;
-  align-items: center;
-  justify-content: center;
-  gap: 10vh;
   cursor: pointer;
-  padding: 0.5vw;
+  width: 2vw;
+  height: 3.5vh;
+  margin-top: 3%;
+  margin-right: 2%;
+  margin-bottom: -8%;
 }
 
 </style>

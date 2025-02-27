@@ -19,7 +19,14 @@
         :searchInput="message"
         :buttons="tableButtons"
         @onRowSelect="selectCallback"
-      ></TheTable>
+        @notFound="handleNotFound"
+      />
+      <div v-if="noResultsFound" class = "tableBackground">
+        <p class="no-users-found">No Team Users found</p>
+      </div>
+      
+
+
     </div>
     
     <!-- Conditionally render the right popup placeholder -->
@@ -31,7 +38,7 @@
         </div>
         
           <img src="../../assets/wrizz.jpg" alt="Profile Image" class="pfp">
-          <p class="cardUsername">{{ selectedRow.user }}</p>
+          <p class="cardUsername">{{ selectedRow.username }}</p>
           <p class="cardUseless">Team User</p>
           <div class="cardActions">
             <button class="edit-button"><img src="../../assets/pencil.svg"></button>
@@ -44,8 +51,8 @@
             </div>
               
             <div class = "cardInfoMember"> 
-              <p class="cardInfoLabel">PASSWORD</p>
-              <p> Placeholder for password from database</p>
+              <p class="cardInfoLabel">Password</p>
+              <p> ****************</p>
             </div>
 
             
@@ -69,9 +76,15 @@
         <div class="formRole">
           <label for="role">Role</label>
           <select v-model="newUser.role" id="role" required>
+            
+            <option value="Webdev">Webdev</option>
+            <option value="Business">Business</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Coordination">Coordination</option>
+            <option value="Partnership">Partnership</option>
             <option value="Admin">Admin</option>
-            <option value="User">User</option>
-            <option value="Viewer">Viewer</option>
+            <option value="Team">Team</option>
+
           </select>
         </div>
         <div class="modal-actions">
@@ -83,55 +96,95 @@
 </template>
 
 <script setup>
+import axios from 'axios';
+import CryptoJS from "crypto-js";
 import TheTable from '../../global-components/TheTable.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const message = ref('');
 const showAddUserModal = ref(false);
 const newUser = ref({ username: '', role: '' });
-const selectedRow = ref(null);  // Track the selected row
+const selectedRow = ref(null);  
 
 function selectCallback(row) {
-  selectedRow.value = row;  // Set the selected row
-}
-
-function addUser() {
-  datab.value.push({ id: 1, user: newUser.value.username, role: newUser.value.role, name: newUser.value.username });
-  closeModal();
+  selectedRow.value = row;  
 }
 
 function closeModal() {
   showAddUserModal.value = false;
-  newUser.value = { username: '', role: '' };
 }
 function closeCardInfo(){
   selectedRow.value = null;
 }
-const datab = ref([
-  {
-    id: "1",
-    user: "Deco",
-    
-    role: "Webdev",
-    name: "André Santos the Feeble",
-  },
-  {
-    id: "2",
-    user: "DD",
-    
-    role: "Webdev",
-    name: "André Santos"
-  },
-]);
+const datab = ref([{
+  user: null,
+  name: null,
+  username: null,
+  role: null,
+}])
+const noResultsFound = ref(false);
+function handleNotFound(isEmpty) {
+  noResultsFound.value = isEmpty;
+}
 
+const fetchData = () => {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss',{auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then((response)=>{
+          datab.value = response.data.users
+          console.log(datab.value)
+        })
+        .catch(error => console.error('Fetch error:', error)); 
+}
+
+onMounted(fetchData)
 const tablePref = {
-  id: "ID",
-  user: "Username",
+  user: "ID",
+  username: "Username",
   role: "Role",
   name: "Member"
   
   
-};
+}
+
+function generateSecurePassword(length = 16) {
+  const array = new Uint8Array(length);
+  window.crypto.getRandomValues(array);
+  return btoa(String.fromCharCode(...array)).slice(0, length);
+}
+
+function addUser() {
+
+  let password = generateSecurePassword(16);
+  let encryptedPassword = CryptoJS.AES.encrypt(password, import.meta.env.VITE_APP_API_KEY).toString();
+
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/user/addteamuser',
+  { 
+    user: { 
+      name: "nome",
+      username: newUser.value.username, 
+      role: newUser.value.role,
+      password: encryptedPassword
+    }
+  }, 
+  { 
+    auth: { 
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
+    }
+  })
+  .then(() => {
+    fetchData();
+    closeModal();
+  })
+  .catch(error => {
+    console.error("Failed to add user :<");
+  });
+}
+
+
+
 
 </script>
 
@@ -454,6 +507,24 @@ form > button {
         color: #333;
     }
 
+.tableBackground {
+  background-color: var(--c-accent);
+  border-radius: 6px;
+  min-height: 70%;
+  
+  display: flex;
+  justify-content: center;  /* Centers horizontally */
+  align-items: center;  /* Centers vertically */
+}
+
+.no-users-found {
+  font-weight: 700;
+  text-align: center;
+  font-size: 1.2rem;
+  color: darkgray;
+}
+
+
 @media (max-width: 768px) {
   .wrapper {
   display: flex;
@@ -467,8 +538,8 @@ form > button {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent gray */
-    z-index: 500; /* Behind the popup */
+    background-color: rgba(0, 0, 0, 0.5); 
+    z-index: 500; 
 }
   .table {
     width: 100%;
@@ -476,16 +547,16 @@ form > button {
     gap: 1ch;
   }
   .right-popup-placeholder {
-    position: fixed; /* Position the popup above the content */
-    top: 50%; /* Vertically center */
-    left: 43%; /* Horizontally center */
-    transform: translate(-50%, -50%); /* Adjust the position to be truly centered */
-    width: 90%; /* Adjust width to fit on smaller screens */
-    height: calc(97dvh - var(--header-height)); /* Let the height adapt to content */
-    background-color: #eef4fb; /* Add background for better visibility */
+    position: fixed; 
+    top: 50%; 
+    left: 43%;
+    transform: translate(-50%, -50%);
+    width: 90%; 
+    height: calc(97dvh - var(--header-height)); 
+    background-color: #eef4fb; 
     padding: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000; /* Ensure it stays above other content */
+    z-index: 1000; 
   }
 
 
@@ -531,5 +602,13 @@ form > button {
     display: none;
   
   }
+  .no-users-found {
+  text-align: center;
+  font-size: 1.2rem;
+  color: gray;
+  margin-top: 20px;
 }
+
+}
+
 </style>

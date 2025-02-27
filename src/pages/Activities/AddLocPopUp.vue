@@ -12,15 +12,15 @@
         <div class="row">
           <div class="col">
             <label for="name">Name</label>
-            <input type="text" v-model="name" />
+            <input id="name" type="text" v-model="name" />
           </div>
           <div class="col">
             <label for="priority">Priority</label>
-            <input type="text" v-model="priority" />
+            <input id="priority" type="text" v-model="priority" />
           </div>
         </div>
         <div class="end_btn">
-          <button class = "btn_add" @click="closePopup">Add</button> <!-- function to add and save info v-model -->
+          <button class = "btn_add" @click="addLoc">Add</button> <!-- function to add and save info v-model -->
         </div>
       </div>
     </div>
@@ -28,9 +28,44 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits , ref } from "vue";
+import { ref } from "vue";
+import axios from "axios";
 
-const emit = defineEmits(['close'])
+
+const emit = defineEmits(['close', 'locAdded'])
+
+// Inputs do formulário
+const name = ref("");
+const priority = ref();
+
+
+function addLoc() {
+    if (!name.value.trim()) {
+        console.error("O campo 'Nome' não pode estar vazio.");
+        return;
+    }
+
+    const locData = {
+        event_id: '',
+        name: name.value,
+        priority: priority.value,
+    };
+
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + `/activities/types/add-location`, locData, {
+        auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+    })
+        .then(() => {
+            console.log("Location adicionada com sucesso!");
+            emit("locAdded")
+            emit("close");
+        })
+        .catch(error => {
+            console.error("Erro ao adicionar location:", error.response?.data || error);
+        });
+}
 
 function closePopup() {
   emit('close');
@@ -39,9 +74,6 @@ function closePopup() {
 const props = defineProps({
   foo: String
 })
-
-const name = ref('');
-const priority = ref('');
 
 </script>
 
@@ -62,19 +94,24 @@ const priority = ref('');
 
 
 .popup-container {
-  width: 700px;
+  width: 1100px;
+  min-height: 700px;
   background-color: white;
-  border-radius: 10px;
+  border-radius: 5px;
   padding: 30px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   position: relative;
+  margin: 0px 20px;
 }
 
 .header {
   font-size: 1.5em;
   font-weight: 600;
   color: #4f4f4f;
-  margin-bottom: 20px;
+  margin-top: 20px;
+  margin-left: 30px;
+  margin-right: 20px;
+  margin-bottom: 40px;
 }
 
 .btn_close {
@@ -120,16 +157,18 @@ input[type="text"] {
 }
 
 .end_btn {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: auto;
-  margin-top: 20px;
+  position: absolute; /* Altere para position: absolute */
+    bottom: 40px; /* Alinhe com a margem inferior */
+    right: 40px; /* Alinhe com a margem direita */
+    display: flex;
+    justify-content: flex-end;
+    width: auto;
 }
 
 .btn_add {
   background-color: #1a2e4e;
   color: #ffffff;
-  padding: 10px 20px;
+  padding: 10px 30px;
   font-size: 1em;
   font-weight: 400;
   font-family: 'Kumbh Sans', sans-serif;

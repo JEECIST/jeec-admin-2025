@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, ref } from "vue";
+import { defineProps, defineEmits, ref, onMounted, onUnmounted } from "vue";
 
 const props = defineProps({
     isOpen: Boolean,
@@ -7,21 +7,17 @@ const props = defineProps({
 
 const emit = defineEmits(["modal-close"]);
 
-function isMobile() {
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
+const isMobile = ref();
+function updateIsMobile() { isMobile.value = window.innerWidth <= 800; }
+onMounted(() => { window.addEventListener('resize', updateIsMobile); });
+onUnmounted(() => { window.removeEventListener('resize', updateIsMobile); });
 
 </script>
 
 <template>
     <div v-if="isOpen" class="modal-mask">
-        <div class="desktop" v-if="!isMobile()">
-            <div class="wrapper-wrapper">
+        <div class="desktop" v-if="!isMobile">
+            <div class="wrapper">
                 <div class="popup-wrapper">
                     <div class="ihatedivs">
                         <div class="header">
@@ -29,7 +25,7 @@ function isMobile() {
                             <button class="close" @click.stop="emit('modal-close')">X</button>
                         </div>
                         <div class="flex-1">
-                            <div class="flex-1-row-4">
+                            <div class="flex-1-row-1">
                                 <div class="labels" id="name">
                                     <label for="name">Name</label>
                                     <input type="text" placeholder="" id="name">
@@ -39,7 +35,7 @@ function isMobile() {
                                     <input type="text" placeholder="" id="priority">
                                 </div>
                             </div>
-                            <div class="flex-1-row-5">
+                            <div class="flex-1-row-2">
                                 <div class="check" id="website">
                                     <label for="website">Show in Website</label>
                                     <div class="radios">
@@ -62,7 +58,7 @@ function isMobile() {
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex-1-row-6">
+                            <div class="flex-1-row-3">
                                 <div class="check" id="post">
                                     <label for="post">Exclusive Posts</label>
                                     <div class="radios">
@@ -82,7 +78,7 @@ function isMobile() {
 
 
         <div class="mobile" v-else>
-            <div class="mobile-wrapper-wrapper">
+            <div class="mobile-wrapper">
                 <div class="popup-wrapper">
                     <div class="ihatedivs">
                         <div class="header">
@@ -90,7 +86,7 @@ function isMobile() {
                             <button class="mobile-close" @click.stop="emit('modal-close')">X</button>
                         </div>
                         <div class="flex-1">
-                            <div class="mobile-flex-1-row-4">
+                            <div class="mobile-flex-1-row-1">
                                 <div class="labels" id="name">
                                     <label for="name">Name</label>
                                     <input type="text" placeholder="" id="name">
@@ -100,7 +96,7 @@ function isMobile() {
                                     <input type="text" placeholder="" id="priority">
                                 </div>
                             </div>
-                            <div class="mobile-flex-1-row-5">
+                            <div class="mobile-flex-1-row-2">
                                 <div class="check" id="website">
                                     <label for="website">Show in Website</label>
                                     <div class="radios">
@@ -123,7 +119,7 @@ function isMobile() {
                                     </div>
                                 </div>
                             </div>
-                            <div class="mobile-flex-1-row-6">
+                            <div class="mobile-flex-1-row-3">
                                 <div class="check" id="post">
                                     <label for="post">Exclusive Posts</label>
                                     <div class="radios">
@@ -154,7 +150,23 @@ function isMobile() {
     background-color: rgba(0, 0, 0, 0.425);
 }
 
-.mobile-wrapper-wrapper {
+.wrapper {
+    display: flex;
+    justify-content: center;
+    background-color: white;
+    width: 60vw;
+    height: 70%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    border-radius: 15px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 15px;
+}
+
+.mobile-wrapper {
     display: flex;
     justify-content: center;
     background-color: white;
@@ -166,26 +178,7 @@ function isMobile() {
     translate: -50% -50%;
     overflow-y: auto;
     overflow-x: hidden;
-}
-
-.wrapper-wrapper {
-    display: flex;
-    justify-content: center;
-    background-color: white;
-    width: 60vw;
-    height: 70%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    translate: -50% -50%;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    border-radius: 15px;
 }
 
 .popup-wrapper {
@@ -194,6 +187,12 @@ function isMobile() {
     height: 100%;
     left: 0;
     top: 0;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .flex-1,
@@ -209,33 +208,33 @@ h1 {
     color: #515151;
 }
 
-.mobile-flex-1-row-4 {
-    display: flex;
-    flex-direction: row;
-    width: 84.5vw;
-    justify-content: space-between;
-}
-
-.flex-1-row-4 {
+.flex-1-row-1 {
     display: flex;
     flex-direction: row;
     width: 48vw;
     justify-content: space-between;
 }
 
-.mobile-flex-1-row-5,
-.mobile-flex-1-row-6 {
+.flex-1-row-2,
+.flex-1-row-3 {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: left;
     gap: 10vw;
     margin-top: 3%;
 }
 
-.flex-1-row-5,
-.flex-1-row-6 {
+.mobile-flex-1-row-1 {
     display: flex;
     flex-direction: row;
+    width: 84.5vw;
+    justify-content: space-between;
+}
+
+.mobile-flex-1-row-2,
+.mobile-flex-1-row-3 {
+    display: flex;
+    flex-direction: column;
     justify-content: left;
     gap: 10vw;
     margin-top: 3%;
@@ -258,7 +257,7 @@ input {
     height: 100%;
 }
 
-.mobile-flex-1-row-4>.labels>#name,
+.mobile-flex-1-row-1>.labels>#name,
 #priority {
     width: 60vw;
 }
@@ -273,11 +272,6 @@ input {
     justify-content: left;
     gap: 1.3vw;
     align-items: center;
-}
-
-radio {
-    display: flex;
-    flex-direction: row;
 }
 
 .check {
@@ -312,13 +306,6 @@ radio {
     margin-bottom: 3%;
     margin-top: 2%;
     margin-right: 2%;
-}
-
-.mobile-btns {
-    width: 80vw;
-    display: flex;
-    justify-content: right;
-    gap: 4%;
 }
 
 .mobile-add {
@@ -356,6 +343,13 @@ radio {
     margin-top: 8vh;
     justify-content: right;
     gap: 0.1%;
+}
+
+.mobile-btns {
+    width: 80vw;
+    display: flex;
+    justify-content: right;
+    gap: 4%;
 }
 
 </style>

@@ -10,7 +10,7 @@
       <TheNav class="nav" :class="{ open: stateStore.sideNavOpen }"></TheNav>
       <TheHeader class="header"></TheHeader>
     </template>
-    <main>
+    <main :class="{'mobile': isMobile()}">
       <router-view :key="$route.fullPath"/>
     </main>
   </div>
@@ -28,12 +28,17 @@ import { useStateStore } from './stores/state';
 useUserStore().getAccess();
 const stateStore = useStateStore();
 
+import {isMobile} from '@utils/utils';
 </script>
 
 <style scoped>
 main {
   padding-top: var(--header-height);
   padding-left: var(--sidenav-width);
+}
+
+main.mobile {
+  padding-top: var(--mobile-header-height);
 }
 
 .nav-backdrop {
@@ -72,23 +77,23 @@ main {
     height: 100dvh;
     background-color: #000000e6;
     opacity: 0;
-    transition: transform 0.5s ease-in;
+    transition: transform 0.25s ease-in;
   }
 
   .nav-backdrop.open {
     opacity: 1;
-    transition: opacity 0.5s ease-out
+    transition: opacity 0.25s ease-out
   }
 
   .nav {
     transform: translateX(-100%);
-    transition: transform 0.5s ease-in;
+    transition: transform 0.25s ease-in;
   }
 
   .nav.open {
     visibility: visible;
     transform: translateX(0);
-    transition: transform 0.5s ease-out;
+    transition: transform 0.25s ease-out;
   }
 }
 </style>
