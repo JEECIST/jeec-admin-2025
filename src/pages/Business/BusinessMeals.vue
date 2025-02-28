@@ -19,7 +19,7 @@
       <h2>{{ selectedRow.day }}</h2>
       <p :style="{ color: 'gray', fontSize: '18px' }">Meal</p>
       <div class="cardActions">
-        <button class="edit-button" type="button" @click="editModal = true">
+        <button class="edit-button" type="button" @click="openModal(event)">
           <img src="../../assets/pencil.svg">
         </button>
         <button class="meal-button" type="button" @click="showMeal = true">
@@ -79,12 +79,10 @@
         <!-- Dishes Section -->
         <div class="formRole">
           <div v-for="(dish, index) in newMeal.dishes" :key="index" class="form-group">
-            <!-- Dynamic label for each dish -->
             <label :for="'dish' + index">Dish {{ index + 1 }}</label>
-            <input v-model="newMeal.dishes[index]" :id="'dish' + index" placeholder="Enter Dish Name" required />
+            <input v-model="dish.name" :id="'dish' + index" placeholder="Enter Dish Name" required />
           </div>
         </div>
-
         <!-- Button to add a new dish input -->
         <div class="addDish">
           <button type="button" class="btn-primary" @click="addDish">Add Dish</button>
@@ -92,7 +90,7 @@
 
         <!-- Modal actions -->
         <div class="modal-actions">
-          <button type="submit" class="btn-primary">Save</button>
+          <button type="submit" class="btn-primary" @click="submitMeal" >Save</button>
           
         </div>
       </form>
@@ -101,7 +99,7 @@
 
   <div v-if="showMeal" class="modal-overlay">
     <div class="modal">
-      <button class="close-popup" @click="closeMeal()">&times;</button>
+      <button class="close-popup" @click="closeModal()">&times;</button>
       <h2>Meals Ordered</h2>
       <div class="table">
       <TheTable
@@ -131,7 +129,7 @@ const showMeal = ref(false);
 const newMeal = ref({
   regDay: '',
   regHour: '',
-  dishes: [''] 
+  dishes: [{ name: "" }] 
 });
 const selectedRow = ref(null);  
 const fetchData = () => {
@@ -141,6 +139,7 @@ const fetchData = () => {
         }}).then((response)=>{
           datab.value = response.data.events_days.map((event) => {
         return {
+          event_id:event.event_id,
           external_id: event.external_id, 
           day: event.day,
           weekday: event.weekday, 
@@ -148,7 +147,7 @@ const fetchData = () => {
             ? event.meal_registration_datetime.split(" ")[0] // Extract Date
             : null,
           registrationTime: event.meal_registration_datetime
-            ? event.meal_registration_datetime.split(" ")[1] // Extract Time
+            ? event.meal_registration_datetime.split(" ")[1].slice(0,5) // Extract Time
             : null,
           registrationWeekday: event.meal_registration_datetime
             ? new Date(
@@ -166,14 +165,47 @@ const fetchData = () => {
 }
 
 onMounted(fetchData)
-
+function test(){
+  console.log(newMeal.value.dishes);
+}
 function selectCallback(row) {
   selectedRow.value = row;
+  
+  
 
 }
 function addDish() {
-  newMeal.value.dishes.push('');  
+  newMeal.value.dishes.push({ name: "" });  
+  
 }
+function submitMeal() {
+  const payload = {
+    newDishes: {
+      event_day_id: selectedRow.value.event_id,
+      name: newMeal.value.dishes.map(dish => dish.name)
+    }
+  };
+
+  
+
+  axios
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/submit_dishes", payload, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
+    })
+    .then(() => {
+      fetchData();
+      closeModal();
+    })
+    .catch((error) => {
+      console.error("Failed to add meal dishes:", error);
+    });
+}
+
+
+
 
 const formattedRegDay = computed({
       get: () => {
@@ -212,14 +244,14 @@ function addUser() {
   })
   .then(() => {
     
+
     fetchData();
     closeModal();
   })
   .catch(error => {
-    console.log(selectedRow.value.weekday);
-    console.log(newMeal.value.regDay);
-    console.log(newMeal.value.regHour);
-    console.log(selectedRow.value.external_id);
+    // console.log(newMeal.value.regDay);
+    // console.log(newMeal.value.regHour);
+    // console.log(selectedRow.value.external_id);
     console.error("Failed to add meal :<");
   });
 }
@@ -236,6 +268,20 @@ function closeCardInfo(){
 
 
 
+const openModal = (event) => {
+  editModal.value = true;
+  newMeal.value = {
+    regDay: selectedRow.value.registrationDay 
+      ? selectedRow.value.registrationDay.split("-").reverse().join("-") // Convert DD-MM-YYYY → YYYY-MM-DD
+      : null,
+    regHour: selectedRow.value.registrationTime?.slice(0, 5), // Remove seconds (HH:MM format)
+    dishes: selectedRow.value.dishes 
+      ? selectedRow.value.dishes.map(dish => ({ name: dish.name }))  // Convert existing dishes
+      : [{ name: "" }],
+  };
+};
+
+
 const datab = ref([
   {
     day: null,
@@ -243,7 +289,8 @@ const datab = ref([
     registrationDay: null,
     registrationTime: null,
     registrationWeekday: null,
-    external_id: null
+    external_id: null,
+    event_id: null
   },
 ]);
 
@@ -251,8 +298,9 @@ const tablePref = {
   day: "Day",
   weekday: "Weekday", 
   registrationDay: "Registration Day",
-  registrationTime: "Registration Time",
-  registrationWeekday: "Registration Weekday"
+  registrationWeekday: "Registration Weekday",
+  registrationTime: "Registration Time"
+  
   
 };
 </script>
