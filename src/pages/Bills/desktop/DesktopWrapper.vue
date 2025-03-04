@@ -49,6 +49,7 @@ const tablePref = {
 async function getBills(){
     const response = await httpAdmin.GET('/bills');
     table_data.value = await response.data.bills;
+    loaded.value = true;
 }
 
 function reloadPage(){
