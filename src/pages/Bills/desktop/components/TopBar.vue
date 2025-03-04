@@ -51,7 +51,6 @@ form > input {
   font-stretch: inherit;
   line-height: inherit;
   font-family: inherit;
-  font-size-adjust: inherit;
   font-kerning: inherit;
   font-optical-sizing: inherit;
   font-language-override: inherit;

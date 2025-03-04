@@ -11,7 +11,7 @@ const popupShow = ref(false);
 const message = ref('');
 const blob_url= ref();
 const table_data = ref();
- const selectedRow = ref({
+const selectedRow = ref({
     id: "",
     value: "",
     date: "",
@@ -49,7 +49,6 @@ const tablePref = {
 async function getBills(){
     const response = await httpAdmin.GET('/bills');
     table_data.value = await response.data.bills;
-    loaded.value=true; 
 }
 
 function reloadPage(){
@@ -69,7 +68,7 @@ function selectCallback(row) {
     getBillImage(selectedRow.value.id)
 };
 
-function isDataBEmpty(){
+function dataIsEmpty(){
     return table_data.length === 0;
 };
 
@@ -85,7 +84,7 @@ onMounted(() => {
 
 
 <template>
-<div v-if="loaded" class="desktop">
+<div class="desktop">
     <div class="wrapper">
         <div class="table">
             <TopBar 
@@ -95,8 +94,9 @@ onMounted(() => {
                 @toggle-add-modal="toggleAddModal"
             ></TopBar>
         
-            <div v-if="!isDataBEmpty()">
+            <div v-if="loaded">
                 <TheTable
+                    v-if="!dataIsEmpty()"
                     :data="filteredTableData"
                     :tableHeaders="tablePref"
                     :searchInput="message"
