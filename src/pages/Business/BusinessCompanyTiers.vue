@@ -119,7 +119,7 @@
                         </div>
                         <div class="element" id="priority">
                             <label>Priority</label>
-                            <input type="text" required v-model="newTier.priority">
+                            <input type="number" required v-model="newTier.priority">
                         </div>
                     </div>
                     <div class="line">
