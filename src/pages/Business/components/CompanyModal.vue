@@ -19,6 +19,8 @@ const props = defineProps({
     },
 });
 
+const emits = defineEmits(['close-modal'])
+
 const newCompany = ref({
   name: '',
   event_id: '',
@@ -44,39 +46,20 @@ function onLogoSelected(event){
   console.log(fileSelected.value);
 }
 
-function closeModal() {
-  showAddCompanyModal.value = false;
-  showEditCompanyModal.value = false;
-  newCompany.value = {
-    name: '',
-    event_id: '',
-    email: '',
-    website: '',
-    username: '',
-    cv: 'No',
-    tier_id: '',
-    responsible_id: '',
-    days: '',
-    image: '',
-    changeimg: 'No',
-  };
-
-  resetCallback();
-}
 
 </script>
 
 <template>
-<div v-if="showAddCompanyModal || showEditCompanyModal" class="modal-overlay">
+<div v-if="props.showAddCompanyModal || props.showEditCompanyModal" class="modal-overlay">
     <form class="modal">
-      <div class="btn-cancel" @click="closeModal()"> X </div>
-      <button v-if="showAddCompanyModal" class="btn-primary" @click="addCompany()">Add</button>
-      <button v-if="showEditCompanyModal" class="btn-primary" @click="editCompany()">Edit</button>
+      <div class="btn-cancel" @click="emits('close-modal')"> X </div>
+      <button v-if="props.showAddCompanyModal" class="btn-primary" @click="addCompany()">Add</button>
+      <button v-if="props.showEditCompanyModal" class="btn-primary" @click="editCompany()">Edit</button>
 
       <div class="modal-aux">
         <div class="header">
-          <h1 v-if="showAddCompanyModal">Add Company</h1>
-          <h1 v-if="showEditCompanyModal">Edit Company</h1>
+          <h1 v-if="props.showAddCompanyModal">Add Company</h1>
+          <h1 v-if="props.showEditCompanyModal">Edit Company</h1>
         </div>
         <div class="body">
           <div class="line">
@@ -117,7 +100,9 @@ function closeModal() {
                 </div>
                 <!-- Hidden file input -->
                 <label for="logo-upload" class="custom-logo-label">Add new Logo</label>
-                <input id="logo-upload" name ="fileSelected" type="file" @change="onLogoSelected" class="button-add-logo" accept="image/*" />
+                <input 
+                    id="logo-upload"
+                    name ="fileSelected" type="file" @change="onLogoSelected" class="button-add-logo" accept="image/*" />
               </div>
             </div>
             <div class="esquerda">
