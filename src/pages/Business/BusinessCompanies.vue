@@ -2,34 +2,24 @@
   <div class="wrapper">
     <div class="wrapper-sec">
       <div class="table">
-        <form>
-          <div class="first-div">
-            <div class="search_style">
-              <label>
-                <img src="../../assets/search.svg">
-              </label>
-              <input v-model="message" placeholder="Search for a company" />
-            </div>
-            <select class="select" v-model="selectedEvent" @change="filterByEvent">
-              <option v-for="event in events" :key="event.id" :value="event.id">
-                {{ event.name }}
-              </option>
-            </select>
-          </div>
-          <div class="buttons-div">
-            <button type="button" @click="showAddCompanyModal = true">Add Company</button>
-            <button type="button" @click="()=>$router.push('/business/companies/tiers')"> Company Tiers <span class = "chevron"> </span></button>
-          </div>
-        </form>
+        <TopBar
+          v-model:message="message"
+          :events="events"
+          @toggle-add-modal="showAddCompanyModal = true"
+        ></TopBar>
+        
         <TheTable
           :data="filteredCompanies"
           :tableHeaders="tablePref"
           :searchInput="message"
-          
           @onRowSelect="selectCallback"
         ></TheTable>
-        <div class="nocompanies" v-if=noCompanies>No Companies Found</div>
+        
+        <div class="nocompanies" v-if=noCompanies>
+          No Companies Found
+        </div>
       </div>
+      
       <!-- Conditionally render the right popup placeholder -->
       <div v-if="selectedRow" class="right-popup-placeholder-overlay"></div>
       <div v-if="selectedRow" class="right-popup-placeholder">
@@ -211,6 +201,7 @@
 <script setup>
 import axios from 'axios';
 import TheTable from '../../global-components/TheTable.vue';
+import TopBar from './components/TopBar.vue';
 import { ref, onMounted } from 'vue';
 
 let companies = ref([]);

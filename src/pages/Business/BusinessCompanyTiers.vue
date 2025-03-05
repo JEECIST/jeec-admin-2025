@@ -2,27 +2,28 @@
     <div class="wrapper">
         <div class="wrapper-sec">
             <div class="table">
-            <form>
-                <div class="first-div">
-                <div class="search_style">
-                    <label>
-                    <img src="../../assets/search.svg">
-                    </label>
-                    <input v-model="message" placeholder="Search for a company tier" />
-                </div>
-                </div>
-                <div class="buttons-div">
-                <button type="button" @click="showAddTierModal = true">Add Tier</button>
-                </div>
-            </form>
-            <TheTable
-                :data="tiers"
-                :tableHeaders="tablePref"
-                :searchInput="message"
-                :key="tableKey"
+                <form>
+                    <div class="first-div">
+                    <div class="search_style">
+                        <label>
+                        <img src="../../assets/search.svg">
+                        </label>
+                        <input v-model="message" placeholder="Search for a company tier" />
+                    </div>
+                    </div>
+                    <div class="buttons-div">
+                    <button type="button" @click="showAddTierModal = true">Add Tier</button>
+                    </div>
+                </form>
                 
-                @onRowSelect="selectCallback"
-            ></TheTable>
+                <TheTable
+                    :data="tiers"
+                    :tableHeaders="tablePref"
+                    :searchInput="message"
+                    :key="tableKey"
+                    
+                    @onRowSelect="selectCallback"
+                ></TheTable>
             </div>
             <!-- Conditionally render the right popup placeholder -->
             <div v-if="selectedRow" class="right-popup-placeholder-overlay"></div>
