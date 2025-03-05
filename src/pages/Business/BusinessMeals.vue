@@ -30,15 +30,14 @@
       <div class="cardInfo">
         <div class="cardInfoMember">
           <p class="cardInfoLabel">Dishes Available</p>
-          <!-- Check if 'name' is an array and iterate, else display it as a single dish -->
-          <div v-if="Array.isArray(selectedRow.name)">
-            <div v-for="(dish, index) in selectedRow.name" :key="index">
-              <p class="cardInfoValue">Dish {{ index + 1 }}: {{ dish }}</p>
-            </div>
-          </div>
-          <div v-else>
-            <p class="cardInfoValue">Dish: {{ selectedRow.name }}</p>
-          </div>
+          
+          <p v-if="error" class="error">{{ error }}</p>
+          <ul v-if="dishes.length" class="dishes-list">
+            <li v-for="dish in dishes" :key="dish.id">
+              <p>{{ dish.name }}</p> 
+            </li>
+          </ul>
+          
         </div>
       </div>
 
@@ -120,9 +119,11 @@
 <script setup>
 
 import axios from 'axios';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
 
+const dishes = ref([]);
+const error = ref(null);
 const message = ref('');
 const editModal = ref(false);  
 const showMeal = ref(false);
@@ -131,7 +132,19 @@ const newMeal = ref({
   regHour: '',
   dishes: [{ name: "" }] 
 });
-const selectedRow = ref(null);  
+const selectedRow = ref(null);
+watch(
+  () => selectedRow.value?.event_id,
+  (newEventDayId) => {
+    if (newEventDayId !== undefined && newEventDayId !== null) {
+      fetchDishes(newEventDayId);
+    } else {
+      dishes.value = []; 
+      error.value = "No event selected.";
+    }
+  }
+);
+
 const fetchData = () => {
     axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/event_day_meal',{auth: {
           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
@@ -165,11 +178,50 @@ const fetchData = () => {
 }
 
 onMounted(fetchData)
-function test(){
-  console.log(newMeal.value.dishes);
-}
+
+
+
+const fetchDishes = async (eventDayId) => {
+  if (!eventDayId) {
+  
+    dishes.value = [];
+    error.value = "Invalid event selected.";
+    return;
+  }
+
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/get_dishes?event_day_id=${eventDayId}`,
+      {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+      }
+    );
+
+    console.log("Fetched Dishes:", response.data);
+
+    if (response.data.dishes.length) {
+      dishes.value = response.data.dishes;
+      error.value = "";
+    } else {
+      dishes.value = []; 
+      error.value = "No dishes available.";
+    }
+  } catch (err) {
+    console.error("Fetch error:", err);
+    dishes.value = [];
+    error.value = "Failed to fetch dishes.";
+  }
+};
+
+onMounted(fetchDishes);
+
 function selectCallback(row) {
   selectedRow.value = row;
+  onMounted(fetchDishes);
+  console.log(selectedRow.value.event_id);
   
   
 
@@ -249,9 +301,7 @@ function addUser() {
     closeModal();
   })
   .catch(error => {
-    // console.log(newMeal.value.regDay);
-    // console.log(newMeal.value.regHour);
-    // console.log(selectedRow.value.external_id);
+ 
     console.error("Failed to add meal :<");
   });
 }
@@ -580,6 +630,20 @@ input {
         cursor: pointer;
         color: #333;
     }
+
+    .dishes-list {
+
+  list-style-type: none; 
+}
+
+.dishes-list li {
+  color:gray;
+  font-size: 16px;
+}
+
+
+
+
 
 /* Styles for mobile screens */
 @media (max-width: 768px) {
