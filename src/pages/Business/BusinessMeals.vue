@@ -15,7 +15,7 @@
       <div class="header">
         <h1 class="cardUsername">{{ selectedRow.weekday }}</h1>
       </div>
-      <img src="../../assets/wrizz.jpg" alt="Profile Image" class="pfp">
+      <img src="../../assets/JEEC.png" alt="Profile Image" class="pfp">
       <h2>{{ selectedRow.day }}</h2>
       <p :style="{ color: 'gray', fontSize: '18px' }">Meal</p>
       <div class="cardActions">
@@ -32,20 +32,16 @@
           <p class="cardInfoLabel">Dishes Available</p>
           
           <p v-if="error" class="error">{{ error }}</p>
-          <ul v-if="dishes.length" class="dishes-list">
-            <li v-for="dish in dishes" :key="dish.id">
+          <ul v-if="companiesData[0].dishes.length" class="dishes-list">
+            <li v-for="dish in companiesData[0].dishes" :key="dish.id">
               <p>{{ dish.name }}</p> 
             </li>
           </ul>
-          
         </div>
       </div>
-
     </div>
   </div>
 
-  
-  
   <!-- Modal for Editing User Info -->
   <div v-if="editModal" class="modal-overlay">
     <div class="modal">
@@ -90,7 +86,6 @@
         <!-- Modal actions -->
         <div class="modal-actions">
           <button type="submit" class="btn-primary" @click="submitMeal" >Save</button>
-          
         </div>
       </form>
     </div>
@@ -101,23 +96,19 @@
       <button class="close-popup" @click="closeModal()">&times;</button>
       <h2>Meals Ordered</h2>
       <div class="table">
-      <TheTable
-        :data="datab"
-        :tableHeaders="tablePref"
-        :searchInput="message"
-        :buttons="tableButtons"
-        @onRowSelect="selectCallback"
-      ></TheTable>
-    </div>
+        <TheTable
+          :data="companiesData"
+          :tableHeaders="mealsTable"
+          :searchInput="message"
+          :buttons="tableButtons"
+          @onRowSelect="selectCallback"
+        ></TheTable>
+      </div>
     </div>
   </div>
-
-
 </template>
 
-
 <script setup>
-
 import axios from 'axios';
 import { ref, onMounted, computed, watch } from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
@@ -136,55 +127,47 @@ const selectedRow = ref(null);
 watch(
   () => selectedRow.value?.event_id,
   (newEventDayId) => {
-    if (newEventDayId !== undefined && newEventDayId !== null) {
+    if (newEventDayId) {
       fetchDishes(newEventDayId);
-    } else {
-      dishes.value = []; 
-      error.value = "No event selected.";
     }
   }
 );
 
 const fetchData = () => {
-    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/event_day_meal',{auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        }}).then((response)=>{
-          datab.value = response.data.events_days.map((event) => {
-        return {
-          event_id:event.event_id,
-          external_id: event.external_id, 
-          day: event.day,
-          weekday: event.weekday, 
-          registrationDay: event.meal_registration_datetime
-            ? event.meal_registration_datetime.split(" ")[0] // Extract Date
-            : null,
-          registrationTime: event.meal_registration_datetime
-            ? event.meal_registration_datetime.split(" ")[1].slice(0,5) // Extract Time
-            : null,
-          registrationWeekday: event.meal_registration_datetime
-            ? new Date(
-                event.meal_registration_datetime.split(" ")[0]
-                  .split("-")
-                  .reverse()
-                  .join("-")
-              ).toLocaleDateString("en-US", { weekday: "long" }) 
-            : null
-        };
-      });
-          console.log(datab.value)
-        })
-        .catch(error => console.error('Fetch error:', error)); 
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/event_day_meal', {auth: {
+    username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+    password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+  }}).then((response) => {
+    datab.value = response.data.events_days.map((event) => {
+      return {
+        event_id: event.event_id,
+        external_id: event.external_id, 
+        day: event.day,
+        weekday: event.weekday, 
+        registrationDay: event.meal_registration_datetime
+          ? event.meal_registration_datetime.split(" ")[0] // Extract Date
+          : null,
+        registrationTime: event.meal_registration_datetime
+          ? event.meal_registration_datetime.split(" ")[1].slice(0,5) // Extract Time
+          : null,
+        registrationWeekday: event.meal_registration_datetime
+          ? new Date(
+              event.meal_registration_datetime.split(" ")[0]
+                .split("-")
+                .reverse()
+                .join("-")
+            ).toLocaleDateString("en-US", { weekday: "long" }) 
+          : null
+      };
+    });
+    console.log(datab.value);
+  }).catch(error => console.error('Fetch error:', error)); 
 }
 
-onMounted(fetchData)
-
-
+onMounted(fetchData);
 
 const fetchDishes = async (eventDayId) => {
   if (!eventDayId) {
-  
-    dishes.value = [];
     error.value = "Invalid event selected.";
     return;
   }
@@ -203,15 +186,33 @@ const fetchDishes = async (eventDayId) => {
     console.log("Fetched Dishes:", response.data);
 
     if (response.data.dishes.length) {
-      dishes.value = response.data.dishes;
+      // Update companiesData with fetched dishes
+      companiesData.value = [
+        {
+          name: "heinu", // Company Name
+          dishes: response.data.dishes.map((dish) => dish.name),
+        },
+      ];
+      companiesData.value[0].dishes = response.data.dishes;
+      // Update mealsTable dynamically using dish names as column headers
+      mealsTable.value = {
+        name: "Company",
+      };
+
+      response.data.dishes.forEach((dish) => {
+        mealsTable.value[dish.name] = dish.name;
+      });
+
       error.value = "";
     } else {
-      dishes.value = []; 
+      companiesData.value = [{ name: "heinu", dishes: [] }];
+      mealsTable.value = { name: "Company" };
       error.value = "No dishes available.";
     }
   } catch (err) {
     console.error("Fetch error:", err);
-    dishes.value = [];
+    companiesData.value = [{ name: "heinu", dishes: [] }];
+    mealsTable.value = { name: "Company" };
     error.value = "Failed to fetch dishes.";
   }
 };
@@ -222,23 +223,19 @@ function selectCallback(row) {
   selectedRow.value = row;
   onMounted(fetchDishes);
   console.log(selectedRow.value.event_id);
-  
-  
+}
 
-}
 function addDish() {
-  newMeal.value.dishes.push({ name: "" });  
-  
+  newMeal.value.dishes.push({ name: "" });
 }
+
 function submitMeal() {
   const payload = {
     newDishes: {
       event_day_id: selectedRow.value.event_id,
-      name: newMeal.value.dishes.map(dish => dish.name)
+      name: newMeal.value.dishes.map(dish => dish.name),
     }
   };
-
-  
 
   axios
     .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/submit_dishes", payload, {
@@ -249,6 +246,7 @@ function submitMeal() {
     })
     .then(() => {
       fetchData();
+      fetchDishes(selectedRow.value.event_id);
       closeModal();
     })
     .catch((error) => {
@@ -256,27 +254,23 @@ function submitMeal() {
     });
 }
 
-
-
-
 const formattedRegDay = computed({
-      get: () => {
-        if (!newMeal.value.regDay) return "";
-        const [year, month, day] = newMeal.value.regDay.split("-");
-        return `${day}-${month}-${year}`;
-      },
-      set: (value) => {
-        if (!value) {
-          newMeal.value.regDay = "";
-          return;
-        }
-        const [day, month, year] = value.split("-");
-        newMeal.value.regDay = `${year}-${month}-${day}`;
-      }
-    });
-  
-function addUser() {
+  get: () => {
+    if (!newMeal.value.regDay) return "";
+    const [year, month, day] = newMeal.value.regDay.split("-");
+    return `${day}-${month}-${year}`;
+  },
+  set: (value) => {
+    if (!value) {
+      newMeal.value.regDay = "";
+      return;
+    }
+    const [day, month, year] = value.split("-");
+    newMeal.value.regDay = `${year}-${month}-${day}`;
+  }
+});
 
+function addUser() {
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/update_day_meal',
   { 
     form: { 
@@ -284,9 +278,7 @@ function addUser() {
       registration_day: formattedRegDay.value, 
       registration_time: newMeal.value.regHour, 
       external_id: selectedRow.value.external_id,
-      
     }
-    
   }, 
   { 
     auth: { 
@@ -295,17 +287,13 @@ function addUser() {
     }
   })
   .then(() => {
-    
-
     fetchData();
     closeModal();
   })
   .catch(error => {
- 
     console.error("Failed to add meal :<");
   });
 }
-
 
 function closeModal() {
   editModal.value = false;
@@ -315,8 +303,6 @@ function closeModal() {
 function closeCardInfo(){
   selectedRow.value = null;
 }
-
-
 
 const openModal = (event) => {
   editModal.value = true;
@@ -330,7 +316,6 @@ const openModal = (event) => {
       : [{ name: "" }],
   };
 };
-
 
 const datab = ref([
   {
@@ -350,10 +335,38 @@ const tablePref = {
   registrationDay: "Registration Day",
   registrationWeekday: "Registration Weekday",
   registrationTime: "Registration Time"
-  
-  
+};
+
+const companiesData = ref([
+  {
+    name: "heinu",
+    dishes: [],
+  },
+]);
+
+const mealsTable = ref({});
+
+const fetchDishQuantity = async (dishId) => {
+  if (!dishId) return;
+
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/get_dish_quantity?dish_id=${dishId}`,
+      {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+      }
+    );
+
+    console.log("Dish Quantity:", response.data);
+  } catch (err) {
+    console.error("Error fetching dish quantity:", err);
+  }
 };
 </script>
+
 
 
 <style scoped>
@@ -428,8 +441,8 @@ h2 {
 }
 
 .right-popup-placeholder .pfp {
-  width: 10rem;
-  height: 10rem;
+  width: 8rem;
+  height: 8rem;
   border-radius: 50%;
   margin-bottom: 15px;
 }
@@ -450,7 +463,7 @@ h2 {
 .right-popup-placeholder .cardActions {
   display: flex;
   gap: 10px;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   
 }
 
@@ -472,7 +485,7 @@ h2 {
 .right-popup-placeholder .cardInfo {
   width: 100%;
   text-align: left;
-  margin-top: 20px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -482,7 +495,7 @@ h2 {
   font-size: 1.1rem;
   font-weight: 500;
   color: #555;
-  margin-bottom: 5px;
+  /* margin-bottom: 50px; */
 }
 
 .right-popup-placeholder .cardInfoValue {
