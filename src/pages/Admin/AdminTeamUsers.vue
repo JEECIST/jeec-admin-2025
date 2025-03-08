@@ -37,7 +37,7 @@
           <p class="cardUsername">{{ selectedRow.role }}</p>
         </div>
         
-          <img src="../../assets/wrizz.jpg" alt="Profile Image" class="pfp">
+          <img src="../../assets/JEEC.png" alt="Profile Image" class="pfp">
           <p class="cardUsername">{{ selectedRow.username }}</p>
           <p class="cardUseless">Team User</p>
           <div class="cardActions">

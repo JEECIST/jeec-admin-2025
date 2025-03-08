@@ -129,6 +129,7 @@ watch(
   (newEventDayId) => {
     if (newEventDayId) {
       fetchDishes(newEventDayId);
+      fetchCompanyDishes(newEventDayId)
     }
   }
 );
@@ -186,15 +187,13 @@ const fetchDishes = async (eventDayId) => {
     console.log("Fetched Dishes:", response.data);
 
     if (response.data.dishes.length) {
-      // Update companiesData with fetched dishes
       companiesData.value = [
         {
-          name: "heinu", // Company Name
+          name: "Company A", 
           dishes: response.data.dishes.map((dish) => dish.name),
         },
       ];
       companiesData.value[0].dishes = response.data.dishes;
-      // Update mealsTable dynamically using dish names as column headers
       mealsTable.value = {
         name: "Company",
       };
@@ -222,6 +221,7 @@ onMounted(fetchDishes);
 function selectCallback(row) {
   selectedRow.value = row;
   onMounted(fetchDishes);
+  // onMounted(fetchCompanyDishes);
   console.log(selectedRow.value.event_id);
 }
 
@@ -339,19 +339,17 @@ const tablePref = {
 
 const companiesData = ref([
   {
-    name: "heinu",
+    name: "Company X",
     dishes: [],
   },
 ]);
 
 const mealsTable = ref({});
 
-const fetchDishQuantity = async (dishId) => {
-  if (!dishId) return;
-
+const fetchCompanyDishes = async () => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/get_dish_quantity?dish_id=${dishId}`,
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/get_company_dishes`,
       {
         auth: {
           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
@@ -360,13 +358,38 @@ const fetchDishQuantity = async (dishId) => {
       }
     );
 
-    console.log("Dish Quantity:", response.data);
+    console.log("Fetched Company Dishes:", response.data);
+
+    if (response.data.company_dishes.length) {
+      companiesData.value = response.data.company_dishes.map((company) => ({
+        name: company.company_name || "Unknown Company",
+        dishes: company.dishes ? company.dishes.map((dish) => dish.name) : [],
+      }));
+
+      mealsTable.value = { name: "Company" };
+      response.data.company_dishes.forEach((company) => {
+        if (company.dishes) {
+          company.dishes.forEach((dish) => {
+            mealsTable.value[dish.name] = dish.name;
+          });
+        }
+      });
+
+      error.value = "";
+    } else {
+      companiesData.value = [{ name: "Unknown Company", dishes: [] }];
+      mealsTable.value = { name: "Company" };
+      error.value = "No company dishes available.";
+    }
   } catch (err) {
-    console.error("Error fetching dish quantity:", err);
+    console.error("Fetch error:", err);
+    companiesData.value = [{ name: "Unknown Company", dishes: [] }];
+    mealsTable.value = { name: "Company" };
+    error.value = "Failed to fetch company dishes.";
   }
 };
-</script>
 
+</script>
 
 
 <style scoped>
