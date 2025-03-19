@@ -1,5 +1,6 @@
 <template>
   <div class="wrapper">
+    <!-- Main Event Day Table -->
     <div class="table">
       <TheTable
         :data="datab"
@@ -7,102 +8,109 @@
         :searchInput="message"
         :buttons="tableButtons"
         @onRowSelect="selectCallback"
-      ></TheTable>
+      />
     </div>
+
+    <!-- Detail Popup for Selected Event Day -->
     <div v-if="selectedRow" class="popUpOverlay"></div>
     <div v-if="selectedRow" class="right-popup-placeholder">
       <button class="close-popup" @click="closeCardInfo">&times;</button>
       <div class="header">
         <h1 class="cardUsername">{{ selectedRow.weekday }}</h1>
       </div>
-      <img src="../../assets/JEEC.png" alt="Profile Image" class="pfp">
+      <img src="../../assets/JEEC.png" alt="Profile Image" class="pfp" />
       <h2>{{ selectedRow.day }}</h2>
       <p :style="{ color: 'gray', fontSize: '18px' }">Meal</p>
       <div class="cardActions">
-        <button class="edit-button" type="button" @click="openModal(event)">
-          <img src="../../assets/pencil.svg">
+        <button class="edit-button" type="button" @click="openModal">
+          <img src="../../assets/pencil.svg" />
         </button>
         <button class="meal-button" type="button" @click="showMeal = true">
-          <img src="../../assets/meal_btn.svg">
+          <img src="../../assets/meal_btn.svg" />
         </button>
       </div>
-      
       <div class="cardInfo">
         <div class="cardInfoMember">
           <p class="cardInfoLabel">Dishes Available</p>
-          
           <p v-if="error" class="error">{{ error }}</p>
-          <ul v-if="companiesData[0].dishes.length" class="dishes-list">
-            <li v-for="dish in companiesData[0].dishes" :key="dish.id">
-              <p>{{ dish.name }}</p> 
+          <!-- List of available dishes for the selected event day -->
+          <ul v-if="selectedRow.dishes && selectedRow.dishes.length" class="dishes-list">
+            <li v-for="dish in selectedRow.dishes" :key="dish.id">
+              <p>{{ dish.name }}</p>
             </li>
           </ul>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Modal for Editing User Info -->
-  <div v-if="editModal" class="modal-overlay">
-    <div class="modal">
-      <button class="close-popup" @click="closeModal()">&times;</button>
-      <h2>Edit Day</h2>
-      <form class="popup_form" @submit.prevent="addUser">
-        <div class="formReg">
-          <div class="form-group">
-            <label for="regDay">Registration Day</label>
-            <input 
-              type="date" 
-              v-model="newMeal.regDay" 
-              id="regDay" 
-              required 
-              :min="minDate" 
-              :max="maxDate"
-            />
+    <!-- Modal for Editing Day Info -->
+    <div v-if="editModal" class="modal-overlay">
+      <div class="modal">
+        <button class="close-popup" @click="closeModal">&times;</button>
+        <h2>Edit Day</h2>
+        <form class="popup_form" @submit.prevent="addUser">
+          <div class="formReg">
+            <div class="form-group">
+              <label for="regDay">Registration Day</label>
+              <input 
+                type="date" 
+                v-model="newMeal.regDay" 
+                id="regDay" 
+                required 
+                :min="minDate" 
+                :max="maxDate"
+              />
+            </div>
+            <div class="form-group">
+              <label for="regHour">Registration Hour</label>
+              <input 
+                type="time" 
+                v-model="newMeal.regHour" 
+                id="regHour" 
+                required 
+              />
+            </div>
           </div>
-          <div class="form-group">
-            <label for="regHour">Registration Hour</label>
-            <input 
-              type="time" 
-              v-model="newMeal.regHour" 
-              id="regHour" 
-              required 
-            />
+          <!-- Dishes Section -->
+          <div class="formRole">
+            <div v-for="(dish, index) in newMeal.dishes" :key="index" class="form-group">
+              <label :for="'dish' + index">Dish {{ index + 1 }}</label>
+              <input v-model="dish.name" :id="'dish' + index" placeholder="Enter Dish Name" required />
+            </div>
           </div>
-        </div>
-
-        <!-- Dishes Section -->
-        <div class="formRole">
-          <div v-for="(dish, index) in newMeal.dishes" :key="index" class="form-group">
-            <label :for="'dish' + index">Dish {{ index + 1 }}</label>
-            <input v-model="dish.name" :id="'dish' + index" placeholder="Enter Dish Name" required />
+          <!-- Button to add a new dish input -->
+          <div class="addDish">
+            <button type="button" class="btn-primary" @click="addDish">Add Dish</button>
           </div>
-        </div>
-        <!-- Button to add a new dish input -->
-        <div class="addDish">
-          <button type="button" class="btn-primary" @click="addDish">Add Dish</button>
-        </div>
-
-        <!-- Modal actions -->
-        <div class="modal-actions">
-          <button type="submit" class="btn-primary" @click="submitMeal" >Save</button>
-        </div>
-      </form>
+          <!-- Modal actions -->
+          <div class="modal-actions">
+            <button type="submit" class="btn-primary" @click="submitMeal">Save</button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
 
-  <div v-if="showMeal" class="modal-overlay">
-    <div class="modal">
-      <button class="close-popup" @click="closeModal()">&times;</button>
-      <h2>Meals Ordered</h2>
-      <div class="table">
-        <TheTable
-          :data="companiesData"
-          :tableHeaders="mealsTable"
-          :searchInput="message"
-          :buttons="tableButtons"
-          @onRowSelect="selectCallback"
-        ></TheTable>
+    <!-- Modal for Meals Ordered (Pivoted Company Meals) -->
+    <div v-if="showMeal" class="modal-overlay">
+      <div class="modal">
+        <button class="close-popup" @click="closeModal">&times;</button>
+        <h2>Meals Ordered</h2>
+        <div class="table">
+          <template v-if="companyMeals && companyMeals.length">
+            <TheTable
+              :data="companyMeals"
+              :tableHeaders="mealsTable"
+              :searchInput="message"
+              :buttons="tableButtons"
+              @onRowSelect="selectCallback"
+            />
+          </template>
+          <template v-else>
+            <div class = "tableBackground">
+              <p class="no-users-found">No Orders found</p>
+            </div>
+          </template>
+        </div>
       </div>
     </div>
   </div>
@@ -113,66 +121,85 @@ import axios from 'axios';
 import { ref, onMounted, computed, watch } from 'vue';
 import TheTable from '../../global-components/TheTable.vue';
 
-const dishes = ref([]);
-const error = ref(null);
 const message = ref('');
-const editModal = ref(false);  
+const editModal = ref(false);
 const showMeal = ref(false);
+const error = ref(null);
+
+// Data for the Edit Modal
 const newMeal = ref({
   regDay: '',
   regHour: '',
-  dishes: [{ name: "" }] 
+  dishes: [{ name: "" }]
 });
-const selectedRow = ref(null);
-watch(
-  () => selectedRow.value?.event_id,
-  (newEventDayId) => {
-    if (newEventDayId) {
-      fetchDishes(newEventDayId);
-      fetchCompanyDishes(newEventDayId)
-    }
-  }
-);
 
+// Data for the main event day table
+const datab = ref([]);
+
+// Data for the pivoted Meals Ordered table (company meals)
+const companyMeals = ref([]);
+
+// Table headers for the main event day table
+const tablePref = {
+  day: "Day",
+  weekday: "Weekday", 
+  registrationDay: "Registration Day",
+  registrationWeekday: "Registration Weekday",
+  registrationTime: "Registration Time"
+};
+
+// Table headers for the Meals Ordered table will be generated dynamically.
+const mealsTable = ref({});
+
+// Currently selected event day row
+const selectedRow = ref(null);
+
+// Placeholder for any table buttons
+const tableButtons = ref([]);
+
+// Fetch main event day data
 const fetchData = () => {
-  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/event_day_meal', {auth: {
-    username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-    password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-  }}).then((response) => {
-    datab.value = response.data.events_days.map((event) => {
-      return {
-        event_id: event.event_id,
-        external_id: event.external_id, 
-        day: event.day,
-        weekday: event.weekday, 
-        registrationDay: event.meal_registration_datetime
-          ? event.meal_registration_datetime.split(" ")[0] // Extract Date
-          : null,
-        registrationTime: event.meal_registration_datetime
-          ? event.meal_registration_datetime.split(" ")[1].slice(0,5) // Extract Time
-          : null,
-        registrationWeekday: event.meal_registration_datetime
-          ? new Date(
-              event.meal_registration_datetime.split(" ")[0]
-                .split("-")
-                .reverse()
-                .join("-")
-            ).toLocaleDateString("en-US", { weekday: "long" }) 
-          : null
-      };
-    });
-    console.log(datab.value);
-  }).catch(error => console.error('Fetch error:', error)); 
-}
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/event_day_meal', {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  })
+  .then((response) => {
+    datab.value = response.data.events_days.map((event) => ({
+      event_id: event.event_id,
+      external_id: event.external_id,
+      day: event.day,
+      weekday: event.weekday,
+      registrationDay: event.meal_registration_datetime
+        ? event.meal_registration_datetime.split(" ")[0]
+        : null,
+      registrationTime: event.meal_registration_datetime
+        ? event.meal_registration_datetime.split(" ")[1].slice(0, 5)
+        : null,
+      registrationWeekday: event.meal_registration_datetime
+        ? new Date(
+            event.meal_registration_datetime.split(" ")[0]
+              .split("-")
+              .reverse()
+              .join("-")
+          ).toLocaleDateString("en-US", { weekday: "long" })
+        : null,
+      dishes: event.dishes || []
+    }));
+    console.log("Main Table Data:", datab.value);
+  })
+  .catch(err => console.error('Fetch error:', err));
+};
 
 onMounted(fetchData);
 
+// Fetch available dishes for the selected event day (for the detail popup)
 const fetchDishes = async (eventDayId) => {
   if (!eventDayId) {
     error.value = "Invalid event selected.";
     return;
   }
-
   try {
     const response = await axios.get(
       `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/get_dishes?event_day_id=${eventDayId}`,
@@ -183,52 +210,116 @@ const fetchDishes = async (eventDayId) => {
         },
       }
     );
-
     console.log("Fetched Dishes:", response.data);
-
-    if (response.data.dishes.length) {
-      companiesData.value = [
-        {
-          name: "Company A", 
-          dishes: response.data.dishes.map((dish) => dish.name),
-        },
-      ];
-      companiesData.value[0].dishes = response.data.dishes;
-      mealsTable.value = {
-        name: "Company",
-      };
-
-      response.data.dishes.forEach((dish) => {
-        mealsTable.value[dish.name] = dish.name;
-      });
-
+    if (response.data.dishes && response.data.dishes.length) {
+      selectedRow.value.dishes = response.data.dishes;
       error.value = "";
     } else {
-      companiesData.value = [{ name: "heinu", dishes: [] }];
-      mealsTable.value = { name: "Company" };
       error.value = "No dishes available.";
     }
   } catch (err) {
     console.error("Fetch error:", err);
-    companiesData.value = [{ name: "heinu", dishes: [] }];
-    mealsTable.value = { name: "Company" };
     error.value = "Failed to fetch dishes.";
   }
 };
 
-onMounted(fetchDishes);
+// Fetch and pivot company meals data for the Meals Ordered table.
+// This endpoint returns only records for the given event_day_id.
+const fetchCompanyMeals = async () => {
+  if (!selectedRow.value || !selectedRow.value.event_id) {
+    error.value = "No event selected.";
+    return;
+  }
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/get_all_dish_quantities?event_day_id=${selectedRow.value.event_id}`,
+      {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+      }
+    );
+    console.log("Fetched Company Meals:", response.data);
+    if (Array.isArray(response.data)) {
+      const pivot = {};
+      const dishSet = new Set();
+      
+      // Build pivot and collect dish names
+      response.data.forEach(item => {
+        dishSet.add(item.dish_name);
+        if (!pivot[item.company_name]) {
+          pivot[item.company_name] = { company: item.company_name };
+        }
+        // Use 0 if quantity is undefined, even if quantity is 0.
+        pivot[item.company_name][item.dish_name] =
+          item.quantity !== undefined ? item.quantity : 0;
+      });
+      
+      // Ensure every company row has all dish columns (defaulting to 0 if missing)
+      const dishArray = Array.from(dishSet);
+      Object.values(pivot).forEach(row => {
+        dishArray.forEach(dish => {
+          if (row[dish] === undefined) {
+            row[dish] = 0;
+          }
+        });
+      });
+      
+      // Generate dynamic headers: first column "Company", then one per unique dish.
+      const headers = { company: "Company" };
+      dishArray.forEach(dish => {
+        headers[dish] = dish;
+      });
+      mealsTable.value = headers;
+      companyMeals.value = Object.values(pivot);
+      
+      // If the response has no records, then show "No Data Found"
+      if (response.data.length === 0) {
+        error.value = "No Data Found";
+      } else {
+        error.value = "";
+      }
+      console.log("Pivoted Meals Data:", companyMeals.value);
+    } else {
+      companyMeals.value = [];
+      error.value = "No Data Found";
+    }
+  } catch (err) {
+    
+    companyMeals.value = [];
+    
+  }
+};
 
+
+// Watch for changes in the selected event day and fetch associated data.
+watch(
+  () => selectedRow.value?.event_id,
+  (newEventDayId) => {
+    if (newEventDayId) {
+      fetchDishes(newEventDayId);
+      fetchCompanyMeals();
+    }
+  }
+);
+
+// Callback when a row is selected from the main table.
 function selectCallback(row) {
   selectedRow.value = row;
-  onMounted(fetchDishes);
-  // onMounted(fetchCompanyDishes);
-  console.log(selectedRow.value.event_id);
+  if (row.event_id) {
+    fetchDishes(row.event_id);
+    fetchCompanyMeals();
+  }
+  console.log("Selected Event ID:", selectedRow.value.event_id);
 }
 
+// Add a new dish input in the Edit Modal.
 function addDish() {
   newMeal.value.dishes.push({ name: "" });
 }
 
+// Submit new meal (adding new dishes).
 function submitMeal() {
   const payload = {
     newDishes: {
@@ -247,13 +338,15 @@ function submitMeal() {
     .then(() => {
       fetchData();
       fetchDishes(selectedRow.value.event_id);
+      fetchCompanyMeals();
       closeModal();
     })
-    .catch((error) => {
-      console.error("Failed to add meal dishes:", error);
+    .catch(err => {
+      console.error("Failed to add meal dishes:", err);
     });
 }
 
+// Computed property for formatted registration day.
 const formattedRegDay = computed({
   get: () => {
     if (!newMeal.value.regDay) return "";
@@ -270,31 +363,34 @@ const formattedRegDay = computed({
   }
 });
 
+// Update event day information.
 function addUser() {
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/update_day_meal',
-  { 
-    form: { 
-      day: selectedRow.value.day,
-      registration_day: formattedRegDay.value, 
-      registration_time: newMeal.value.regHour, 
-      external_id: selectedRow.value.external_id,
+    { 
+      form: { 
+        day: selectedRow.value.day,
+        registration_day: formattedRegDay.value, 
+        registration_time: newMeal.value.regHour, 
+        external_id: selectedRow.value.external_id,
+      }
+    },
+    { 
+      auth: { 
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
+      }
     }
-  }, 
-  { 
-    auth: { 
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
-    }
-  })
+  )
   .then(() => {
     fetchData();
     closeModal();
   })
-  .catch(error => {
-    console.error("Failed to add meal :<");
+  .catch(err => {
+    console.error("Failed to update meal:", err);
   });
 }
 
+// Close modals.
 function closeModal() {
   editModal.value = false;
   showMeal.value = false;
@@ -304,91 +400,27 @@ function closeCardInfo(){
   selectedRow.value = null;
 }
 
-const openModal = (event) => {
+// Open the Edit Modal with pre-filled data from the selected row.
+function openModal() {
   editModal.value = true;
   newMeal.value = {
     regDay: selectedRow.value.registrationDay 
-      ? selectedRow.value.registrationDay.split("-").reverse().join("-") // Convert DD-MM-YYYY → YYYY-MM-DD
+      ? selectedRow.value.registrationDay.split("-").reverse().join("-")
       : null,
-    regHour: selectedRow.value.registrationTime?.slice(0, 5), // Remove seconds (HH:MM format)
+    regHour: selectedRow.value.registrationTime?.slice(0, 5),
     dishes: selectedRow.value.dishes 
-      ? selectedRow.value.dishes.map(dish => ({ name: dish.name }))  // Convert existing dishes
+      ? selectedRow.value.dishes.map(dish => ({ name: dish.name }))
       : [{ name: "" }],
   };
-};
+}
 
-const datab = ref([
-  {
-    day: null,
-    weekday: null,
-    registrationDay: null,
-    registrationTime: null,
-    registrationWeekday: null,
-    external_id: null,
-    event_id: null
-  },
-]);
-
-const tablePref = {
-  day: "Day",
-  weekday: "Weekday", 
-  registrationDay: "Registration Day",
-  registrationWeekday: "Registration Weekday",
-  registrationTime: "Registration Time"
-};
-
-const companiesData = ref([
-  {
-    name: "Company X",
-    dishes: [],
-  },
-]);
-
-const mealsTable = ref({});
-
-const fetchCompanyDishes = async () => {
-  try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/get_company_dishes`,
-      {
-        auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
-        },
-      }
-    );
-
-    console.log("Fetched Company Dishes:", response.data);
-
-    if (response.data.company_dishes.length) {
-      companiesData.value = response.data.company_dishes.map((company) => ({
-        name: company.company_name || "Unknown Company",
-        dishes: company.dishes ? company.dishes.map((dish) => dish.name) : [],
-      }));
-
-      mealsTable.value = { name: "Company" };
-      response.data.company_dishes.forEach((company) => {
-        if (company.dishes) {
-          company.dishes.forEach((dish) => {
-            mealsTable.value[dish.name] = dish.name;
-          });
-        }
-      });
-
-      error.value = "";
-    } else {
-      companiesData.value = [{ name: "Unknown Company", dishes: [] }];
-      mealsTable.value = { name: "Company" };
-      error.value = "No company dishes available.";
-    }
-  } catch (err) {
-    console.error("Fetch error:", err);
-    companiesData.value = [{ name: "Unknown Company", dishes: [] }];
-    mealsTable.value = { name: "Company" };
-    error.value = "Failed to fetch company dishes.";
-  }
-};
-
+// Optional: Define minDate and maxDate for the date input.
+const minDate = computed(() => new Date().toISOString().split("T")[0]);
+const maxDate = computed(() => {
+  const date = new Date();
+  date.setFullYear(date.getFullYear() + 1);
+  return date.toISOString().split("T")[0];
+});
 </script>
 
 
@@ -527,6 +559,22 @@ h2 {
   color: #333;
 }
 
+.tableBackground {
+  background-color: var(--c-accent);
+  border-radius: 6px;
+  min-height: 300px;
+  
+  display: flex;
+  justify-content: center;  /* Centers horizontally */
+  align-items: center;  /* Centers vertically */
+}
+
+.no-users-found {
+  font-weight: 700;
+  text-align: center;
+  font-size: 1.2rem;
+  color: darkgray;
+}
 /* Modal styles */
 .modal-overlay {
   position: absolute;
@@ -544,7 +592,7 @@ h2 {
 .modal {
   background: white;
   padding: 2rem;
-  
+  min-height: 70%;
   width: 100%;
   max-width: 700px;
   
