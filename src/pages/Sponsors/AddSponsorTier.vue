@@ -25,94 +25,94 @@
           
           <div class="second-column">
               <div class="radio-label">
-                <label for="show">Included Meal</label>
+                <label for="includedMeal">Included Meal</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
+                  <input type="radio" id="includedMealYes" v-model="includedMeal" :value="true"/>
+                  <label for="includedMealYes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
+                  <input type="radio" id="includedMealNo" v-model="includedMeal" :value="false"/>
+                  <label for="includedMealNo">No</label>
                 </div>
               </div>
               <div class="radio-label">
-                <label for="show">Logo in Canvas</label>
+                <label for="logoInCanvas">Logo in Canvas</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
+                  <input type="radio" id="logoInCanvasYes" v-model="logoInCanvas" :value="true"/>
+                  <label for="logoInCanvasYes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
+                  <input type="radio" id="logoInCanvasNo" v-model="logoInCanvas" :value="false"/>
+                  <label for="logoInCanvasNo">No</label>
                 </div>
               </div>
               <div class="radio-label">
-                <label for="show">Teaser</label>
+                <label for="teaser">Teaser</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
+                  <input type="radio" id="teaserYes" v-model="teaser" :value="true"/>
+                  <label for="teaserYes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
-                </div>
-              </div>
-          </div>
-          <div class="second-column">
-              <div class="radio-label">
-                <label for="show">Show in Website</label>
-                <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
-
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
-                </div>
-              </div>
-              <div class="radio-label">
-                <label for="show">Logo in posters</label>
-                <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
-
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
-                </div>
-              </div>
-              <div class="radio-label">
-                <label for="show">Exclusive Posts</label>
-                <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
-
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
+                  <input type="radio" id="teaserNo" v-model="teaser" :value="false"/>
+                  <label for="teaserNo">No</label>
                 </div>
               </div>
           </div>
           <div class="second-column">
               <div class="radio-label">
-                <label for="show">Social Media</label>
+                <label for="showInWebsite">Show in Website</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
+                  <input type="radio" id="showInWebsiteYes" v-model="showInWebsite" :value="true"/>
+                  <label for="showInWebsiteYes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
+                  <input type="radio" id="showInWebsiteNo" v-model="showInWebsite" :value="false"/>
+                  <label for="showInWebsiteNo">No</label>
                 </div>
               </div>
               <div class="radio-label">
-                <label for="show">Exclusive Video</label>
+                <label for="logoInPosters">Logo in posters</label>
                 <div class="radio">
-                  <input type="radio" id="yes" name="show" value="Yes"/>
-                  <label for="yes">Yes</label>
+                  <input type="radio" id="logoInPostersYes" v-model="logoInPosters" :value="true"/>
+                  <label for="logoInPostersYes">Yes</label>
 
-                  <input type="radio" id="no" name="show" value="No"/>
-                  <label for="no">No</label>
+                  <input type="radio" id="logoInPostersNo" v-model="logoInPosters" :value="false"/>
+                  <label for="logoInPostersNo">No</label>
+                </div>
+              </div>
+              <div class="radio-label">
+                <label for="exclusivePosts">Exclusive Posts</label>
+                <div class="radio">
+                  <input type="radio" id="exclusivePostsYes" v-model="exclusivePosts" :value="true"/>
+                  <label for="exclusivePostsYes">Yes</label>
+
+                  <input type="radio" id="exclusivePostsNo" v-model="exclusivePosts" :value="false"/>
+                  <label for="exclusivePostsNo">No</label>
+                </div>
+              </div>
+          </div>
+          <div class="second-column">
+              <div class="radio-label">
+                <label for="socialMedia">Social Media</label>
+                <div class="radio">
+                  <input type="radio" id="socialMediaYes" v-model="socialMedia" :value="true"/>
+                  <label for="socialMediaYes">Yes</label>
+
+                  <input type="radio" id="socialMediaNo" v-model="socialMedia" :value="false"/>
+                  <label for="socialMediaNo">No</label>
+                </div>
+              </div>
+              <div class="radio-label">
+                <label for="exclusiveVideo">Exclusive Video</label>
+                <div class="radio">
+                  <input type="radio" id="exclusiveVideoYes" v-model="exclusiveVideo" :value="true"/>
+                  <label for="exclusiveVideoYes">Yes</label>
+
+                  <input type="radio" id="exclusiveVideoNo" v-model="exclusiveVideo" :value="false"/>
+                  <label for="exclusiveVideoNo">No</label>
                 </div>
               </div>
           </div>
             
         </div>
       </form>
-      <button class="button-add-sponsor">Add</button>
+      <button class="button-add-sponsor" @click="addingSponsorTier">Add</button>
       
     </div>
   </div>
@@ -120,16 +120,68 @@
 </template>
 
 <script setup>
-const emit = defineEmits(['close'])
+import { ref } from 'vue';
+import axios from 'axios';
+
+const emit = defineEmits(['close']);
 
 function closePopup() {
-emit('close');
+  emit('close');
 }
 
 const props = defineProps({
   foo: String
+});
 
-})
+const name = ref('');
+const priority = ref('');
+const includedMeal = ref(null);
+const logoInCanvas = ref(null);
+const teaser = ref(null);
+const showInWebsite = ref(null);
+const logoInPosters = ref(null);
+const exclusivePosts = ref(null);
+const socialMedia = ref(null);
+const exclusiveVideo = ref(null);
+
+function addingSponsorTier(e) {
+  console.log('adding sponsor tier');
+  e.preventDefault();
+
+  const fd = new FormData();
+  fd.append('name', name.value);
+  fd.append('priority', priority.value);
+  fd.append('included_meal', includedMeal.value);
+  fd.append('logo_in_canvas', logoInCanvas.value);
+  fd.append('teaser', teaser.value);
+  fd.append('show_in_website', showInWebsite.value);
+  fd.append('logo_in_posters', logoInPosters.value);
+  fd.append('exclusive_posts', exclusivePosts.value);
+  fd.append('social_media', socialMedia.value);
+  fd.append('exclusive_video', exclusiveVideo.value);
+
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add-sponsor-tier-vue', fd, {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then(response => {
+    console.log('Response:', response);
+    const error_response = response.data.error;
+    console.log('Error response:', error_response);
+    if (error_response == '') {
+      closePopup();
+    } else {
+      console.log('Error on adding sponsor tier:', error_response);
+      alert('Error on adding sponsor tier: ' + error_response);
+      console.log('Alert should have shown: Error on adding sponsor tier: ' + error_response);
+    }
+  }).catch(error => {
+    console.error('Request failed:', error);
+    alert('Request failed: ' + error.message);
+    console.log('Alert should have shown: Request failed: ' + error.message);
+  });
+}
 </script>
 
 <style scoped>
