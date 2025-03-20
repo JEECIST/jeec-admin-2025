@@ -90,7 +90,7 @@
       </div>
     </div>
 
-    <!-- Modal for Meals Ordered (Pivoted Company Meals) -->
+
     <div v-if="showMeal" class="modal-overlay">
       <div class="modal">
         <button class="close-popup" @click="closeModal">&times;</button>
@@ -321,10 +321,21 @@ function addDish() {
 
 // Submit new meal (adding new dishes).
 function submitMeal() {
+  // Trim and filter out any blank dish names.
+  const validDishNames = newMeal.value.dishes
+    .map(dish => dish.name.trim())
+    .filter(name => name !== "");
+    
+  // Optionally, you could check if no dish is provided and then abort submission.
+  if (validDishNames.length === 0) {
+    console.error("No valid dish names provided. Aborting submission.");
+    return;
+  }
+
   const payload = {
     newDishes: {
       event_day_id: selectedRow.value.event_id,
-      name: newMeal.value.dishes.map(dish => dish.name),
+      name: validDishNames
     }
   };
 
@@ -346,7 +357,6 @@ function submitMeal() {
     });
 }
 
-// Computed property for formatted registration day.
 const formattedRegDay = computed({
   get: () => {
     if (!newMeal.value.regDay) return "";
