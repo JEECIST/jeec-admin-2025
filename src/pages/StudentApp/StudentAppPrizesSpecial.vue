@@ -4,53 +4,105 @@ import { ref, onMounted } from 'vue';
 import dropdown from '../../global-components/dropdown.vue';
 import axios from "axios"
 
+const dailyPrizes = ref([]); 
+const weeklyPrizes = ref([]); 
+const squadPrizes = ref([]); 
+const individualPrizes = ref([]); 
+const cvPrizes = ref([]);
 
-const dailyPrizes = ref([]);
-const selectedValues = ref(Array(dailyPrizes.value.length).fill(null));
-const warning = ref([]);
+const rewardsArray = ref({
+    Daily: [],
+    Weekly: [],
+    Squad: [],
+    Individual: [],
+    Cv: []
+});
 
-const rewards = ref(["Pack Duplo Vertigem", "E-voucher (1p)", "Pack Duplo Pura Adrenalina", "Pack STREET ART FOR ALL", "Passeio golfinhos (2p)"]);
-let rewardsArray;
-const dailyRewards = ref([
-  { date: "19/02", reward: "Pack Duplo Vertigem", winner: "davidovich.fer" },
-  { date: "20/02", reward: "E-voucher (1p)", winner: "davidovich.fer" },
-  { date: "21/02", reward: "Pack Duplo Pura Adrenalina", winner: null },
-  { date: "22/02", reward: "Pack STREET ART FOR ALL", winner: "di.shadow99" },
-  { date: "23/02", reward: "Passeio golfinhos (2p)", winner: null },
-]);
+const selectedValues = ref({
+    Daily: [],
+    Weekly: [],
+    Squad: [],
+    Individual: [],
+    Cv: []
+});
+
+const warning = ref({
+    Daily: [],
+    Weekly: [],
+    Squad: [],
+    Individual: [],
+    Cv: []
+});
+
+const getPrizeArray = (type) => {
+    switch (type) {
+        case 'Daily': return dailyPrizes.value;
+        case 'Weekly': return weeklyPrizes.value;
+        case 'Squad': return squadPrizes.value;
+        case 'Individual': return individualPrizes.value;
+        case 'Cv': return cvPrizes.value;
+        default: return [];
+    }
+};
 
 
-
-function getDailyPrizes() {
-    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get-daily-prizes', {
+function getPrizesSpecial() {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get-prizes-special', {
         auth: {
             username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
             password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }
     }).then(response => {
-        const rewardsList = response.data; // Assuming backend returns the array
+        const rewardsList = response.data; 
 
-        dailyPrizes.value = rewardsList.map((reward, index) => ({
-            date: `${19 + index}/02`, // Generates dates from 19/02 to match rewards
-            reward: reward.name, // Assign reward name from backend data
-            winner: null // Winner is always null
+        // Group prizes by type
+        const groupedPrizes = {
+            Daily: [],
+            Weekly: [],
+            Squad: [],
+            Individual: [],
+            Cv: []
+        };
+
+        rewardsList.forEach(prize => {
+            if (groupedPrizes[prize.type]) {
+                groupedPrizes[prize.type].push(prize.name);
+            }
+        });
+
+        rewardsArray.value = groupedPrizes;
+
+        // Create five tables (one per type)
+        dailyPrizes.value = Array.from({ length: 5 }, (_, index) => ({
+            date: `${19 + index}/02`, reward: null, winner: null
         }));
-        rewardsArray = rewardsList.map(prize => prize.name);
-        console.log("Updated dailyPrizes:", dailyPrizes.value);
-    
+        weeklyPrizes.value = Array.from({ length: 5 }, (_, index) => ({
+            date: `${19 + index}/02`, reward: null, winner: null
+        }));
+        squadPrizes.value = Array.from({ length: 5 }, (_, index) => ({
+            date: `${19 + index}/02`, reward: null, winner: null
+        }));
+        individualPrizes.value = Array.from({ length: 5 }, (_, index) => ({
+            date: `${19 + index}/02`, reward: null, winner: null
+        }));
+        cvPrizes.value = Array.from({ length: 5 }, (_, index) => ({
+            date: `${19 + index}/02`, reward: null, winner: null
+        }));
+
+        console.log("Updated Prizes Data:", rewardsArray.value);
     }).catch(error => {
-        console.error("Error fetching daily prizes:", error);
+        console.error("Error fetching prizes:", error);
     });
 }
 
-const handleButtonClick = (index) => {
-  if (!selectedValues.value[index]) {
-    warning.value[index] = true; // Show warning if no selection
-    return;
-  }
-  warning.value[index] = false; // Hide warning if selection is made
-  alert(`Winner generated with reward: ${selectedValues.value[index]}`);
-  setClaimedPrize(selectedValues.value[index]);
+const handleButtonClick = (type, index) => {
+    if (!selectedValues.value[type][index]) {
+        warning.value[type][index] = true;
+        return;
+    }
+    warning.value[type][index] = false;
+    alert(`Winner generated with reward: ${selectedValues.value[type][index]}`);
+    //Set claim prize aqui
 };
 
 function setClaimedPrize(prizeName){
@@ -77,7 +129,7 @@ function setClaimedPrize(prizeName){
 }
 
 onMounted(() => {
-  getDailyPrizes();
+  getPrizesSpecial();
 });
 
 
@@ -89,7 +141,49 @@ onMounted(() => {
   <div class="desktop">
     <div class="table-container">
       <div class="section">
-        <h2>Daily Rewards</h2>
+        <h2>Special Prizes</h2>
+
+        <div v-for="(prizes, type) in rewardsArray" :key="type">
+          <h3>{{ type }} Prizes</h3>
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Reward</th>
+                <th>Winner</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(reward, index) in getPrizeArray(type)" :key="index">
+                <td>{{ reward.date }}</td>
+                <td>
+                  <dropdown  
+                    :options="rewardsArray[type]"
+                    v-model="selectedValues[type][index]"
+                  />
+                  <p>Selected Option: {{ selectedValues[type][index] || "None selected" }}</p>
+                </td>
+                <td>
+                  <div v-if="reward.winner">{{ reward.winner }}</div>
+                  <div v-else>
+                    <button 
+                      class="genButton" 
+                      :disabled="!selectedValues[type][index]"
+                      @click="handleButtonClick(type, index)"
+                    >
+                      Let's Roll it
+                    </button>
+                    <p v-if="warning[type][index]" class="warning">⚠ Please select a prize first!</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Weekly Rewards</h2>
         <table class="styled-table">
           <thead>
             <tr>
@@ -99,7 +193,7 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(reward, index) in dailyPrizes" :key="index">
+            <tr v-for="(reward, index) in weeklyPrizes" :key="index">
               <td>{{ reward.date }}</td>
               <td>
                 <!-- Dropdown for selecting reward -->
@@ -122,35 +216,6 @@ onMounted(() => {
                   </button>
                   <!-- Warning message -->
                   <p v-if="warning[index]" class="warning">Please select a prize first!</p>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="section">
-        <h2>Weekly Rewards</h2>
-        <table class="styled-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Reward</th>
-              <th>Winner</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(reward, index) in dailyRewards" :key="index">
-              <td>{{ reward.date }}</td>
-              <td>
-                <dropdown
-                  :options="rewards"
-                />
-              </td>
-              <td>
-                <div v-if="reward.winner">{{ reward.winner }}</div>
-                <div v-else>
-                  <button class="genButton" onclick="alert('This gens a winner')">Lets Roll it</button>
                 </div>
               </td>
             </tr>
@@ -245,7 +310,7 @@ thead {
 }
 
 .desktop{
-  width: 75%;
+  width: 90%;
 }
 
 #rewards > h2 {
@@ -265,8 +330,8 @@ thead {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 80vh;
-  padding-top: 30%;
+  height: 100vh;
+  padding-top: 10%;
 }
 
 .mobile-wrapper {
