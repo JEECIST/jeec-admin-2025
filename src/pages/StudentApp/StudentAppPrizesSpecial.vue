@@ -1,11 +1,11 @@
 <script setup>
-import TheTable from '../../global-components/TheTable.vue';
-import { ref, computed } from 'vue';
-import EditPrizePopup from './EditPrizeShopPopup.vue';
-import AddPrizePopup from './AddPrizeShopPopup.vue';
+
+import { ref, computed, onMounted } from 'vue';
 import dropdown from '../../global-components/dropdown.vue';
+import axios from "axios"
 
 const popupShow = ref(false);
+const dailyPrizes = ref([]);
 
 const isModalOpened = ref(false);
 
@@ -65,6 +65,30 @@ const mappedWinner = (reward) => {
   }
 
 }
+
+function getDailyPrizes() {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get-daily-prizes', {
+        auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+    }).then(response => {
+        const rewardsList = response.data; // Assuming backend returns the array
+
+        dailyPrizes.value = rewardsList.map((reward, index) => ({
+            date: `${19 + index}/02`, // Generates dates from 19/02 to match rewards
+            reward: reward.name, // Assign reward name from backend data
+            winner: null // Winner is always null
+        }));
+    }).catch(error => {
+        console.error("Error fetching daily prizes:", error);
+    });
+}
+
+onMounted(() => {
+  getDailyPrizes();
+  console.log(dailyPrizes["value"]);
+});
 
 
 </script>

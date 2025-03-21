@@ -1,8 +1,6 @@
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
 import { ref, onMounted } from 'vue';
-import EditPrizePopup from './EditPrizeShopPopup.vue';
-import AddPrizePopup from './AddPrizeShopPopup.vue';
 import axios from "axios"
 
 const popupShow = ref(false);
@@ -18,13 +16,6 @@ const closeModal = () => {
 };
 
 const isOtherModalOpened = ref(false);
-
-const openOtherModal = () => {
-  isOtherModalOpened.value = true;
-};
-const closeOtherModal = () => {
-  isOtherModalOpened.value = false;
-};
 
 function removePrize(selectedRow){
 
@@ -103,13 +94,6 @@ const tablePref = {
         </label>
         <input v-model="message" placeholder="Search for a prize">
       </form>
-    
-     <Transition name="fade" appear>
-        <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-     </Transition>
-     <Transition name="fade" appear>
-        <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-     </Transition>
      </div>
       <TheTable
         :data="prizesShop"
@@ -125,9 +109,6 @@ const tablePref = {
             <h3 class="text1">{{ selectedRow.name }}</h3>
             <p class="text2 title">Prize</p>
             <div class="btns-row">
-              <button class="btn" @click="openOtherModal()">
-                  <img src="../../assets/pencil.svg">
-              </button>
               <button class="btn" @click="openLink()">
                   <img src="../../assets/internet.svg">
               </button>

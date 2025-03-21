@@ -1,14 +1,17 @@
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from "axios"
 import { useRouter } from 'vue-router';
-import AddPrizePopup from './AddPrizePopup.vue';
-import EditPrizePopup from './EditPrizePopup.vue';
+import AddPrizePopup from './newPrizePopup.vue';
+import EditPrizePopup from './newEditPrizePopup.vue';
 
 const popupShow = ref(false);
 const selectedRow = ref(null);
+const prizeToEdit = ref(null);
 const isModalOpened = ref(false);
+const noPrizes = ref(false);
+const isOtherModalOpened = ref(false);
 
 const openModal = () => {
   isModalOpened.value = true;
@@ -18,7 +21,7 @@ const closeModal = () => {
   getPrizes();
 };
 
-const isOtherModalOpened = ref(false);
+
 
 const openOtherModal = () => {
   isOtherModalOpened.value = true;
@@ -70,23 +73,62 @@ function goToPrizeSpecial() {
 
 const message = ref();
 
-const updateSelectedRow = (newValueRow) => { // Required para dar updated à selected row sem eu ter de clicar denovo numa row para atualizar a info
-  selectedRow.value.name = newValueRow["name"]
-  selectedRow.value.Type = newValueRow["Type"]
-  selectedRow.value.description = newValueRow["description"]
-  selectedRow.value.initialAmount = newValueRow["initialAmount"]
-  selectedRow.value.currentAmount = newValueRow["currentAmount"]
-  selectedRow.value.cost = newValueRow["cost"]
-  selectedRow.value.link = newValueRow["link"]
-}
 
 function selectCallback(row) {
   popupShow.value = true;
   selectedRow.value = row
+  fetchPrizebyName();
+  fetchPrizeDetails();
+    
+  console.log(selectedRow)
 }
 
 function isPrizesEmpty(){
     return prizes.length === 0;
+}
+
+function fetchPrizebyName(){
+  const prizeName = selectedRow.value.name;
+  console.log("prizeName");
+  console.log(prizeName);
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get-prize-name', {
+    prizeName: prizeName,
+  }, {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then((response) => {
+    // Since the backend sends an array, we extract the first element
+        selectedRow.value = response.data[0];
+ 
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+function fetchPrizeDetails(){
+  console.log('Fetching prize details')
+  const prizeName = selectedRow.value.name;
+  console.log(selectedRow.value)
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get_image_prize', {
+    prizeName: prizeName,
+  }, {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then((response) => {
+    if (!response.data.error) {
+      console.log('prize details fetched', response.data);
+      selectedRow.value.logo = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image; // Update the logo in the selectedRow
+      console.log(selectedRow.value.logo);
+    } else {
+      console.log('Error fetching prize details', response.data.error);
+    }
+  }).catch((error) => {
+    console.log(error);
+  });
 }
 
 const prizes = ref([])
@@ -103,12 +145,22 @@ function getPrizes(){
         }}).then(response => {
 
       prizes.value = response.data
+
+      if (response.data.error == 'No prizes found'){
+        noPrizes.value = true
+      }
+
     })
 }
 
 onMounted(() => {
   getPrizes();
 }); 
+
+function handleEmptyPrizes(isEmpty){
+  noPrizes.value = isEmpty;
+}
+
 
 const tablePref = {
   id: "ID",
@@ -121,7 +173,6 @@ const tablePref = {
 </script>
 
 <template>
-  <button @click=""> TESTES</button>
 <div class="desktop" v-if="!isMobile()">
   <div class="wrapper">
     <div class="table">
@@ -140,7 +191,7 @@ const tablePref = {
           <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
       </Transition>
       <Transition name="fade" appear>
-          <EditPrizePopup :selectedRow="selectedRow" :isOpen="isOtherModalOpened" @updateSelectedRow="updateSelectedRow" @modal-close="closeOtherModal"></EditPrizePopup>
+          <EditPrizePopup v-if="isOtherModalOpened" :isOpen="isOtherModalOpened" :selectedRow="selectedRow" @modal-close="closeOtherModal"></EditPrizePopup>
       </Transition>
       </div>
         <div v-if="!isPrizesEmpty()">
@@ -149,13 +200,16 @@ const tablePref = {
             :tableHeaders="tablePref"
             :searchInput="message"
             @onRowSelect="selectCallback"
+            @notFound="handleEmptyPrizes"
             ></TheTable>
         </div>
+        <div class="noprizes" v-if=noPrizes>No Prizes Found</div>
       </div>
       <div class="right-popup-placeholder" v-if="selectedRow">
           <div class="items">
             <h1>SHOP</h1>
-            <div class="prize-photo">Insert PPPPPrize Photo</div>
+            <img v-if="selectedRow.logo" class='prize-logo' :src="selectedRow.logo" alt="prize logo" />
+            <div v-else class='prize-no-logo'>No logo</div>
             <h3 class="text1">{{ selectedRow.name }}</h3>
             <p class="text2 title">Prize</p>
             <div class="btns-row">
@@ -187,77 +241,51 @@ const tablePref = {
         </div>
       </div>
 </div>
-
-
-
-<div class="mobile" v-else>
-  <div class="mobile-wrapper">
-      <div class="table">
-        <div class="mobile-topbar">
-        <form>
-          <label>
-            <img src="../../assets/search.svg">
-          </label>
-          <input v-model="message" placeholder="Search for a prize">
-        </form>
-
-        <div class="imsosickofdivs">
-        <button class="topbtn" @click="openModal">Add Prize</button>
-        <button class="topbtn" @click="goToPrizeSpecial">Special 〉</button>
-        <button @click="goToPrizeShop" class="topbtn">Shop 〉</button>
-      <Transition name="fade" appear>
-          <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-      </Transition>
-      <Transition name="fade" appear>
-          <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-      </Transition>
-      </div>
-      <div class="right-popup-placeholder-mobile" v-show="popupShow">
-          <div class="items">
-            <h1>SHOP</h1>
-            <div class="prize-photo">Insert PPPPPrize Photo</div>
-            <h3 class="text1">Chamuça</h3>
-            <p class="text2 title">Prize</p>
-            <div class="btns-row">
-              <button class="btn" @click="openOtherModal">
-                  <img src="../../assets/pencil.svg">
-              </button>
-              <button class="btn">
-                  <img src="../../assets/internet.svg">
-              </button>
-              <button class="btn">
-                  <img src="../../assets/trash.svg">
-              </button>
-            </div>
-            <div id="info">
-              <p>Description</p>
-              <p class="text2">Vinda do ROSE STUPAA GOOAT</p>
-              <div class="row">
-                <div class="col">
-                  <p>Initial Amount</p>
-                  <p class="text2">69</p>           
-                </div>
-                <div class="col">
-                  <p>Current Amount</p>
-                  <p class="text2">6</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <TheTable
-          :data="prizes"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
-    </div>
-  </div>
-</div>
 </template>
 
 <style scoped>
+
+
+.prize-logo {
+  width: 18vh;
+  height: 18vh;
+  min-height: 70px;
+  min-width: 70px;
+  max-width: 150px;
+  max-height: 150px;
+  object-fit: scale-down; /* Ensure the whole image is visible */
+  border-radius: 50%;
+}
+
+.prize-no-logo {
+  width: 18vh;
+  height: 18vh;
+  min-height:100px;
+  min-width: 100px;
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  color: #888;
+  font-size: 14px;
+  text-align: center;
+}
+
+.noprizes{
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1em;
+  color: var(--c-tf);
+  background-color: var(--c-accent);
+  font-weight: 600; 
+}
 
 .no-chamuca-found{
   width: 85vw;
