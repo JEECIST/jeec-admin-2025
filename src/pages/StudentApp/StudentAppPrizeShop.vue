@@ -50,13 +50,36 @@ function isMobile() {
    }
 }
 
-// TODOOO OLHAR PARA O EDIT DISTO E POR SE PRECISO
-
 const message = ref();
 
 function selectCallback(row) {
   selectedRow.value = row;
   popupShow.value = true;
+  fetchPrizeDetails();
+}
+
+function fetchPrizeDetails(){
+  console.log('Fetching prize details')
+  const prizeName = selectedRow.value.name;
+  console.log(selectedRow.value)
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get_image_prize', {
+    prizeName: prizeName,
+  }, {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then((response) => {
+    if (!response.data.error) {
+      console.log('prize details fetched', response.data);
+      selectedRow.value.logo = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image; // Update the logo in the selectedRow
+      console.log(selectedRow.value.logo);
+    } else {
+      console.log('Error fetching prize details', response.data.error);
+    }
+  }).catch((error) => {
+    console.log(error);
+  });
 }
 
 function getPrizes(){
@@ -105,7 +128,8 @@ const tablePref = {
     <div class="right-popup-placeholder" v-if="selectedRow">
           <div class="items">
             <h1>SHOP</h1>
-            <div class="prize-photo">Insert PPPPPrize Photo</div>
+            <img v-if="selectedRow.logo" class='prize-logo' :src="selectedRow.logo" alt="prize logo" />
+            <div v-else class='prize-no-logo'>No logo</div>
             <h3 class="text1">{{ selectedRow.name }}</h3>
             <p class="text2 title">Prize</p>
             <div class="btns-row">
@@ -134,58 +158,26 @@ const tablePref = {
         </div>
   </div>
 </div>
-
-
-
-<div class="mobile" v-else>
-  <div class="mobile-wrapper">
-      <div class="table">
-        <div class="mobile-topbar">
-        <form>
-          <label>
-            <img src="../../assets/search.svg">
-          </label>
-          <input v-model="message" placeholder="Search for a prize">
-        </form>
-      <button class="topbtn" @click="openModal">Add Prize</button>
-      <Transition name="fade" appear>
-          <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-      </Transition>
-      <Transition name="fade" appear>
-          <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-      </Transition>
-      </div>
-      <div class="right-popup-placeholder-mobile" v-show="popupShow">
-          <div class="items">
-            <h1>SHOP</h1>
-            <div class="prize-photo">Insert PPPPPrize Photo</div>
-            <h3 class="text1">Chamuça</h3>
-            <p class="text2 title">Prize</p>
-            <div class="btns-row">
-              <button class="btn" @click="openOtherModal">
-                  <img src="../../assets/pencil.svg">
-              </button>
-              <button class="btn" @click="showfunction">
-                  <img src="../../assets/sheet.svg">
-              </button>
-              <button class="btn">
-                  <img src="../../assets/trash.svg">
-              </button>
-            </div>
-          </div>
-        </div>
-        <TheTable
-          :data="datab"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
-    </div>
-</div>
 </template>
 
 <style scoped>
+
+.prize-no-logo {
+  width: 18vh;
+  height: 18vh;
+  min-height:100px;
+  min-width: 100px;
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  color: #888;
+  font-size: 14px;
+  text-align: center;
+}
 
 .mobile-wrapper {
   display: flex;
@@ -301,7 +293,7 @@ form > input::placeholder {
     margin-top: 7vh;
 }
 
-.prize-photo {
+.prize-logo {
     height: 165px;
     width: 165px;
     background-color: var(--c-select);

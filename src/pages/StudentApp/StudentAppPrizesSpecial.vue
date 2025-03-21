@@ -85,10 +85,11 @@ onMounted(() => {
 
 <template>
 <div id="rewards">
-  <h2>Daily Rewards</h2>
+  
   <div class="desktop">
     <div class="table-container">
       <div class="section">
+        <h2>Daily Rewards</h2>
         <table class="styled-table">
           <thead>
             <tr>
