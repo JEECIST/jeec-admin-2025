@@ -1,33 +1,16 @@
 <script setup>
 
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import dropdown from '../../global-components/dropdown.vue';
 import axios from "axios"
 
-const popupShow = ref(false);
+
 const dailyPrizes = ref([]);
-
-const isModalOpened = ref(false);
-
-const openModal = () => {
-  isModalOpened.value = true;
-};
-const closeModal = () => {
-  isModalOpened.value = false;
-};
-
-const isOtherModalOpened = ref(false);
-
-const openOtherModal = () => {
-  isOtherModalOpened.value = true;
-};
-const closeOtherModal = () => {
-  isOtherModalOpened.value = false;
-};
-
+const selectedValues = ref(Array(dailyPrizes.value.length).fill(null));
+const warning = ref([]);
 
 const rewards = ref(["Pack Duplo Vertigem", "E-voucher (1p)", "Pack Duplo Pura Adrenalina", "Pack STREET ART FOR ALL", "Passeio golfinhos (2p)"]);
-
+let rewardsArray;
 const dailyRewards = ref([
   { date: "19/02", reward: "Pack Duplo Vertigem", winner: "davidovich.fer" },
   { date: "20/02", reward: "E-voucher (1p)", winner: "davidovich.fer" },
@@ -36,35 +19,7 @@ const dailyRewards = ref([
   { date: "23/02", reward: "Passeio golfinhos (2p)", winner: null },
 ]);
 
-const weeklyRewards = ref([
-  { place: 1, reward: "Apple iPad", winner: "inesabrantes24" },
-  { place: 2, reward: "Apple Smart Watch", winner: "" },
-  { place: 3, reward: "Monitor MITSAI MC24", winner: "" },
-]);
 
-
-function isMobile() {
-   if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-     return true;
-   }
-   else {
-    return false;
-   }
-}
-
-
-const uniqueRewards = computed(() => {
-  return [...new Set(datab.flatMap(item => item.reward))]; // Get unique rewards from the datab
-});
-
-const mappedWinner = (reward) => {
-  if (reward.winner){
-      return reward.winner
-  }else{
-    return "Button"
-  }
-
-}
 
 function getDailyPrizes() {
     axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get-daily-prizes', {
@@ -80,14 +35,49 @@ function getDailyPrizes() {
             reward: reward.name, // Assign reward name from backend data
             winner: null // Winner is always null
         }));
+        rewardsArray = rewardsList.map(prize => prize.name);
+        console.log("Updated dailyPrizes:", dailyPrizes.value);
+    
     }).catch(error => {
         console.error("Error fetching daily prizes:", error);
     });
 }
 
+const handleButtonClick = (index) => {
+  if (!selectedValues.value[index]) {
+    warning.value[index] = true; // Show warning if no selection
+    return;
+  }
+  warning.value[index] = false; // Hide warning if selection is made
+  alert(`Winner generated with reward: ${selectedValues.value[index]}`);
+  setClaimedPrize(selectedValues.value[index]);
+};
+
+function setClaimedPrize(prizeName){
+  // axios para dar set a true
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/claim-prize', {
+    prizeName: prizeName,
+    claimed: true,
+  }, {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then((response) => {
+    if (!response.data.error) {
+      console.log('prize details fetched', response.data);
+      selectedRow.value.logo = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image; // Update the logo in the selectedRow
+      console.log(selectedRow.value.logo);
+    } else {
+      console.log('Error fetching prize details', response.data.error);
+    }
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
 onMounted(() => {
   getDailyPrizes();
-  console.log(dailyPrizes["value"]);
 });
 
 
@@ -108,17 +98,29 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(reward, index) in dailyRewards" :key="index">
+            <tr v-for="(reward, index) in dailyPrizes" :key="index">
               <td>{{ reward.date }}</td>
               <td>
-                <dropdown
-                  :options="rewards"
+                <!-- Dropdown for selecting reward -->
+                <dropdown  
+                  :options="rewardsArray"
+                  v-model="selectedValues[index]"
                 />
+                <p>Selected Option: {{ selectedValues[index] || "None selected" }}</p>
               </td>
               <td>
                 <div v-if="reward.winner">{{ reward.winner }}</div>
                 <div v-else>
-                  <button class="genButton" onclick="alert('This gens a winner')">Lets Roll it</button>
+                  <!-- Disable button if no selection is made -->
+                  <button 
+                    class="genButton" 
+                    :disabled="!selectedValues[index]"
+                    @click="handleButtonClick(index)"
+                  >
+                    Let's Roll it
+                  </button>
+                  <!-- Warning message -->
+                  <p v-if="warning[index]" class="warning">Please select a prize first!</p>
                 </div>
               </td>
             </tr>
@@ -165,6 +167,16 @@ onMounted(() => {
 
 <style scoped>
 
+.warning {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.genButton:disabled {
+  background-color: grey;
+  cursor: not-allowed;
+}
 
 .genButton {
     background-color: var(--c-select);

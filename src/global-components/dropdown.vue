@@ -51,6 +51,7 @@ const toggleOptionSelect = (option) => {
   selectedOption.value = option;
   emit('update:modelValue', option)
   isDropDownVisible.value = false
+  // Premio atribuido ig
 }
 
 
