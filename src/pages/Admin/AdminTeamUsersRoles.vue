@@ -346,6 +346,19 @@ function addingUserRole(e) {
       console.log('User role added:', response.data);
       fetchData();
       showAddUserRole.value = false;
+      name.value = '';
+      priority.value = '';
+      activities.value = null;
+      admin.value = null;
+      bills.value = null;
+      business.value = null;
+      claim_prizes.value = null;
+      qr_codes.value = null;
+      speakers.value = null;
+      sponsors.value = null;
+      student_app.value = null;
+      teams.value = null;
+      shifts.value = null;
     } else {
       console.log('Error on adding sponsor tier:', error_response);
       alert('Error on adding sponsor tier: ' + error_response);
