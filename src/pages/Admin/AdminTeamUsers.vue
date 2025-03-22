@@ -10,8 +10,7 @@
         </div>
         
         <button type="button" @click="showAddUserModal = true">Add User</button>
-        
-        <button type="button">User Roles <span class = "chevron"> </span></button>
+        <router-link to="/admin/team-users/roles" class="router-link">User Roles<span class="chevron"></span></router-link>
       </form>
       <TheTable
         :data="datab"
@@ -280,6 +279,20 @@ form > button {
   padding: 0px 15px;
   height: 100%;
   width: 25%;
+}
+
+.router-link {
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  background-color: var(--c-select);
+  border-radius: 6px;
+  color: var(--c-bg-light);
+  cursor: pointer;
+  padding: 0px 15px;
+  height: 100%;
+  width: 25%;
+  text-decoration: none; /* Remove underline */
 }
 
 
@@ -595,6 +608,20 @@ form > button {
     cursor: pointer;
     width: 6rem;
     padding-right: 1rem;
+    
+  }
+
+  .router-link {
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    background-color: var(--c-select);
+    border-radius: 6px;
+    color: var(--c-bg-light);
+    cursor: pointer;
+    width: 6rem;
+    padding-right: 1rem;
+    text-decoration: none; /* Remove underline */
     
   }
 
