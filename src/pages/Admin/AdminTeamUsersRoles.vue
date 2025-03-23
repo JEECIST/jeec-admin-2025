@@ -44,18 +44,16 @@
           <p class="card-subtitle">User Role</p>
         </div>
         <div class="card-buttons">
-          <button @click="editRow(selectedRow)" class="icon-button">
+          <button @click="() => { populateEditForm(); showEditUserRole = true; }" class="icon-button">
             <img :src="pencilIcon" alt="edit" class="icon" />
           </button>
           <button @click="tooglelist" class="icon-button">
             <img :src="briefcaseIcon" alt="list of roless in tier" class="icon">
           </button>
-          <button @click="deleteRow(selectedRow)" class="icon-button">
+          <button @click="deleteUserRole()" class="icon-button">
             <img :src="trashIcon" alt="delete" class="icon" />
           </button>
-
         </div>
-        
       </div>
       <div class="roles-card-body">
         <div class="card-collumn">
@@ -110,8 +108,6 @@
             <p>{{ selectedRow.teams }}</p>
           </div>
       </div>
-        
-        
       </div>
     </div>
 
@@ -266,8 +262,158 @@
       </div>
     </div>
 
-    <rolessList v-if="listroless" @close="tooglelist" :tier="selectedRow" />
-    <EditrolesTier v-if="iseditrolestier" @close="editRow(selectedRow)" :rolesData="selectedRow" :isOpen="iseditroles"/>
+    <!-- Edit User Role Pop up -->
+    <div v-if="showEditUserRole" class="backdrop">
+      <div class="tier-pop-up">
+        <div class="header">
+          <h1>Edit User Role</h1>
+          <button @click="showEditUserRole=false" class="close-button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        </div>
+        <form class="form">
+          <div class="form-line">
+            <div class="inputname">
+              <label for="name">Name</label>
+                <input type="text" v-model="name"/>
+            </div>
+            <div class="inputname">
+              <label for="Priority">Priority</label>
+              <input type="text" v-model="priority"/>
+            </div>
+          </div>
+          <div class="form-columns">
+            
+            <div class="second-column">
+                <div class="radio-label">
+                  <label for="activities">Activities</label>
+                  <div class="radio">
+                    <input type="radio" id="activitiesYes" v-model="activities" :value="true"/>
+                    <label for="activitiesYes">Yes</label>
+
+                    <input type="radio" id="activitiesNo" v-model="activities" :value="false"/>
+                    <label for="activitiesNo">No</label>
+                  </div>
+                </div>
+                <div class="radio-label">
+                  <label for="admin">Admin</label>
+                  <div class="radio">
+                    <input type="radio" id="adminYes" v-model="admin" :value="true"/>
+                    <label for="adminYes">Yes</label>
+
+                    <input type="radio" id="adminNo" v-model="admin" :value="false"/>
+                    <label for="adminNo">No</label>
+                  </div>
+                </div>
+                <div class="radio-label">
+                  <label for="bills">Bills</label>
+                  <div class="radio">
+                    <input type="radio" id="billsYes" v-model="bills" :value="true"/>
+                    <label for="billsYes">Yes</label>
+
+                    <input type="radio" id="billsNo" v-model="bills" :value="false"/>
+                    <label for="billsNo">No</label>
+                  </div>
+                </div>
+                <div class="radio-label">
+                  <label for="teams">Teams</label>
+                  <div class="radio">
+                    <input type="radio" id="teamsYes" v-model="teams" :value="true"/>
+                    <label for="teamsYes">Yes</label>
+
+                    <input type="radio" id="teamsNo" v-model="teams" :value="false"/>
+                    <label for="teamsNo">No</label>
+                  </div>
+                </div>
+            </div>
+            <div class="second-column">
+                <div class="radio-label">
+                  <label for="business">Business</label>
+                  <div class="radio">
+                    <input type="radio" id="businessYes" v-model="business" :value="true"/>
+                    <label for="businessYes">Yes</label>
+
+                    <input type="radio" id="businessNo" v-model="business" :value="false"/>
+                    <label for="businessNo">No</label>
+                  </div>
+                </div>
+                <div class="radio-label">
+                  <label for="claim_prizes">Claim Prizes</label>
+                  <div class="radio">
+                    <input type="radio" id="claim_prizesYes" v-model="claim_prizes" :value="true"/>
+                    <label for="claim_prizesYes">Yes</label>
+
+                    <input type="radio" id="claim_prizesNo" v-model="claim_prizes" :value="false"/>
+                    <label for="claim_prizesNo">No</label>
+                  </div>
+                </div>
+                <div class="radio-label">
+                  <label for="qr_codes">QR Codes</label>
+                  <div class="radio">
+                    <input type="radio" id="qr_codesYes" v-model="qr_codes" :value="true"/>
+                    <label for="qr_codesYes">Yes</label>
+
+                    <input type="radio" id="qr_codesNo" v-model="qr_codes" :value="false"/>
+                    <label for="qr_codesNo">No</label>
+                  </div>
+                </div>
+                <div class="radio-label">
+                  <label for="shifts">Shifts</label>
+                  <div class="radio">
+                    <input type="radio" id="shiftsYes" v-model="shifts" :value="true"/>
+                    <label for="shiftsYes">Yes</label>
+
+                    <input type="radio" id="shiftsNo" v-model="shifts" :value="false"/>
+                    <label for="shiftsNo">No</label>
+                  </div>
+                </div>
+            </div>
+            <div class="second-column">
+                <div class="radio-label">
+                  <label for="speakers">Speakers</label>
+                  <div class="radio">
+                    <input type="radio" id="speakersYes" v-model="speakers" :value="true"/>
+                    <label for="speakersYes">Yes</label>
+
+                    <input type="radio" id="speakersNo" v-model="speakers" :value="false"/>
+                    <label for="speakersNo">No</label>
+                  </div>
+                </div>
+                <div class="radio-label">
+                  <label for="sponsors">Sponsors</label>
+                  <div class="radio">
+                    <input type="radio" id="sponsorsYes" v-model="sponsors" :value="true"/>
+                    <label for="sponsorsYes">Yes</label>
+
+                    <input type="radio" id="sponsorsNo" v-model="sponsors" :value="false"/>
+                    <label for="sponsorsNo">No</label>
+                  </div>
+                </div>
+                
+                <div class="radio-label">
+                  <label for="student_app">Student App</label>
+                  <div class="radio">
+                    <input type="radio" id="student_appYes" v-model="student_app" :value="true"/>
+                    <label for="student_appYes">Yes</label>
+
+                    <input type="radio" id="student_appNo" v-model="student_app" :value="false"/>
+                    <label for="student_appNo">No</label>
+                  </div>
+                </div>
+
+            </div>
+              
+          </div>
+        </form>
+        <button class="button-add-pop-up" @click="editUserRole">Edit</button>
+        
+      </div>
+    </div>
+
+    
   </div>
   
 </template>
@@ -371,9 +517,96 @@ function addingUserRole(e) {
   });
 }
 
+function deleteUserRole(){
+  if (confirm(`Are you sure you want to delete the User Role "${selectedRow.value.name}"?`)) {
+    console.log('deleting user role', selectedRow.value.role);
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss_roles/delete', {
+      role: selectedRow.value.role
+    }, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    }).then((response) => {
+      console.log('User role deleted', response.data);
+      unselectRow();
+      fetchData();
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+}
+
+function populateEditForm() {
+  if (selectedRow.value) {
+    name.value = selectedRow.value.name || '';
+    priority.value = selectedRow.value.priority || '';
+    activities.value = selectedRow.value.activities === true ? true : false;
+    admin.value = selectedRow.value.admin === true ? true : false;
+    bills.value = selectedRow.value.bills === true ? true : false;
+    business.value = selectedRow.value.business === true ? true : false;
+    claim_prizes.value = selectedRow.value.claim_prizes === true ? true : false;
+    qr_codes.value = selectedRow.value.qr_codes === true ? true : false;
+    speakers.value = selectedRow.value.speakers === true ? true : false;
+    sponsors.value = selectedRow.value.sponsors === true ? true : false;
+    student_app.value = selectedRow.value.student_app === true ? true : false;
+    teams.value = selectedRow.value.teams === true ? true : false;
+    shifts.value = selectedRow.value.shifts === true ? true : false;
+  }
+}
+
+function editUserRole() {
+  
+  console.log('editing user role', selectedRow.value.role);
+
+  const fd = new FormData();
+  fd.append('name', name.value);
+  fd.append('priority', priority.value);
+  fd.append('activities', activities.value);
+  fd.append('admin', admin.value);
+  fd.append('bills', bills.value);
+  fd.append('business', business.value);
+  fd.append('claim_prizes', claim_prizes.value);
+  fd.append('qr_codes', qr_codes.value);
+  fd.append('speakers', speakers.value);
+  fd.append('sponsors', sponsors.value);
+  fd.append('student_app', student_app.value);
+  fd.append('teams', teams.value);
+  fd.append('shifts', shifts.value);
+  fd.append('role', selectedRow.value.role);
+
+  console.log('Form data:', fd);
+
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss_roles/update', fd, {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then(response => {
+    console.log('Response:', response);
+    const error_response = response.data.error;
+    console.log('Error response:', error_response);
+    if (error_response == '') {
+      console.log('User role edited:', response.data);
+      fetchData();
+      showEditUserRole.value = false;
+      unselectRow();
+    } else {
+      console.log('Error on editing user role:', error_response);
+      alert('Error on editing user role: ' + error_response);
+      console.log('Alert should have shown: Error on editing user role: ' + error_response);
+    }
+  }).catch(error => {
+    console.error('Request failed:', error);
+    alert('Request failed: ' + error.message);
+    console.log('Alert should have shown: Request failed: ' + error.message);
+  });
+  
+}
+
 const showAddUserRole= ref(false);
-const iseditrolestier= ref(false);
-const listroless= ref(false);
+const showEditUserRole= ref(false);
+const listroles= ref(false);
 const cardDisplaying = ref(false);
 
 
