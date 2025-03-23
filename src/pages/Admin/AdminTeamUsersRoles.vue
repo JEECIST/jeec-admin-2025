@@ -47,8 +47,8 @@
           <button @click="() => { populateEditForm(); showEditUserRole = true; }" class="icon-button">
             <img :src="pencilIcon" alt="edit" class="icon" />
           </button>
-          <button @click="tooglelist" class="icon-button">
-            <img :src="briefcaseIcon" alt="list of roless in tier" class="icon">
+          <button @click="() => {listRoles(); showlistroles = true;}" class="icon-button">
+            <img :src="briefcaseIcon" alt="list of users in role" class="icon">
           </button>
           <button @click="deleteUserRole()" class="icon-button">
             <img :src="trashIcon" alt="delete" class="icon" />
@@ -413,6 +413,29 @@
       </div>
     </div>
 
+    <!--List of Users in Role Pop up-->
+    <div v-if="showlistroles" class="backdrop-list">
+      <div class="role-pop-up"> 
+        <div class="header-list">
+          <h1>{{selectedRow.name}} users</h1>
+          <button @click="closePopup" class="close-button-list">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4f4f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="users-grid">
+          <div v-for="(user, index) in list_data" :key="index" class="user-item">
+            <img v-if="user.logo" class="user-logo" :src="JEEC" alt="JEEC logo">
+            <div v-else class="default-logo"></div>
+            <span>{{ user.name }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     
   </div>
   
@@ -459,6 +482,8 @@ const sponsors = ref(null);
 const student_app = ref(null);
 const teams = ref(null);
 const shifts = ref(null);
+
+const list_data= ref([]);
 
 function addingUserRole(e) {
   console.log('adding user role');
@@ -606,7 +631,7 @@ function editUserRole() {
 
 const showAddUserRole= ref(false);
 const showEditUserRole= ref(false);
-const listroles= ref(false);
+const showlistroles= ref(false);
 const cardDisplaying = ref(false);
 
 
@@ -615,6 +640,7 @@ const headers = {
   role: 'ID',
   name: 'Name',
   priority: 'Priority'
+  // number_of_users: '# of Users'
 };
 
 const tableButtons = '';
@@ -642,39 +668,25 @@ function unselectRow() {
   selectedRow.value = null;
 }
 
-// Event handlers for button clicks
-function editRow(row) {
-  iseditrolestier.value= !iseditrolestier.value
-  console.log(iseditrolestier.value)
-  console.log('Edit button clicked for row:', row);
-}
 
+function listRoles(){
+  console.log('List button clicked for row:', selectedRow);
 
-
-function tooglelist()
-{
-  listroless.value= !listroless.value
-  console.log(listroless.value)
-}
-
-function deleteRow(row) {
-  if (confirm('Are you sure you want to delete this roles tier?')) {
-    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/delete_roles_tier', {
-      tier_id: selectedRow.value.id
-    }, {
-      auth: {
-        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      }
-    }).then((response) => {
-      console.log('roles tier deleted', response.data);
-      unselectRow();
-      fetchData();
-    }).catch((error) => {
-      console.log(error);
-    });
-  }
-  console.log('Delete button clicked for row:', row);
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss_roles/list', {
+    params: {
+      role: selectedRow.value.role
+    },
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then((response) => {
+    data.value = response.data.users
+      .filter(user => user !== null) // Filter out null values
+    console.log(data.value);
+  }).catch((error) => {
+    console.log(error);
+  });
 }
 
 
@@ -1256,6 +1268,99 @@ input[type="radio"] {
 }
 
 
+.backdrop-list {
+  top: 0;
+  position: fixed;
+  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  align-content: center;
+}
+
+.role-pop-up {
+  display: flex;
+  flex-direction: column;
+  width: 90vw;
+  max-width: 900px;
+  overflow-y: auto;
+  padding: 50px 50px 50px 50px;
+  height: fit-content;
+  max-height: 80vh;
+  margin: 3vh auto;
+  background-color: #ffff;
+  font-size: 0.9em;
+  color: var(--text-color);
+  font-family: var(--font-family);
+  z-index: 3;
+  gap: 40px;
+}
+
+.header-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button-list {
+  z-index: 3;
+  background: none;
+  border: none;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.role-pop-up h1 {
+  font-size: 2em;
+}
+
+/* Use CSS Grid for two columns */
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+}
+
+/* Alternate row background across two columns */
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 6px 10px;
+  box-sizing: border-box;
+  height: 60px;
+}
+
+/* Alternating background color for two-column rows */
+.user-item:nth-child(4n+1),
+.user-item:nth-child(4n+2) {
+  background-color: var(--c-bg-light);
+}
+
+.user-item:nth-child(4n+3),
+.user-item:nth-child(4n+4) {
+  background-color: var(--c-accent);
+}
+
+.user-logo {
+  width: 3vw;
+  height: 3vw;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  object-fit: scale-down;
+}
+
+.default-logo {
+  width: 3vw;
+  height: 3vw;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  background-color: var(--c-select);
+}
+
+
 @media (max-width: 700px) {
 
   .hide-on-mobile {
@@ -1335,6 +1440,19 @@ input[type="radio"] {
     width: fit-content;
     font-size: 1em;
   }
+
+  .users-grid {
+    grid-template-columns: 1fr; /* 1 column */
+  }
+
+  /* Alternate row background across two columns */
+.user-item:nth-child(odd) {
+  background-color: var(--c-bg-light);
+}
+
+.user-item:nth-child(even) {
+  background-color: var(--c-accent);
+}
 
 }
 
