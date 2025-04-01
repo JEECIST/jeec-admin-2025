@@ -102,8 +102,8 @@ const selectedRow = ref(null);
 const roles = ref(null);
 
 function selectCallback(row) {
-  row.password = decryptPassword(row.password);
-  selectedRow.value = row;
+  selectedRow.value = {...row};
+  selectedRow.value.password = decryptPassword(row.password);
 }
 
 function decryptPassword(encrypted_password){
@@ -151,21 +151,23 @@ const tablePref = {
   
 }
 
-function generateSecurePassword(length = 16) {
-  const array = new Uint8Array(length);
-  window.crypto.getRandomValues(array);
-  return btoa(String.fromCharCode(...array)).slice(0, length);
-}
+// function generateSecurePassword(length = 16) {
+//   const array = new Uint8Array(length);
+//   window.crypto.getRandomValues(array);
+//   return btoa(String.fromCharCode(...array)).slice(0, length);
+// }
 
 function addUser() {
 
-  let password = generateSecurePassword(16);
-  let encryptedPassword = CryptoJS.AES.encrypt(password, import.meta.env.VITE_APP_API_KEY).toString();
+  let password = Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2)
+  let encryptedPassword = CryptoJS.DES.encrypt(password, import.meta.env.VITE_APP_API_KEY).toString();
+
+  console.log(encryptedPassword)
 
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/user/addteamuser',
   { 
     user: { 
-      name: "nome",
+      name: "Not attributed yet",
       username: newUser.value.username, 
       role_id: newUser.value.role_id,
       password: encryptedPassword

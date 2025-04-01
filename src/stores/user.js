@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
+import { useRouter } from "vue-router";
 import CryptoJS from 'crypto-js'
+import axios from 'axios'
+
+const router = useRouter();
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -28,50 +32,63 @@ export const useUserStore = defineStore("user", {
     getAccessList: (state) => state.accessList,
   },
   actions: {
+    testUserStore(username,password){
+      console.log(username);
+      console.log(password);
+    },
     async getAccess(username, password) {
-      try {
-        await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/login',{username : username}, {auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        }}).then(response=> {
-          password = response.data.password
-          role = response.data.role
-          id = response.data.id
-          if (password != ""){
-            password = CryptoJS.DES.decrypt(password, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
-            
-            
-            // console.log(CryptoJS.DES.decrypt('U2FsdGVkX1+jKFPpXzYXJHIR/68SP6nyg9hJQPIRP4fjaOomWRo3OQ==', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
-            if (password.normalize() === password.normalize()){
-              this.loginUser(username, role, true, accessList)
-              console.log("Updated authentication - success")
-            }
-            else{
-              this.logoutUser()
-              console.log("Updated authentication - logout")
-            }
+      console.log(password)
+      await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/login',{username : username}, {auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }}).then(response=> {
+        let password_received = response.data.password
+        let role_received = response.data.role
+        
+        if (password_received != ""){
+          let password_decrypted = CryptoJS.DES.decrypt(password_received, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
+          
+          // console.log(CryptoJS.DES.decrypt('U2FsdGVkX1+jKFPpXzYXJHIR/68SP6nyg9hJQPIRP4fjaOomWRo3OQ==', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
+          if (password.normalize() === password_decrypted.normalize()){
+            this.loginUser(username, role_received, true)
+            console.log("Login success")
+            return true;
           }
           else{
             this.logoutUser()
-            console.log("Updated authentication - logout")
+            console.log("Login Failed")
+            return false;
           }
-        })
-      } catch (error) {
-        this.logoutUser()
-        console.error("Login error:", error);
-      }
+        }
+      })
+      return false;
     },
-    loginUser(state, username, role, loggedIn, accessList){
-      state.username = username;
-      state.role = role;
-      state.loggedIn = loggedIn;
-      state.accessList = accessList;
+    loginUser(username, role, loggedIn){
+      console.log("HEREERERE")
+      this.username = username;
+      this.role = role.name;
+      this.loggedIn = true;
+      this.accessList = {
+        dashboard: true,
+        activities: role.activities,
+        admin: role.admin,
+        bills: role.bills,
+        business: role.business,
+        claimprizes: role.claim_prizes,
+        qrcodes: role.qr_codes,
+        speakers: role.speakers,
+        sponsors: role.sponsors,
+        studentapp: role.student_app,
+        teams: role.teams,
+        usershifts: role.shifts,
+      };
+      console.log(this.role)
     },
-    logoutUser(state){
-      state.username = "";
-      state.role = "";
-      state.loggedIn = false;
-      state.accessList = {
+    logoutUser(){
+      this.username = "";
+      this.role = "";
+      this.loggedIn = false;
+      this.accessList = {
         dashboard: false,
         activities: false,
         admin: false,

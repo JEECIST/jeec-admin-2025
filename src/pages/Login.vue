@@ -22,13 +22,22 @@
 <script setup>
 import { ref } from "vue";
 import { useUserStore } from "../stores/user.js";
+import router from "../router/index.js";
 
 const username = ref("");
 const password = ref("");
 const userStore = useUserStore();
 
-const login = () => {
-  userStore.getAccess(username.value, password.value);
+async function login(){
+    await userStore.getAccess(username.value, password.value);
+    console.log(userStore.$state)
+
+    if(userStore.isLoggedIn){
+        router.push({path: "/dashboard"})
+    }
+    else{
+        router.push({path: "/login"})
+    }
 };
 </script>
 
@@ -41,7 +50,6 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
 }
-
 
 p,
 h {
@@ -57,7 +65,8 @@ h {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    width: 100vw;
+    margin-top: var(--opposite-header-height);
+    margin-left: var(--opposite-sidenav-width);
 }
 
 .external-box {
