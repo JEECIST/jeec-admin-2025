@@ -51,7 +51,7 @@
               
             <div class = "cardInfoMember"> 
               <p class="cardInfoLabel">Password</p>
-              <p> ****************</p>
+              <p class="cardInfoValue">{{ selectedRow.password }}</p>
             </div>
 
             
@@ -74,16 +74,8 @@
         </div>
         <div class="formRole">
           <label for="role">Role</label>
-          <select v-model="newUser.role" id="role" required>
-            
-            <option value="Webdev">Webdev</option>
-            <option value="Business">Business</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Coordination">Coordination</option>
-            <option value="Partnership">Partnership</option>
-            <option value="Admin">Admin</option>
-            <option value="Team">Team</option>
-
+          <select v-model="newUser.role_id" id="role_id" required>
+            <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
           </select>
         </div>
         <div class="modal-actions">
@@ -98,15 +90,27 @@
 import axios from 'axios';
 import CryptoJS from "crypto-js";
 import TheTable from '../../global-components/TheTable.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useUserStore } from "../../stores/user.js";
+
+const userStore = useUserStore();
 
 const message = ref('');
 const showAddUserModal = ref(false);
-const newUser = ref({ username: '', role: '' });
-const selectedRow = ref(null);  
+const newUser = ref({ username: '', role_id: '' });
+const selectedRow = ref(null);
+const roles = ref(null);
 
 function selectCallback(row) {
-  selectedRow.value = row;  
+  row.password = decryptPassword(row.password);
+  selectedRow.value = row;
+}
+
+function decryptPassword(encrypted_password){
+  if(userStore.getRole == "admin")
+    return CryptoJS.DES.decrypt(encrypted_password, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
+  else
+    return "****************"
 }
 
 function closeModal() {
@@ -132,7 +136,7 @@ const fetchData = () => {
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }}).then((response)=>{
           datab.value = response.data.users
-          console.log(datab.value)
+          roles.value = response.data.roles
         })
         .catch(error => console.error('Fetch error:', error)); 
 }
@@ -163,7 +167,7 @@ function addUser() {
     user: { 
       name: "nome",
       username: newUser.value.username, 
-      role: newUser.value.role,
+      role_id: newUser.value.role_id,
       password: encryptedPassword
     }
   }, 

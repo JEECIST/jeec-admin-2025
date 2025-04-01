@@ -8,9 +8,9 @@
             <div class="internal-box">
                 <img src="../assets/brain.svg" class="brain-img">
                 <div class="login-inputs">
-                    <input v-model="text" placeholder="Enter Username">
+                    <input v-model="username" placeholder="Enter Username">
                     <input type="password" v-model="password" placeholder="Enter Password">
-                    <button>
+                    <button @click="login()">
                         <p>Login</p>
                     </button>
                 </div>
@@ -20,8 +20,18 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
+import { useUserStore } from "../stores/user.js";
 
+const username = ref("");
+const password = ref("");
+const userStore = useUserStore();
+
+const login = () => {
+  userStore.getAccess(username.value, password.value);
+};
 </script>
+
 
 <style scoped>
 /* Para o background dos inputs nao ficar amarelo */
