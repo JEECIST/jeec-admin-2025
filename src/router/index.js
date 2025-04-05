@@ -5,7 +5,7 @@ import Dashboard from "../global-components/TheDashboard.vue";
 
 const routes = [
   {
-    path: "/login",
+    path: "/",
     name: "login",
     component: () => import("../pages/Login.vue"),
   },

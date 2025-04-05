@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useUserStore } from "../stores/user.js";
 import router from "../router/index.js";
 
@@ -30,7 +30,6 @@ const userStore = useUserStore();
 
 async function login(){
     await userStore.getAccess(username.value, password.value);
-    console.log(userStore.$state)
 
     if(userStore.isLoggedIn){
         router.push({path: "/dashboard"})
@@ -39,6 +38,15 @@ async function login(){
         router.push({path: "/login"})
     }
 };
+
+function automaticLogin(){
+    if(userStore.isLoggedIn){
+        router.push({path: "/dashboard"})
+    }
+    console.log("bLP7UzXCkehBurML")
+}
+
+onMounted(automaticLogin)
 </script>
 
 
@@ -65,8 +73,8 @@ h {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin-top: var(--opposite-header-height);
-    margin-left: var(--opposite-sidenav-width);
+    /* margin-top: var(--opposite-header-height);
+    margin-left: var(--opposite-sidenav-width); */
 }
 
 .external-box {

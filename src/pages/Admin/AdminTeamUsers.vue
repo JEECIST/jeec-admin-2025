@@ -90,7 +90,7 @@
 import axios from 'axios';
 import CryptoJS from "crypto-js";
 import TheTable from '../../global-components/TheTable.vue';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useUserStore } from "../../stores/user.js";
 
 const userStore = useUserStore();

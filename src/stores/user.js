@@ -8,21 +8,21 @@ const router = useRouter();
 export const useUserStore = defineStore("user", {
   state: () => ({
     username: "",
-    role: "admin",
-    loggedIn: true,
+    role: "",
+    loggedIn: false,
     accessList: {
-      dashboard: true,
-      activities: true,
-      admin: true,
-      bills: true,
-      business: true,
-      claimprizes: true,
-      qrcodes: true,
-      speakers: true,
-      sponsors: true,
-      studentapp: true,
-      teams: true,
-      usershifts: true,
+      dashboard: false,
+      activities: false,
+      admin: false,
+      bills: false,
+      business: false,
+      claimprizes: false,
+      qrcodes: false,
+      speakers: false,
+      sponsors: false,
+      studentapp: false,
+      teams: false,
+      usershifts: false,
     },
   }),
   getters: {
@@ -85,23 +85,17 @@ export const useUserStore = defineStore("user", {
       console.log(this.role)
     },
     logoutUser(){
-      this.username = "";
-      this.role = "";
-      this.loggedIn = false;
-      this.accessList = {
-        dashboard: false,
-        activities: false,
-        admin: false,
-        bills: false,
-        business: false,
-        claimprizes: false,
-        qrcodes: false,
-        speakers: false,
-        sponsors: false,
-        studentapp: false,
-        teams: false,
-        usershifts: false,
-      };
+      this.$reset();
+      localStorage.removeItem("user");
     },
+  },
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: "user",
+        storage: localStorage,
+      },
+    ],
   },
 });
