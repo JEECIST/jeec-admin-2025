@@ -10,6 +10,7 @@ export const useUserStore = defineStore("user", {
     username: "",
     role: "",
     loggedIn: false,
+    jwt: "",
     accessList: {
       dashboard: false,
       activities: false,
@@ -43,14 +44,17 @@ export const useUserStore = defineStore("user", {
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }}).then(response=> {
         let password_received = response.data.password
+        let jwt = response.data.jwt
         let role_received = response.data.role
+
+        console.log(jwt)
         
         if (password_received != ""){
           let password_decrypted = CryptoJS.DES.decrypt(password_received, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
           
           // console.log(CryptoJS.DES.decrypt('U2FsdGVkX1+jKFPpXzYXJHIR/68SP6nyg9hJQPIRP4fjaOomWRo3OQ==', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
           if (password.normalize() === password_decrypted.normalize()){
-            this.loginUser(username, role_received, true)
+            this.loginUser(username, jwt, role_received)
             console.log("Login success")
             return true;
           }
@@ -63,10 +67,11 @@ export const useUserStore = defineStore("user", {
       })
       return false;
     },
-    loginUser(username, role, loggedIn){
+    loginUser(username, jwt, role){
       console.log("HEREERERE")
       this.username = username;
       this.role = role.name;
+      this.jwt = jwt;
       this.loggedIn = true;
       this.accessList = {
         dashboard: true,
