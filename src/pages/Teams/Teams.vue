@@ -49,7 +49,7 @@
               <button class="closeX" @click="closePopup">&times;</button>
               <div class="popup-content">
                 <div class="fotobola">
-                  <img :src="selectedTeam.imageUrl" />
+                  <img :src="image" />
                 </div>
                 <h2 class="subtitulo">{{ selectedTeam.name }}</h2>
                 <p class="sub-subtitulo">Team</p>
@@ -58,7 +58,7 @@
                     <img src="/home/code/jeec-admin-2025/src/assets/pencil.svg" alt="Edit" />
                   </button>
                   <router-link :to="{ name: 'teams-members', params: { external_id: selectedTeam.external_id } }">
-                    <button class="edit">
+                    <button class="edit" @click="TeamMembers(selectedTeam.external_id)">
                       <img src="/home/code/jeec-admin-2025/src/assets/linkedin.svg" alt="Team" />
                     </button>
                   </router-link>
@@ -126,7 +126,55 @@
             </div>
           </div>
 
+
           <div v-if="showEditPopup" class="overlay">
+            <div class="edit-popup">
+              <div class="edit-popup-content">
+                <h2>Edit Team</h2>
+                <button key="closeX" class="closeX" @click="closeEditPopup">&times;</button>
+                <div class="primline">
+                  <div class="Add-name">
+                    <label for="name" class="nomes">Name:</label>
+                    <input type="text" v-model="editTeam.name" id="name" required />
+                  </div>
+                  <div class="Add-event">
+                    <label for="event" class="nomes">Event:</label>
+                    <select v-model="editTeam.event_id" id="event">
+                      <option v-for="event in events" :key="event.id" :value="event.id"> 
+                        {{ event.name }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="Add-priority">
+                    <label for="priority" class="nomes">Priority:</label>
+                    <input type="text" v-model="editTeam.priority" id="priority" required />
+                  </div>
+                </div>
+                <div class="Description">
+                  <label class="nomes">Description:</label>
+                  <input type="text" v-model="editTeam.description" id="description" required />
+                </div>
+                <div class="primeline">
+                  <div class="form-group">
+                    <label class="custom-file-upload">
+                      Picture:
+                      <input type="file" @change="handleFileChange" class="file-input" ref="fileInput" style="display: none;" />
+                      <div class="small-quadrado" @click="triggerFileInput">
+                        <label class="centrado">{{ selectedFile ? selectedFile.name : 'No picture selected' }}</label>
+                      </div>
+                      <div class="ultline">
+                        <button type="button" class="left-add" @click="triggerFileInput">Add Picture</button>
+                        <button @click="saveEdit(selectedTeam.external_id)" class="right-add">Save</button>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- <div v-if="showEditPopup" class="overlay">
             <div class="edit-popup">
               <div class="edit-popup-content">
                 <h2>Edit Team</h2>
@@ -158,7 +206,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
 
         </div>
       </div>
@@ -202,6 +250,8 @@ export default {
       newTeamMembers: '',
       imageUrl: '',
       selectedFile: null,
+      filetoUpload: null,
+      image: null,
     };
   },
   computed: {
@@ -228,10 +278,23 @@ export default {
         this.teams = data.teams.map(team => ({
           ...team,
           priority: team.website_priority || 0,
-          members: 0 ,
-          imageUrl: team.image_url, 
+          members: 0 , 
         }));
         this.events = data.events;
+        this.teams.forEach(team => {
+          axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/members', { external_id: team.external_id }, {
+            auth: {
+              username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+              password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+            }
+          }).then(response => {
+            const members = response.data.team.members || [];
+            const index = this.teams.findIndex(t => t.external_id === team.external_id);
+            if (index !== -1) {
+              this.teams[index].members = members.length; // Atualizar o número de membros
+            }
+          });
+        });
       });
     },
     TeamMembers(external_id) {
@@ -240,28 +303,35 @@ export default {
     handleEventChange() {
       console.log(this.selectedEvent);
     },
+    fetchTeamImage(external_id) {
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/getimageteam', 
+        { external_id: external_id },
+        {
+          auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+          },
+        }
+      ).then(response => {
+        console.log(response.data);
+        this.image = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image;
+        console.log(this.image);
+      });
+    },
+    // blobToBase64(blob, callback) {
+    //   const reader = new FileReader();
+    //   reader.onloadend = () => {
+    //     callback(reader.result);
+    //   };
+    //   reader.readAsDataURL(blob);
+    // },
     selectTeam(row) {
       this.selectedTeam = row;
       this.selectedEvent = row.event;
       this.selectedPriority = row.priority;
       this.selectedMembers = row.members;
-      this.imageUrl = row.imageUrl;
       this.showPopup = true;
-    
-      axios.post(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/getimageteam`, {
-        external_id: row.external_id
-      }, {
-        auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        },
-        responseType: 'blob'
-      }).then(response => {
-        const imageUrl = URL.createObjectURL(response.data);
-        this.imageUrl = imageUrl;
-        this.selectedTeam.imageUrl = imageUrl;
-        console.log(this.selectedTeam.imageUrl);
-      });
+      this.fetchTeamImage(row.external_id);
     },
     closePopup() {
       this.showPopup = false;

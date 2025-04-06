@@ -28,7 +28,7 @@
                 :tableHeaders="{ name: 'Name', username: 'Username', userRole: 'User Role', shifts: 'Shifts' }"
                 :searchInput="searchQuery"
                 @onRowSelect="selectMember"
-              ></TheTable>
+              />
             </div>
           </div>
 
@@ -192,6 +192,8 @@ export default {
       newMemberEmail: '',
       newMemberUserRole: '',
       newMemberShifts: '',
+      newMemberIstId: '',
+      newMemberBackground: false,
       selectedFile: null,
       imageUrl: null,
       selectedTeamId: null,
@@ -200,25 +202,29 @@ export default {
   computed: {
     filteredMembers() {
       return this.members.filter(member => 
-        member.username.toLowerCase().includes(this.searchQuery.toLowerCase())
+        member.name.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     },
   },
   mounted() {
     this.fetchMembers();
-    console.log(external_id);
   },
   methods: {
     fetchMembers() {
-      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/members', { external_id : this.$route.params.external_id }, {
-      }, {
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/members', { external_id: this.external_id }, {
         auth: {
           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }
       }).then(response => {
         const data = response.data;
-        this.members = data.members;
+        this.members = data.team.members.map(member => ({
+          ...member,
+          username: member.username || 'N/A',
+          userRole: member.userRole || 'N/A',
+          shifts: member.shifts || 0,
+          member_id: member.id,
+        }));
       });
     },
     handleEventChange() {
@@ -271,17 +277,19 @@ export default {
       this.showEditPopup = false;
     },
     deleteMember(memberId) {
-      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/delete_team_member', { id: memberId }, {
+      const payload = {
+        member_external_id: memberId, 
+      };
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/delete_team_member', payload, {
         auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        }
-      }).then(response => {
-        this.members = this.members.filter(member => member.id !== memberId);
-        this.fetchMembers();
-        this.closePopup();
-      }).catch(error => {
-        console.error('Error deleting member:', error);
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+      })
+      .then(() => {
+        this.members = this.members.filter(member => member.id !== memberId); // Remove o membro da lista local
+        this.fetchMembers(); // Atualiza a lista de membros
+        this.closePopup(); // Fecha o popup
       });
     },
     TeamMembers() {
@@ -294,33 +302,45 @@ export default {
       this.showAddPopup = false;
     },
     saveNewMember() {
-      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/new-member', {
-        external_id: this.selectedTeamId,
+      const new_member = {
         name: this.newMemberName,
         username: this.newMemberUsername,
+        email: this.newMemberEmail,
         userRole: this.newMemberUserRole,
         shifts: this.newMemberShifts,
-        email: this.newMemberEmail
-      }, {
+        external_id: this.external_id,
+        image: this.selectedFile ? this.selectedFile : null,
+      };
+
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/new-member', new_member, {
         auth: {
           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        }
-      }).then(response => {
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+      })
+      .then((response) => {
         const newMember = response.data.member;
-        this.members.push(newMember);
-        this.closeAddPopup();
-        this.newMemberName = '';
-        this.newMemberUsername = '';
-        this.newMemberEmail = '';
-        this.newMemberUserRole = '';
-        this.newMemberShifts = '';
-        this.selectedFile = null;
-        this.imageUrl = null;
-        this.fetchMembers();
-      }).catch(error => {
+        this.members.push({
+          ...newMember,
+          username: newMember.username || 'N/A',
+          userRole: newMember.userRole || 'N/A',
+          shifts: newMember.shifts || 0,
+        });
+        this.fetchMembers(); // Atualiza a lista de membros
+        this.closeAddPopup(); // Fecha o popup de adição
+        this.resetNewMemberForm(); // Reseta os campos do formulário
+      })
+      .catch((error) => {
         console.error('Error adding new member:', error);
       });
+    },
+    resetNewMemberForm() {
+      this.newMemberName = '';
+      this.newMemberUsername = '';
+      this.newMemberEmail = '';
+      this.newMemberUserRole = '';
+      this.newMemberShifts = '';
+      this.selectedFile = null;
     },
     handleFileChange(event) {
       this.selectedFile = event.target.files[0];
