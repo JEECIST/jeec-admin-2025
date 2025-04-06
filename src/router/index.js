@@ -208,8 +208,9 @@ const routes = [
     component: () => import("../pages/Teams/Teams.vue"),
   },
   {
-    path: "/teams/members/:externalid",
+    path: "/teams/members/:external_id",
     name: "teams-members",
+    props: true,
     meta: { title: "Team Members" },
     component: () => import("../pages/Teams/TeamMembers.vue"),
   },
