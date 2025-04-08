@@ -1,9 +1,10 @@
 <script setup>
-import { defineProps, defineEmits, ref } from "vue";
+import { defineProps, defineEmits, ref, watchEffect } from "vue";
 import axios from "axios";
 
 const props = defineProps({
     isOpen: Boolean,
+    selectedRow: Object,
 });
 
 const emit = defineEmits(["modal-close"]);
@@ -17,7 +18,7 @@ function isMobile() {
     }
 }
 
-
+const external_id = ref('')
 const name = ref('');
 const start_date = ref('');
 const end_date = ref('');
@@ -32,12 +33,30 @@ const cvs_purged = ref(null);
 const default_event = ref(null);
 const facebook = ref('');
 
+watchEffect(() => {
+    if (props.selectedRow) {
+        external_id.value = props.selectedRow.external_id || '';
+        name.value = props.selectedRow.name || '';
+        start_date.value = props.selectedRow.start_date || '';
+        end_date.value = props.selectedRow.end_date || '';
+        email.value = props.selectedRow.email || '';
+        location.value = props.selectedRow.location || '';
+        cv_submission_start.value = props.selectedRow.cv_submission_start || '';
+        cv_submission_end.value = props.selectedRow.cv_submission_end || '';
+        cv_access_start.value = props.selectedRow.cv_access_start || '';
+        cv_access_end.value = props.selectedRow.cv_access_end || '';
+        end_game.value = props.selectedRow.end_game || '';
+        cvs_purged.value = props.selectedRow.cvs_purged ?? null;
+        default_event.value = props.selectedRow.default_event ?? null;
+        facebook.value = props.selectedRow.facebook || '';
+    }
+});
 
-function AddEvent() {
+function editEvent() {
     if (name.value && start_date.value && end_date.value && cv_submission_start.value && cv_submission_end.value && cv_access_start.value && cv_access_end.value && end_game.value) {
-        
         console.log(start_date)
-        axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/new-event-vue', {
+        axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/update-event-vue', {
+            external_id: external_id.value,
             name: name.value,
             start_date: start_date.value,
             end_date: end_date.value,
@@ -50,7 +69,7 @@ function AddEvent() {
             end_game: end_game.value,
             cvs_purged: cvs_purged.value,
             default_event: default_event.value,
-            facebook: facebook.value },
+            facebook: facebook.value},
             {auth: {
                 username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
                 password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
@@ -69,7 +88,7 @@ function AddEvent() {
         <div class="desktop" v-if="!isMobile()">
             <div class="wrapper-wrapper">
                 <div class="popup-wrapper" ref="target">
-                    <h1>Add Event</h1>
+                    <h1>Edit Event</h1>
                     <div class="stuff-inside">
                         <div class="flex-1">
                             <div class="flex-1-row-1">
@@ -169,7 +188,7 @@ function AddEvent() {
                         </div>
                     </div>
                     <div class="btns">
-                        <button class="add" @click="AddEvent">Add</button>
+                        <button class="add" @click="editEvent">Edit</button>
                         <button class="add" @click.stop="emit('modal-close')">Cancel</button>
                     </div>
                 </div>

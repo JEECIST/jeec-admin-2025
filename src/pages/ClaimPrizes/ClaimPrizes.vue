@@ -57,24 +57,28 @@ function teste(teste) {
 };
 
 function claim_prize(prize) {
-  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/student_rewards/update', {auth: {
-    username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-    password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-  }, external_id: prize.ext_id}).then(response => {
-    student_prizes.value = response.data.rewards
-  })
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/student_rewards/update',{
+    external_id: prize.ext_id},
+    {auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }}).then(response => {
+      student_prizes.value = response.data.rewards
+    })
 }
 
 function search_student(student){
   console.log(student)
-  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/student_rewards', {auth: {
-    username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-    password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-  }, search: student}).then(response => {
-    console.log(response.data)
-    student_prizes.value = response.data.rewards/*TODO OBJETO */
-    console.log(student_prizes)
-  });
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/student_rewards', 
+    {search: student},
+    {auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }}).then(response => {
+      console.log(response.data)
+      student_prizes.value = response.data.rewards/*TODO OBJETO */
+      console.log(student_prizes)
+    });
 }
 
 onMounted(() => {
