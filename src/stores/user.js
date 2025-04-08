@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import CryptoJS from 'crypto-js'
 import axios from 'axios'
+import { jwtDecode } from "jwt-decode";
+
 
 const router = useRouter();
 
@@ -10,7 +12,8 @@ export const useUserStore = defineStore("user", {
     username: "",
     role: "",
     loggedIn: false,
-    jwt: "",
+    jwt_access: "",
+    jwt_refresh: "",
     accessList: {
       dashboard: false,
       activities: false,
@@ -44,17 +47,16 @@ export const useUserStore = defineStore("user", {
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }}).then(response=> {
         let password_received = response.data.password
-        let jwt = response.data.jwt
+        let jwt_access = response.data.jwt_access
+        let jwt_refresh = response.data.jwt_refresh
         let role_received = response.data.role
-
-        console.log(jwt)
         
         if (password_received != ""){
           let password_decrypted = CryptoJS.DES.decrypt(password_received, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
           
           // console.log(CryptoJS.DES.decrypt('U2FsdGVkX1+jKFPpXzYXJHIR/68SP6nyg9hJQPIRP4fjaOomWRo3OQ==', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
           if (password.normalize() === password_decrypted.normalize()){
-            this.loginUser(username, jwt, role_received)
+            this.loginUser(username, jwt_access, jwt_refresh, role_received)
             console.log("Login success")
             return true;
           }
@@ -67,11 +69,11 @@ export const useUserStore = defineStore("user", {
       })
       return false;
     },
-    loginUser(username, jwt, role){
-      console.log("HEREERERE")
+    loginUser(username, jwt_access, jwt_refresh, role){
       this.username = username;
       this.role = role.name;
-      this.jwt = jwt;
+      this.jwt_access = jwt_access;
+      this.jwt_refresh = jwt_refresh;
       this.loggedIn = true;
       this.accessList = {
         dashboard: true,
@@ -93,12 +95,76 @@ export const useUserStore = defineStore("user", {
       this.$reset();
       localStorage.removeItem("user");
     },
+    
+    isTokenExpired() {
+      try {
+        const decoded = jwtDecode(this.jwt_access);
+        console.log(decoded)
+        if (!decoded || !decoded.exp) return true;
+
+        const now = Math.floor(Date.now() / 1000);
+        return decoded.exp < now;
+      } catch (e) {
+        console.error("Failed to decode token:", e);
+        return true;
+      }
+    },
+
+    async refreshJWT() {
+      await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/refresh_jwt',{refresh_jwt : this.jwt_refresh}, {auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }}).then(response=> {
+        console.log(response.data)
+        // let new_access_jwt = response.data.jwt_access;
+        // let new_refresh_jwt = response.data.jwt_refresh;
+        // refreshTokens(new_access_jwt,new_refresh_jwt);
+
+        this.jwt_access = response.data.jwt_access;
+        this.jwt_refresh = response.data.jwt_refresh;
+      })
+      return false;
+    },
+
+    refreshTokens(access_jwt, refresh_jwt){
+      this.jwt_access = access_jwt;
+      this.jwt_refresh = refresh_jwt;
+    },
+
+    async verifyPermission(){
+      let permission = false;
+      console.log(this.jwt_access)
+      await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/check_permission',{access_jwt : this.jwt_access}, {auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }}).then(response=> {
+        permission = response.data.permission;
+        let access_list = response.data.access_list;
+
+        this.accessList = {
+          dashboard: true,
+          activities: access_list.activities,
+          admin: access_list.admin,
+          bills: access_list.bills,
+          business: access_list.business,
+          claimprizes: access_list.claim_prizes,
+          qrcodes: access_list.qr_codes,
+          speakers: access_list.speakers,
+          sponsors: access_list.sponsors,
+          studentapp: access_list.student_app,
+          teams: access_list.teams,
+          usershifts: access_list.shifts,
+        };
+      })
+
+      return permission;
+    }
   },
   persist: {
     enabled: true,
     strategies: [
       {
-        key: "user",
+        key: "user.username",
         storage: localStorage,
       },
     ],

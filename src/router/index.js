@@ -237,20 +237,40 @@ const router = createRouter({
   },
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach(async (to, from) => {
   const userStore = useUserStore();
+
+  let expired = false;
 
   document.title = to.meta.title;
 
-  if (!userStore.loggedIn && to.name !== "login")
-    return { name: "login" };
-  
-  if (userStore.loggedIn && to.name !== "login") {
-    const routeName = router.getRoutes().find(rte => rte.path === ('/' + to.path.split('/')[1])).name;
-    if (!userStore.accessList[routeName])
-      return { name: "dashboard" }
+  if ((userStore.loggedIn && to.name !== "login") && userStore.isTokenExpired()) {
+    try {
+      await userStore.refreshJWT(); // Wait for refresh to finish
+      expired = userStore.isTokenExpired(); // Re-check after refresh
+    } catch (error) {
+      // Refresh failed (e.g. network, invalid refresh token)
+      expired = true;
+    }
   }
-  
+
+  if ((!userStore.loggedIn && to.name !== "login") || expired) {
+    userStore.logoutUser();
+    return { name: "login" };
+  }
+
+  if (userStore.loggedIn && to.name !== "login") {
+    userStore.verifyPermission();
+
+    const routeName = router.getRoutes().find(
+      rte => rte.path === ('/' + to.path.split('/')[1])
+    )?.name;
+
+    if (!userStore.accessList[routeName]) {
+      return { name: "dashboard" };
+    }
+  }
 });
+
 
 export default router;
