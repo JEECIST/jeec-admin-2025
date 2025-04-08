@@ -8,9 +8,9 @@
             <div class="internal-box">
                 <img src="../assets/brain.svg" class="brain-img">
                 <div class="login-inputs">
-                    <input v-model="text" placeholder="Enter Username">
+                    <input v-model="username" placeholder="Enter Username">
                     <input type="password" v-model="password" placeholder="Enter Password">
-                    <button>
+                    <button @click="login()">
                         <p>Login</p>
                     </button>
                 </div>
@@ -20,8 +20,35 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue";
+import { useUserStore } from "../stores/user.js";
+import router from "../router/index.js";
 
+const username = ref("");
+const password = ref("");
+const userStore = useUserStore();
+
+async function login(){
+    await userStore.getAccess(username.value, password.value);
+
+    if(userStore.isLoggedIn){
+        router.push({path: "/dashboard"})
+    }
+    else{
+        router.push({path: "/login"})
+    }
+};
+
+function automaticLogin(){
+    if(userStore.isLoggedIn){
+        router.push({path: "/dashboard"})
+    }
+    console.log("bLP7UzXCkehBurML")
+}
+
+onMounted(automaticLogin)
 </script>
+
 
 <style scoped>
 /* Para o background dos inputs nao ficar amarelo */
@@ -31,7 +58,6 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
 }
-
 
 p,
 h {
@@ -47,7 +73,8 @@ h {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    width: 100vw;
+    /* margin-top: var(--opposite-header-height);
+    margin-left: var(--opposite-sidenav-width); */
 }
 
 .external-box {

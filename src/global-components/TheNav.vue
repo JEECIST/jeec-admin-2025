@@ -37,10 +37,10 @@
 
       <div class="user">
         <div class="user-info">
-          <p>{{ name }}</p>
+          <p>{{ username }}</p>
           <p>{{ role }}</p>
         </div>
-        <button class="logout-button">Log out</button>
+        <button class="logout-button" @click="logout()">Log out</button>
       </div>
 
     </nav>
@@ -52,13 +52,14 @@ import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '../stores/user';
 import { useStateStore } from '../stores/state';
+import router from '../router';
 
 const stateStore = useStateStore();
 const Router = useRouter();
 const Route = useRoute();
 const dashboardRoute = Router.getRoutes().find(rte => rte.name === "dashboard");
 const userStore = useUserStore();
-const name = computed(() => userStore.name);
+const username = computed(() => userStore.username);
 const role = computed(() => userStore.role);
 
 const routes = computed(() => {
@@ -87,6 +88,11 @@ const childRoutes = computed(() => {
 
   return arr
 })
+
+function logout(){
+  userStore.logoutUser();
+  router.go();
+}
 
 function backCallback() {
   (window.matchMedia("screen and (max-width: 700px)")) ? stateStore.sideNavOpen = false : Router.go(-1);
