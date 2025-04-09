@@ -55,7 +55,7 @@
                 <p class="sub-subtitulo">Team</p>
                 <div class="display">
                   <button class="edit" @click="editButton">
-                    <img src="/home/code/jeec-admin-2025/src/assets/pencil.svg" alt="Edit" />
+                    <img src="/home/code/jeec-admin-2025/src/assets/edit_btn.svg" alt="Edit" />
                   </button>
                   <router-link :to="{ name: 'teams-members', params: { external_id: selectedTeam.external_id } }">
                     <button class="edit" @click="TeamMembers(selectedTeam.external_id)">
