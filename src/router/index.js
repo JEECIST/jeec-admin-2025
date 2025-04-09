@@ -7,6 +7,9 @@ const routes = [
   {
     path: "/",
     name: "login",
+    meta: { 
+      title: "JEEC Admin",
+    },
     component: () => import("../pages/Login.vue"),
   },
   {
