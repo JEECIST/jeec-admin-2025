@@ -55,15 +55,15 @@
                 <p class="sub-subtitulo">Team</p>
                 <div class="display">
                   <button class="edit" @click="editButton">
-                    <img src="/home/code/jeec-admin-2025/src/assets/edit_btn.svg" alt="Edit" />
+                    <img src="../../assets/edit_btn.svg" alt="Edit" />
                   </button>
                   <router-link :to="{ name: 'teams-members', params: { external_id: selectedTeam.external_id } }">
                     <button class="edit" @click="TeamMembers(selectedTeam.external_id)">
-                      <img src="/home/code/jeec-admin-2025/src/assets/linkedin.svg" alt="Team" />
+                      <img src="../../assets/linkedin.svg" alt="Team" />
                     </button>
                   </router-link>
                   <button class="edit" @click="deleteTeam(selectedTeam.external_id, selectedTeam.event)">
-                    <img src="/home/code/jeec-admin-2025/src/assets/trash.svg" alt="Delete" />
+                    <img src="../../assets/trash.svg" alt="Delete" />
                   </button>
                 </div>
                 <p class="descricao">Description:</p>

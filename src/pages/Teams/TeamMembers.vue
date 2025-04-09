@@ -46,15 +46,15 @@
                 <p class="sub-subtitulo">{{ selectedMember.userRole }}</p>
                 <div class="display">
                   <button class="edit" @click="editButton">
-                    <img src="/home/code/jeec-admin-2025/src/assets/edit_btn.svg" alt="Edit" />
+                    <img src="../../assets/edit_btn.svg" alt="Edit" />
                   </button>
                   <button class="edit" @click="TeamMembers">
                     <a href="/user-shifts" target="_self">
-                      <img src="/home/code/jeec-admin-2025/src/assets/linkedin.svg" alt="Team" />
+                      <img src="../../assets/linkedin.svg" alt="Team" />
                     </a>
                   </button>
                   <button class="edit" @click="deleteMember(selectedMember.id)">
-                    <img src="/home/code/jeec-admin-2025/src/assets/trash.svg" alt="Delete" />
+                    <img src="../../assets/trash.svg" alt="Delete" />
                   </button>
                 </div>
                 <p class="descricao">Email:</p>
