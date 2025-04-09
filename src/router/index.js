@@ -152,12 +152,6 @@ const routes = [
     component: () => import("../pages/Sponsors/SponsorsTiers.vue"),
   },
   {
-    path: "/sponsors/bills/:externalid",
-    name: "sponsors-bills",
-    meta: { title: "Sponsor Bills" },
-    component: () => import("../pages/Sponsors/SponsorBills.vue")
-  },
-  {
     path: "/student-app",
     name: "studentapp",
     component: Dashboard,
