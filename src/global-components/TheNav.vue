@@ -13,7 +13,7 @@
         <li>
           <router-link class="nav-link" activeClass="selected" @click="stateStore.sideNavOpen = false"
             :to="({ name: dashboardRoute.name })">
-            <img :src="'/src/assets/pages/' + dashboardRoute.name + '.svg'" aria-hidden="true"><span>{{
+            <img :src="require('/src/assets/pages/' + dashboardRoute.name + '.svg')" aria-hidden="true"><span>{{
               dashboardRoute.meta.title }}</span>
           </router-link>
         </li>
@@ -22,7 +22,7 @@
           <li v-if="userStore.accessList[route.name]">
             <router-link class="nav-link" activeClass="selected" @click="stateStore.sideNavOpen = false"
               :to="({ name: route.name })">
-              <img :src="'/src/assets/pages/' + route.name + '.svg'" aria-hidden="true">
+              <img :src="require('@/src/assets/pages/' + route.name + '.svg')" aria-hidden="true">
               <span>{{ route.meta.title}}</span>
             </router-link>
             <ul class="child-routes" v-if="parentRoute.name === route.name && parentRoute.meta.children !== false">
