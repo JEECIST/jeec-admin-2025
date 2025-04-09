@@ -54,7 +54,7 @@ export const useUserStore = defineStore("user", {
         if (password_received != ""){
           let password_decrypted = CryptoJS.DES.decrypt(password_received, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
           
-          // console.log(CryptoJS.DES.decrypt('U2FsdGVkX1+jKFPpXzYXJHIR/68SP6nyg9hJQPIRP4fjaOomWRo3OQ==', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
+          console.log(CryptoJS.DES.decrypt('U2FsdGVkX1900tB14cv9fEeREuPNng8c', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
           if (password.normalize() === password_decrypted.normalize()){
             this.loginUser(username, jwt_access, jwt_refresh, role_received)
             console.log("Login success")

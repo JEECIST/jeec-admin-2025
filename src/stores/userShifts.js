@@ -1,5 +1,8 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
+import { useUserStore } from "../stores/user.js";
+
+const userStore = useUserStore();
 
 export const useSlotStore = defineStore('slotStore', {
   state: () => ({
@@ -38,9 +41,10 @@ export const useSlotStore = defineStore('slotStore', {
         console.log(this.slots);
     },
     submitSlots() {
-        let debug = "2621b32a-2cd0-4568-a228-fd3b754aa27c"
+        let username = userStore.username;
+        console.log(this.slots)
         axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add_shifts_to_user', {
-          user_external_id: debug,  
+          username: username,  
           user_shifts: this.slots},
           {auth: {
             username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
