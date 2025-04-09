@@ -46,7 +46,7 @@
                 <p class="sub-subtitulo">{{ selectedMember.userRole }}</p>
                 <div class="display">
                   <button class="edit" @click="editButton">
-                    <img src="/home/code/jeec-admin-2025/src/assets/pencil.svg" alt="Edit" />
+                    <img src="/home/code/jeec-admin-2025/src/assets/edit_btn.svg" alt="Edit" />
                   </button>
                   <button class="edit" @click="TeamMembers">
                     <a href="/user-shifts" target="_self">
