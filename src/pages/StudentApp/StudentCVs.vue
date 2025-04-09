@@ -109,13 +109,13 @@ function get_cv(student) {
 
 function accept_cv (student){
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/accept_cv', {
-    auth: {
+    student_username: student.username,
+    tecnico: student.isFromTecnico,
+    educationLevel: student.educationLevel},
+    {auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     },
-    student_username: student.username,
-    tecnico: student.isFromTecnico,
-    educationLevel: student.educationLevel
   }).then(response => {
     console.log(response.data)
     get_students_with_cv();
@@ -124,13 +124,13 @@ function accept_cv (student){
 
 function remove_cv (student){
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/remove_cv', {
-    auth: {
+    student_username: student.username,
+    tecnico: student.isFromTecnico,
+    educationLevel: student.educationLevel},
+    {auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     },
-    student_username: student.username,
-    tecnico: student.isFromTecnico,
-    educationLevel: student.educationLevel
   }).then(response => {
     console.log(response.data)
     get_students_with_cv();
