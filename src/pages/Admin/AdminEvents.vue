@@ -159,12 +159,10 @@ const selectedRow = ref([]);
 
 function selectCallback(row) {
   selectedRow.value = row;
-  console.log(selectedRow);
   popupShow.value = true;
 }
 
 function deleteEvent() {
-  console.log(selectedRow.value.external_id)
 
   if (confirm('Are you sure you want to delete this event?')) {
     axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/delete-event-vue', {
@@ -174,7 +172,6 @@ function deleteEvent() {
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }
     }).then(response => {
-      console.log(response.data)
       getEvents()
     })
   }
@@ -187,7 +184,6 @@ function getEvents() {
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
   }).then(response => {
-    console.log(response.data)
     events.value = response.data.events
   })
 }

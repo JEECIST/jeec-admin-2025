@@ -41,7 +41,6 @@ export const useUserStore = defineStore("user", {
       console.log(password);
     },
     async getAccess(username, password) {
-      console.log(password)
       await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/login',{username : username}, {auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
@@ -54,7 +53,7 @@ export const useUserStore = defineStore("user", {
         if (password_received != ""){
           let password_decrypted = CryptoJS.DES.decrypt(password_received, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
           
-          console.log(CryptoJS.DES.decrypt('U2FsdGVkX1900tB14cv9fEeREuPNng8c', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
+          // console.log(CryptoJS.DES.decrypt('U2FsdGVkX1900tB14cv9fEeREuPNng8c', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
           if (password.normalize() === password_decrypted.normalize()){
             this.loginUser(username, jwt_access, jwt_refresh, role_received)
             console.log("Login success")
@@ -89,7 +88,6 @@ export const useUserStore = defineStore("user", {
         teams: role.teams,
         usershifts: role.shifts,
       };
-      console.log(this.role)
     },
     logoutUser(){
       this.$reset();
@@ -99,7 +97,6 @@ export const useUserStore = defineStore("user", {
     isTokenExpired() {
       try {
         const decoded = jwtDecode(this.jwt_access);
-        console.log(decoded)
         if (!decoded || !decoded.exp) return true;
 
         const now = Math.floor(Date.now() / 1000);
@@ -115,7 +112,6 @@ export const useUserStore = defineStore("user", {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }}).then(response=> {
-        console.log(response.data)
         // let new_access_jwt = response.data.jwt_access;
         // let new_refresh_jwt = response.data.jwt_refresh;
         // refreshTokens(new_access_jwt,new_refresh_jwt);
@@ -133,7 +129,6 @@ export const useUserStore = defineStore("user", {
 
     async verifyPermission(){
       let permission = false;
-      console.log(this.jwt_access)
       await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/check_permission',{access_jwt : this.jwt_access}, {auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY

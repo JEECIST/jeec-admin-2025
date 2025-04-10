@@ -230,7 +230,6 @@ let fileSelected = ref(null);
 let fileToUpload = ref(null);
 
 const fetchCompanies = async () => {
-  console.log("Teste")
   axios
   .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
@@ -248,12 +247,6 @@ const fetchCompanies = async () => {
 
     default_event_id.value = data.default_event_id;
 
-    console.log("Company:", companies.value);
-    console.log("Events:", events.value);
-    console.log("Tiers:", tiers.value);
-    console.log("Responsibles:", responsibles.value);
-    console.log("Default Event:", default_event_id.value);
-
     selectedEvent = default_event_id.value.id;
 
     filterByEvent();
@@ -265,9 +258,6 @@ const fetchCompanies = async () => {
 
 function fetchCompanyImage() {
   const f = new FormData();
-
-  console.log("fetchCompaniesImage: ", selectedRow.value.external_id);
-
   f.append('external_id', selectedRow.value.external_id)
 
   axios
@@ -282,7 +272,6 @@ function fetchCompanyImage() {
       // Cria uma URL de objeto a partir do Blob e armazena em 'logo_image'
       fileToUpload.value = response.data;
       logo_image.value = URL.createObjectURL(response.data);
-      console.log("Logo_image: ", logo_image.value);
     } else {
       console.error('Imagem não encontrada');
     }
@@ -326,7 +315,6 @@ const tablePref = {
 
 function selectCallback(row) {
   if (selectedRow.value == row) {
-    console.log("reset");
     resetCallback();
   } else {
     selectedRow.value = row;
@@ -402,8 +390,6 @@ function editCompany() {
   update_company.append('image', fileToUpload.value)
   update_company.append('changeimg', newCompany.value.changeimg)
 
-  console.log("Edit: ", newCompany.value.changeimg);
-
   axios
   .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/update',update_company,{auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
@@ -449,7 +435,6 @@ function filterByEvent() {
   } else {
     noCompanies = false; // Caso contrário, a flag é false
   }
-  console.log(filteredCompanies.value.length);
 }
 
 function onLogoSelected(event){
@@ -457,7 +442,6 @@ function onLogoSelected(event){
   fileToUpload.value = event.target.files[0];
   logo_image.value = URL.createObjectURL(event.target.files[0]);
   newCompany.value.changeimg = 'Yes';
-  console.log(fileSelected.value);
 }
 
 function irParaSite(site) {

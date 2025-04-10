@@ -162,8 +162,6 @@ function addUser() {
   let password = Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2)
   let encryptedPassword = CryptoJS.DES.encrypt(password, import.meta.env.VITE_APP_API_KEY).toString();
 
-  console.log(encryptedPassword)
-
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/user/addteamuser',
   { 
     user: { 

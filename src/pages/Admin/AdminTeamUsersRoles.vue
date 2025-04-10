@@ -461,9 +461,8 @@ const fetchData = () => {
         }}).then((response)=>{
           const data = response.data
           tableData.value = response.data.roles
-          console.log("User Roles",tableData.value)
         }).catch((error)=>{
-          console.log(error)
+          console.log(error);
         })
 }
 
@@ -486,7 +485,6 @@ const shifts = ref(null);
 const list_data= ref([]);
 
 function addingUserRole(e) {
-  console.log('adding user role');
   e.preventDefault();
 
   const fd = new FormData();
@@ -510,11 +508,8 @@ function addingUserRole(e) {
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
   }).then(response => {
-    console.log('Response:', response);
     const error_response = response.data.error;
-    console.log('Error response:', error_response);
     if (error_response == '') {
-      console.log('User role added:', response.data);
       fetchData();
       showAddUserRole.value = false;
       name.value = '';
@@ -531,20 +526,16 @@ function addingUserRole(e) {
       teams.value = null;
       shifts.value = null;
     } else {
-      console.log('Error on adding sponsor tier:', error_response);
       alert('Error on adding sponsor tier: ' + error_response);
-      console.log('Alert should have shown: Error on adding sponsor tier: ' + error_response);
     }
   }).catch(error => {
     console.error('Request failed:', error);
     alert('Request failed: ' + error.message);
-    console.log('Alert should have shown: Request failed: ' + error.message);
   });
 }
 
 function deleteUserRole(){
   if (confirm(`Are you sure you want to delete the User Role "${selectedRow.value.name}"?`)) {
-    console.log('deleting user role', selectedRow.value.role);
     axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss_roles/delete', {
       role: selectedRow.value.role
     }, {
@@ -553,7 +544,6 @@ function deleteUserRole(){
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }
     }).then((response) => {
-      console.log('User role deleted', response.data);
       unselectRow();
       fetchData();
     }).catch((error) => {
@@ -581,9 +571,6 @@ function populateEditForm() {
 }
 
 function editUserRole() {
-  
-  console.log('editing user role', selectedRow.value.role);
-
   const fd = new FormData();
   fd.append('name', name.value);
   fd.append('priority', priority.value);
@@ -600,31 +587,23 @@ function editUserRole() {
   fd.append('shifts', shifts.value);
   fd.append('role', selectedRow.value.role);
 
-  console.log('Form data:', fd);
-
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss_roles/update', fd, {
     auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
   }).then(response => {
-    console.log('Response:', response);
     const error_response = response.data.error;
-    console.log('Error response:', error_response);
     if (error_response == '') {
-      console.log('User role edited:', response.data);
       fetchData();
       showEditUserRole.value = false;
       unselectRow();
     } else {
-      console.log('Error on editing user role:', error_response);
       alert('Error on editing user role: ' + error_response);
-      console.log('Alert should have shown: Error on editing user role: ' + error_response);
     }
   }).catch(error => {
     console.error('Request failed:', error);
     alert('Request failed: ' + error.message);
-    console.log('Alert should have shown: Request failed: ' + error.message);
   });
   
 }
@@ -655,11 +634,9 @@ const selectedRow = ref(null);
 function handleRowSelect(row) {
   cardDisplaying.value = true;
   selectedRow.value = row;
-  console.log('Row selected:', row);
 }
 
 function handleno_roles(isEmpty){
-  console.log('No roles found', isEmpty);
   no_roles.value = isEmpty;
 }
 
@@ -670,8 +647,6 @@ function unselectRow() {
 
 
 function listRoles(){
-  console.log('List button clicked for row:', selectedRow);
-
   axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss_roles/list', {
     params: {
       role: selectedRow.value.role
@@ -683,7 +658,6 @@ function listRoles(){
   }).then((response) => {
     data.value = response.data.users
       .filter(user => user !== null) // Filter out null values
-    console.log(data.value);
   }).catch((error) => {
     console.log(error);
   });

@@ -44,7 +44,7 @@ function automaticLogin(){
     if(userStore.isLoggedIn){
         router.push({path: "/dashboard"})
     }
-    console.log(CryptoJS.DES.decrypt('U2FsdGVkX1900tB14cv9fEeREuPNng8c', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
+    console.log(CryptoJS.DES.decrypt('U2FsdGVkX1+jKFPpXzYXJHIR/68SP6nyg9hJQPIRP4fjaOomWRo3OQ==', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
 }
 
 onMounted(automaticLogin)
