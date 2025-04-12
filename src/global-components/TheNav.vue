@@ -13,7 +13,7 @@
         <li>
           <router-link class="nav-link" activeClass="selected" @click="stateStore.sideNavOpen = false"
             :to="({ name: dashboardRoute.name })">
-            <img :src="'src/assets/pages/' + dashboardRoute.name + '.svg'" aria-hidden="true"><span>{{
+            <img :src="'/assets/pages/' + dashboardRoute.name + '.svg'" aria-hidden="true"><span>{{
               dashboardRoute.meta.title }}</span>
           </router-link>
         </li>

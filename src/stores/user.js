@@ -41,32 +41,41 @@ export const useUserStore = defineStore("user", {
       console.log(password);
     },
     async getAccess(username, password) {
-      await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/login',{username : username}, {auth: {
-        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      }}).then(response=> {
-        let password_received = response.data.password
-        let jwt_access = response.data.jwt_access
-        let jwt_refresh = response.data.jwt_refresh
-        let role_received = response.data.role
-        
-        if (password_received != ""){
-          let password_decrypted = CryptoJS.DES.decrypt(password_received, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
-          
-          // console.log(CryptoJS.DES.decrypt('U2FsdGVkX1900tB14cv9fEeREuPNng8c', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
-          if (password.normalize() === password_decrypted.normalize()){
-            this.loginUser(username, jwt_access, jwt_refresh, role_received)
-            console.log("Login success")
-            return true;
+      try {
+        const response = await axios.post(
+          import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/login',
+          { username },
+          {
+            auth: {
+              username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+              password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+            },
           }
-          else{
-            this.logoutUser()
-            console.log("Login Failed")
+        );
+    
+        const { password: password_received, jwt_access, jwt_refresh, role: role_received } = response.data;
+    
+        if (password_received !== "") {
+          const password_decrypted = CryptoJS.DES.decrypt(password_received, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
+    
+          if (password.normalize() === password_decrypted.normalize()) {
+            this.loginUser(username, jwt_access, jwt_refresh, role_received);
+            console.log("Login success");
+            return true;
+          } else {
+            this.logoutUser();
+            console.log("Login Failed");
             return false;
           }
         }
-      })
-      return false;
+    
+        this.logoutUser();
+        return false;
+      } catch (error) {
+        console.error("Login error:", error);
+        this.logoutUser();
+        return false;
+      }
     },
     loginUser(username, jwt_access, jwt_refresh, role){
       this.username = username;
@@ -159,7 +168,7 @@ export const useUserStore = defineStore("user", {
     enabled: true,
     strategies: [
       {
-        key: "user.username",
+        key: "user",
         storage: localStorage,
       },
     ],

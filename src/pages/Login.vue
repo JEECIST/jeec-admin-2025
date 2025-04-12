@@ -30,10 +30,12 @@ const password = ref("");
 const userStore = useUserStore();
 
 async function login(){
-    await userStore.getAccess(username.value, password.value);
-
-    if(userStore.isLoggedIn){
-        router.push({path: "/dashboard"})
+    let login_result = await userStore.getAccess(username.value, password.value);
+    
+    if(login_result){
+        setTimeout(() => {
+            router.push({ path: "/dashboard" });
+        }, 100000);
     }
     else{
         router.push({path: "/login"})
