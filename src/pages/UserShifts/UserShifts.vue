@@ -71,4 +71,13 @@ onMounted(() => {
     cursor: pointer;
 }
 
+button:hover {
+  background-color: #4782c0;
+}
+
+button:active {
+  transform: scale(0.96);
+  background-color: #4782c0;
+}
+
 </style>

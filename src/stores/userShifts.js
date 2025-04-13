@@ -51,7 +51,8 @@ export const useSlotStore = defineStore('slotStore', {
             password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
           }
         }).then(response => {
-          console.log(response.data)
+          // console.log(response.data)
+          alert(response.data)
         })
     },
     extractShifts() {

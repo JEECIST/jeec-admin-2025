@@ -71,4 +71,9 @@ p {
     font-size: 15px;
 }
 
+button:active {
+  transform: scale(0.96);
+  /* background-color: #4782c0; */
+}
+
 </style>
