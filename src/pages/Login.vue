@@ -33,9 +33,7 @@ async function login(){
     let login_result = await userStore.getAccess(username.value, password.value);
     
     if(login_result){
-        setTimeout(() => {
-            router.push({ path: "/dashboard" });
-        }, 100000);
+        router.push({path: "/dashboard"})
     }
     else{
         router.push({path: "/login"})
@@ -47,7 +45,7 @@ function automaticLogin(){
         router.push({path: "/dashboard"})
     }
     // console.log(CryptoJS.DES.decrypt('', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
-    console.log("Atualizou")
+    console.log("Atualizou2")
 }
 
 onMounted(automaticLogin)
