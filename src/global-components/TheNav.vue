@@ -13,7 +13,7 @@
         <li>
           <router-link class="nav-link" activeClass="selected" @click="stateStore.sideNavOpen = false"
             :to="({ name: dashboardRoute.name })">
-            <img :src="'/src/assets/pages/' + dashboardRoute.name + '.svg'" aria-hidden="true"><span>{{
+            <img :src="iconMap[dashboardRoute.name]" aria-hidden="true"><span>{{
               dashboardRoute.meta.title }}</span>
           </router-link>
         </li>
@@ -22,7 +22,7 @@
           <li v-if="userStore.accessList[route.name]">
             <router-link class="nav-link" activeClass="selected" @click="stateStore.sideNavOpen = false"
               :to="({ name: route.name })">
-              <img :src="'src/assets/pages/' + route.name + '.svg'" aria-hidden="true">
+              <img :src="iconMap[route.name]" aria-hidden="true">
               <span>{{ route.meta.title}}</span>
             </router-link>
             <ul class="child-routes" v-if="parentRoute.name === route.name && parentRoute.meta.children !== false">
@@ -101,6 +101,20 @@ function backCallback() {
     router.go(-1);
   }
 }
+
+// for the images to appear in prod
+const pageIcons = import.meta.glob('../assets/pages/*.svg', {
+  eager: true,
+  import: 'default',
+});
+
+const iconMap = {};
+for (const path in pageIcons) {
+  const fileName = path.split('/').pop().replace('.svg', '');
+  iconMap[fileName] = pageIcons[path];
+}
+
+
 </script>
 
 <style scoped>
