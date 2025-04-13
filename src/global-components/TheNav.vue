@@ -13,7 +13,7 @@
         <li>
           <router-link class="nav-link" activeClass="selected" @click="stateStore.sideNavOpen = false"
             :to="({ name: dashboardRoute.name })">
-            <img :src="'/src/assets/pages/' + dashboardRoute.name + '.svg'" aria-hidden="true"><span>{{
+            <img :src="new URL(`@/assets/pages/${dashboardRoute.name}.svg`, import.meta.url).href" aria-hidden="true"/><span>{{
               dashboardRoute.meta.title }}</span>
           </router-link>
         </li>
@@ -22,7 +22,7 @@
           <li v-if="userStore.accessList[route.name]">
             <router-link class="nav-link" activeClass="selected" @click="stateStore.sideNavOpen = false"
               :to="({ name: route.name })">
-              <img :src="'/src/assets/pages/' + route.name + '.svg'" aria-hidden="true">
+              <img :src="'src/assets/pages/' + route.name + '.svg'" aria-hidden="true">
               <span>{{ route.meta.title}}</span>
             </router-link>
             <ul class="child-routes" v-if="parentRoute.name === route.name && parentRoute.meta.children !== false">
@@ -95,7 +95,11 @@ function logout(){
 }
 
 function backCallback() {
-  (window.matchMedia("screen and (max-width: 700px)")) ? stateStore.sideNavOpen = false : Router.go(-1);
+  if (window.matchMedia("screen and (max-width: 700px)").matches) {
+    stateStore.sideNavOpen = false;
+  } else {
+    router.go(-1);
+  }
 }
 </script>
 

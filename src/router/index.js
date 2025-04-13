@@ -7,6 +7,9 @@ const routes = [
   {
     path: "/",
     name: "login",
+    meta: { 
+      title: "JEEC Admin",
+    },
     component: () => import("../pages/Login.vue"),
   },
   {
@@ -152,12 +155,6 @@ const routes = [
     component: () => import("../pages/Sponsors/SponsorsTiers.vue"),
   },
   {
-    path: "/sponsors/bills/:externalid",
-    name: "sponsors-bills",
-    meta: { title: "Sponsor Bills" },
-    component: () => import("../pages/Sponsors/SponsorBills.vue")
-  },
-  {
     path: "/student-app",
     name: "studentapp",
     component: Dashboard,
@@ -246,38 +243,44 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   const userStore = useUserStore();
-
   let expired = false;
 
   document.title = to.meta.title;
 
-  if ((userStore.loggedIn && to.name !== "login") && userStore.isTokenExpired()) {
+  // If navigating to login, don’t run auth logic
+  if (to.name === "login") {
+    return true;
+  }
+
+  // Check for token expiration and try refreshing
+  if (userStore.loggedIn && userStore.isTokenExpired()) {
     try {
-      await userStore.refreshJWT(); // Wait for refresh to finish
-      expired = userStore.isTokenExpired(); // Re-check after refresh
-    } catch (error) {
-      // Refresh failed (e.g. network, invalid refresh token)
+      await userStore.refreshJWT();
+      expired = userStore.isTokenExpired();
+    } catch {
       expired = true;
     }
   }
 
-  if ((!userStore.loggedIn && to.name !== "login") || expired) {
+  if (!userStore.loggedIn || expired) {
     userStore.logoutUser();
     return { name: "login" };
   }
 
-  if (userStore.loggedIn && to.name !== "login") {
-    userStore.verifyPermission();
+  // Permissions
+  await userStore.verifyPermission();
 
-    const routeName = router.getRoutes().find(
-      rte => rte.path === ('/' + to.path.split('/')[1])
-    )?.name;
+  const routeName = router.getRoutes().find(
+    rte => rte.path === '/' + to.path.split('/')[1]
+  )?.name;
 
-    if (!userStore.accessList[routeName]) {
-      return { name: "dashboard" };
-    }
+  if (routeName && !userStore.accessList[routeName]) {
+    return { name: "dashboard" };
   }
+
+  return true;
 });
+
 
 
 export default router;
