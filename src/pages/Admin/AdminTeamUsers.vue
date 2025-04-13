@@ -41,8 +41,8 @@
           <p class="cardUsername">{{ selectedRow.username }}</p>
           <p class="cardUseless">Team User</p>
           <div class="cardActions">
-            <button class="edit-button"><img src="../../assets/pencil.svg"></button>
-            <button class="delete-button" @click="deleteUser(selectedRow)"><img src="../../assets/trash.svg"></button>
+            <button class="edit-button" @click="openEditUserPopup(selectedRow)"><img src="../../assets/pencil.svg"></button>
+            <button class="delete-button" @click="deleteUser(selectedRow.external_id)"><img src="../../assets/trash.svg"></button>
           </div>
           <div class="cardInfo">
             <div class = "cardInfoMember"> 
@@ -85,6 +85,29 @@
       </form>
     </div>
   </div>
+
+  <div v-if="showEditUserModal" class="modal-overlay">
+    <div class="modal">
+      <button class="close-popup" @click="closeEditModal()">&times;</button>
+      <h2>Edit Team User</h2>
+      
+      <form class="popup_form" @submit.prevent="updateUser">
+        <div class="formUsername">
+          <label for="username">Username</label>
+          <input v-model="editUser.username" id="username" required />
+        </div>
+        <div class="formRole">
+          <label for="role">Role</label>
+          <select v-model="editUser.role_id" id="role_id" required>
+            <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -99,7 +122,9 @@ const userStore = useUserStore();
 
 const message = ref('');
 const showAddUserModal = ref(false);
+const showEditUserModal = ref(false);
 const newUser = ref({ username: '', role_id: '' });
+const editUser = ref({ username: '', role_id: '', external_id: ''});
 const selectedRow = ref(null);
 const roles = ref(null);
 const slotStore = useSlotStore();
@@ -120,6 +145,10 @@ function closeModal() {
   showAddUserModal.value = false;
 }
 
+function closeEditModal() {
+  showEditUserModal.value = false;
+}
+
 function closeCardInfo(){
   selectedRow.value = null;
 }
@@ -127,6 +156,7 @@ function closeCardInfo(){
 function extractShifts() {
   slotStore.extractShifts()
 }
+
 const datab = ref([{
   user: null,
   name: null,
@@ -159,12 +189,6 @@ const tablePref = {
   
 }
 
-// function generateSecurePassword(length = 16) {
-//   const array = new Uint8Array(length);
-//   window.crypto.getRandomValues(array);
-//   return btoa(String.fromCharCode(...array)).slice(0, length);
-// }
-
 function addUser() {
 
   let password = Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2)
@@ -194,36 +218,51 @@ function addUser() {
   });
 }
 
-function deleteUser() {
-
-let password = Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2)
-let encryptedPassword = CryptoJS.DES.encrypt(password, import.meta.env.VITE_APP_API_KEY).toString();
-
-axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/user/addteamuser',
-{ 
-  user: { 
-    name: "Not attributed yet",
-    username: newUser.value.username, 
-    role_id: newUser.value.role_id,
-    password: encryptedPassword
-  }
-}, 
-{ 
-  auth: { 
-    username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-    password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
-  }
-})
-.then(() => {
-  fetchData();
-  closeModal();
-})
-.catch(error => {
-  console.error("Failed to add user :<");
-});
+function deleteUser(external_id) {
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss/delete', {external_id: external_id},{ 
+    auth: { 
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
+    }
+  })
+  .then(() => {
+    fetchData();
+    closeCardInfo();
+  })
+  .catch(error => {
+    console.error("Failed to delete user");
+  });
 }
 
+function openEditUserPopup(user){
+  editUser.value.username = user.username;
+  editUser.value.role_id = user.role_id;
+  editUser.value.external_id = user.external_id;
+  showEditUserModal.value = true;
+}
 
+function updateUser() {
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss/update',
+  { 
+    new_username: editUser.value.username, 
+    new_role: editUser.value.role_id,
+    external_id: editUser.value.external_id,
+  }, 
+  { 
+    auth: { 
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
+    }
+  })
+  .then(() => {
+    fetchData();
+    closeEditModal();
+    closeCardInfo();
+  })
+  .catch(error => {
+    console.error("Failed to add user :<");
+  });
+}
 
 </script>
 
