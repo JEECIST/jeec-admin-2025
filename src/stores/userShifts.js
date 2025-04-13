@@ -16,13 +16,13 @@ export const useSlotStore = defineStore('slotStore', {
         this.slots = JSON.parse(storedSlots);
       }
     },
-    toggleSlot(day, weekday, time) {
+    toggleSlot(weekday, time) {
       const slotIndex = this.slots.findIndex(
-        (slot) => slot.day === day && slot.weekday === weekday && slot.time === time
+        (slot) => slot.weekday === weekday && slot.time === time
       );
 
       if (slotIndex === -1) {
-        this.slots.push({ day, weekday, time });
+        this.slots.push({ weekday, time });
       } else {
         this.slots.splice(slotIndex, 1);
       }
@@ -32,9 +32,9 @@ export const useSlotStore = defineStore('slotStore', {
     saveSlots() {
       localStorage.setItem('slots', JSON.stringify(this.slots));
     },
-    isSelected(day, weekday, time) {
+    isSelected(weekday, time) {
       return this.slots.some(
-        (slot) => slot.day === day && slot.weekday === weekday && slot.time === time
+        (slot) => slot.weekday === weekday && slot.time === time
       );
     },
     showSelected() {
@@ -55,14 +55,27 @@ export const useSlotStore = defineStore('slotStore', {
         })
     },
     extractShifts() {
-      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/extract_member_shifts_to_json', {
-        //PASSAR O USER 
+      axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/extract_member_shifts_to_json', {
         auth: {
           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }
       }).then(response => {
         console.log(response.data)
+      })
+    },
+    getShifts() {
+      let username = userStore.username;
+      console.log(username)
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get_user_shifts', {
+        username: username},
+        {auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+      }).then(response => {
+        console.log(response.data)
+        this.slots = response.data.shifts;
       })
     }
   }

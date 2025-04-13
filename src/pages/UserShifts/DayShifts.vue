@@ -5,7 +5,7 @@
             <p>{{ day }} - May</p>
             <p>{{ weekDay }}</p>
         </div>
-        <SlotShift v-for="slot in shifts" :key="slot" class="slot" :time="slot" :day="day" :weekDay="weekDay" />
+        <SlotShift v-for="slot in shifts" :key="slot" class="slot" :time="slot" :weekDay="weekDay" />
     </div>
 </template>
 

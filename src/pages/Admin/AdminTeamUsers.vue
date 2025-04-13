@@ -10,6 +10,7 @@
         </div>
         
         <button type="button" @click="showAddUserModal = true">Add User</button>
+        <button @click="extractShifts" type="button">Extract Shifts</button>
         <router-link to="/admin/team-users/roles" class="router-link">User Roles<span class="chevron"></span></router-link>
       </form>
       <TheTable
@@ -92,6 +93,7 @@ import CryptoJS from "crypto-js";
 import TheTable from '../../global-components/TheTable.vue';
 import { ref, onMounted } from 'vue';
 import { useUserStore } from "../../stores/user.js";
+import { useSlotStore } from "../../stores/userShifts";
 
 const userStore = useUserStore();
 
@@ -100,6 +102,7 @@ const showAddUserModal = ref(false);
 const newUser = ref({ username: '', role_id: '' });
 const selectedRow = ref(null);
 const roles = ref(null);
+const slotStore = useSlotStore();
 
 function selectCallback(row) {
   selectedRow.value = {...row};
@@ -116,8 +119,13 @@ function decryptPassword(encrypted_password){
 function closeModal() {
   showAddUserModal.value = false;
 }
+
 function closeCardInfo(){
   selectedRow.value = null;
+}
+
+function extractShifts() {
+  slotStore.extractShifts()
 }
 const datab = ref([{
   user: null,

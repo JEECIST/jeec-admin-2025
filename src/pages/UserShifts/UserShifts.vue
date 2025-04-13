@@ -4,13 +4,13 @@
             <DayShifts v-for="day in days" :key="day" class="day" :day="day" :weekDay="weekDays[day - 3]" />
         </div>
         <button @click="submitShifts" class="submit-button">Submit</button>
-        <button @click="extractShifts" class="submit-button">Extract</button>
     </div>
 </template>
 
 <script setup>
 import DayShifts from "./DayShifts.vue";
 import { useSlotStore } from "../../stores/userShifts"; // Adjust the path if needed
+import { onMounted } from "vue";
 
 const days = ["3", "4", "5", "6", "7", "8", "9", "10", "11"];
 const weekDays = ["Saturday 1", "Sunday 1", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday 2", "Sunday 2"];
@@ -21,9 +21,13 @@ function submitShifts() {
     slotStore.submitSlots()
 }
 
-function extractShifts() {
-    slotStore.extractShifts()
+function getShifts() {
+    slotStore.getShifts()
 }
+
+onMounted(() => {
+  getShifts()
+});
 
 </script>
 
@@ -31,17 +35,19 @@ function extractShifts() {
 .week {
     display: flex;
     flex-direction: column;
-    height: 87vh; /* Full height of screen */
+    height: 100%; /* Full height of screen */
     overflow: hidden; /* Prevent weird scrollbars */
 }
 
 .wrap {
     display: flex;
-    flex: 1; /* Take up all space except button */
+    flex: 1;
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
     padding: 1rem;
+    scroll-snap-type: x mandatory; /* for nice snapping */
+    -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
 }
 
 .day {
