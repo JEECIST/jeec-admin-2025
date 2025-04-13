@@ -47,6 +47,7 @@ function automaticLogin(){
         router.push({path: "/dashboard"})
     }
     // console.log(CryptoJS.DES.decrypt('', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
+    console.log("Atualizou")
 }
 
 onMounted(automaticLogin)
