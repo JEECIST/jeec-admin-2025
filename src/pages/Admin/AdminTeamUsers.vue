@@ -42,7 +42,7 @@
           <p class="cardUseless">Team User</p>
           <div class="cardActions">
             <button class="edit-button"><img src="../../assets/pencil.svg"></button>
-            <button class="delete-button"><img src="../../assets/trash.svg"></button>
+            <button class="delete-button" @click="deleteUser(selectedRow)"><img src="../../assets/trash.svg"></button>
           </div>
           <div class="cardInfo">
             <div class = "cardInfoMember"> 
@@ -194,6 +194,34 @@ function addUser() {
   });
 }
 
+function deleteUser() {
+
+let password = Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2)
+let encryptedPassword = CryptoJS.DES.encrypt(password, import.meta.env.VITE_APP_API_KEY).toString();
+
+axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/user/addteamuser',
+{ 
+  user: { 
+    name: "Not attributed yet",
+    username: newUser.value.username, 
+    role_id: newUser.value.role_id,
+    password: encryptedPassword
+  }
+}, 
+{ 
+  auth: { 
+    username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+    password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
+  }
+})
+.then(() => {
+  fetchData();
+  closeModal();
+})
+.catch(error => {
+  console.error("Failed to add user :<");
+});
+}
 
 
 
