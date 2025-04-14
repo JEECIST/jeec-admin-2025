@@ -10,7 +10,7 @@
               </label>
               <input v-model="message" placeholder="Search for a company" />
             </div>
-            <select class="select" v-model="selectedEvent" @change="filterByEvent">
+            <select class="select" v-model="selectedEvent" @change="change_event($event.target.value)">
               <option v-for="event in events" :key="event.id" :value="event.id">
                 {{ event.name }}
               </option>
@@ -22,7 +22,7 @@
           </div>
         </form>
         <TheTable
-          :data="filteredCompanies"
+          :data="companies"
           :tableHeaders="tablePref"
           :searchInput="message"
           
@@ -219,7 +219,7 @@ const events = ref([]);
 const tiers = ref([]);
 const responsibles = ref([]);
 const default_event_id = ref();
-let selectedEvent = ref();
+let selectedEvent = ref(null);
 const selectedRow = ref(null);
 
 let noCompanies = ref();
@@ -229,9 +229,11 @@ let logo_image = ref('')
 let fileSelected = ref(null);
 let fileToUpload = ref(null);
 
-const fetchCompanies = async () => {
+const fetchCompanies = () => {
   axios
-  .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{auth: {
+  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{
+    event_id: selectedEvent.value
+  },{auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
@@ -239,7 +241,6 @@ const fetchCompanies = async () => {
   .then((response)=>{
 
     const data = response.data;
-    console.log(data)
 
     companies.value = data.companies;
     events.value = data.events;
@@ -250,12 +251,39 @@ const fetchCompanies = async () => {
 
     selectedEvent = default_event_id.value.id;
 
-    filterByEvent();
+    // filterByEvent();
   })
   .catch((error)=>{
     console.log(error);
   })
 };
+
+function change_event(event) {
+  axios
+  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{
+    event_id: event
+  },{auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  })
+  .then((response)=>{
+
+    const data = response.data;
+
+    companies.value = data.companies;
+    events.value = data.events;
+    tiers.value = data.tiers;
+    responsibles.value = data.responsibles;
+
+    default_event_id.value = data.default_event_id;
+
+    // filterByEvent();
+  })
+  .catch((error)=>{
+    console.log(error);
+  })
+}
 
 function fetchCompanyImage() {
   const f = new FormData();
@@ -430,6 +458,8 @@ function removeCompany(row) {
 
 function filterByEvent() {
   filteredCompanies.value = companies.value.filter(company => company.event_id == selectedEvent);
+  console.log(filteredCompanies)
+  console.log(companies)
 
   if (filteredCompanies.value.length === 0) {
     noCompanies = true; // Se o array estiver vazio, a flag é true
