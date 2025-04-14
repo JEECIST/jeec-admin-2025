@@ -239,6 +239,7 @@ const fetchCompanies = async () => {
   .then((response)=>{
 
     const data = response.data;
+    console.log(data)
 
     companies.value = data.companies;
     events.value = data.events;
