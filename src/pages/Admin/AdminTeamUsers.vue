@@ -55,6 +55,15 @@
               <p class="cardInfoValue">{{ selectedRow.password }}</p>
             </div>
 
+                          
+            <div class = "cardInfoMember"> 
+              <p class="cardInfoLabel">#Shifts</p>
+              <p class="cardInfoValue">{{ selectedRow.n_shifts }}</p>
+            </div>
+
+
+
+
             
           </div>
         
