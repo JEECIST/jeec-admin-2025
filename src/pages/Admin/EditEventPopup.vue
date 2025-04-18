@@ -33,24 +33,50 @@ const cvs_purged = ref(null);
 const default_event = ref(null);
 const facebook = ref('');
 
+function normalizeDate(date) {
+    if (!date) return '';
+
+    // Try parsing with Date object (for "Mon, 28 Apr 2025 23:00:00 GMT" etc.)
+    const parsedDate = new Date(date);
+    if (!isNaN(parsedDate.getTime())) {
+        return parsedDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
+    }
+
+    // Try parsing "30 11 2024, Saturday" (custom format)
+    const parts = date.split(',');
+    const datePart = parts[0]?.trim(); // "30 11 2024"
+    if (datePart) {
+        const [day, month, year] = datePart.split(' ');
+        if (day && month && year) {
+            // Pad day and month
+            const d = day.padStart(2, '0');
+            const m = month.padStart(2, '0');
+            return `${year}-${m}-${d}`;
+        }
+    }
+
+    return '';
+}
+
 watchEffect(() => {
     if (props.selectedRow) {
         external_id.value = props.selectedRow.external_id || '';
         name.value = props.selectedRow.name || '';
-        start_date.value = props.selectedRow.start_date || '';
-        end_date.value = props.selectedRow.end_date || '';
+        start_date.value = normalizeDate(props.selectedRow.start_date);
+        end_date.value = normalizeDate(props.selectedRow.end_date);
+        cv_submission_start.value = normalizeDate(props.selectedRow.cvs_submission_start);
+        cv_submission_end.value = normalizeDate(props.selectedRow.cvs_submission_end);
+        cv_access_start.value = normalizeDate(props.selectedRow.cvs_access_start);
+        cv_access_end.value = normalizeDate(props.selectedRow.cvs_access_end);
+        end_game.value = normalizeDate(props.selectedRow.end_game_day);
         email.value = props.selectedRow.email || '';
         location.value = props.selectedRow.location || '';
-        cv_submission_start.value = props.selectedRow.cv_submission_start || '';
-        cv_submission_end.value = props.selectedRow.cv_submission_end || '';
-        cv_access_start.value = props.selectedRow.cv_access_start || '';
-        cv_access_end.value = props.selectedRow.cv_access_end || '';
-        end_game.value = props.selectedRow.end_game || '';
         cvs_purged.value = props.selectedRow.cvs_purged ?? null;
-        default_event.value = props.selectedRow.default_event ?? null;
-        facebook.value = props.selectedRow.facebook || '';
+        default_event.value = props.selectedRow.default ?? null;
+        facebook.value = props.selectedRow.facebook_event_link || '';
     }
 });
+
 
 function editEvent() {
     if (name.value && start_date.value && end_date.value && cv_submission_start.value && cv_submission_end.value && cv_access_start.value && cv_access_end.value && end_game.value) {

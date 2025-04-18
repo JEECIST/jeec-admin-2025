@@ -185,6 +185,7 @@ function getEvents() {
     }
   }).then(response => {
     events.value = response.data.events
+    console.log(events)
   })
 }
 
