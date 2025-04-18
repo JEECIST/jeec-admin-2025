@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="table">
-      <form @submit.prevent="search_student(student)">
+      <form @submit.prevent>
         <div class="search_style">
           <label>
             <img src="../../assets/search.svg">
@@ -19,7 +19,7 @@
 
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import Check from '../../assets/check.svg';
 import axios from 'axios';
 
@@ -51,11 +51,6 @@ const tableButtons = [{
   icon: Check
 }];
 
-function teste(teste) {
-  console.log("merda");
-  console.log(teste);
-};
-
 function claim_prize(prize) {
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/student_rewards/update',{
     external_id: prize.ext_id},
@@ -75,16 +70,9 @@ function search_student(student){
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }}).then(response => {
-      console.log(response.data)
       student_prizes.value = response.data.rewards/*TODO OBJETO */
-      console.log(student_prizes)
     });
 }
-
-onMounted(() => {
-  console.log("Claim Prizes")
-});
-
 
 
 </script>

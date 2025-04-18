@@ -246,7 +246,7 @@
                 <div class="body">
                     <div class="div-grid">
                         <!-- Utiliza v-for para iterar sobre os dados dos indivíduos -->
-                        <div v-for="company in companies.filter(company => company.tier_id === selectedRow.id)" :key="company.name" class="element">
+                        <div v-for="company in selectedRow.companies" :key="company.name" class="element">
                             <div class="compimg"></div>
                             {{ company.name }}
                         </div>
@@ -269,7 +269,7 @@ const tableKey = ref(0);
 
 const fetchTiers = async () => {
   axios
-  .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/tiers_vue',{auth: {
+  .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/company_tiers_vue',{auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
@@ -278,10 +278,7 @@ const fetchTiers = async () => {
     const data = response.data
 
     tiers.value = data.tiers;
-    companies.value = data.companies;
 
-    console.log(tiers.value);
-    console.log(companies.value);
   })
   .catch((error)=>{
     console.log(error);
