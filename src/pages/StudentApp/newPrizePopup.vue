@@ -149,7 +149,7 @@
         isOpen: Boolean,
     });
   
-  const types = ["Daily", "Weekly", "CV", "Individual", "Squad", "Shop"];
+  const types = ["Daily", "CV", "Individual", "Squad", "Shop"];
   
 
   const eventselected = ref(null)

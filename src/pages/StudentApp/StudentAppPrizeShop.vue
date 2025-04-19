@@ -55,14 +55,13 @@ const message = ref();
 function selectCallback(row) {
   selectedRow.value = row;
   popupShow.value = true;
-  fetchPrizeDetails();
+  fetchPrizebyName();
 }
 
-function fetchPrizeDetails(){
-  console.log('Fetching prize details')
+function fetchPrizebyName(){
   const prizeName = selectedRow.value.name;
-  console.log(selectedRow.value)
-  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get_image_prize', {
+
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get-prize-name', {
     prizeName: prizeName,
   }, {
     auth: {
@@ -70,13 +69,10 @@ function fetchPrizeDetails(){
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
   }).then((response) => {
-    if (!response.data.error) {
-      console.log('prize details fetched', response.data);
-      selectedRow.value.logo = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image; // Update the logo in the selectedRow
-      console.log(selectedRow.value.logo);
-    } else {
-      console.log('Error fetching prize details', response.data.error);
-    }
+    // Since the backend sends an array, we extract the first element
+    selectedRow.value = response.data[0];
+    selectedRow.value.logo = selectedRow.value.logo ? `data:image/*;base64,${selectedRow.value.logo}` : null
+    console.log(selectedRow.value.logo);
   }).catch((error) => {
     console.log(error);
   });
@@ -302,7 +298,6 @@ form > input::placeholder {
     align-items: center;
     text-align: center;
     color: white;
-
 }
 
 .text1 {

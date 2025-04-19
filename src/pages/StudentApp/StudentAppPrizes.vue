@@ -78,7 +78,6 @@ function selectCallback(row) {
   popupShow.value = true;
   selectedRow.value = row
   fetchPrizebyName();
-  fetchPrizeDetails();
     
   console.log(selectedRow)
 }
@@ -100,32 +99,9 @@ function fetchPrizebyName(){
     }
   }).then((response) => {
     // Since the backend sends an array, we extract the first element
-        selectedRow.value = response.data[0];
- 
-  }).catch((error) => {
-    console.log(error);
-  });
-}
-
-function fetchPrizeDetails(){
-  console.log('Fetching prize details')
-  const prizeName = selectedRow.value.name;
-  console.log(selectedRow.value)
-  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get_image_prize', {
-    prizeName: prizeName,
-  }, {
-    auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-    }
-  }).then((response) => {
-    if (!response.data.error) {
-      console.log('prize details fetched', response.data);
-      selectedRow.value.logo = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image; // Update the logo in the selectedRow
-      console.log(selectedRow.value.logo);
-    } else {
-      console.log('Error fetching prize details', response.data.error);
-    }
+    selectedRow.value = response.data[0];
+    selectedRow.value.logo = selectedRow.value.logo ? `data:image/*;base64,${selectedRow.value.logo}` : null
+    console.log(selectedRow.value.logo);
   }).catch((error) => {
     console.log(error);
   });
@@ -247,14 +223,14 @@ const tablePref = {
 
 
 .prize-logo {
-  width: 18vh;
-  height: 18vh;
-  min-height: 70px;
-  min-width: 70px;
-  max-width: 150px;
-  max-height: 150px;
-  object-fit: scale-down; /* Ensure the whole image is visible */
-  border-radius: 50%;
+    height: 165px;
+    width: 165px;
+    background-color: var(--c-select);
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: white;
 }
 
 .prize-no-logo {
