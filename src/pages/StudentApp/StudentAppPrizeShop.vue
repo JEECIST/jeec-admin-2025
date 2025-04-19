@@ -1,11 +1,11 @@
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
-import { ref } from 'vue';
-import EditPrizePopup from './EditPrizeShopPopup.vue';
-import AddPrizePopup from './AddPrizeShopPopup.vue';
+import { ref, onMounted } from 'vue';
+import axios from "axios"
 
 const popupShow = ref(false);
-
+const prizesShop = ref([])
+const selectedRow = ref(null);
 const isModalOpened = ref(false);
 
 const openModal = () => {
@@ -17,12 +17,29 @@ const closeModal = () => {
 
 const isOtherModalOpened = ref(false);
 
-const openOtherModal = () => {
-  isOtherModalOpened.value = true;
-};
-const closeOtherModal = () => {
-  isOtherModalOpened.value = false;
-};
+function removePrize(selectedRow){
+
+const idSelectedRow = selectedRow['id']
+selectedRow.value = null;
+
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/delete-prize', {auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+  }, 
+  id: idSelectedRow,
+
+  }).then(response => {
+      if (response.data == "Success"){
+           getPrizes();
+      }
+
+  })
+  
+}
+
+function openLink(){
+  window.open(selectedRow.value.link);
+}
 
 function isMobile() {
    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -36,115 +53,51 @@ function isMobile() {
 const message = ref();
 
 function selectCallback(row) {
-  console.log(row)
+  selectedRow.value = row;
   popupShow.value = true;
+  fetchPrizebyName();
 }
 
-const datab = [
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
-  {
-    id:   "2",
-    name: "Chamuça",
-    price: "1.337",
-    limitPurchases: "-4"
-  },
+function fetchPrizebyName(){
+  const prizeName = selectedRow.value.name;
 
-];
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get-prize-name', {
+    prizeName: prizeName,
+  }, {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then((response) => {
+    // Since the backend sends an array, we extract the first element
+    selectedRow.value = response.data[0];
+    selectedRow.value.logo = selectedRow.value.logo ? `data:image/*;base64,${selectedRow.value.logo}` : null
+    console.log(selectedRow.value.logo);
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+function getPrizes(){
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/get-prizes-shop', {auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then(response => {
+
+      prizesShop.value = response.data
+    })
+}
+
+onMounted(() => {
+  getPrizes();
+});
 
 const tablePref = {
   id: "ID",
   name: "Name",
-  price: "Price",
-  limitPurchases: "Limit Purchases"
+  cost: "Price",
+  amountPerDay: "Limit Purchases",
+  lastUnits: "Last Units"
 };
 
 </script>
@@ -160,109 +113,68 @@ const tablePref = {
         </label>
         <input v-model="message" placeholder="Search for a prize">
       </form>
-    
-     <button class="topbtn" @click="openModal">Add Prize</button>
-     <Transition name="fade" appear>
-        <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-     </Transition>
-     <Transition name="fade" appear>
-        <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-     </Transition>
      </div>
       <TheTable
-        :data="datab"
+        :data="prizesShop"
         :tableHeaders="tablePref"
         :searchInput="message"
         @onRowSelect="selectCallback"
       ></TheTable>
     </div>
-    <div class="right-popup-placeholder" v-show="popupShow">
-        <div class="items">
-          <h1>SHOP</h1>
-          <div class="prize-photo">Insert PPPPPrize Photo</div>
-          <h3 class="text1">Chamuça</h3>
-          <p class="text2 title">Prize</p>
-          <div class="btns-row">
-            <button class="btn" @click="openOtherModal">
-                <img src="../../assets/pencil.svg">
-            </button>
-            <button class="btn">
-                <img src="../../assets/internet.svg">
-            </button>
-            <button class="btn">
-                <img src="../../assets/trash.svg">
-            </button>
-          </div>
-          <div id="info">
-            <p>Description</p>
-            <p class="text2">Vinda do ROSE STUPAA GOOAT</p>
-            <div class="row">
-              <div class="col">
-                <p>Initial Amount</p>
-                <p class="text2">69</p>           
-              </div>
-              <div class="col">
-                <p>Current Amount</p>
-                <p class="text2">6</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-  </div>
-</div>
-
-
-
-<div class="mobile" v-else>
-  <div class="mobile-wrapper">
-      <div class="table">
-        <div class="mobile-topbar">
-        <form>
-          <label>
-            <img src="../../assets/search.svg">
-          </label>
-          <input v-model="message" placeholder="Search for a prize">
-        </form>
-      <button class="topbtn" @click="openModal">Add Prize</button>
-      <Transition name="fade" appear>
-          <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-      </Transition>
-      <Transition name="fade" appear>
-          <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-      </Transition>
-      </div>
-      <div class="right-popup-placeholder-mobile" v-show="popupShow">
+    <div class="right-popup-placeholder" v-if="selectedRow">
           <div class="items">
             <h1>SHOP</h1>
-            <div class="prize-photo">Insert PPPPPrize Photo</div>
-            <h3 class="text1">Chamuça</h3>
+            <img v-if="selectedRow.logo" class='prize-logo' :src="selectedRow.logo" alt="prize logo" />
+            <div v-else class='prize-no-logo'>No logo</div>
+            <h3 class="text1">{{ selectedRow.name }}</h3>
             <p class="text2 title">Prize</p>
             <div class="btns-row">
-              <button class="btn" @click="openOtherModal">
-                  <img src="../../assets/pencil.svg">
+              <button class="btn" @click="openLink()">
+                  <img src="../../assets/internet.svg">
               </button>
-              <button class="btn" @click="showfunction">
-                  <img src="../../assets/sheet.svg">
-              </button>
-              <button class="btn">
+              <button class="btn" @click="removePrize(selectedRow)">
                   <img src="../../assets/trash.svg">
               </button>
             </div>
+            <div id="info">
+              <p>Description</p>
+              <p class="text2">{{ selectedRow.description }}</p>
+              <div class="row">
+                <div class="col">
+                  <p>Initial Amount</p>
+                  <p class="text2">{{ selectedRow.initialAmount }}</p>           
+                </div>
+                <div class="col">
+                  <p>Current Amount</p>
+                  <p class="text2">{{ selectedRow.currentAmount }}</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <TheTable
-          :data="datab"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
-    </div>
+  </div>
 </div>
 </template>
 
 <style scoped>
+
+.prize-no-logo {
+  width: 18vh;
+  height: 18vh;
+  min-height:100px;
+  min-width: 100px;
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  color: #888;
+  font-size: 14px;
+  text-align: center;
+}
+
 .mobile-wrapper {
   display: flex;
   flex-direction: column;
@@ -377,7 +289,7 @@ form > input::placeholder {
     margin-top: 7vh;
 }
 
-.prize-photo {
+.prize-logo {
     height: 165px;
     width: 165px;
     background-color: var(--c-select);
@@ -386,7 +298,6 @@ form > input::placeholder {
     align-items: center;
     text-align: center;
     color: white;
-
 }
 
 .text1 {

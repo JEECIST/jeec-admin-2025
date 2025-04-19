@@ -1,356 +1,374 @@
 <script setup>
-import TheTable from '../../global-components/TheTable.vue';
-import { ref, computed } from 'vue';
-import EditPrizePopup from './EditPrizeShopPopup.vue';
-import AddPrizePopup from './AddPrizeShopPopup.vue';
 
-const popupShow = ref(false);
+import { ref, onMounted, computed, watch } from 'vue';
+import dropdown from '../../global-components/dropdown.vue';
+import axios from "axios"
 
-const isModalOpened = ref(false);
-
-const openModal = () => {
-  isModalOpened.value = true;
-};
-const closeModal = () => {
-  isModalOpened.value = false;
-};
-
-const isOtherModalOpened = ref(false);
-
-const openOtherModal = () => {
-  isOtherModalOpened.value = true;
-};
-const closeOtherModal = () => {
-  isOtherModalOpened.value = false;
-};
-
-function isMobile() {
-   if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-     return true;
-   }
-   else {
-    return false;
-   }
-}
-
-const message = ref();
-
-function selectCallback(row) {
-  console.log(row)
-  popupShow.value = true;
-}
-
-const datab = [
-  {
-    date:   "19/02",
-    reward: ["Pack Duplo Vertigem", "EU TU ELE"],
-    winner: "K",
-  },
-  {
-    date:   "20/02",
-    reward: ["E-Voucher", "LOL"],
-    winner: "Y",
-  },
-  {
-    date:   "21/02",
-    reward: ["Pack Duplo Pura Adrenalina", "HEHE"],
-    winner: null,
-  },
-  {
-    date:   "22/02",
-    reward: ["Pack STREET ART FOR ALL (Boost)", "JWAD"],
-    winner: false,
-  },
-  {
-    date:   "23/02",
-    reward: ["Passeio golfinhos", "ASDSA"],
-    winner: "",
-  },
-];
-
-const processedData = computed(() =>
-  datab.map((item) => ({
-    ...item,
-    hasWinner: !!item.winner,
-  }))
-);
-
-const claimReward = (reward) => {
-  alert(`Claiming reward: ${reward}`);
-};
-
-
-const tablePref = {
-  date: "date",
-  reward: "reward",
-  winner: "winner",
-};
-
-
-const uniqueRewards = computed(() => {
-  return [...new Set(datab.flatMap(item => item.reward))]; // Get unique rewards from the datab
+const dailyPrizes = ref([]); 
+const squadPrizes = ref([]); 
+const individualPrizes = ref([]); 
+const cvPrizes = ref([]);
+const rewardsList = ref({
+    Daily: [],
+    Squad: [],
+    Individual: [],
+    CV: []
 });
 
+
+const rewardsArray = ref({
+    Daily: [],
+    Squad: [],
+    Individual: [],
+    CV: []
+});
+
+const selectedValues = ref({
+    Daily: [],
+    Squad: [],
+    Individual: [],
+    CV: []
+});
+
+const warning = ref({
+    Daily: [],
+    Squad: [],
+    Individual: [],
+    CV: []
+});
+
+const getPrizeArray = (type) => {
+    switch (type) {
+        case 'Daily': return dailyPrizes.value;
+        case 'Squad': return squadPrizes.value;
+        case 'Individual': return individualPrizes.value;
+        case 'CV': return cvPrizes.value;
+        default: return [];
+    }
+};
+
+const redeemedPrizeNames = computed(() =>
+  rewardsList.value
+    ? Object.values(rewardsList.value).flat().filter(prize => prize.winner).map(prize => prize.name)
+    : []
+);
+
+function filteredRewards(type) {
+  return rewardsArray.value[type]?.filter(
+    prize => !redeemedPrizeNames.value.includes(prize.name)
+  ) || [];
+}
+
+watch(redeemedPrizeNames, (newVal) => {
+  console.log("Redeemed prizes:", newVal);
+});
+
+function getPrizesSpecial() {
+    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get-prizes-special', {
+        auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+    }).then(response => {
+        rewardsList.value = response.data; 
+        console.log(rewardsList);
+        // Group prizes by type
+        const groupedPrizes = {
+            Daily: [],
+            Squad: [],
+            Individual: [],
+            CV: []
+        };
+
+        const typeConfigs = {
+          Daily: { count: 5, getDate: (i) => `${5 + i}/05` },
+          Squad: { count: 3, getDate: (i) => `${i + 1}` },
+          Individual: { count: 3, getDate: (i) => `${i + 1}` },
+          CV: { count: 1, getDate: (i) => `${i + 1}` },
+        };
+        console.log('rewardsList:', rewardsList, typeof rewardsList);
+        rewardsList.value.forEach(prize => {
+            if (groupedPrizes[prize.type]) {
+                groupedPrizes[prize.type].push(prize);
+            }
+        });
+
+        rewardsArray.value = groupedPrizes;
+        
+        // Initialize prize rows and prefill winner/prize if they exist
+        for (const [type, config] of Object.entries(typeConfigs)) {
+          const rows = [];
+          selectedValues.value[type] = [];
+          warning.value[type] = [];
+
+          for (let i = 0; i < config.count; i++) {
+            const date = config.getDate(i);
+
+            const found = rewardsList.value.find(prize =>
+              prize.type === type &&
+              prize.rowplace === date &&
+              prize.winner
+            );
+
+            rows.push({
+              date,
+              reward: found ? found.name : null,
+              winner: found ? found.winner : null,
+              editable: !found
+            });
+
+            selectedValues.value[type][i] = null;
+            warning.value[type][i] = false;
+          }
+
+          // Assign to the corresponding ref
+          switch (type) {
+            case 'Daily': dailyPrizes.value = rows; break;
+            case 'Weekly': weeklyPrizes.value = rows; break;
+            case 'Squad': squadPrizes.value = rows; break;
+            case 'Individual': individualPrizes.value = rows; break;
+            case 'CV': cvPrizes.value = rows; break;
+          }
+        }
+
+        console.log("Updated Prizes Data:", dailyPrizes.value);
+    }).catch(error => {
+        console.error("Error fetching prizes:", error);
+    });
+}
+
+const handleButtonClick = (type, index) => {
+    if (!selectedValues.value[type][index]) {
+        warning.value[type][index] = true;
+        return;
+    }
+    let date = "";
+    warning.value[type][index] = false;
+    if(type == "Daily"){
+      date = `${5 + index}/05`;
+    }else{
+      date = `${1 + index}`;
+    }
+    const name = selectedValues.value[type][index].name;
+
+    //Set claim prize aqui
+    setClaimedPrize(name, type, date)
+    getPrizesSpecial() // get again
+};
+
+function setClaimedPrize(prizeName, type, date){
+  // axios para dar set a true
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/generate-winner', {
+    prizeName: prizeName,
+    type: type,
+    rowplace: date,
+    claimed: true,
+  }, {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then((response) => {
+    if (!response.data.error) {
+      console.log('prize details fetched', response.data);
+      selectedRow.value.logo = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image; // Update the logo in the selectedRow
+      console.log(selectedRow.value.logo);
+    } else {
+      console.log('Error fetching prize details', response.data.error);
+    }
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+onMounted(() => {
+  getPrizesSpecial();
+});
+
+function voadora(){
+
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/voadora', null, {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  })
+  .then(response => {
+    console.log('Voadora endpoint called successfully:', response.data);
+  })
+  .catch(error => {
+    console.error('Error calling /voadora:', error);
+  });
+
+}
 
 </script>
 
 <template>
 <div id="rewards">
-  <h2>Daily Rewards</h2>
-  <div class="desktop" v-if="!isMobile()">
-    <div class="wrapper">
-        <div class="table">
-          <div class="topbar">
-          
-          <label for="reward">Filter by Reward:</label>
-            <select v-model="selectedReward" @change="filterRewards">
-              <option value="">All Rewards</option>
-              <option v-for="reward in uniqueRewards" :key="reward" :value="reward">{{ reward }}</option>
-            </select>
-        
-          <Transition name="fade" appear>
-              <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-          </Transition>
-          <Transition name="fade" appear>
-              <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-          </Transition>
-          </div>
-            <TheTable
-              :data="processedData"
-              :tableHeaders="tablePref"
-              :searchInput="message"
-              @onRowSelect="selectCallback"
-            >
-            <template #column-winner="{ row }">
-              <div>
-                <span v-if="row.hasWinner">{{ row.winner }}</span>
-                <button v-else class="claim-btn">
-                  Claim Reward
-                </button>
-              </div>
-            </template>
-          </TheTable>
-          </div>
+  <!-- <button @click="voadora()">ALO</button> -->
+  <div class="desktop">
+    <div class="table-container">
+      <div class="section">
+        <h1>Special Prizes</h1>
+
+        <div v-for="(prizes, type) in rewardsArray" :key="type" class="table-prizes">
+          <h2>{{ type }} Prizes</h2>
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Reward</th>
+                <th>Winner</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(reward, index) in getPrizeArray(type)" :key="index">
+                <td>{{ reward.date }}</td>
+                <td>
+                  <div v-if="getPrizeArray(type)[index].reward">
+                    {{ getPrizeArray(type)[index].reward }}
+                  </div>
+                  <div v-else>
+                    <dropdown  
+                      :options="filteredRewards(type)"
+                      v-model="selectedValues[type][index]"
+                      :disabled="!getPrizeArray(type)[index].editable"
+                    />
+                  </div>
+                </td>
+                <td>
+                  <div v-if="getPrizeArray(type)[index].winner">
+                    {{ getPrizeArray(type)[index].winner }}
+                  </div>
+                  <div v-else>
+                    <button 
+                      class="genButton" 
+                      :disabled="!selectedValues[type][index]"
+                      @click="handleButtonClick(type, index)"
+                    >
+                      Let's Roll it
+                    </button>
+                    <p v-if="warning[type][index]" class="warning">⚠ Please select a prize first!</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-
-
-
-  <div class="mobile" v-else>
-  <div class="mobile-wrapper">
-      <div class="table">
-        <TheTable
-          :data="datab"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
     </div>
-  </div>
+
 </div>
 
-<div id="rewards">
-  <h2>Weekly Rewards</h2>
-  <div class="desktop" v-if="!isMobile()">
-    <div class="wrapper">
-        <div class="table">
-          <div class="topbar">
-          <form>
-            <label>
-              <img src="../../assets/search.svg">
-            </label>
-            <input v-model="message" placeholder="Search for a prize">
-          </form>
-        
-          <button class="topbtn" @click="openModal">Add Prize</button>
-          <Transition name="fade" appear>
-              <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-          </Transition>
-          <Transition name="fade" appear>
-              <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-          </Transition>
-          </div>
-            <TheTable
-              :data="datab"
-              :tableHeaders="tablePref"
-              :searchInput="message"
-              @onRowSelect="selectCallback"
-            ></TheTable>
-          </div>
-      </div>
-    </div>
-
-
-
-  <div class="mobile" v-else>
-  <div class="mobile-wrapper">
-      <div class="table">
-        <TheTable
-          :data="datab"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="rewards">
-  <h2>CV Rewards</h2>
-  <div class="desktop" v-if="!isMobile()">
-    <div class="wrapper">
-        <div class="table">
-          <div class="topbar">
-          <form>
-            <label>
-              <img src="../../assets/search.svg">
-            </label>
-            <input v-model="message" placeholder="Search for a prize">
-          </form>
-        
-          <button class="topbtn" @click="openModal">Add Prize</button>
-          <Transition name="fade" appear>
-              <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-          </Transition>
-          <Transition name="fade" appear>
-              <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-          </Transition>
-          </div>
-            <TheTable
-              :data="datab"
-              :tableHeaders="tablePref"
-              :searchInput="message"
-              @onRowSelect="selectCallback"
-            ></TheTable>
-          </div>
-      </div>
-    </div>
-
-
-
-  <div class="mobile" v-else>
-  <div class="mobile-wrapper">
-      <div class="table">
-        <TheTable
-          :data="datab"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="rewards">
-  <h2>Squad Rewards</h2>
-  <div class="desktop" v-if="!isMobile()">
-    <div class="wrapper">
-        <div class="table">
-          <div class="topbar">
-          <form>
-            <label>
-              <img src="../../assets/search.svg">
-            </label>
-            <input v-model="message" placeholder="Search for a prize">
-          </form>
-        
-          <button class="topbtn" @click="openModal">Add Prize</button>
-          <Transition name="fade" appear>
-              <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-          </Transition>
-          <Transition name="fade" appear>
-              <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-          </Transition>
-          </div>
-            <TheTable
-              :data="datab"
-              :tableHeaders="tablePref"
-              :searchInput="message"
-              @onRowSelect="selectCallback"
-            ></TheTable>
-          </div>
-      </div>
-    </div>
-
-
-
-  <div class="mobile" v-else>
-  <div class="mobile-wrapper">
-      <div class="table">
-        <TheTable
-          :data="datab"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="rewards">
-  <h2>Individual Rewards</h2>
-  <div class="desktop" v-if="!isMobile()">
-    <div class="wrapper">
-        <div class="table">
-          <div class="topbar">
-          <form>
-            <label>
-              <img src="../../assets/search.svg">
-            </label>
-            <input v-model="message" placeholder="Search for a prize">
-          </form>
-        
-          <button class="topbtn" @click="openModal">Add Prize</button>
-          <Transition name="fade" appear>
-              <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
-          </Transition>
-          <Transition name="fade" appear>
-              <EditPrizePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditPrizePopup>
-          </Transition>
-          </div>
-            <TheTable
-              :data="datab"
-              :tableHeaders="tablePref"
-              :searchInput="message"
-              @onRowSelect="selectCallback"
-            ></TheTable>
-          </div>
-      </div>
-    </div>
-
-
-
-  <div class="mobile" v-else>
-  <div class="mobile-wrapper">
-      <div class="table">
-        <TheTable
-          :data="datab"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          @onRowSelect="selectCallback"
-        ></TheTable>
-      </div>
-    </div>
-  </div>
-</div>
 
 </template>
 
 
 <style scoped>
 
+.warning {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.genButton:disabled {
+  background-color: grey;
+  cursor: not-allowed;
+}
+
+.genButton {
+    background-color: var(--c-select);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    align-items: center;
+    height: 45px;
+    font-weight: 500;
+    font-size: small;
+    flex-grow: 1;
+    width: 30%;
+    cursor: pointer;
+}
+
+td {
+  text-align: center;
+}
+
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 8px 12px;
+}
+
+.styled-table th {
+  background-color: #f9f9f9;
+  font-weight: bold;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+
+.styled-table tbody tr {
+  border-bottom: none;
+}
+
+.styled-table tbody tr:nth-child(even) {
+  background-color: #eaf4fc; /* Light blue */
+}
+
+.styled-table tbody tr:hover {
+  background-color: #d6eaff; /* Slightly darker blue for hover */
+}
+
+.styled-table td select {
+  width: 100%;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+th {
+  text-align: center !important;
+}
+
+thead {
+  background-color: white;
+}
+
 .desktop{
-  width: 75%;
+  width: 90%;
 }
 
 #rewards > h2 {
-
   font-weight: bold;
   font-size: 2rem;
+}
+
+.table-prizes{
+  padding-bottom: 3%;
+}
+
+.table-prizes h2 {
+  font-size: 2rem;
+  text-align: center;
+  padding-bottom: 1%;
+}
+
+.section > h1 {
+  font-weight: bold;
+  font-size: 3rem;
+  text-align: center;
+  padding-top: 2%;
+  padding-bottom: 2%;
 }
 
 #rewards {
@@ -358,7 +376,7 @@ const uniqueRewards = computed(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 50vh;
+  height: 100%;
 }
 
 .mobile-wrapper {
