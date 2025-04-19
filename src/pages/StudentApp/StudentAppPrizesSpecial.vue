@@ -206,7 +206,7 @@ function voadora(){
 
 <template>
 <div id="rewards">
-  <button @click="voadora()">ALO</button>
+  <!-- <button @click="voadora()">ALO</button> -->
   <div class="desktop">
     <div class="table-container">
       <div class="section">
