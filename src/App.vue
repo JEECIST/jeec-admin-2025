@@ -22,10 +22,8 @@ import TheHeader from './global-components/TheHeader.vue';
 import { useRoute } from 'vue-router';
 const route = useRoute();
 
-import { useUserStore } from './stores/user';
 import { useStateStore } from './stores/state';
 
-useUserStore().getAccess();
 const stateStore = useStateStore();
 
 import {isMobile} from '@utils/utils';

@@ -9,10 +9,10 @@
       </div>
       <div class="user">
         <div class="user-info">
-          <p>{{ name }}</p>
+          <p>{{ username }}</p>
           <p>{{ role }}</p>
         </div>
-        <button class="logout-button">Log out</button>
+        <button class="logout-button" @click="logout">Log out</button>
       </div>
     </div>
   </header>
@@ -20,19 +20,26 @@
 
 <script setup>
 import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 const route = useRoute();
+const router = useRouter();
 const title = computed(() => route.meta.title);
 
 import { useUserStore } from '../stores/user';
 const userStore = useUserStore();
-const name = computed(() => userStore.name);
+const username = computed(() => userStore.username);
 const role = computed(() => userStore.role);
 
 import { useStateStore } from '../stores/state';
 const stateStore = useStateStore();
 
 import { isMobile } from '@utils/utils'
+
+
+function logout(){
+  userStore.logoutUser();
+  router.go();
+}
 </script>
 
 <style scoped>

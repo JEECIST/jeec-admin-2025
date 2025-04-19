@@ -4,8 +4,8 @@ import { computed, onMounted, ref } from 'vue';
 import * as httpAdmin from '@utils/http-admin';
 import TopBar from './components/TopBar.vue';
 import BillCard from './components/BillCard.vue';
-import AddBillPopup from '../components/AddBillPopup.vue';
-import EditBillPopup from '../components/EditBillPopup.vue';
+import AddBillPopup from '../Components/AddBillPopup.vue';
+import EditBillPopup from '../Components/EditBillPopup.vue';
 
 const popupShow = ref(false);
 const message = ref('');

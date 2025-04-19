@@ -10,10 +10,7 @@
               </label>
               <input v-model="message" placeholder="Search for a company" />
             </div>
-            <select class="select" v-model="selectedEvent" @change="filterByEvent">
-              <option v-for="event in events" :key="event.id" :value="event.id">
-                {{ event.name }}
-            <select class="select" v-model="selectedEvent" @change="filterByEvent">
+            <select class="select" v-model="selectedEvent" @change="change_event($event.target.value)">
               <option v-for="event in events" :key="event.id" :value="event.id">
                 {{ event.name }}
               </option>
@@ -25,8 +22,7 @@
           </div>
         </form>
         <TheTable
-          :data="filteredCompanies"
-          :data="filteredCompanies"
+          :data="companies"
           :tableHeaders="tablePref"
           :searchInput="message"
           
@@ -333,7 +329,7 @@ const events = ref([]);
 const tiers = ref([]);
 const responsibles = ref([]);
 const default_event_id = ref();
-let selectedEvent = ref();
+let selectedEvent = ref(null);
 const selectedRow = ref(null);
 
 let noCompanies = ref();
@@ -343,10 +339,11 @@ let logo_image = ref('')
 let fileSelected = ref(null);
 let fileToUpload = ref(null);
 
-const fetchCompanies = async () => {
-  console.log("Teste")
+const fetchCompanies = () => {
   axios
-  .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{auth: {
+  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{
+    event_id: selectedEvent.value
+  },{auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
@@ -362,26 +359,44 @@ const fetchCompanies = async () => {
 
     default_event_id.value = data.default_event_id;
 
-    console.log("Company:", companies.value);
-    console.log("Events:", events.value);
-    console.log("Tiers:", tiers.value);
-    console.log("Responsibles:", responsibles.value);
-    console.log("Default Event:", default_event_id.value);
-
     selectedEvent = default_event_id.value.id;
 
-    filterByEvent();
+    // filterByEvent();
   })
   .catch((error)=>{
     console.log(error);
   })
 };
 
+function change_event(event) {
+  axios
+  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{
+    event_id: event
+  },{auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  })
+  .then((response)=>{
+
+    const data = response.data;
+
+    companies.value = data.companies;
+    events.value = data.events;
+    tiers.value = data.tiers;
+    responsibles.value = data.responsibles;
+
+    default_event_id.value = data.default_event_id;
+
+    // filterByEvent();
+  })
+  .catch((error)=>{
+    console.log(error);
+  })
+}
+
 function fetchCompanyImage() {
   const f = new FormData();
-
-  console.log("fetchCompaniesImage: ", selectedRow.value.external_id);
-
   f.append('external_id', selectedRow.value.external_id)
 
   axios
@@ -396,7 +411,6 @@ function fetchCompanyImage() {
       // Cria uma URL de objeto a partir do Blob e armazena em 'logo_image'
       fileToUpload.value = response.data;
       logo_image.value = URL.createObjectURL(response.data);
-      console.log("Logo_image: ", logo_image.value);
     } else {
       console.error('Imagem não encontrada');
     }
@@ -417,7 +431,7 @@ const events = ref([]);
 const tiers = ref([]);
 const responsibles = ref([]);
 const default_event_id = ref();
-let selectedEvent = ref();
+let selectedEvent = ref(null);
 const selectedRow = ref(null);
 
 let noCompanies = ref();
@@ -427,10 +441,11 @@ let logo_image = ref('')
 let fileSelected = ref(null);
 let fileToUpload = ref(null);
 
-const fetchCompanies = async () => {
-  console.log("Teste")
+const fetchCompanies = () => {
   axios
-  .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{auth: {
+  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{
+    event_id: selectedEvent.value
+  },{auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
@@ -446,26 +461,44 @@ const fetchCompanies = async () => {
 
     default_event_id.value = data.default_event_id;
 
-    console.log("Company:", companies.value);
-    console.log("Events:", events.value);
-    console.log("Tiers:", tiers.value);
-    console.log("Responsibles:", responsibles.value);
-    console.log("Default Event:", default_event_id.value);
-
     selectedEvent = default_event_id.value.id;
 
-    filterByEvent();
+    // filterByEvent();
   })
   .catch((error)=>{
     console.log(error);
   })
 };
 
+function change_event(event) {
+  axios
+  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{
+    event_id: event
+  },{auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  })
+  .then((response)=>{
+
+    const data = response.data;
+
+    companies.value = data.companies;
+    events.value = data.events;
+    tiers.value = data.tiers;
+    responsibles.value = data.responsibles;
+
+    default_event_id.value = data.default_event_id;
+
+    // filterByEvent();
+  })
+  .catch((error)=>{
+    console.log(error);
+  })
+}
+
 function fetchCompanyImage() {
   const f = new FormData();
-
-  console.log("fetchCompaniesImage: ", selectedRow.value.external_id);
-
   f.append('external_id', selectedRow.value.external_id)
 
   axios
@@ -480,7 +513,6 @@ function fetchCompanyImage() {
       // Cria uma URL de objeto a partir do Blob e armazena em 'logo_image'
       fileToUpload.value = response.data;
       logo_image.value = URL.createObjectURL(response.data);
-      console.log("Logo_image: ", logo_image.value);
     } else {
       console.error('Imagem não encontrada');
     }
@@ -539,9 +571,6 @@ const tablePref = {
 
 function selectCallback(row) {
   if (selectedRow.value == row) {
-    console.log("reset");
-    resetCallback();
-    console.log("reset");
     resetCallback();
   } else {
     selectedRow.value = row;
@@ -658,37 +687,6 @@ function editCompany() {
   update_company.append('image', fileToUpload.value)
   update_company.append('changeimg', newCompany.value.changeimg)
 
-  console.log("Edit: ", newCompany.value.changeimg);
-
-  axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/update',update_company,{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      }
-  })
-  .then(response => {
-          this.error = response.data
-      })
-
-  setTimeout(fetchCompanies, 100);
-
-  const update_company = new FormData();
-
-  update_company.append('name', newCompany.value.name)
-  update_company.append('event_id', newCompany.value.event_id)
-  update_company.append('email', newCompany.value.email)
-  update_company.append('website', newCompany.value.website)
-  update_company.append('username', newCompany.value.username)
-  update_company.append('cv', newCompany.value.cv)
-  update_company.append('tier_id', newCompany.value.tier_id)
-  update_company.append('responsible_id', newCompany.value.responsible_id)
-  update_company.append('days', newCompany.value.days)
-  update_company.append('external_id', newCompany.value.external_id)
-  update_company.append('image', fileToUpload.value)
-  update_company.append('changeimg', newCompany.value.changeimg)
-
-  console.log("Edit: ", newCompany.value.changeimg);
-
   axios
   .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/update',update_company,{auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
@@ -728,13 +726,14 @@ function removeCompany(row) {
 
 function filterByEvent() {
   filteredCompanies.value = companies.value.filter(company => company.event_id == selectedEvent);
+  console.log(filteredCompanies)
+  console.log(companies)
 
   if (filteredCompanies.value.length === 0) {
     noCompanies = true; // Se o array estiver vazio, a flag é true
   } else {
     noCompanies = false; // Caso contrário, a flag é false
   }
-  console.log(filteredCompanies.value.length);
 }
 
 function onLogoSelected(event){
@@ -742,7 +741,6 @@ function onLogoSelected(event){
   fileToUpload.value = event.target.files[0];
   logo_image.value = URL.createObjectURL(event.target.files[0]);
   newCompany.value.changeimg = 'Yes';
-  console.log(fileSelected.value);
 }
 
   const delete_company = new FormData();
@@ -767,13 +765,14 @@ function onLogoSelected(event){
 
 function filterByEvent() {
   filteredCompanies.value = companies.value.filter(company => company.event_id == selectedEvent);
+  console.log(filteredCompanies)
+  console.log(companies)
 
   if (filteredCompanies.value.length === 0) {
     noCompanies = true; // Se o array estiver vazio, a flag é true
   } else {
     noCompanies = false; // Caso contrário, a flag é false
   }
-  console.log(filteredCompanies.value.length);
 }
 
 function onLogoSelected(event){
@@ -781,7 +780,6 @@ function onLogoSelected(event){
   fileToUpload.value = event.target.files[0];
   logo_image.value = URL.createObjectURL(event.target.files[0]);
   newCompany.value.changeimg = 'Yes';
-  console.log(fileSelected.value);
 }
 
 function irParaSite(site) {

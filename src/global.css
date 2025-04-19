@@ -17,8 +17,11 @@
   --font-family: 'Kumbh Sans', sans-serif;
 
   --header-height: 100px;
+  --opposite-header-height: -100px;
   --mobile-header-height: 74px;
   --sidenav-width: 300px;
+  --opposite-sidenav-width: -300px;
+
 
 
   background-color: var(--c-bg-light);

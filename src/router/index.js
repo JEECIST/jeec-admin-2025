@@ -5,8 +5,11 @@ import Dashboard from "../global-components/TheDashboard.vue";
 
 const routes = [
   {
-    path: "/login",
+    path: "/",
     name: "login",
+    meta: { 
+      title: "JEEC Admin",
+    },
     component: () => import("../pages/Login.vue"),
   },
   {
@@ -152,17 +155,11 @@ const routes = [
     component: () => import("../pages/Sponsors/SponsorsTiers.vue"),
   },
   {
-    path: "/sponsors/bills/:externalid",
-    name: "sponsors-bills",
-    meta: { title: "Sponsor Bills" },
-    component: () => import("../pages/Sponsors/SponsorBills.vue")
-  },
-  {
     path: "/student-app",
     name: "studentapp",
     component: Dashboard,
     meta: {
-      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students"]
+      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students", "studentapp-cvs"]
     },
   },
   {
@@ -202,14 +199,21 @@ const routes = [
     component: () => import("../pages/StudentApp/StudentAppPrizeShop.vue"),
   },
   {
+    path: "/student-app/cvs",
+    name: "studentapp-cvs",
+    meta: { title: "Student CVs" },
+    component: () => import("../pages/StudentApp/StudentCVs.vue"),
+  },
+  {
     path: "/teams",
     name: "teams",
     meta: { title: "Teams", children: false },
     component: () => import("../pages/Teams/Teams.vue"),
   },
   {
-    path: "/teams/members/:externalid",
+    path: "/teams/members/:external_id",
     name: "teams-members",
+    props: true,
     meta: { title: "Team Members" },
     component: () => import("../pages/Teams/TeamMembers.vue"),
   },
@@ -237,20 +241,46 @@ const router = createRouter({
   },
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach(async (to, from) => {
   const userStore = useUserStore();
+  let expired = false;
 
   document.title = to.meta.title;
 
-  if (!userStore.loggedIn && to.name !== "login")
-    return { name: "login" };
-  
-  if (userStore.loggedIn && to.name !== "login") {
-    const routeName = router.getRoutes().find(rte => rte.path === ('/' + to.path.split('/')[1])).name;
-    if (!userStore.accessList[routeName])
-      return { name: "dashboard" }
+  // If navigating to login, don’t run auth logic
+  if (to.name === "login") {
+    return true;
   }
-  
+
+  // Check for token expiration and try refreshing
+  if (userStore.loggedIn && userStore.isTokenExpired()) {
+    try {
+      await userStore.refreshJWT();
+      expired = userStore.isTokenExpired();
+    } catch {
+      expired = true;
+    }
+  }
+
+  if (!userStore.loggedIn || expired) {
+    userStore.logoutUser();
+    return { name: "login" };
+  }
+
+  // Permissions
+  await userStore.verifyPermission();
+
+  const routeName = router.getRoutes().find(
+    rte => rte.path === '/' + to.path.split('/')[1]
+  )?.name;
+
+  if (routeName && !userStore.accessList[routeName]) {
+    return { name: "dashboard" };
+  }
+
+  return true;
 });
+
+
 
 export default router;

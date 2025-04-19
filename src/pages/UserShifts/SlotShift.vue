@@ -1,8 +1,14 @@
 <template>
-    <button @click="selectSlot" :class="isSelected ? 'slot-selected' : 'slot-not-selected'">
+    <div class="slot-scroll-container">
+      <button
+        @click="selectSlot"
+        :class="isSelected ? 'slot-selected' : 'slot-not-selected'"
+      >
         <p>{{ time }}</p>
-    </button>
+      </button>
+    </div>
 </template>
+  
 
 <script setup>
 import { defineProps, computed } from 'vue';
@@ -12,7 +18,7 @@ import { useSlotStore } from '../../stores/userShifts.js'; // Importe a store
 // Recebendo as props
 const props = defineProps({
     time: String,
-    day: String,
+    // day: String,
     weekDay: String,
 });
 
@@ -21,12 +27,12 @@ const slotStore = useSlotStore();
 
 // Computed property para verificar se o slot está selecionado
 const isSelected = computed(() =>
-    slotStore.isSelected(props.day, props.weekDay, props.time)
+    slotStore.isSelected(props.weekDay, props.time)
 );
 
 // Função para alternar a seleção de slots
 function selectSlot() {
-    slotStore.toggleSlot(props.day, props.weekDay, props.time);
+    slotStore.toggleSlot(props.weekDay, props.time);
 }
 </script>
 
@@ -38,7 +44,10 @@ function selectSlot() {
     background-color: #509CDB;
     border-radius: 10px;
     border: none;
-    height: 5%;
+    /* height: 5%; */
+    height: 40px;
+    margin: 5px;
+    width: 100px;
 }
 
 .slot-not-selected {
@@ -48,7 +57,10 @@ function selectSlot() {
     background-color: #EBF6FF;
     border-radius: 10px;
     border: none;
-    height: 5%;
+    /* height: 5%; */
+    height: 40px;
+    margin: 5px;
+    width: 100px;
 }
 
 p {
@@ -58,4 +70,10 @@ p {
     text-overflow: ellipsis;
     font-size: 15px;
 }
+
+button:active {
+  transform: scale(0.96);
+  /* background-color: #4782c0; */
+}
+
 </style>

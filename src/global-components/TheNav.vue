@@ -13,7 +13,7 @@
         <li>
           <router-link class="nav-link" activeClass="selected" @click="stateStore.sideNavOpen = false"
             :to="({ name: dashboardRoute.name })">
-            <img :src="'/src/assets/pages/' + dashboardRoute.name + '.svg'" aria-hidden="true"><span>{{
+            <img :src="iconMap[dashboardRoute.name]" aria-hidden="true"><span>{{
               dashboardRoute.meta.title }}</span>
           </router-link>
         </li>
@@ -22,7 +22,7 @@
           <li v-if="userStore.accessList[route.name]">
             <router-link class="nav-link" activeClass="selected" @click="stateStore.sideNavOpen = false"
               :to="({ name: route.name })">
-              <img :src="'/src/assets/pages/' + route.name + '.svg'" aria-hidden="true">
+              <img :src="iconMap[route.name]" aria-hidden="true">
               <span>{{ route.meta.title}}</span>
             </router-link>
             <ul class="child-routes" v-if="parentRoute.name === route.name && parentRoute.meta.children !== false">
@@ -37,10 +37,10 @@
 
       <div class="user">
         <div class="user-info">
-          <p>{{ name }}</p>
+          <p>{{ username }}</p>
           <p>{{ role }}</p>
         </div>
-        <button class="logout-button">Log out</button>
+        <button class="logout-button" @click="logout()">Log out</button>
       </div>
 
     </nav>
@@ -52,13 +52,14 @@ import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '../stores/user';
 import { useStateStore } from '../stores/state';
+import router from '../router';
 
 const stateStore = useStateStore();
 const Router = useRouter();
 const Route = useRoute();
 const dashboardRoute = Router.getRoutes().find(rte => rte.name === "dashboard");
 const userStore = useUserStore();
-const name = computed(() => userStore.name);
+const username = computed(() => userStore.username);
 const role = computed(() => userStore.role);
 
 const routes = computed(() => {
@@ -88,9 +89,32 @@ const childRoutes = computed(() => {
   return arr
 })
 
-function backCallback() {
-  (window.matchMedia("screen and (max-width: 700px)")) ? stateStore.sideNavOpen = false : Router.go(-1);
+function logout(){
+  userStore.logoutUser();
+  router.go();
 }
+
+function backCallback() {
+  if (window.matchMedia("screen and (max-width: 700px)").matches) {
+    stateStore.sideNavOpen = false;
+  } else {
+    router.go(-1);
+  }
+}
+
+// for the images to appear in prod
+const pageIcons = import.meta.glob('../assets/pages/*.svg', {
+  eager: true,
+  import: 'default',
+});
+
+const iconMap = {};
+for (const path in pageIcons) {
+  const fileName = path.split('/').pop().replace('.svg', '');
+  iconMap[fileName] = pageIcons[path];
+}
+
+
 </script>
 
 <style scoped>
