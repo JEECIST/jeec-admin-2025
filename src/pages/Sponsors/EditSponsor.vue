@@ -16,7 +16,7 @@
             <label for="name">Name</label>
             <input type="text" v-model="sponsorData.name"/>
           </div>
-          <div class="event-filter">
+          <div @change="responsibleFinder" class="event-filter">
             <label for="event">Event</label>
             <select class="selection-box" v-model="selectedEvent">
               <option v-for="event in events" :key="event.id" :value="event">{{ event.name }}</option>
@@ -47,10 +47,10 @@
           </div>
           <div class="second-column">
             <div class="form-line">
-              <div class="inputjeec">
+              <div v-if="jeec_responsible_flag" class="inputjeec">
                 <label for="jeecresponsible">JEEC Responsible</label>
                 <select class="selection-box-jeec" v-model="selectedColaborator">  
-                  <option v-for="responsible in colaborators" :key="responsible.id" :value="{id :responsible.id, name: responsible.name}">{{ responsible.name }}</option>
+                  <option v-for="responsible in colaborators_for_event" :key="responsible.id" :value="{id :responsible.id, name: responsible.name}">{{ responsible.name }}</option>
                 </select>
               </div>
             </div>
@@ -86,7 +86,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 const emit = defineEmits(['close'])
 var fileSelected = ref(null);
@@ -99,7 +99,6 @@ const props = defineProps({
   sponsorData: Object,
   events: Array,
   tiers: Array,
-  colaborators: Array
 })
 
 function onLogoSelected(event){
@@ -112,6 +111,11 @@ function onLogoSelected(event){
 const selectedEvent = ref(null);
 const selectedTier = ref(null);
 const selectedColaborator = ref(null);
+
+
+const colaborators_for_event = ref([])
+const jeec_responsible_flag = ref(true)
+
 
 
 
@@ -127,7 +131,8 @@ watch(() => props.sponsorData, (newVal) => {
     if (tier) {
       selectedTier.value = tier;
     }
-    const responsible = props.colaborators.find(c => c.name === newVal.jeec_responsible);
+
+    const responsible = colaborators_for_event.value.find(c => c.name === newVal.jeec_responsible);
     if (responsible) {
       selectedColaborator.value = responsible;
     }
@@ -164,6 +169,30 @@ function updateSponsor() {
         })
 }
 
+function responsibleFinder(){
+  let event_id = selectedEvent.value.id;
+  console.log(event_id)
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/colaborators', {event_id: event_id} ,{auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then(response => {
+          console.log("Response", response)
+          let colaborators = response.data.colaborators
+          if(colaborators.length > 0){
+            colaborators_for_event.value = colaborators;
+            jeec_responsible_flag.value = true;
+          }
+          const responsible = colaborators.find(c => c.name === props.sponsorData.jeec_responsible);
+          if (responsible) {
+            selectedColaborator.value = {
+              id: responsible.id,
+              name: responsible.name
+            };
+          }
+        })
+}
+
+onMounted(responsibleFinder)
 
 </script>
 

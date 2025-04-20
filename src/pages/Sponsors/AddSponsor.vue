@@ -18,7 +18,7 @@
           </div>
           <div class="event-filter">
             <label for="event">Event</label>
-            <select class="selection-box" v-model="eventselected">
+            <select @change="responsibleFinder" class="selection-box" v-model="eventselected">
                 <option v-for="event in events" :key="event.id" :value="{ id: event.id, name: event.name }">{{ event.name }}</option>
             </select>  
           </div>
@@ -46,10 +46,10 @@
           </div>
           <div class="second-column">
             <div class="form-line">
-              <div class="inputjeec">
+              <div v-if="jeec_responsible_flag" class="inputjeec">
                 <label for="jeecresponsible">JEEC Responsible</label>
                 <select class="selection-box-jeec" v-model="jeec_responsible">  
-                  <option v-for="responsible in colaborators" :key="responsible.id" :value="{ id: responsible.id, name: responsible.name }">{{ responsible.name }}</option>
+                  <option v-for="responsible in colaborators_for_event" :key="responsible.id" :value="{ id: responsible.id, name: responsible.name }">{{ responsible.name }}</option>
                 </select>
               </div>
             </div>
@@ -97,7 +97,6 @@ function closePopup() {
 const props = defineProps({
   events: Array,
   tiers: Array,
-  colaborators: Array
 })
 
 
@@ -113,7 +112,8 @@ var fileToUpload = ref(null)
 const show_in_website = ref('false')
 const logo_image = ref('')
 
-
+const colaborators_for_event = ref([])
+const jeec_responsible_flag = ref(false)
 
 
 
@@ -159,6 +159,22 @@ function addingSponsor(e) {
         })
         
       }
+
+function responsibleFinder(){
+  let event_id = eventselected.value.id;
+  console.log(event_id)
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/colaborators', {event_id: event_id} ,{auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }}).then(response => {
+          console.log("Response", response)
+          let colaborators = response.data.colaborators
+          if(colaborators.length > 0){
+            colaborators_for_event.value = colaborators;
+            jeec_responsible_flag.value = true;
+          }
+        })
+}
 
 </script>
 
