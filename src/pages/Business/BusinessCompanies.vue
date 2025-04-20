@@ -49,7 +49,6 @@
                 <img src="./imagens/edit.svg"/>
               </button>
               <button class="web-button" @click="irParaSite(selectedRow.website)">
-              <button class="web-button" @click="irParaSite(selectedRow.website)">
                 <img src="./imagens/web.svg"/>
               </button>
               <button class="bill-button" @click="irParaBills()">
@@ -423,108 +422,6 @@ function fetchCompanyImage() {
 
 // Chamando a função assim que o componente for montado
 onMounted(fetchCompanies);
-import { ref, onMounted } from 'vue';
-
-let companies = ref([]);
-let filteredCompanies = ref([]);
-const events = ref([]);
-const tiers = ref([]);
-const responsibles = ref([]);
-const default_event_id = ref();
-let selectedEvent = ref(null);
-const selectedRow = ref(null);
-
-let noCompanies = ref();
-
-let logo_image = ref('')
-
-let fileSelected = ref(null);
-let fileToUpload = ref(null);
-
-const fetchCompanies = () => {
-  axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{
-    event_id: selectedEvent.value
-  },{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-    }
-  })
-  .then((response)=>{
-
-    const data = response.data;
-
-    companies.value = data.companies;
-    events.value = data.events;
-    tiers.value = data.tiers;
-    responsibles.value = data.responsibles;
-
-    default_event_id.value = data.default_event_id;
-
-    selectedEvent = default_event_id.value.id;
-
-    // filterByEvent();
-  })
-  .catch((error)=>{
-    console.log(error);
-  })
-};
-
-function change_event(event) {
-  axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{
-    event_id: event
-  },{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-    }
-  })
-  .then((response)=>{
-
-    const data = response.data;
-
-    companies.value = data.companies;
-    events.value = data.events;
-    tiers.value = data.tiers;
-    responsibles.value = data.responsibles;
-
-    default_event_id.value = data.default_event_id;
-
-    // filterByEvent();
-  })
-  .catch((error)=>{
-    console.log(error);
-  })
-}
-
-function fetchCompanyImage() {
-  const f = new FormData();
-  f.append('external_id', selectedRow.value.external_id)
-
-  axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/image',f,{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      },responseType: 'blob'
-  })
-  .then((response) => {
-    // Verifica se a resposta contém dados
-    if (response.data) {
-      // Cria uma URL de objeto a partir do Blob e armazena em 'logo_image'
-      fileToUpload.value = response.data;
-      logo_image.value = URL.createObjectURL(response.data);
-    } else {
-      console.error('Imagem não encontrada');
-    }
-  })
-  .catch((error) => {
-    // Lida com erros, por exemplo, se a requisição falhar
-    console.error('Erro ao carregar imagem:', error);
-  });
-}
-
-// Chamando a função assim que o componente for montado
-onMounted(fetchCompanies);
 
 const message = ref('');
 const showAddCompanyModal = ref(false);
@@ -548,16 +445,6 @@ const newCompany = ref({
 });
 
 const days = ["2025-08-15", "2025-08-16", "2025-08-17", "2025-08-18", "2025-08-19", "2025-08-20"];
-  cv: 'No',
-  tier_id: '',
-  responsible_id: '',
-  days: '',
-  image: '',
-  changeimg: 'No',
-  external_id: '',
-});
-
-const days = ["2025-08-15", "2025-08-16", "2025-08-17", "2025-08-18", "2025-08-19", "2025-08-20"];
 
 const tablePref = {
   id: "ID",
@@ -565,7 +452,6 @@ const tablePref = {
   name: "Name",
   tier: "Tier",
   //username: "Username",
-  responsible: "JEEC Responsible"
   responsible: "JEEC Responsible"
 };
 
@@ -577,12 +463,6 @@ function selectCallback(row) {
     fetchCompanyImage();
     fetchCompanyImage();
   }
-}
-
-function resetCallback() {
-  selectedRow.value = null;
-  logo_image.value = '';
-  fileToUpload.value = '';
 }
 
 function resetCallback() {
@@ -616,33 +496,7 @@ function addCompany() {
           this.error = response.data
       })
 
-  setTimeout(fetchCompanies, 100);
-
-  
-  const new_company = new FormData();
-
-  new_company.append('name', newCompany.value.name)
-  new_company.append('event_id', newCompany.value.event_id)
-  new_company.append('email', newCompany.value.email)
-  new_company.append('website', newCompany.value.website)
-  new_company.append('username', newCompany.value.username)
-  new_company.append('cv', newCompany.value.cv)
-  new_company.append('tier_id', newCompany.value.tier_id)
-  new_company.append('responsible_id', newCompany.value.responsible_id)
-  new_company.append('days', newCompany.value.days)
-  if (fileToUpload.value) new_company.append('image', fileToUpload.value)
-
-  axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/create',new_company,{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      }
-  })
-  .then(response => {
-          this.error = response.data
-      })
-
-  setTimeout(fetchCompanies, 100);
+  setTimeout(fetchCompanies, 10);
 
   closeModal();
 }
@@ -724,44 +578,12 @@ function removeCompany(row) {
 
 };
 
-function filterByEvent() {
-  filteredCompanies.value = companies.value.filter(company => company.event_id == selectedEvent);
-  console.log(filteredCompanies)
-  console.log(companies)
-
-  if (filteredCompanies.value.length === 0) {
-    noCompanies = true; // Se o array estiver vazio, a flag é true
-  } else {
-    noCompanies = false; // Caso contrário, a flag é false
-  }
-}
-
 function onLogoSelected(event){
   fileSelected.value = event.target.files[0].name;
   fileToUpload.value = event.target.files[0];
   logo_image.value = URL.createObjectURL(event.target.files[0]);
   newCompany.value.changeimg = 'Yes';
 }
-
-  const delete_company = new FormData();
-
-  delete_company.append('external_id', selectedRow.value.external_id)
-
-  axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/delete',delete_company,{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      }
-  })
-  .then(response => {
-          this.error = response.data
-      })
-
-  resetCallback();
-
-  setTimeout(fetchCompanies, 100);
-
-};
 
 function filterByEvent() {
   filteredCompanies.value = companies.value.filter(company => company.event_id == selectedEvent);
@@ -773,13 +595,6 @@ function filterByEvent() {
   } else {
     noCompanies = false; // Caso contrário, a flag é false
   }
-}
-
-function onLogoSelected(event){
-  fileSelected.value = event.target.files[0].name;
-  fileToUpload.value = event.target.files[0];
-  logo_image.value = URL.createObjectURL(event.target.files[0]);
-  newCompany.value.changeimg = 'Yes';
 }
 
 function irParaSite(site) {
