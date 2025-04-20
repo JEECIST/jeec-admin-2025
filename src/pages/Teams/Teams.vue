@@ -111,14 +111,16 @@
                   <div class="form-group">
                     <label class="custom-file-upload">
                       Picture:
-                      <input type="file" @change="handleFileChange" class="file-input" ref="fileInput" style="display: none;" />
-                      <div class="small-quadrado" @click="triggerFileInput">
-                        <label class="centrado">{{ selectedFile ? selectedFile.name : 'No picture selected' }}</label>
-                      </div>
-                      <div class="ultline">
-                        <button type="button" class="left-add" @click="triggerFileInput">Add Picture</button>
-                        <button @click="saveNewTeam" class="right-add">Add</button>
-                      </div>
+                      <form @submit.prevent="saveNewTeam">
+                          <input type="file" @change="handleFileChange" class="file-input" ref="fileInput" style="display: none;" />
+                          <div class="small-quadrado" @click="triggerFileInput">
+                            <label class="centrado">No picture selected</label>
+                          </div>
+                          <div class="ultline">
+                            <button type="button" class="left-add" @click="triggerFileInput">Add Picture</button>
+                            <button type="submit" class="right-add">Save</button>
+                          </div>
+                      </form>
                     </label>
                   </div>
                 </div>
@@ -275,26 +277,8 @@ export default {
         }
       }).then(response => {
         const data = response.data;
-        this.teams = data.teams.map(team => ({
-          ...team,
-          priority: team.website_priority || 0,
-          members: 0 , 
-        }));
+        this.teams = data.teams;
         this.events = data.events;
-        this.teams.forEach(team => {
-          axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/members', { external_id: team.external_id }, {
-            auth: {
-              username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-              password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-            }
-          }).then(response => {
-            const members = response.data.team.members || [];
-            const index = this.teams.findIndex(t => t.external_id === team.external_id);
-            if (index !== -1) {
-              this.teams[index].members = members.length; // Atualizar o número de membros
-            }
-          });
-        });
       });
     },
     TeamMembers(external_id) {
@@ -313,18 +297,9 @@ export default {
           },
         }
       ).then(response => {
-        console.log(response.data);
         this.image = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image;
-        console.log(this.image);
       });
     },
-    // blobToBase64(blob, callback) {
-    //   const reader = new FileReader();
-    //   reader.onloadend = () => {
-    //     callback(reader.result);
-    //   };
-    //   reader.readAsDataURL(blob);
-    // },
     selectTeam(row) {
       this.selectedTeam = row;
       this.selectedEvent = row.event;
@@ -345,41 +320,32 @@ export default {
       this.showEditPopup = true;
     },
     saveEdit(external_id) {
-      const equip = {
-        external_id: external_id,
-        old_name: this.selectedTeam.name,
-        old_event_name: this.selectedTeam.event,
-        name: this.editTeam.name,
-        description: this.editTeam.description,
-        website_priority: this.editTeam.priority,
-        members: this.editTeam.members,
-        event_name: this.editTeam.event
-      };
-      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/updateteam', equip, {
+      const formData = new FormData();
+      formData.append("name", this.editTeam.name);
+      formData.append("description", this.editTeam.description);
+      formData.append("website_priority", this.editTeam.priority);
+      formData.append("event_name", this.editTeam.event);
+      formData.append("external_id", external_id);
+      if (this.selectedFile) {
+        formData.append("fd", this.selectedFile);
+      }
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/updateteam', formData,
+      {
         auth: {
           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }
-      }).then(response => {
-        const updatedTeam = response.data.team;
-        // renovar selected team 
-        if (updatedTeam && updatedTeam.external_id) {
-          const index = this.teams.findIndex(team => team.external_id === updatedTeam.external_id);
-          if (index !== -1) {
-            this.teams.splice(index, 1, updatedTeam);
-            this.selectedTeam = { ...updatedTeam };
-            this.selectedTeam.members = updatedTeam.members;
-          } else {
-            this.teams.push(updatedTeam);
-          }
-          this.selectedTeam = { ...this.editTeam };
-          this.selectedTeam.members = this.editTeam.members;
-          this.fetchTeams();
-          this.closeEditPopup();
-          if (window.innerWidth <= 768) {
-            this.showPopup = false;
-          }
-        }
+      }).then((response) => {
+        const updatedTeam = response.data;
+        console.log(updatedTeam);
+        this.teams.push ({
+          ...updatedTeam,
+          website_priority: this.editTeam.priority,
+          description: this.editTeam.description,
+        });
+        this.fetchTeams();
+        this.closeEditPopup();
+        this.closePopup();
       });
     },
     openAddPopup() {
@@ -392,38 +358,45 @@ export default {
       this.showEditPopup = false;
     },
     saveNewTeam() {
-      const new_equip = {
-        name: this.newTeamName,
-        description: this.newTeamDescription,
-        website_priority: this.newTeamPriority,
-        event_id: this.newTeamEvent,
-        members: this.newTeamMembers,
-        //undefined
-        // image: this.selectedTeam.imageUrl
-      };
-      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/new-team-vue', new_equip ,{
+      const formData = new FormData();
+      formData.append("name", this.newTeamName);
+      formData.append("description", this.newTeamDescription);
+      formData.append("website_priority", this.newTeamPriority);
+      formData.append("event_id", this.newTeamEvent);
+      formData.append("members", this.newTeamMembers);
+      if (this.selectedFile) {
+        formData.append("team_image", this.selectedFile);
+      }
+  
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/new-team-vue', formData ,{
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
         auth: {
           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         } 
       }).then(response => {
-        const newTeam = response.data.team;
+        const newTeam = response.data;
+        console.log(newTeam);
         this.teams.push({
           ...newTeam,
           priority: this.newTeamPriority,
           members: this.newTeamMembers,
-          imageUrl: this.selectedTeam.image_url
+          image: response.data.image,
         });
-        // console.log(this.selectedTeam.image_url);
         this.fetchTeams();
         this.closeAddPopup();
-        this.newTeamName = '';
-        this.newTeamEvent = '';
-        this.newTeamPriority = '';
-        this.newTeamDescription = '';
-        this.newTeamMembers = '';
-        this.selectedFile = null;
+        this.resetNewTeamForm();
       });
+    },
+    resetNewTeamForm() {
+      this.newTeamName = '';
+      this.newTeamEvent = '';
+      this.newTeamPriority = '';
+      this.newTeamDescription = '';
+      this.newTeamMembers = '';
+      this.selectedFile = null;
     },
     handleFileChange(event) {
       this.selectedFile = event.target.files[0];

@@ -25,7 +25,7 @@
             <div class="scrollbar">
               <TheTable
                 :data="filteredMembers"
-                :tableHeaders="{ name: 'Name', username: 'Username', userRole: 'User Role', shifts: 'Shifts' }"
+                :tableHeaders="{ name: 'Name', username: 'Username', userRole: 'User Role'}"
                 :searchInput="searchQuery"
                 @onRowSelect="selectMember"
               />
@@ -40,7 +40,7 @@
               <button class="closeX" @click="closePopup">&times;</button>
               <div class="popup-content">
                 <div class="fotobola">
-                  <img v-if="imageUrl" :src="imageUrl" alt="Member Image" />
+                  <img :src="image" />
                 </div>
                 <h2 class="subtitulo">{{ selectedMember.name }}</h2>
                 <p class="sub-subtitulo">{{ selectedMember.userRole }}</p>
@@ -53,8 +53,8 @@
                       <img src="../../assets/linkedin.svg" alt="Team" />
                     </a>
                   </button>
-                  <button class="edit" @click="deleteMember(selectedMember.id)">
-                    <img src="../../assets/trash.svg" alt="Delete" />
+                  <button class="edit" @click="deleteMember(selectedMember.external_id)">
+                    <img src="/home/code/jeec-admin-2025/src/assets/trash.svg" alt="Delete" />
                   </button>
                 </div>
                 <p class="descricao">Email:</p>
@@ -63,14 +63,12 @@
                 </p>
                 <p class="descricao">Linkedin:</p>
                 <p class="inf1">
-                  {{ selectedMember.linkedin }}
+                  {{ selectedMember.linkedin_url }}
                 </p>
                 <div class="linha">
-                  <p class="direita">Shifts:</p>
                   <p class="direita">User Role:</p>
                 </div>
                 <div class="linha">
-                  <p class="opaco">{{ selectedMember.shifts }}</p>
                   <p class="opaco">{{ selectedMember.userRole }}</p>
                 </div>
               </div>
@@ -82,26 +80,50 @@
               <div class="edit-popup-content">
                 <h2>Edit Member</h2>
                 <button key="closeX" class="closeX" @click="closeEditPopup">&times;</button>
-                <div class="pos">
-                  <form @submit.prevent="saveEdit">
-                    <label for="name" class="Add-name">Name:
+                <form @submit.prevent="saveEdit">
+                  <div class="primline">
+                    <div class="Add-priority">
+                      <label for="name" class="">Name:</label>
                       <input type="text" v-model="editMember.name" id="name" required />
-                    </label>
-                    <label for="event" class="Add-name">User Name:
-                      <input type="text" v-model="editMember.username" id="event" required />
-                    </label>
-                    <label for="priority" class="Add-name">Email:
-                      <input type="text" v-model="editMember.email" id="priority" required />
-                    </label>
-                    <label for="members" class="Add-name">User Role:
-                      <input type="text" v-model="editMember.userRole" id="members" required />
-                    </label>
-                    <label for="shifts" class="Add-name">Shifts:
-                      <input type="number" v-model="editMember.shifts" id="shifts" required />
-                    </label>
-                    <button type="submit" class="add-team">Save</button>
-                  </form>
-                </div>
+                    </div>
+                    <div class="Add-priority">
+                      <label for="username" class="">Username:</label>
+                      <select v-model="editMember.username" id="username">
+                        <option v-for="user in user_list" :key="user.id" :value="user.id"> 
+                          {{ user.username }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="primline">
+                    <div class="Add-priority">
+                      <label for="email" class="">Email:</label>
+                      <input type="text" v-model="editMember.email" id="email" required />
+                    </div>
+                    <div class="Add-priority">
+                      <label for="linkedin" class="">Linkedin:</label>
+                      <input type="text" v-model="editMember.linkedin_url" id="linkedin" required />
+                    </div>
+                  </div>
+                  <div class="primeline">
+                    <div class="form-group">
+                      <label class="custom-file-upload">
+                        Picture:
+                        <input type="file" @change="handleFileChange" class="file-input" ref="fileInput" style="display: none;" />
+                        <div class="small-quadrado" @click="triggerFileInput">
+                          <label class="centrado">
+                            No picture selected
+                            <img :src="image" />
+                          </label>
+                        </div>
+                        <div class="ultline">
+                          <button type="button" class="left-add" @click="triggerFileInput">Change Picture</button>
+                          <button type="submit" class="right-add">Save</button>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
@@ -113,43 +135,41 @@
                 <button key="closeX" class="closeX" @click="closeAddPopup">&times;</button>
                 <form @submit.prevent="saveNewMember"> 
                   <div class="primline">
-                    <div class="Add-name">
+                    <div class="Add-priority">
                       <label for="name" class="">Name:</label>
                       <input type="text" v-model="newMemberName" id="name" required />
                     </div>
                     <div class="Add-priority">
-                      <label for="username" class="">User Name:</label>
-                      <input type="text" v-model="newMemberUsername" id="username" required />
+                      <label for="username" class="">Username:</label>
+                      <select v-model="newMemberUsername" id="username">
+                        <option v-for="user in user_list" :key="user.id" :value="user.id"> 
+                          {{ user.username }}
+                        </option>
+                      </select>
                     </div>
-                  </div>
-                  <div class="primline">
                     <div class="Add-priority">
                       <label for="email" class="">Email:</label>
                       <input type="text" v-model="newMemberEmail" id="email" required />
                     </div>
                     <div class="Add-priority">
-                      <label for="userRole" class="">User Role:</label>
-                      <input type="text" v-model="newMemberUserRole" id="userRole" required />
-                    </div>
-                  </div>
-                  <div class="primline">
-                    <div class="Add-priority">
-                      <label for="shifts" class="">Shifts:</label>
-                      <input type="number" v-model="newMemberShifts" id="shifts" required />
+                      <label for="linkedin" class="">Linkedin:</label>
+                      <input type="text" v-model="newMemberLinkedin" id="linkedin" required />
                     </div>
                   </div>
                   <div class="primeline">
                     <div class="form-group">
                       <label class="custom-file-upload">
                         Picture:
-                        <input type="file" @change="handleFileChange" class="file-input" ref="fileInput" style="display: none;" />
-                        <div class="small-quadrado" @click="triggerFileInput">
-                          <label class="centrado">{{ selectedFile ? selectedFile.name : 'No picture selected' }}</label>
-                        </div>
-                        <div class="ultline">
-                          <button type="button" class="left-add" @click="triggerFileInput">Add Picture</button>
-                          <button type="submit" class="right-add">Save</button>
-                        </div>
+                        <form @submit.prevent="saveNewMember">
+                          <input type="file" @change="handleFileChange" class="file-input" ref="fileInput" style="display: none;" />
+                          <div class="small-quadrado" @click="triggerFileInput">
+                            <label class="centrado">No picture selected</label>
+                          </div>
+                          <div class="ultline">
+                            <button type="button" class="left-add" @click="triggerFileInput">Add Picture</button>
+                            <button type="submit" class="right-add">Save</button>
+                          </div>
+                        </form>
                       </label>
                     </div>
                   </div>
@@ -193,10 +213,12 @@ export default {
       newMemberUserRole: '',
       newMemberShifts: '',
       newMemberIstId: '',
+      newMemberLinkedin: '',
       newMemberBackground: false,
       selectedFile: null,
-      imageUrl: null,
+      image: null,
       selectedTeamId: null,
+      user_list: [],
     };
   },
   computed: {
@@ -220,11 +242,59 @@ export default {
         const data = response.data;
         this.members = data.team.members.map(member => ({
           ...member,
-          username: member.username || 'N/A',
-          userRole: member.userRole || 'N/A',
+          username: member.username || "N/A",
+          userRole: member.userRole || "N/A",
           shifts: member.shifts || 0,
-          member_id: member.id,
+          email: member.email || "N/A",
+          linkedin_url: member.linkedin_url || "N/A",
         }));
+      });
+    },
+    saveNewMember() {
+      const formData = new FormData();
+      formData.append("name", this.newMemberName);
+      formData.append("external_id", this.external_id);
+      formData.append("ist_id", this.newMemberIstId || "");
+      formData.append("email", this.newMemberEmail);
+      formData.append("linkedin_url", this.newMemberLinkedin || "");
+      formData.append("background_bool", this.newMemberBackground ? "True" : "False");
+      if (this.selectedFile) {
+        formData.append("fd", this.selectedFile);
+      }
+
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/new-member', formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+      })
+      .then((response) => {
+        const newMember = response.data;
+        this.members.push({
+          name: newMember.name || "N/A",
+          image: newMember.image || null,
+          email: newMember.email || "N/A",
+          linkedin_url: newMember.linkedin_url || "N/A",
+          external_id: newMember.external_id || "N/A",
+        });
+        this.fetchMembers();
+        this.closeAddPopup();
+      });
+    },
+    fetchMemberImage(external_id) {
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/getimagemember', 
+        { member_external_id: external_id },
+        {
+          auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+          },
+        }
+      ).then(response => {
+        this.image = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image;
       });
     },
     handleEventChange() {
@@ -233,6 +303,7 @@ export default {
     selectMember(row) {
       this.selectedMember = row;
       this.showPopup = true;
+      this.fetchMemberImage(row.external_id);
     },
     closePopup() {
       this.showPopup = false;
@@ -242,54 +313,59 @@ export default {
       this.showPopup = false;
     },
     editButton() {
+      console.log(this.selectedMember);
       this.editMember = { ...this.selectedMember }; 
       this.showEditPopup = true;
     },
     saveEdit() {
-      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/updatemember', {
-        id: this.editMember.id,
-        name: this.editMember.name,
-        username: this.editMember.username,
-        email: this.editMember.email,
-        userRole: this.editMember.userRole,
-        shifts: this.editMember.shifts
-      }, {
-        auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        }
-      }).then(response => {
-        const updatedMember = response.data.member;
-        const index = this.members.findIndex(member => member.id === updatedMember.id);
-        if (index !== -1) {
-          this.members.splice(index, 1, updatedMember);
-          this.selectedMember = { ...updatedMember };
-        } else {
-          this.members.push(updatedMember);
-        }
-        this.showEditPopup = false;
-        if (window.innerWidth <= 768) {
-          this.showPopup = false;
-        }
-      });
-    },
-    closeEditPopup() {
-      this.showEditPopup = false;
-    },
-    deleteMember(memberId) {
-      const payload = {
-        member_external_id: memberId, 
-      };
-      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/delete_team_member', payload, {
+      const formData = new FormData();
+      formData.append("name", this.editMember.name);
+      formData.append("external_id", this.external_id);
+      formData.append("ist_id", this.editMember.ist_id || "");
+      formData.append("email", this.editMember.email);
+      formData.append("linkedin_url", this.editMember.linkedin_url || "");
+      formData.append("background_bool", this.editMember.background_bool ? "True" : "False");
+      formData.append("member_external_id", this.selectedMember.external_id);
+
+      if (this.selectedFile) {
+        formData.append("fd", this.selectedFile);
+      }
+
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/update_team_member', formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
         auth: {
           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
         },
       })
       .then(() => {
-        this.members = this.members.filter(member => member.id !== memberId); // Remove o membro da lista local
-        this.fetchMembers(); // Atualiza a lista de membros
-        this.closePopup(); // Fecha o popup
+        this.fetchMembers();
+        this.closeEditPopup();
+        this.closePopup();
+      });
+    },
+    closeEditPopup() {
+      this.showEditPopup = false;
+    },
+    deleteMember(external_id) {
+      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/delete_team_member',
+        {
+          member_external_id: external_id,
+          external_id: this.external_id,
+        },
+        {
+          auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+          },
+        }
+      )
+      .then(() => {
+        this.members = this.members.filter(member => member.external_id !== external_id);
+        this.fetchMembers();
+        this.closePopup();
       });
     },
     TeamMembers() {
@@ -297,42 +373,25 @@ export default {
     },
     openAddPopup() {
       this.showAddPopup = true;
+      axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/get_users',
+        {
+          auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+          },
+        }
+      )
+      .then((response) => {
+        const users = response.data.users;
+        this.user_list = users.map(user => ({
+          id: user.id,
+          username: user.username,
+        }));
+      });
+      this.image = null;
     },
     closeAddPopup() {
       this.showAddPopup = false;
-    },
-    saveNewMember() {
-      const new_member = {
-        name: this.newMemberName,
-        username: this.newMemberUsername,
-        email: this.newMemberEmail,
-        userRole: this.newMemberUserRole,
-        shifts: this.newMemberShifts,
-        external_id: this.external_id,
-        image: this.selectedFile ? this.selectedFile : null,
-      };
-
-      axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/team/new-member', new_member, {
-        auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
-        },
-      })
-      .then((response) => {
-        const newMember = response.data.member;
-        this.members.push({
-          ...newMember,
-          username: newMember.username || 'N/A',
-          userRole: newMember.userRole || 'N/A',
-          shifts: newMember.shifts || 0,
-        });
-        this.fetchMembers(); // Atualiza a lista de membros
-        this.closeAddPopup(); // Fecha o popup de adição
-        this.resetNewMemberForm(); // Reseta os campos do formulário
-      })
-      .catch((error) => {
-        console.error('Error adding new member:', error);
-      });
     },
     resetNewMemberForm() {
       this.newMemberName = '';
@@ -344,7 +403,7 @@ export default {
     },
     handleFileChange(event) {
       this.selectedFile = event.target.files[0];
-      this.imageUrl = URL.createObjectURL(this.selectedFile);
+      this.image = URL.createObjectURL(this.selectedFile);
     },
     triggerFileInput() {
       this.$refs.fileInput.click();
@@ -595,6 +654,13 @@ export default {
   margin-top: 3vh;
 }
 
+.fotobola img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .display {
   display: flex;
   justify-content: space-between;
@@ -655,6 +721,7 @@ export default {
   position: relative;
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  width: 60%;
 }
 
 .edit-popup-content {
@@ -686,14 +753,6 @@ export default {
   margin-top: 0.625rem;
 }
 
-.editpopup {
-  font-size: 1rem;
-  font-weight: bold;
-  color: var(--c-text);
-  margin-top: 0.625rem;
-  margin-bottom: 0.3125rem;
-}
-
 .scrollbar {
   overflow-y: auto;
   height: calc(100% - 21vh);
@@ -702,18 +761,28 @@ export default {
 .primline {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-between;
   width: 100%;
-  gap: 2.5%;
 }
 
-.Add-name, .Add-event, .Add-priority {
+.Add-event, .Add-priority {
   display: flex;
   flex-direction: column;
   margin-top: 0.9375rem;
+  width: 20em;
 }
 
-.Add-name input, .Add-priority input {
+.Add-priority input {
+  width: 20em;
+  height: 2.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.Add-priority > select {
   height: 2.5rem;
   border: 1px solid #ccc;
   border-radius: 0.625rem;
