@@ -84,8 +84,8 @@
       </div>
     </div>
 
-    <AddSponsor v-if="isaddsponsor" @close="toogleadd" :events="events" :tiers="tiers" :isOpen="isaddsponsor" :colaborators="colaborators"/>
-    <EditSponsor v-if="iseditsponsor" @close="toogleedit" :sponsorData="selectedRow" :events="events" :tiers="tiers" :isOpen="iseditsponsor" :colaborators="colaborators"/>
+    <AddSponsor v-if="isaddsponsor" @close="toogleadd" :events="events" :tiers="tiers" :isOpen="isaddsponsor"/>
+    <EditSponsor v-if="iseditsponsor" @close="toogleedit" :sponsorData="selectedRow" :events="events" :tiers="tiers" :isOpen="iseditsponsor"/>
    
   </div>
   
@@ -106,7 +106,6 @@ const originalTableData = ref([])
 
 const events = ref([])
 const tiers = ref([])
-const colaborators = ref([])
 
 const fetchData = () => {
   axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/sponsors_vue',{auth: {
@@ -118,9 +117,6 @@ const fetchData = () => {
 
       tiers.value = response.data.tiers
       console.log("Tiers",tiers.value)
-
-      colaborators.value = response.data.colaborators
-      console.log("Colaborators",colaborators.value)
 
       originalTableData.value = response.data.sponsors
       tableData.value = response.data.sponsors
