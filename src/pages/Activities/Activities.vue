@@ -3,11 +3,14 @@
     <div class="no-events" v-if="tableData.length === 0">
       <div class="buttons">
         <div class="event-label">
-          <p>Event</p>
-          <select class="selection-box" v-model="eventselected">
-            <option value="all">All</option>
-            <option value="JEEC 23/24">JEEC 23/24</option>
-            <option value="JEEC 24/25">JEEC 24/25</option>
+          <td class="px-4 py-2 border text-center" style="user-select: none;">
+            Event
+          </td>
+          <select class="selection-box" v-model="eventselected" @change="fetchAllByEvent">
+            <option value="" selected disabled hidden>Select Event</option>
+            <option v-for="event in eventsNames" :key="event.id" :value="event.id">
+              {{ event.name }}
+            </option>
           </select>
         </div>
         <button class="add-btn" @click="addPopUp">Add Activity</button>
@@ -21,11 +24,14 @@
       <div class="table-with-buttons" v-if="tableData.length > 0 && !(isMobile && showDashboard)">
         <div class="buttons">
           <div class="event-label">
-          <p>Event</p>
-          <select class="selection-box" v-model="eventselected">
-            <option value="all">All</option>
-            <option value="JEEC 23/24">JEEC 23/24</option>
-            <option value="JEEC 24/25">JEEC 24/25</option>
+            <td class="px-4 py-2 border text-center" style="user-select: none;">
+              Event
+            </td>
+          <select class="selection-box" v-model="eventselected" @change="fetchAllByEvent">
+            <option value="" selected disabled hidden>Select Event</option>
+            <option v-for="event in eventsNames" :key="event.id" :value="event.id">
+              {{ event.name }}
+            </option>
           </select>
           </div>
           <button class="add-btn" @click="addPopUp">Add Activity</button>
@@ -41,7 +47,7 @@
         </div>
       </div>
     </div>
-    <div class="right-popup" v-if="showDashboard">
+    <div class="right-popup" v-if="showDashboard" :class="{ 'mobile-popup': isMobile }">
       <div class="right-popup-header">
         <button @click="closeDashboard" class="close-btn">×</button>
         <h1 class="dbWeekday">{{ selectedRow.Weekday }}</h1>
@@ -51,8 +57,8 @@
             <p class="right-popup-subtitle">Activities</p>
           </div>
           <div class="right-popup-buttons">
-            <button @click="goToActivitiesDay" class="image-button">
-              <img src="../../assets/sheet.svg">
+            <button @click="goToActivitiesDay(selectedRow.Date, selectedRow.EventDay_External_ID, eventselected)" class="image-button">
+              <img src="../../assets/sheet.svg" alt="Go to Activities Day">
             </button>
           </div>
           <div class="right-popup-body">
@@ -82,74 +88,116 @@
 
         <div class="form-group activity-type-group">
             <label for="activity-type">Activity Type:</label>
-            <select id="activity-type" name="activity-type" v-model="newActivity.type">
-              <option value="" selected disabled hidden>Select Activity</option>
-              <option v-for="type in activityTypes" :key="type" :value="type">{{ type }}</option>
-            </select>
+            <multiselect
+              v-model="newActivity.type"
+              :options="activityTypesNames"
+              :multiple="false"
+              :close-on-select="true"
+              :clearable="true"
+              placeholder="Select activity type"
+              label="name"
+              track-by="external_id"
+            >
+            </multiselect>
         </div>
 
         <div class="form-group description-group">
             <label for="description">Description:</label>
-            <textarea id="description" name="description" v-model="newActivity.description"></textarea>
+            <input type="text" id="description" name="description" v-model="newActivity.description">
         </div>
 
         <div class="form-group">
-            <label for="day">Day:</label>
-            <select id="day" name="day" v-model="newActivity.day">
-              <option value="" selected disabled hidden>Select day</option>
-              <option value="19">19</option>
-              <option value="20">20</option>
-              <option value="21">21</option>
-              <option value="22">22</option>
-              <option value="23">23</option>
-            </select>
+          <label for="day">Day:</label>
+          <multiselect
+            v-model="newActivity.selectedDay"
+            :options="tableData"
+            :multiple="false"
+            :close-on-select="true"
+            :clearable="true"
+            placeholder="Select day"
+            label="Date"
+            track-by="Date"
+          >
+          </multiselect>
         </div>
 
         <div class="form-group">
             <label for="start-time">Start Time:</label>
-            <input type="text" id="start-time" name="start-time" v-model="newActivity.startTime">
+            <input type="time" id="start-time" name="start-time" v-model="newActivity.startTime">
         </div>
 
         <div class="form-group">
             <label for="end-time">End Time:</label>
-            <input type="text" id="end-time" name="end-time" v-model="newActivity.endTime">
+            <input type="time" id="end-time" name="end-time" v-model="newActivity.endTime">
         </div>
 
         <div class="form-group">
             <label for="qr-code">End Time QR Codes:</label>
-            <input type="text" id="qr-code" name="qr-code" v-model="newActivity.qrCode">
+            <input type="time" id="qr-code" name="qr-code" v-model="newActivity.qrCode">
         </div>
 
         <div class="form-group">
-            <label for="companies">Choose Companies:</label>
-            <select id="companies" name="companies" v-model="newActivity.companie">
-              <option value="" selected disabled hidden>Select Company</option>
-              <option v-for="companies in companiesNames" :key="companies" :value="companies">{{ companies }}</option>
-            </select>
+          <label for="companies">Choose Companies:</label>
+            <multiselect
+              v-model="newActivity.companies"
+              :options="companiesNames"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="false"
+              :preserve-search="true"
+              placeholder="Search..."
+              search-placeholder="Search..."
+              label="name"
+              track-by="external_id"
+            >
+            </multiselect>
         </div>
 
         <div class="form-group">
-            <label for="volunteers">Choose Volunteers:</label>
-            <select id="volunteers" name="volunteers" v-model="newActivity.volunteers">
-              <option value="" selected disabled hidden>Select Activity</option>
-              <option v-for="type in activityTypes" :key="type" :value="type">{{ type }}</option>
-            </select>
+          <label for="volunteers">Choose Volunteers:</label>
+            <multiselect
+              v-model="newActivity.volunteers"
+              :options="volunteersNames"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="false"
+              :preserve-search="true"
+              placeholder="Search..."
+              label="name"
+              track-by="id"
+            >
+            </multiselect>
         </div>
 
         <div class="form-group">
-            <label for="speakers">Choose Speakers:</label>
-            <select id="speakers" name="speakers" v-model="newActivity.speakers">
-              <option value="" selected disabled hidden>Select Activity</option>
-              <option v-for="name in speakersNames" :key="name" :value="name">{{ name }}</option>
-            </select>
+          <label for="speakers">Choose Speakers:</label>
+            <multiselect
+              v-model="newActivity.speakers"
+              :options="speakersNames"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="false"
+              :preserve-search="true"
+              placeholder="Search..."
+              label="name"
+              track-by="external_id"
+            >
+            </multiselect>
         </div>
 
         <div class="form-group">
-            <label for="reward">Choose Reward:</label>
-            <select id="reward" name="reward" v-model="newActivity.reward">
-              <option value="" selected disabled hidden>Select Activity</option>
-              <option v-for="type in activityTypes" :key="type" :value="type">{{ type }}</option>
-            </select>
+            <label for="prize">Choose Prizes:</label>
+            <multiselect
+              v-model="newActivity.prize"
+              :options="prizes"
+              :multiple="false"
+              :close-on-select="true"
+              :clearable="true"
+              placeholder="Select prize"
+              label="name"
+              track-by="external_id"
+            >
+            </multiselect>
         </div>
 
         <div class="form-actions">
@@ -167,176 +215,207 @@ import axios from 'axios';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import TheTable from '../../global-components/TheTable.vue';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 
-// nomeDoEvento = "teste"; isto é important, mas esta a dar erro agr
+const tableData = ref([]);
 
-
-
-const tableData = ref([{ Date: '19-02-2024', Weekday: 'Monday',    NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-  { Date: '20-02-2024', Weekday: 'Tuesday',   NumberActivities: 9, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-  { Date: '21-02-2024', Weekday: 'Wednesday', NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-  { Date: '22-02-2024', Weekday: 'Thursday',  NumberActivities: 9, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-  { Date: '23-02-2024', Weekday: 'Friday',    NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},]);
-
-const activityTypes = ref([]);
+const eventsNames = ref([]);
+const activityTypesNames = ref([]);
 const companiesNames = ref([]);
 const speakersNames = ref([]);
-const name = ref("");
+const volunteersNames = ref([]);
+const defaultEventName = ref('');
+const defaultEventId = ref('');
+const eventselected = ref('');
+const EventDays = ref([]);
+const prizes = ref([]);
 
-const fetchData = () => {
-    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities_vue', {
-          event_id:"31cd68cf-ac76-4ae5-b9f3-434988d2556f",
-          username:"Rafa",
-        },{
-          auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        }}).then((response)=>{
-          const data = response.data
-          console.log(data)
-        })
-}
-
-const fetchActivityTypesNames = async () => {
+const fetchAllFromEventsDefault = async () => {
   try {
-    const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/get_name_types', {
+    const response = await axios.get(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/activities/get_all_from_event_default`, {
       auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      }
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
     });
 
-    console.log('Activity Types:', response.data);
-    activityTypes.value = response.data.types; // Armazena os tipos de atividades
+    eventsNames.value = response.data.all_events.map((event) => ({
+      id: event.id,
+      name: event.name,
+    }));
 
-    console.log(activityTypes.value); // Verifica se está preenchendo corretamente
+    if (response.data.default_event) {
+      defaultEventId.value = response.data.default_event.id;
+      defaultEventName.value = response.data.default_event.name;
+
+      eventselected.value = defaultEventId.value;
+
+      await fetchAllByEvent();
+    }
   } catch (error) {
-    console.error('Error fetching activity types:', error);
+    console.error("Error fetching all events:", error);
+
+    if (error.response && error.response.data.error) {
+      alert(error.response.data.error);
+    } else {
+      alert("Failed to fetch events.");
+    }
   }
-}
+};
 
+const fetchAllByEvent = async () => {
+  if (!eventselected.value) {
+    console.error("Event parameter is missing.");
+    alert("Please select an event.");
+    return;
+  }
 
+  closeDashboard();
 
-// const fetchCompaniesNames = async () => {
-//   try {
-//     const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies/companies/get_name', {
-//       auth: {
-//         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-//         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-//       }
-//     });
-
-//     console.log('Companies Names:', response.data);
-//     companiesNames.value = response.data.name;
-//     console.log(companiesNames.value);
-//   } catch (error) {
-//     console.error('Error fetching companies names:', error);
-//   }
-// }
-
-
-const fetchCompaniesNames = async () => {
   try {
-    const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue', {
+    const response = await axios.get(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/activities/get_all_by_event`, {
+      params: {
+        event_id: eventselected.value,
+      },
       auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      }
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
     });
-    companiesNames.value = response.data.companies
-    console.log('Companies Names:', companiesNames.value);
 
-    // if (response.data.error == 'No sponsors found'){
-    //     noSponsors.value = true
-    //   }
+    tableData.value = response.data.event_days.map((eventDay) => ({
+      EventDay_External_ID: eventDay.external_id,
+      Date: new Date(eventDay.day).toLocaleDateString("en-GB"), // Formato DD/MM/YYYY
+      Weekday: new Date(eventDay.day).toLocaleDateString("en-US", { weekday: "long" }),
+      NumberActivities: eventDay.n_real_activities,
+      NumberJobFair: eventDay.n_job_fair,
+      Logo: "src/assets/wrizz.jpg",
+    }))
+    .sort((a, b) => {
+      // Ordena as datas em ordem crescente
+      const dateA = new Date(a.Date.split('/').reverse().join('-'));
+      const dateB = new Date(b.Date.split('/').reverse().join('-'));
+      return dateA - dateB;
+    });
 
-  } catch (error) {
-    console.error('Error fetching companies names:', error);
-  }
-}
+    EventDays.value = response.data.event_days.map((eventDay) => ({
+        Date: new Date(eventDay.day).toLocaleDateString("en-GB"), // Formato DD/MM/YYYY
+      }));
 
-
-// const fetchActivityTypesNames = async () => {
-//   try {
-//     const [response1, response2] = await Promise.all([
-//       axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/get_name_types', {
-//         auth: {
-//           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-//           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-//         }
-//       }),
-//       axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies/companies_vue', {
-//         auth: {
-//           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-//           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-//         }
-//       })
-//     ]);
-
-//     console.log('Activity Types:', response1.data);
-//     activityTypes.value = response1.data.types; // Armazena os tipos de atividades
-//     console.log(activityTypes.value); // Verifica se está preenchendo corretamente
+    speakersNames.value = response.data.speakers.map((speaker) => ({
+        name: speaker.name,
+        external_id: speaker.external_id,
+      }));
     
-//     console.log('Companies Names:', response2.data);
-//     companiesNames.value = response2.data.types;
-//     console.log(companiesNames.value);
+    activityTypesNames.value = response.data.types.map((type) => ({
+        name: type.name,
+        external_id: type.external_id,
+      }));
+    
+    companiesNames.value = response.data.companies.map((company) => ({
+        name: company.name,
+        external_id: company.external_id,
+      }));
 
-//   } catch (error) {
-//     console.error('Error fetching data:', error);
-//   }
-// };
+    volunteersNames.value = response.data.volunteers.map((volunteer) => ({
+        name: volunteer.name,
+        id: volunteer.id,
+      }));
 
+    prizes.value = response.data.prizes.map((prize) => ({
+        name: prize.name,
+        external_id: prize.external_id,
+    }));
 
-
-const fetchSpeakersNames = async () => {
-  try {
-    const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakers/speakerss', {
-      auth: {
-        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      }
-    });
-
-    console.log('Speakers Names:', response.data);
-    speakersNames.value = response.data.speaker.name;
-    console.log(speakersNames.value);
   } catch (error) {
-    console.error('Error fetching speakers names:', error);
+    console.error("Error fetching days for event:", error);
+
+    if (error.response && error.response.data.error) {
+      alert(error.response.data.error);
+    } else {
+      alert("Failed to fetch event days.");
+    }
   }
-}
-
-
+};
 
 const addNewActivity = async () => {
   if (!newActivity.value.name || !newActivity.value.type || !newActivity.value.description ||
-      !newActivity.value.day || !newActivity.value.startTime || !newActivity.value.endTime || 
+      !newActivity.value.selectedDay || !newActivity.value.startTime || !newActivity.value.endTime || 
       !newActivity.value.qrCode) {
-        alert('Please fill out all fields.');
+        alert('Please fill out all required fields.');
         return;
   }
 
+  if (newActivity.value.startTime >= newActivity.value.endTime) {
+    alert("Start Time must be earlier than End Time.");
+    return;
+  }
+
+  if (newActivity.value.endTime >= newActivity.value.qrCode) {
+    alert("End Time must be earlier than QR Code End Time.");
+    return;
+  }
+
+  const { Date: selectedDate, NumberActivities, NumberJobFair, EventDay_External_ID } = newActivity.value.selectedDay;
+
+  // Converte o formato do dia de DD/MM/YYYY para o formato YYYY MM DD
+  const [dd, mm, yyyy] = selectedDate.split('/');
+  const formattedDay = `${yyyy} ${mm} ${dd}`;
+
+  const adjustedStartTime = newActivity.value.startTime;
+  const adjustedEndTime = newActivity.value.endTime;
+  const adjustedQRTime = newActivity.value.qrCode;
+
+  // Converte os horários ajustados para o formato YYYY-MM-DD HH:MM
+  const startTimeFormatted = `${formattedDay} ${adjustedStartTime}`;
+  const endTimeFormatted = `${formattedDay} ${adjustedEndTime}`;
+  const endTimeQRFormatted = `${formattedDay} ${adjustedQRTime}`;
+
+  const payload = {
+    name: newActivity.value.name,
+    description: newActivity.value.description,
+    day: formattedDay,
+    time: startTimeFormatted,
+    end_time: endTimeFormatted,
+    qr_code: endTimeQRFormatted,
+    activity_type_external_id: newActivity.value.type.external_id,
+    event_id: eventselected.value,
+    event_day_external_id: EventDay_External_ID,
+  };
+
+  // Adiciona os campos opcionais apenas se estiverem preenchidos
+  if (Array.isArray(newActivity.value.companies) && newActivity.value.companies.length > 0) {
+    payload.company_external_ids = newActivity.value.companies.map((company) => company.external_id);
+  }
+
+  if (Array.isArray(newActivity.value.speakers) && newActivity.value.speakers.length > 0) {
+    payload.speaker_external_ids = newActivity.value.speakers.map((speaker) => speaker.external_id);
+  }
+
+  if (Array.isArray(newActivity.value.volunteers) && newActivity.value.volunteers.length > 0) {
+    payload.volunteer_ids = newActivity.value.volunteers.map((volunteer) => volunteer.id);
+  }
+
+  if (newActivity.value.prize && newActivity.value.prize.external_id) {
+    payload.prize_external_id = newActivity.value.prize.external_id;
+  }
+
   try {
-    const response = await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/new-activity_vue', {
-      event_id: "31cd68cf-ac76-4ae5-b9f3-434988d2556f", // ID do evento
-      //day: newActivity.value.day, // Dia selecionado
-      name: newActivity.value.name,
-      type: newActivity.value.type,
-      description: newActivity.value.description,
-      start_time: newActivity.value.startTime,
-      end_time: newActivity.value.endTime,
-      qr_code: newActivity.value.qrCode
-    }, {
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/add_activity_vue`,
+      payload,
+      {
       auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }
     });
 
-    console.log('Activity added:', response.data);
-    alert('Activity added successfully!');
+    alert("Activity added successfully!");
 
-    fetchData();
+    await fetchAllByEvent();
 
     closePopUp();
   } catch (error) {
@@ -345,21 +424,31 @@ const addNewActivity = async () => {
   }
 }
 
-onMounted(() => {
-    fetchData();
-    fetchActivityTypesNames();
-    fetchCompaniesNames();
-    fetchSpeakersNames();
-});
-
 const router = useRouter();
 
 function goToActivitiesTypes() {
   router.push("/activities/types");
 }
 
-function goToActivitiesDay() {
-  router.push({ name: "activities-day", params: { day: 1, event: nomeDoEvento } });/*variavel com o dia*/
+function goToActivitiesDay(day, event_day_external_id, event_id_ref) {
+  const event_id = event_id_ref;
+  if (!day || !event_day_external_id || !event_id) {
+    console.error("Missing required parameters: day or eventDayId or event ID");
+    return;
+  }
+
+  // Converte o formato de DD/MM/YYYY para YYYY-MM-DD
+  const [dd, mm, yyyy] = day.split('/');
+  const formattedDay = `${yyyy}-${mm}-${dd}`;
+
+  router.push({
+    name: "activities-day",
+    params: {
+      day: formattedDay,
+      event_day_external_id: event_day_external_id,
+      event_id: event_id,
+    },
+  });
 }
 
 const headers = computed(() => {
@@ -383,7 +472,7 @@ const searchQuery = ref('');
 const showDashboard = ref(false);
 const selectedRow = ref(null);
 
-const showModal = ref(false); //Controla se o pop-up está visível
+const showModal = ref(false);
 const newActivity = ref({ 
   name: '', 
   type: '', 
@@ -391,7 +480,11 @@ const newActivity = ref({
   day: '',
   startTime: '',
   endTime: '',
-  qrCode: '' });
+  qrCode: '',
+  companies: [],
+  speakers: [], 
+  volunteers: [],
+  prize: ''  });
 
 const isMobile = ref(false);
 
@@ -400,6 +493,7 @@ const updateIsMobile = () => {
 };
 
 onMounted(() => {
+  fetchAllFromEventsDefault();
   updateIsMobile();
   window.addEventListener('resize', updateIsMobile);
 });
@@ -422,7 +516,6 @@ function closePopUp() {
 }
 
 function handleRowSelect(row) {
-  console.log('Row selected:', row);
   selectedRow.value = row;
   showDashboard.value = true;
 }
@@ -483,7 +576,9 @@ function handleRowSelect(row) {
   padding: 1px 1px;
   font-size: 1em;
   color: #8A8A8A;
-  background-color: #FFFFFF
+  background-color: #FFFFFF;
+  cursor: pointer;
+  user-select: none;
 }
 
 .buttons {
@@ -543,16 +638,20 @@ button:hover {
 
 .add-btn {
   background-color: #5a9bd5;
+  user-select: none;
 }
 
 .types-btn {
   background-color: #5a9bd5;
+  user-select: none;
 }
 
 .table {
   flex-grow: 1;
   transition: flex-grow 0.3s ease;
   margin-top: 1vh;
+  cursor: pointer;
+  user-select: none;
 }
 
 .right-popup {
@@ -571,6 +670,7 @@ button:hover {
   background-color: var(--c-accent);
   gap: 2vh;
   overflow-y: auto;
+  user-select: none;
 }
 
 .right-popup-header {
@@ -589,15 +689,15 @@ button:hover {
   right: 2%;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 25px;
   color: #333;
   cursor: pointer;
   font-weight: bold;
   z-index: 999;
   padding: 0em;
   border-radius: 50%;
-  width: 3vw;
-  height: 3vw;
+  width: 4vw;
+  height: 4vw;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -709,16 +809,12 @@ button:hover {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 500px;
+  width: 70vw;
   max-width: 90%;
   display: flex;
   flex-direction: column;
   gap: 10px;
   z-index: 1000;
-}
-
-.pop-up .close-btn {
-  font-size: 2vw;
 }
 
 form {
@@ -740,6 +836,23 @@ form input, form select, form textarea {
     display: flex;
     flex-direction: column;
     grid-column: span 2;
+}
+
+::v-deep(.multiselect__option--selected) {
+  background-color: #5a9bd5 !important;
+  color: white !important;
+}
+
+::v-deep(.multiselect__tag) {
+  background-color: #5a9bd5 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px;
+}
+
+::v-deep(.multiselect__input) {
+  font-size: 14px !important;
+  color: #333;
 }
 
 .title-group{
@@ -793,5 +906,109 @@ form input, form select, form textarea {
 
 .pop-up-add-btn:hover {
   background-color: #4782c0;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 2ch;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Right Popup - Mantém dimensões mas centraliza */
+  .right-popup.mobile-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -45%);
+    width: 85%;
+    max-width: 380px;
+    height: 75vh;
+    margin: 0;
+    z-index: 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  .pop-up-overlay {
+    align-items: flex-start;
+    padding-top: 5vh;
+    padding-bottom: 5vh;
+    overflow-y: auto;
+  }
+  /* Formulário - Ajuste responsivo das colunas */
+  .pop-up {
+    width: 80%;
+    max-width: 90%;
+    padding: 15px;
+  }
+
+  form {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas em tablet */
+    gap: 15px;
+  }
+
+  .form-group {
+    grid-column: span 1;
+    min-width: 0;
+  }
+
+  /* Campos que ocupam coluna completa */
+  .title-group,
+  .description-group,
+  .form-actions {
+    grid-column: 1 / -1;
+  }
+
+  /* Melhorias para inputs em mobile */
+  .pop-up input,
+  .pop-up select,
+  .pop-up textarea,
+  ::v-deep(.multiselect) {
+    font-size: 18px;
+  }
+
+  /* Telas muito pequenas - 1 coluna */
+  @media (max-width: 480px) {
+    form {
+      grid-template-columns: 1fr;
+    }
+
+    .pop-up .close-btn {
+      height: 4vw;
+      width: 7vw;
+    }
+  }
+
+  /* Ajustes específicos para elementos do popup */
+  .mobile-popup .JEEC-Logo {
+    width: 100px;
+  }
+
+  .mobile-popup .close-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 24px;
+  }
+
+  .mobile-popup .right-popup-body {
+    padding-bottom: 20px;
+  }
+
+  .mobile-popup .dbType {
+    font-size: 18px;
+  }
+
+  /* Botões em coluna */
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pop-up-add-btn {
+    width: 100%;
+    padding: 12px;
+  }
 }
 </style>

@@ -1,50 +1,10 @@
-
-
-
-
-
-
-
-
-Ver se é preciso por o estilo dos botoes q pus no activities.vue
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <template>
   <div class="wrapper">
     <div class="no-events-message" v-if="tableDataActivities.length === 0 && tableDataJobFair.length === 0">
       <p>No Event Days found</p>
     </div>
     <div class="left-container">
-      <div class="tables-with-title" v-if="tableDataActivities.length > 0 && tableDataJobFair.length > 0 && !(isMobile && showDashboard)">
+      <div class="tables-with-title" v-if="(tableDataActivities.length > 0 || tableDataJobFair.length > 0) && !(isMobile && showDashboard)">
         <div class="title-activities">
           <h1>Activities</h1>
         </div>
@@ -69,7 +29,7 @@ Ver se é preciso por o estilo dos botoes q pus no activities.vue
         </div>
       </div>
     </div>
-    <div class="right-popup" v-if="showDashboard">
+    <div class="right-popup" v-if="showDashboard" :class="{ 'mobile-popup': isMobile }">
       <div class="right-popup-header">
         <button @click="closeDashboard" class="close-btn">×</button>
         <img class="JEEC-Logo" :src="selectedRow.Logo" alt="JEEC Logo" />
@@ -78,7 +38,7 @@ Ver se é preciso por o estilo dos botoes q pus no activities.vue
             <p class="right-popup-subtitle">{{ selectedRow.Subtitle }}</p>
           </div>
           <div class="right-popup-buttons">
-            <button @click="addPopUp/*editRow(selectedRow)*/" class="image-button">
+            <button @click="openEditPopUp" class="image-button">
               <img src="../../assets/pencil.svg">
             </button>
             <button @click="deleteRow(selectedRow)" class="image-button">
@@ -89,11 +49,11 @@ Ver se é preciso por o estilo dos botoes q pus no activities.vue
             <div class="right-popup-paragraph">
               <div class="paragraph-item">
                 <h1>Start Time</h1>
-                <p>{{ selectedRow.StartTime }}</p>
+                <p>{{ selectedRow.StartTime_show }}</p>
               </div>
               <div class="paragraph-item">
                 <h1>End Time</h1>
-                <p>{{ selectedRow.EndTime }}</p>
+                <p>{{ selectedRow.EndTime_show }}</p>
               </div>
             </div>
             <div class="right-popup-paragraph">
@@ -105,7 +65,7 @@ Ver se é preciso por o estilo dos botoes q pus no activities.vue
             <div class="right-popup-paragraph" v-if="!isMobile">
               <div class="paragraph-item">
                 <h1>End Time QR Codes</h1>
-                <p>{{ selectedRow.EndTime }}</p>
+                <p>{{ selectedRow.EndTimeQR_show }}</p>
               </div>
             </div>
           </div>
@@ -116,7 +76,7 @@ Ver se é preciso por o estilo dos botoes q pus no activities.vue
         <button @click="closePopUp" class="close-btn">×</button>
       <form @submit.prevent="addNewActivity">
         <div class="form-group title-group">
-          <h2>Add New Activity</h2>
+          <h2>Edit Activity</h2>
         </div>
         
         <div class="form-group name-group">
@@ -128,46 +88,106 @@ Ver se é preciso por o estilo dos botoes q pus no activities.vue
             <label for="activity-type">Activity Type:</label>
             <select id="activity-type" name="activity-type" v-model="newActivity.type">
               <option value="" selected disabled hidden>Select Activity</option>
-              <option value="Nhe">Nhe</option>
-              <option value="Fixe">Fixe</option>
-              <option value="Muito Louco">Muito Louco</option>
+              <option v-for="type in activityTypesNames" :key="type.external_id" :value="type.external_id">{{ type.name }}</option>
             </select>
         </div>
 
         <div class="form-group description-group">
             <label for="description">Description:</label>
-            <textarea id="description" name="description" v-model="newActivity.description"></textarea>
+            <input type="text" id="description" name="description" v-model="newActivity.description">
         </div>
 
         <div class="form-group">
             <label for="day">Day:</label>
             <select id="day" name="day" v-model="newActivity.day">
               <option value="" selected disabled hidden>Select day</option>
-              <option value="19">19</option>
-              <option value="20">20</option>
-              <option value="21">21</option>
-              <option value="22">22</option>
-              <option value="23">23</option>
+              <option v-for="day in EventDays" :key="day.Date" :value="day.Date">
+                {{ day.Date }}
+              </option>
             </select>
         </div>
 
         <div class="form-group">
             <label for="start-time">Start Time:</label>
-            <input type="text" id="start-time" name="start-time" v-model="newActivity.startTime">
+            <input type="time" id="start-time" name="start-time" v-model="newActivity.startTime">
         </div>
 
         <div class="form-group">
             <label for="end-time">End Time:</label>
-            <input type="text" id="end-time" name="end-time" v-model="newActivity.endTime">
+            <input type="time" id="end-time" name="end-time" v-model="newActivity.endTime">
         </div>
 
         <div class="form-group">
             <label for="qr-code">End Time QR Codes:</label>
-            <input type="text" id="qr-code" name="qr-code" v-model="newActivity.qrCode">
+            <input type="time" id="qr-code" name="qr-code" v-model="newActivity.qrCode">
+        </div>
+
+        <div class="form-group">
+          <label for="companies">Choose Companies:</label>
+            <multiselect
+              v-model="newActivity.companies"
+              :options="companiesNames"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="false"
+              :preserve-search="true"
+              placeholder="Search..."
+              search-placeholder="Search..."
+              label="name"
+              track-by="external_id"
+            >
+            </multiselect>
+        </div>
+
+        <div class="form-group">
+          <label for="volunteers">Choose Volunteers:</label>
+            <multiselect
+              v-model="newActivity.volunteers"
+              :options="volunteersNames"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="false"
+              :preserve-search="true"
+              placeholder="Search..."
+              label="name"
+              track-by="id"
+            >
+            </multiselect>
+        </div>
+
+        <div class="form-group">
+            <label for="speakers">Choose Speakers:</label>
+            <multiselect
+              v-model="newActivity.speakers"
+              :options="speakersNames"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="false"
+              :preserve-search="true"
+              placeholder="Search..."
+              label="name"
+              track-by="external_id"
+            >
+            </multiselect>
+        </div>
+
+        <div class="form-group">
+            <label for="prize">Choose Prizes:</label>
+            <multiselect
+              v-model="newActivity.prize"
+              :options="prizes"
+              :multiple="false"
+              :close-on-select="true"
+              :clearable="true"
+              placeholder="Select prize"
+              label="name"
+              track-by="external_id"
+            >
+            </multiselect>
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="pop-up-add-btn">Add</button>
+            <button type="submit" class="pop-up-add-btn" @click="editRow">Edit</button>
         </div>
       </form>
       </div>
@@ -178,99 +198,361 @@ Ver se é preciso por o estilo dos botoes q pus no activities.vue
 <script setup>
 import axios from 'axios';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
 import TheTable from '../../global-components/TheTable.vue';
+import { useRoute } from 'vue-router';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 
-const router = useRouter();
-const day = computed(() => router.params.day);
-const event = computed(() => router.params.event);
+const route = useRoute();
+const day = route.params.day;
+const event_day_external_id = route.params.event_day_external_id;
+const event_id = route.params.event_id;
 
-const tableDataActivities = ref([
-  { ID: '3',  StartTime: '10:00',    EndTime: "11:00", Name: "Como transformar o caos em ordem", Type: "Workshop",        Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '42', StartTime: '11:00',    EndTime: "11:30", Name: "15/15 with Oracle",                Type: "15/15",           Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '24', StartTime: '12:00',    EndTime: "13:30", Name: "Ética na Engenharia",              Type: "Discussion Panel",Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '36', StartTime: '14:00',    EndTime: "14:30", Name: "BLA BLA BLA",                      Type: "15/15",           Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '12', StartTime: '14:30',    EndTime: "15:30", Name: "YAPPING YAPPING",                  Type: "Inside Talks",    Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '19', StartTime: '15:30',    EndTime: "16:00", Name: "YAPPING YAPPING YAPPING",          Type: "15/15",           Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '40', StartTime: '16:00',    EndTime: "17:00", Name: "YAPPING YAPPING YAPPING YAPPING",  Type: "Workshop",        Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '7',  StartTime: '17:00',    EndTime: "18:30", Name: "YAPPING YAPPING YAPPING",          Type: "Main Speaker",    Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-  { ID: '29', StartTime: '18:30',    EndTime: "20:00", Name: "YAPPING YAPPING",                  Type: "Alumni Talks",    Logo: "/src/assets/wrizz.jpg", Subtitle: "Activity"},
-]);
+const tableDataActivities = ref([]);
 
-const fetchData = () => {
-    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities_vue', {
-          day: day,
-          event: event,
-        },{
-          auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        }}).then((response)=>{
-          tableDataActivities.value = response.data.activities || [];
-          tableDataJobFair.value = response.data.jobFair || [];
-}).catch((error) => {
-  console.error("Error fetching activities:", error);
-})
-};
+const activityTypesNames = ref([]);
+const companiesNames = ref([]);
+const speakersNames = ref([]);
+const volunteersNames = ref([]);
+const EventDays = ref([]);
+const prizes = ref([]);
 
-const deleteRow = (selectedRow) => {
-    if (!selectedRow || !selectedRow.ID) return;
+function formatTime(dateTimeString) {
+  const timePart = dateTimeString.split(' ')[4]; 
 
-    if (confirm(`Are you sure you want to delete activity: ${selectedRow.Name}?`)) {
-        axios.delete(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/delete_activity/${selectedRow.ID}`, {
-            auth: {
-                username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-                password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-            }
-        })
-        .then(() => {
-            // Remover do array local
-            if (selectedRow.Subtitle === "Activity") {
-              tableDataActivities.value = tableDataActivities.value.filter(activity => activity.ID !== selectedRow.ID);
-            } else if (selectedRow.Type === "Job Fair") {
-              tableDataJobFair.value = tableDataJobFair.value.filter(jobFair => jobFair.ID !== selectedRow.ID);
-            }
-            fetchData();
-            alert("Activity deleted successfully!");
-        })
-        .catch((error) => {
-            console.error("Error deleting activity:", error);
-            alert("Failed to delete activity.");
-        });
+  return timePart.substring(0, 5); // Retorna HH:MM
+}
+
+const fetchActivitiesByDay = async () => {
+  if (!day) {
+    console.error("Day parameter is missing.");
+    alert("Day parameter is required.");
+    return;
+  }
+
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/activities/get_activity_by_day`, {
+      params: {
+        day: day,
+        event_id: event_id,
+      },
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
+    });
+
+    // Atualiza o tableDataJobFair com as atividades do tipo "Job Fair"
+    tableDataJobFair.value = response.data.job_fair_activities.map((activity) => ({
+      ID: activity.id,
+      ExternalID: activity.external_id,
+      Day: new Date(activity.day).toLocaleDateString("en-GB"), // Formato DD/MM/YYYY
+      Description: activity.description,
+      StartTime: activity.time,
+      StartTime_show: formatTime(activity.time),
+      EndTime: activity.end_time,
+      EndTime_show: formatTime(activity.end_time),
+      EndTimeQR: activity.end_time_qr_code,
+      EndTimeQR_show: formatTime(activity.end_time_qr_code),
+      Name: activity.name,
+      Type: activity.activity_type.name,
+      ActivityTypeExternalID: activity.activity_type.external_id,
+      Logo: "/src/assets/wrizz.jpg",
+      Subtitle: "Job Fair",
+    }));
+
+    // Atualiza o tableDataActivities com as outras atividades
+    tableDataActivities.value = response.data.other_activities.map((activity) => ({
+      ID: activity.id,
+      ExternalID: activity.external_id,
+      Day: new Date(activity.day).toLocaleDateString("en-GB"),
+      Description: activity.description,
+      StartTime: activity.time,
+      StartTime_show: formatTime(activity.time),
+      EndTime: activity.end_time,
+      EndTime_show: formatTime(activity.end_time),
+      EndTimeQR: activity.end_time_qr_code,
+      EndTimeQR_show: formatTime(activity.end_time_qr_code),
+      Name: activity.name,
+      Type: activity.activity_type.name,
+      ActivityTypeExternalID: activity.activity_type.external_id,
+      Logo: "/src/assets/wrizz.jpg",
+      Subtitle: "Activity",
+    }));
+
+    EventDays.value = response.data.default_event_days.map((eventDay) => ({
+        Date: new Date(eventDay.day).toLocaleDateString("en-GB"),
+    }))
+    .sort((a, b) => {
+      // Ordena as datas em ordem crescente
+      const dateA = new Date(a.Date.split('/').reverse().join('-'));
+      const dateB = new Date(b.Date.split('/').reverse().join('-'));
+      return dateA - dateB;
+    });
+
+    speakersNames.value = response.data.speakers.map((speaker) => ({
+        name: speaker.name,
+        external_id: speaker.external_id,
+    }));
+    
+    activityTypesNames.value = response.data.types.map((type) => ({
+      name: type.name,
+      external_id: type.external_id,
+    }));
+
+    companiesNames.value = response.data.companies.map((company) => ({
+      name: company.name,
+      external_id: company.external_id,
+    }));
+
+    volunteersNames.value = response.data.volunteers.map((volunteer) => ({
+        name: volunteer.name,
+        id: volunteer.id,
+      }));
+
+    prizes.value = response.data.prizes.map((prize) => ({
+        name: prize.name,
+        external_id: prize.external_id,
+      }));
+
+  } catch (error) {
+    console.error("Error fetching activities by day:", error);
+    if (error.response && error.response.data.error) {
+      alert(error.response.data.error);
+    } else {
+      alert("Failed to fetch activities.");
     }
+  }
 };
 
 
-onMounted(() => {
-    fetchData();
-});
+const fetchActivitySpeakersCompaniesVolunteerPrize = async (activityExternalId) => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/activities/get_activity_SpeakersComapaniesVolunteersPrize`, {
+      params: {
+        activity_external_id: activityExternalId,
+      },
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
+    });
+
+    newActivity.value.companies = response.data.companies.map((company) => ({
+      name: company.name,
+      external_id: company.external_id,
+    }));
+
+    newActivity.value.speakers = response.data.speakers.map((speaker) => ({
+      name: speaker.name,
+      external_id: speaker.external_id,
+    }));
+
+    newActivity.value.volunteers = response.data.volunteers.map((volunteer) => ({
+      name: volunteer.name,
+      id: volunteer.id,
+    }));
+
+    newActivity.value.prize = response.data.prize.map((prize) => ({
+      name: prize.name,
+      external_id: prize.external_id,
+    }));
+
+  } catch (error) {
+    console.error("Error fetching speakers, companies and volunteers for activity:", error);
+    alert("Failed to fetch speakers, companies and volunteers for this activity.");
+  }
+};
+
+
+function openEditPopUp() {
+  if (!selectedRow.value || !selectedRow.value.ID) {
+    alert("No activity selected to edit.");
+    return;
+  }
+
+  // Encontra o external_id correspondente ao nome do tipo de atividade
+  const selectedActivityType = activityTypesNames.value.find(
+    (type) => type.name === selectedRow.value.Type
+  );
+
+  fetchActivitySpeakersCompaniesVolunteerPrize(selectedRow.value.ExternalID);
+
+  newActivity.value = {
+    name: selectedRow.value.Name,
+    type: selectedActivityType ? selectedActivityType.external_id : '',
+    description: selectedRow.value.Description,
+    day: selectedRow.value.Day,
+    originalDay: selectedRow.value.Day,
+    startTime: selectedRow.value.StartTime_show,
+    endTime: selectedRow.value.EndTime_show, 
+    qrCode: selectedRow.value.EndTimeQR_show,
+    companies: [],
+    speakers: [],
+    volunteers: [],
+    prize: ''
+  };
+
+  showModal.value = true;
+}
+
+
+const editRow = async () => {
+  if (!selectedRow.value || !selectedRow.value.ID) {
+    alert("No activity selected to edit.");
+    return;
+  }
+
+  if (!newActivity.value.name || !newActivity.value.type || !newActivity.value.day || 
+      !newActivity.value.startTime || !newActivity.value.endTime) {
+    alert("Please fill out all required fields.");
+    return;
+  }
+
+  // Verifica se os horários estão em ordem
+  if (newActivity.value.startTime >= newActivity.value.endTime) {
+    alert("Start Time must be earlier than End Time.");
+    return;
+  }
+
+  if (newActivity.value.endTime >= newActivity.value.qrCode) {
+    alert("End Time must be earlier than QR Code End Time.");
+    return;
+  }
+
+  // Converte o formato do dia de DD/MM/YYYY para o formato YYYY MM DD
+  const [dd, mm, yyyy] = newActivity.value.day.split('/');
+  const formattedDay = `${yyyy} ${mm} ${dd}`;
+
+  const [originalDD, originalMM, originalYYYY] = newActivity.value.originalDay.split('/');
+  const originalFormattedDay = `${originalYYYY} ${originalMM} ${originalDD}`;
+
+  const adjustedStartTime = newActivity.value.startTime;
+  const adjustedEndTime = newActivity.value.endTime;
+  const adjustedQRTime = newActivity.value.qrCode;
+
+  // Converte os horários ajustados para o formato YYYY-MM-DD HH:MM
+  const startTimeFormatted = `${formattedDay} ${adjustedStartTime}`;
+  const endTimeFormatted = `${formattedDay} ${adjustedEndTime}`;
+  const endTimeQRFormatted = `${formattedDay} ${adjustedQRTime}`;
+
+  const selectedActivityType = activityTypesNames.value.find(
+    (type) => type.name === selectedRow.value.Type
+  );
+
+  const payload = {
+    activity_external_id: selectedRow.value.ExternalID,
+    name: newActivity.value.name,
+    activity_type_external_id_old: selectedActivityType.external_id,
+    activity_type_external_id_new: newActivity.value.type,
+    description: newActivity.value.description,
+    day: formattedDay,
+    original_day: originalFormattedDay,
+    time: startTimeFormatted,
+    end_time: endTimeFormatted,
+    qr_code: endTimeQRFormatted,
+    event_day_external_id: event_day_external_id
+  };
+
+  // Adiciona os campos opcionais apenas se estiverem preenchidos
+  if (Array.isArray(newActivity.value.companies) && newActivity.value.companies.length > 0) {
+    payload.company_external_ids = newActivity.value.companies.map((company) => company.external_id);
+  }
+
+  if (Array.isArray(newActivity.value.speakers) && newActivity.value.speakers.length > 0) {
+    payload.speaker_external_ids = newActivity.value.speakers.map((speaker) => speaker.external_id);
+  }
+
+  if (Array.isArray(newActivity.value.volunteers) && newActivity.value.volunteers.length > 0) {
+    payload.volunteer_ids = newActivity.value.volunteers.map((volunteer) => volunteer.id);
+  }
+
+  if (newActivity.value.prize && newActivity.value.prize.external_id) {
+    payload.prize_external_id = newActivity.value.prize.external_id;
+  }
+
+  try {
+    const response = await axios.put(
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/edit_activity`,
+      payload,
+      {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    });
+
+    alert("Activity updated successfully!");
+
+    fetchActivitiesByDay();
+    closeDashboard();
+  } catch (error) {
+    console.error("Error updating activity:", error);
+    alert("Failed to update activity.");
+  }
+};
+
+
+const deleteRow = async (selectedRow) => {
+  if (!selectedRow || !selectedRow.ExternalID) {
+    alert("No activity selected to delete.");
+    return;
+  }
+
+  if (confirm(`Are you sure you want to delete activity: ${selectedRow.Name}?`)) {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/activity/deletee`,
+        {
+          activity_external_id: selectedRow.ExternalID,
+          event_day_external_id: event_day_external_id,
+          activity_type_external_id: selectedRow.ActivityTypeExternalID,
+        },
+        {
+          auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+          },
+        }
+      );
+
+      if (response.status === 204) {
+        tableDataActivities.value = tableDataActivities.value.filter(
+          (activity) => activity.ExternalID !== selectedRow.ExternalID
+        );
+
+        fetchActivitiesByDay();
+        closeDashboard();
+        alert("Activity deleted successfully!");
+      } else {
+        alert("Failed to delete activity.");
+      }
+    } catch (error) {
+      console.error("Error deleting activity:", error);
+      alert("Failed to delete activity.");
+    }
+  }
+};
 
 const headersActivities = computed(() => {
   if (isMobile.value) {
     return {
       ID: 'ID',
-      StartTime: 'StartTime',
-      EndTime: 'EndTime',
       Name: 'Name',
       Type: 'Type'
     };
   }
-
+  
   return {
     ID: 'ID',
+    StartTime_show: 'StartTime',
+    EndTime_show: 'EndTime',
     Name: 'Name',
     Type: 'Type'
   };
 });
 
-const tableDataJobFair = ref([
-  { ID: '3', StartTime: '09:00', EndTime: "19:00", Name: "Pingo Doce", Type: "Job Fair", Logo: "/src/assets/wrizz.jpg"},
-  { ID: '3', StartTime: '09:00', EndTime: "19:00", Name: "Pingo Doce", Type: "Job Fair", Logo: "/src/assets/wrizz.jpg"},
-  { ID: '3', StartTime: '09:00', EndTime: "19:00", Name: "Pingo Doce", Type: "Job Fair", Logo: "/src/assets/wrizz.jpg"},
-  { ID: '3', StartTime: '09:00', EndTime: "19:00", Name: "Pingo Doce", Type: "Job Fair", Logo: "/src/assets/wrizz.jpg"},
-  { ID: '3', StartTime: '09:00', EndTime: "19:00", Name: "Pingo Doce", Type: "Job Fair", Logo: "/src/assets/wrizz.jpg"},
-  { ID: '3', StartTime: '09:00', EndTime: "19:00", Name: "Pingo Doce", Type: "Job Fair", Logo: "/src/assets/wrizz.jpg"},
-]);
+const tableDataJobFair = ref([]);
 
 const headersJobFair = computed(() => {
   if (isMobile.value) {
@@ -283,8 +565,8 @@ const headersJobFair = computed(() => {
 
   return {
     ID: 'ID',
-    StartTime: 'StartTime',
-    EndTime: 'EndTime',
+    StartTime_show: 'StartTime',
+    EndTime_show: 'EndTime',
     Name: 'Company',
     Type: 'Type'
   };
@@ -294,15 +576,20 @@ const searchQuery = ref('');
 const showDashboard = ref(false);
 const selectedRow = ref(null);
 
-const showModal = ref(false); //Controla se o pop-up está visível
+const showModal = ref(false);
 const newActivity = ref({ 
   name: '', 
   type: '', 
   description: '',
   day: '',
+  originalDay: '',
   startTime: '',
   endTime: '',
-  qrCode: '' });
+  qrCode: '',
+  companies: [],
+  speakers: [], 
+  volunteers: '',
+  prize: [] });
 
 const isMobile = ref(false);
 
@@ -311,6 +598,7 @@ const updateIsMobile = () => {
 };
 
 onMounted(() => {
+  fetchActivitiesByDay();
   updateIsMobile();
   window.addEventListener('resize', updateIsMobile);
 });
@@ -321,10 +609,6 @@ onUnmounted(() => {
 
 function closeDashboard() {
   showDashboard.value = false;
-}
-
-function addPopUp() {
-  showModal.value = true;
 }
 
 function closePopUp() {
@@ -339,13 +623,11 @@ function addNewActivity() {
       {
         alert('Please fill out all fields.');
   } else {
-    console.log('New Activity:', newActivity.value);
     closePopUp();
   }
 }
 
 function handleRowSelect(row) {
-  console.log('Row selected:', row);
   selectedRow.value = row;
   showDashboard.value = true;
 }
@@ -386,6 +668,8 @@ function handleRowSelect(row) {
   flex-direction: column;
   width: 100%;
   overflow-y: auto;
+  cursor: pointer;
+  user-select: none;
 }
 
 .tables-with-title::-webkit-scrollbar {
@@ -435,6 +719,7 @@ button:hover {
   background-color: var(--c-accent);
   gap: 2vh;
   overflow-y: auto;
+  user-select: none;
 }
 
 .right-popup-header {
@@ -583,7 +868,7 @@ button:hover {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 500px;
+  width: 70vw;
   max-width: 90%;
   display: flex;
   flex-direction: column;
@@ -614,6 +899,23 @@ form input, form select, form textarea {
     display: flex;
     flex-direction: column;
     grid-column: span 2;
+}
+
+::v-deep(.multiselect__option--selected) {
+  background-color: #5a9bd5 !important;
+  color: white !important;
+}
+
+::v-deep(.multiselect__tag) {
+  background-color: #5a9bd5 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px;
+}
+
+::v-deep(.multiselect__input) {
+  font-size: 14px !important;
+  color: #333;
 }
 
 .title-group{
@@ -664,5 +966,104 @@ form input, form select, form textarea {
 
 .pop-up-add-btn:hover {
   background-color: #4782c0;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 2ch;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Right Popup - Mantém dimensões mas centraliza */
+  .right-popup.mobile-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -45%);
+    width: 85%;
+    max-width: 380px;
+    height: 75vh;
+    margin: 0;
+    z-index: 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  .pop-up-overlay {
+    align-items: flex-start;
+    padding-top: 5vh;
+    padding-bottom: 5vh;
+    overflow-y: auto;
+  }
+  /* Formulário - Ajuste responsivo das colunas */
+  .pop-up {
+    width: 80%;
+    max-width: 90%;
+    padding: 15px;
+  }
+
+  form {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas em tablet */
+    gap: 15px;
+  }
+
+  .form-group {
+    grid-column: span 1;
+    min-width: 0;
+  }
+
+  /* Campos que ocupam coluna completa */
+  .title-group,
+  .description-group,
+  .form-actions {
+    grid-column: 1 / -1;
+  }
+
+  /* Melhorias para inputs em mobile */
+  .pop-up input,
+  .pop-up select,
+  .pop-up textarea,
+  ::v-deep(.multiselect) {
+    font-size: 16px;
+  }
+
+  /* Telas muito pequenas - 1 coluna */
+  @media (max-width: 480px) {
+    form {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Ajustes específicos para elementos do popup */
+  .mobile-popup .JEEC-Logo {
+    width: 100px;
+  }
+
+  .mobile-popup .close-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 24px;
+  }
+
+  .mobile-popup .right-popup-body {
+    padding-bottom: 20px;
+  }
+
+  .mobile-popup .dbType {
+    font-size: 18px;
+  }
+
+  /* Botões em coluna */
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pop-up-add-btn {
+    width: 100%;
+    padding: 12px;
+  }
 }
 </style>
