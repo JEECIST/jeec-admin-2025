@@ -1,59 +1,81 @@
-//Por as dashboard do mesmo tamanho
-//Fechar tudo com cruzes, pop ups e dashboards
-//dashboard é popup em telemovel
-
 <template>
   <div class="wrapper">
-    <div class="no-events-message" v-if="tableData.length === 0">
-      <p>No Event Days found</p>
-    </div>
-    <div class="table-with-buttons" v-if="tableData.length > 0">
+    <div class="no-events" v-if="tableData.length === 0">
       <div class="buttons">
+        <div class="event-label">
+          <td class="px-4 py-2 border text-center" style="user-select: none;">
+            Event
+          </td>
+          <select class="selection-box" v-model="eventselected" @change="fetchAllByEvent">
+            <option value="" selected disabled hidden>Select Event</option>
+            <option v-for="event in eventsNames" :key="event.id" :value="event.id">
+              {{ event.name }}
+            </option>
+          </select>
+        </div>
         <button class="add-btn" @click="addPopUp">Add Activity</button>
         <button class="types-btn" @click="goToActivitiesTypes">Activity Types ></button>
       </div>
-      <div class="table">
-        <TheTable
-          :data="tableData"
-          :tableHeaders="headers"
-          :searchInput="searchQuery"
-          @onRowSelect="handleRowSelect"
-        />
+      <div class="no-events-message">
+        <p>No Event Days found</p>
       </div>
     </div>
-    <div class="dashboard" v-if="showDashboard">
-      <div class="dashboard-header">
+    <div class="left-container">
+      <div class="table-with-buttons" v-if="tableData.length > 0 && !(isMobile && showDashboard)">
+        <div class="buttons">
+          <div class="event-label">
+            <td class="px-4 py-2 border text-center" style="user-select: none;">
+              Event
+            </td>
+          <select class="selection-box" v-model="eventselected" @change="fetchAllByEvent">
+            <option value="" selected disabled hidden>Select Event</option>
+            <option v-for="event in eventsNames" :key="event.id" :value="event.id">
+              {{ event.name }}
+            </option>
+          </select>
+          </div>
+          <button class="add-btn" @click="addPopUp">Add Activity</button>
+          <button class="types-btn" @click="goToActivitiesTypes">Activity Types ></button>
+        </div>
+        <div class="table">
+          <TheTable
+            :data="tableData"
+            :tableHeaders="headers"
+            :searchInput="searchQuery"
+            @onRowSelect="handleRowSelect"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="right-popup" v-if="showDashboard" :class="{ 'mobile-popup': isMobile }">
+      <div class="right-popup-header">
+        <button @click="closeDashboard" class="close-btn">×</button>
         <h1 class="dbWeekday">{{ selectedRow.Weekday }}</h1>
         <img class="JEEC-Logo" :src="selectedRow.Logo" alt="JEEC Logo" />
-          <div class="dashboard-title">
+          <div class="right-popup-title">
             <p class="dbDate">{{ selectedRow.Date }}</p>
-            <p class="dashboard-subtitle">Activities</p>
+            <p class="right-popup-subtitle">Activities</p>
           </div>
-          <div class="dashboard-buttons">
-            <button @click="editRow(selectedRow)" class="image-button">
-              <img src="../../assets/pencil.svg">
-            </button>
-            <button @click="goToActivitiesDay" class="image-button">
-              <img src="../../assets/sheet.svg">
-            </button>
-            <button @click="deleteRow(selectedRow)" class="image-button">
-              <img src="../../assets/trash.svg">
+          <div class="right-popup-buttons">
+            <button @click="goToActivitiesDay(selectedRow.Date, selectedRow.EventDay_External_ID, eventselected)" class="image-button">
+              <img src="../../assets/sheet.svg" alt="Go to Activities Day">
             </button>
           </div>
-          <div class="dashboard-body">
-            <div class="dashboard-paragraph">
+          <div class="right-popup-body">
+            <div class="right-popup-paragraph">
               <h1>Activities</h1>
               <p>{{ selectedRow.NumberActivities }}</p>
             </div>
-            <div class="dashboard-paragraph">
+            <div class="right-popup-paragraph">
               <h1>JobFair</h1>
               <p>{{ selectedRow.NumberJobFair }}</p>
             </div>
           </div>
       </div>
     </div>
-    <div class=" pop-up-overlay" v-if="showModal"> 
+    <div class="pop-up-overlay" v-if="showModal"> 
       <div class="pop-up">
+        <button @click="closePopUp" class="close-btn">×</button>
       <form @submit.prevent="addNewActivity">
         <div class="form-group title-group">
           <h2>Add New Activity</h2>
@@ -66,49 +88,120 @@
 
         <div class="form-group activity-type-group">
             <label for="activity-type">Activity Type:</label>
-            <select id="activity-type" name="activity-type" v-model="newActivity.type">
-              <option value="" selected disabled hidden>Select Activity</option>
-              <option value="Nhe">Nhe</option>
-              <option value="Fixe">Fixe</option>
-              <option value="Muito Louco">Muito Louco</option>
-            </select>
+            <multiselect
+              v-model="newActivity.type"
+              :options="activityTypesNames"
+              :multiple="false"
+              :close-on-select="true"
+              :clearable="true"
+              placeholder="Select activity type"
+              label="name"
+              track-by="external_id"
+            >
+            </multiselect>
         </div>
 
         <div class="form-group description-group">
             <label for="description">Description:</label>
-            <textarea id="description" name="description" v-model="newActivity.description"></textarea>
+            <input type="text" id="description" name="description" v-model="newActivity.description">
         </div>
 
         <div class="form-group">
-            <label for="day">Day:</label>
-            <select id="day" name="day" v-model="newActivity.day">
-              <option value="" selected disabled hidden>Select day</option>
-              <option value="19">19</option>
-              <option value="20">20</option>
-              <option value="21">21</option>
-              <option value="22">22</option>
-              <option value="23">23</option>
-            </select>
+          <label for="day">Day:</label>
+          <multiselect
+            v-model="newActivity.selectedDay"
+            :options="tableData"
+            :multiple="false"
+            :close-on-select="true"
+            :clearable="true"
+            placeholder="Select day"
+            label="Date"
+            track-by="Date"
+          >
+          </multiselect>
         </div>
 
         <div class="form-group">
             <label for="start-time">Start Time:</label>
-            <input type="text" id="start-time" name="start-time" v-model="newActivity.startTime">
+            <input type="time" id="start-time" name="start-time" v-model="newActivity.startTime">
         </div>
 
         <div class="form-group">
             <label for="end-time">End Time:</label>
-            <input type="text" id="end-time" name="end-time" v-model="newActivity.endTime">
+            <input type="time" id="end-time" name="end-time" v-model="newActivity.endTime">
         </div>
 
         <div class="form-group">
             <label for="qr-code">End Time QR Codes:</label>
-            <input type="text" id="qr-code" name="qr-code" v-model="newActivity.qrCode">
+            <input type="time" id="qr-code" name="qr-code" v-model="newActivity.qrCode">
+        </div>
+
+        <div class="form-group">
+          <label for="companies">Choose Companies:</label>
+            <multiselect
+              v-model="newActivity.companies"
+              :options="companiesNames"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="false"
+              :preserve-search="true"
+              placeholder="Search..."
+              search-placeholder="Search..."
+              label="name"
+              track-by="external_id"
+            >
+            </multiselect>
+        </div>
+
+        <div class="form-group">
+          <label for="volunteers">Choose Volunteers:</label>
+            <multiselect
+              v-model="newActivity.volunteers"
+              :options="volunteersNames"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="false"
+              :preserve-search="true"
+              placeholder="Search..."
+              label="name"
+              track-by="id"
+            >
+            </multiselect>
+        </div>
+
+        <div class="form-group">
+          <label for="speakers">Choose Speakers:</label>
+            <multiselect
+              v-model="newActivity.speakers"
+              :options="speakersNames"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="false"
+              :preserve-search="true"
+              placeholder="Search..."
+              label="name"
+              track-by="external_id"
+            >
+            </multiselect>
+        </div>
+
+        <div class="form-group">
+            <label for="prize">Choose Prizes:</label>
+            <multiselect
+              v-model="newActivity.prize"
+              :options="prizes"
+              :multiple="false"
+              :close-on-select="true"
+              :clearable="true"
+              placeholder="Select prize"
+              label="name"
+              track-by="external_id"
+            >
+            </multiselect>
         </div>
 
         <div class="form-actions">
             <button type="submit" class="pop-up-add-btn">Add</button>
-            <button type="button" class="pop-up-close-btn" @click="closePopUp">Close</button>
         </div>
       </form>
       </div>
@@ -118,39 +211,268 @@
 
 
 <script setup>
-import { ref } from 'vue';
+import axios from 'axios';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import TheTable from '../../global-components/TheTable.vue';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
+
+
+const tableData = ref([]);
+
+const eventsNames = ref([]);
+const activityTypesNames = ref([]);
+const companiesNames = ref([]);
+const speakersNames = ref([]);
+const volunteersNames = ref([]);
+const defaultEventName = ref('');
+const defaultEventId = ref('');
+const eventselected = ref('');
+const EventDays = ref([]);
+const prizes = ref([]);
+
+const fetchAllFromEventsDefault = async () => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/activities/get_all_from_event_default`, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
+    });
+
+    eventsNames.value = response.data.all_events.map((event) => ({
+      id: event.id,
+      name: event.name,
+    }));
+
+    if (response.data.default_event) {
+      defaultEventId.value = response.data.default_event.id;
+      defaultEventName.value = response.data.default_event.name;
+
+      eventselected.value = defaultEventId.value;
+
+      await fetchAllByEvent();
+    }
+  } catch (error) {
+    console.error("Error fetching all events:", error);
+
+    if (error.response && error.response.data.error) {
+      alert(error.response.data.error);
+    } else {
+      alert("Failed to fetch events.");
+    }
+  }
+};
+
+const fetchAllByEvent = async () => {
+  if (!eventselected.value) {
+    console.error("Event parameter is missing.");
+    alert("Please select an event.");
+    return;
+  }
+
+  closeDashboard();
+
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/activities/get_all_by_event`, {
+      params: {
+        event_id: eventselected.value,
+      },
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
+    });
+
+    tableData.value = response.data.event_days.map((eventDay) => ({
+      EventDay_External_ID: eventDay.external_id,
+      Date: new Date(eventDay.day).toLocaleDateString("en-GB"), // Formato DD/MM/YYYY
+      Weekday: new Date(eventDay.day).toLocaleDateString("en-US", { weekday: "long" }),
+      NumberActivities: eventDay.n_real_activities,
+      NumberJobFair: eventDay.n_job_fair,
+      Logo: "src/assets/wrizz.jpg",
+    }))
+    .sort((a, b) => {
+      // Ordena as datas em ordem crescente
+      const dateA = new Date(a.Date.split('/').reverse().join('-'));
+      const dateB = new Date(b.Date.split('/').reverse().join('-'));
+      return dateA - dateB;
+    });
+
+    EventDays.value = response.data.event_days.map((eventDay) => ({
+        Date: new Date(eventDay.day).toLocaleDateString("en-GB"), // Formato DD/MM/YYYY
+      }));
+
+    speakersNames.value = response.data.speakers.map((speaker) => ({
+        name: speaker.name,
+        external_id: speaker.external_id,
+      }));
+    
+    activityTypesNames.value = response.data.types.map((type) => ({
+        name: type.name,
+        external_id: type.external_id,
+      }));
+    
+    companiesNames.value = response.data.companies.map((company) => ({
+        name: company.name,
+        external_id: company.external_id,
+      }));
+
+    volunteersNames.value = response.data.volunteers.map((volunteer) => ({
+        name: volunteer.name,
+        id: volunteer.id,
+      }));
+
+    prizes.value = response.data.prizes.map((prize) => ({
+        name: prize.name,
+        external_id: prize.external_id,
+    }));
+
+  } catch (error) {
+    console.error("Error fetching days for event:", error);
+
+    if (error.response && error.response.data.error) {
+      alert(error.response.data.error);
+    } else {
+      alert("Failed to fetch event days.");
+    }
+  }
+};
+
+const addNewActivity = async () => {
+  if (!newActivity.value.name || !newActivity.value.type || !newActivity.value.description ||
+      !newActivity.value.selectedDay || !newActivity.value.startTime || !newActivity.value.endTime || 
+      !newActivity.value.qrCode) {
+        alert('Please fill out all required fields.');
+        return;
+  }
+
+  if (newActivity.value.startTime >= newActivity.value.endTime) {
+    alert("Start Time must be earlier than End Time.");
+    return;
+  }
+
+  if (newActivity.value.endTime >= newActivity.value.qrCode) {
+    alert("End Time must be earlier than QR Code End Time.");
+    return;
+  }
+
+  const { Date: selectedDate, NumberActivities, NumberJobFair, EventDay_External_ID } = newActivity.value.selectedDay;
+
+  // Converte o formato do dia de DD/MM/YYYY para o formato YYYY MM DD
+  const [dd, mm, yyyy] = selectedDate.split('/');
+  const formattedDay = `${yyyy} ${mm} ${dd}`;
+
+  const adjustedStartTime = newActivity.value.startTime;
+  const adjustedEndTime = newActivity.value.endTime;
+  const adjustedQRTime = newActivity.value.qrCode;
+
+  // Converte os horários ajustados para o formato YYYY-MM-DD HH:MM
+  const startTimeFormatted = `${formattedDay} ${adjustedStartTime}`;
+  const endTimeFormatted = `${formattedDay} ${adjustedEndTime}`;
+  const endTimeQRFormatted = `${formattedDay} ${adjustedQRTime}`;
+
+  const payload = {
+    name: newActivity.value.name,
+    description: newActivity.value.description,
+    day: formattedDay,
+    time: startTimeFormatted,
+    end_time: endTimeFormatted,
+    qr_code: endTimeQRFormatted,
+    activity_type_external_id: newActivity.value.type.external_id,
+    event_id: eventselected.value,
+    event_day_external_id: EventDay_External_ID,
+  };
+
+  // Adiciona os campos opcionais apenas se estiverem preenchidos
+  if (Array.isArray(newActivity.value.companies) && newActivity.value.companies.length > 0) {
+    payload.company_external_ids = newActivity.value.companies.map((company) => company.external_id);
+  }
+
+  if (Array.isArray(newActivity.value.speakers) && newActivity.value.speakers.length > 0) {
+    payload.speaker_external_ids = newActivity.value.speakers.map((speaker) => speaker.external_id);
+  }
+
+  if (Array.isArray(newActivity.value.volunteers) && newActivity.value.volunteers.length > 0) {
+    payload.volunteer_ids = newActivity.value.volunteers.map((volunteer) => volunteer.id);
+  }
+
+  if (newActivity.value.prize && newActivity.value.prize.external_id) {
+    payload.prize_external_id = newActivity.value.prize.external_id;
+  }
+
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/add_activity_vue`,
+      payload,
+      {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    });
+
+    alert("Activity added successfully!");
+
+    await fetchAllByEvent();
+
+    closePopUp();
+  } catch (error) {
+    console.error('Error adding activity:', error);
+    alert('Failed to add activity.');
+  }
+}
 
 const router = useRouter();
+
 function goToActivitiesTypes() {
   router.push("/activities/types");
 }
 
-function goToActivitiesDay(){
-  router.push("/activities/day");
+function goToActivitiesDay(day, event_day_external_id, event_id_ref) {
+  const event_id = event_id_ref;
+  if (!day || !event_day_external_id || !event_id) {
+    console.error("Missing required parameters: day or eventDayId or event ID");
+    return;
+  }
+
+  // Converte o formato de DD/MM/YYYY para YYYY-MM-DD
+  const [dd, mm, yyyy] = day.split('/');
+  const formattedDay = `${yyyy}-${mm}-${dd}`;
+
+  router.push({
+    name: "activities-day",
+    params: {
+      day: formattedDay,
+      event_day_external_id: event_day_external_id,
+      event_id: event_id,
+    },
+  });
 }
 
-const tableData = ref([
-  { Date: '19-02-2024', Weekday: 'Monday',    NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-  { Date: '20-02-2024', Weekday: 'Tuesday',   NumberActivities: 9, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-  { Date: '21-02-2024', Weekday: 'Wednesday', NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-  { Date: '22-02-2024', Weekday: 'Thursday',  NumberActivities: 9, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-  { Date: '23-02-2024', Weekday: 'Friday',    NumberActivities: 8, NumberJobFair: 20, Logo: "src/assets/wrizz.jpg"},
-]);
+const headers = computed(() => {
+  if (isMobile.value) {
+    return {
+      Date: 'Day',
+      NumberActivities: '# Activities',
+      NumberJobFair: '# Job Fair'
+    };
+  }
 
-const headers = ref ({
-  Date: 'Day',
-  Weekday: 'Weekday',
-  NumberActivities: '# Activities',
-  NumberJobFair: '# Job Fair'
+  return {
+    Date: 'Day',
+    Weekday: 'Weekday',
+    NumberActivities: '# Activities',
+    NumberJobFair: '# Job Fair'
+  };
 });
 
 const searchQuery = ref('');
 const showDashboard = ref(false);
 const selectedRow = ref(null);
 
-const showModal = ref(false); //Controla se o pop-up está visível
+const showModal = ref(false);
 const newActivity = ref({ 
   name: '', 
   type: '', 
@@ -158,7 +480,31 @@ const newActivity = ref({
   day: '',
   startTime: '',
   endTime: '',
-  qrCode: '' }); // Dados da nova atividade
+  qrCode: '',
+  companies: [],
+  speakers: [], 
+  volunteers: [],
+  prize: ''  });
+
+const isMobile = ref(false);
+
+const updateIsMobile = () => {
+  isMobile.value = window.matchMedia('(max-width: 768px)').matches;
+};
+
+onMounted(() => {
+  fetchAllFromEventsDefault();
+  updateIsMobile();
+  window.addEventListener('resize', updateIsMobile);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateIsMobile);
+});
+
+function closeDashboard() {
+  showDashboard.value = false;
+}
 
 function addPopUp() {
   showModal.value = true;
@@ -169,52 +515,50 @@ function closePopUp() {
   newActivity.value = { name: '', type: '', description: '' };
 }
 
-function addNewActivity() {
-  if (!newActivity.value.name || !newActivity.value.type || !newActivity.value.description ||
-      !newActivity.value.day || !newActivity.value.startTime || !newActivity.value.endTime || 
-      !newActivity.value.qrCode) 
-      {
-        alert('Please fill out all fields.');
-  } else {
-    console.log('New Activity:', newActivity.value);
-    closePopUp();
-  }
-}
-
 function handleRowSelect(row) {
-  console.log('Row selected:', row);
   selectedRow.value = row;
   showDashboard.value = true;
 }
 
-function editRow(row) {
-  console.log('Edit button clicked for row:', row);
-}
-
-function deleteRow(row) {
-  console.log('Delete button clicked for row:', row);
-}
 </script>
 
 
 <style scoped>
-.wrapper {
+.wrapper{
   display: flex;
-  flex-direction: row;
-  position: relative;
+  box-sizing: border-box;
   padding: 5ch 3ch 3ch 3ch;
   overflow-y: hidden;
+  width: calc(200dvh - var(--sidebar-width));
+  height: calc(100vh - var(--header-height));
+  background: #FFFFFF;
 }
 
-.no-events-message {
+.left-container{
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: visible;
+}
+
+.no-events{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.no-events-message{
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  font-size: 2vw;
+  height: 100%;
+  font-size: 25px;
   color: #4F4F4F;
   background-color: #EBF6FF;
   font-weight: 500; 
+  padding: 20px;
 }
 
 .table-with-buttons{
@@ -223,12 +567,53 @@ function deleteRow(row) {
   width: 100%;
 }
 
+.selection-box{
+  height: 100%;
+  border: 1px solid #8A8A8A;
+  border-radius: 4px;
+  outline-color: var(--c-select);
+  font-family: 'Kumbh Sans', sans-serif;
+  padding: 1px 1px;
+  font-size: 1em;
+  color: #8A8A8A;
+  background-color: #FFFFFF;
+  cursor: pointer;
+  user-select: none;
+}
+
 .buttons {
+  flex-direction: row;
   display: flex;
   justify-content: flex-end;
   gap: 16px;
-  margin-bottom: 1.5rem;
-  padding-right: 3ch;
+  margin-bottom: 1rem;
+  height: 55px;
+  align-items: flex-end;
+  overflow: visible;
+  align-items: bottom; 
+  position: relative;
+}
+
+.event-label{
+  flex-direction: column;
+  display: flex;
+  justify-content: flex-end;
+  height: 115%;
+}
+
+.selection-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.selection-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 2px;
+  text-align: left;
 }
 
 button {
@@ -239,9 +624,12 @@ button {
   border-radius: 5px;
   font-size: 14px;
   cursor: pointer;
-
   font-family: 'Kumbh Sans', sans-serif;
   font-weight: 550;
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 button:hover {
@@ -250,58 +638,91 @@ button:hover {
 
 .add-btn {
   background-color: #5a9bd5;
+  user-select: none;
 }
 
 .types-btn {
   background-color: #5a9bd5;
+  user-select: none;
 }
 
 .table {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 3ch;
-  padding-right: 3ch;
+  flex-grow: 1;
+  transition: flex-grow 0.3s ease;
+  margin-top: 1vh;
+  cursor: pointer;
+  user-select: none;
 }
 
-.dashboard {
+.right-popup {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   padding: 3vh 2.5vw;
-  max-height: max-content;
-  width: 25vw;
+  height: 100%;
+  width: 380px;
+  margin-left: 20px;
+  margin-right: 0px;
+  margin-top: -1px;
+  border-radius: 10px;
   background-color: var(--c-accent);
-  border-radius: 2vh;
   gap: 2vh;
-  min-height: 100%;
+  overflow-y: auto;
+  user-select: none;
 }
 
-.dashboard-header {
+.right-popup-header {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   padding: 0.5vw 1vw;
-  gap:1vw;
+  gap: 5%;
+}
+
+.close-btn {
+  position: absolute;
+  top: 2%;
+  right: 2%;
+  background: none;
+  border: none;
+  font-size: 25px;
+  color: #333;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 999;
+  padding: 0em;
+  border-radius: 50%;
+  width: 4vw;
+  height: 4vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: #666;
+  background-color: transparent;
 }
 
 .dbWeekday{
   text-transform: uppercase;
-  font-size: 1.7vw;
+  font-size: 20px;
 }
 
 .JEEC-Logo {
   width: 150px;
-  height: 150px;
+  height: auto;
   border-radius: 50%;
   object-fit: cover;
   aspect-ratio: 1 / 1;
 }
 
-.dashboard-title{
+.right-popup-title{
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -312,22 +733,22 @@ button:hover {
 .dbDate{
   font-weight: 800;
   color: var(--c-ft-dark);
-  font-size:1.5vw;
+  font-size: 20px;
   margin-bottom: 5px;
 }
 
-.dashboard-subtitle{
+.right-popup-subtitle{
   color: var(--c-ft-semi-light);
-  font-size:1.1vw;
+  font-size: 15px;
 }
 
-.dashboard-buttons {
+.right-popup-buttons {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0.5vw 1vw;
-  gap: 1vw;
+  padding: 1%;
+  gap: 5%;
 }
 
 .image-button {
@@ -335,37 +756,37 @@ button:hover {
   border: none;
   border-radius: 20%;
   cursor: pointer;
-  align-content: space-between;
-  width:  2.5vw;
-  height: 2.5vw;
-  display: center;
+  width: 35px;
+  height: 35px;
+  display: flex;
   justify-content: center;
-  padding: 1%;
+  align-items: center;
+  padding: 0;
 }
 
 .image {
-  width: 2vw;
-  height: 2vw;
-  color: var(--c-ft-dark);
+  width: 80%;
+  height: auto;
+  object-fit: contain;
 }
 
-.dashboard-body{
+.right-popup-body{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   height: 100%;
   width: 100%;
-  gap: 1.5vh;
+  gap: 1vh;
 }
 
-.dashboard-body h1{
+.right-popup-body h1{
   color: var(--c-ft-dark);
-  font-size: 0.9vw;
+  font-size: 14px;
   font-weight: 700;
 }
 
-.dashboard-body p{
-  font-size: 0.8vw;
+.right-popup-body p{
+  font-size: 14px;
   color: #A7A7A7;
 }
 
@@ -383,11 +804,12 @@ button:hover {
 }
 
 .pop-up {
+  position: relative;
   background-color: white;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 500px;
+  width: 70vw;
   max-width: 90%;
   display: flex;
   flex-direction: column;
@@ -403,7 +825,7 @@ form {
 
 form label {
     display: block;
-    margin-bottom: 5px; /* Espaço entre o rótulo e o input */
+    margin-bottom: 5px;
 }
 
 form input, form select, form textarea {
@@ -414,6 +836,23 @@ form input, form select, form textarea {
     display: flex;
     flex-direction: column;
     grid-column: span 2;
+}
+
+::v-deep(.multiselect__option--selected) {
+  background-color: #5a9bd5 !important;
+  color: white !important;
+}
+
+::v-deep(.multiselect__tag) {
+  background-color: #5a9bd5 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px;
+}
+
+::v-deep(.multiselect__input) {
+  font-size: 14px !important;
+  color: #333;
 }
 
 .title-group{
@@ -456,26 +895,120 @@ form input, form select, form textarea {
 .pop-up-add-btn {
   background-color: #152259;
   color: white;
-  padding: 10px;
+  padding: 12px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-}
-
-.pop-up-close-btn {
-  background-color: #ccc;
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .pop-up-add-btn:hover {
   background-color: #4782c0;
 }
 
-.pop-up-close-btn:hover {
-  background-color: #999;
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 2ch;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Right Popup - Mantém dimensões mas centraliza */
+  .right-popup.mobile-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -45%);
+    width: 85%;
+    max-width: 380px;
+    height: 75vh;
+    margin: 0;
+    z-index: 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  .pop-up-overlay {
+    align-items: flex-start;
+    padding-top: 5vh;
+    padding-bottom: 5vh;
+    overflow-y: auto;
+  }
+  /* Formulário - Ajuste responsivo das colunas */
+  .pop-up {
+    width: 80%;
+    max-width: 90%;
+    padding: 15px;
+  }
+
+  form {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas em tablet */
+    gap: 15px;
+  }
+
+  .form-group {
+    grid-column: span 1;
+    min-width: 0;
+  }
+
+  /* Campos que ocupam coluna completa */
+  .title-group,
+  .description-group,
+  .form-actions {
+    grid-column: 1 / -1;
+  }
+
+  /* Melhorias para inputs em mobile */
+  .pop-up input,
+  .pop-up select,
+  .pop-up textarea,
+  ::v-deep(.multiselect) {
+    font-size: 18px;
+  }
+
+  /* Telas muito pequenas - 1 coluna */
+  @media (max-width: 480px) {
+    form {
+      grid-template-columns: 1fr;
+    }
+
+    .pop-up .close-btn {
+      height: 4vw;
+      width: 7vw;
+    }
+  }
+
+  /* Ajustes específicos para elementos do popup */
+  .mobile-popup .JEEC-Logo {
+    width: 100px;
+  }
+
+  .mobile-popup .close-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 24px;
+  }
+
+  .mobile-popup .right-popup-body {
+    padding-bottom: 20px;
+  }
+
+  .mobile-popup .dbType {
+    font-size: 18px;
+  }
+
+  /* Botões em coluna */
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pop-up-add-btn {
+    width: 100%;
+    padding: 12px;
+  }
 }
 </style>
