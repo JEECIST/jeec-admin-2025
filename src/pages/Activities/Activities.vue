@@ -3,9 +3,7 @@
     <div class="no-events" v-if="tableData.length === 0">
       <div class="buttons">
         <div class="event-label">
-          <td class="px-4 py-2 border text-center" style="user-select: none;">
-            Event
-          </td>
+          <span class="event-label-text">Event</span>
           <select class="selection-box" v-model="eventselected" @change="fetchAllByEvent">
             <option value="" selected disabled hidden>Select Event</option>
             <option v-for="event in eventsNames" :key="event.id" :value="event.id">
@@ -24,9 +22,7 @@
       <div class="table-with-buttons" v-if="tableData.length > 0 && !(isMobile && showDashboard)">
         <div class="buttons">
           <div class="event-label">
-            <td class="px-4 py-2 border text-center" style="user-select: none;">
-              Event
-            </td>
+            <span class="event-label-text">Event</span>
           <select class="selection-box" v-model="eventselected" @change="fetchAllByEvent">
             <option value="" selected disabled hidden>Select Event</option>
             <option v-for="event in eventsNames" :key="event.id" :value="event.id">
@@ -94,7 +90,8 @@
               :multiple="false"
               :close-on-select="true"
               :clearable="true"
-              placeholder="Select activity type"
+              placeholder="Select type"
+              search-placeholder="Search..."
               label="name"
               track-by="external_id"
             >
@@ -115,6 +112,7 @@
             :close-on-select="true"
             :clearable="true"
             placeholder="Select day"
+            search-placeholder="Search..."
             label="Date"
             track-by="Date"
           >
@@ -145,7 +143,7 @@
               :close-on-select="false"
               :clear-on-select="false"
               :preserve-search="true"
-              placeholder="Search..."
+              placeholder="Select companies"
               search-placeholder="Search..."
               label="name"
               track-by="external_id"
@@ -162,7 +160,8 @@
               :close-on-select="false"
               :clear-on-select="false"
               :preserve-search="true"
-              placeholder="Search..."
+              placeholder="Select volunteers"
+              search-placeholder="Search..."
               label="name"
               track-by="id"
             >
@@ -178,7 +177,8 @@
               :close-on-select="false"
               :clear-on-select="false"
               :preserve-search="true"
-              placeholder="Search..."
+              placeholder="Select speakers"
+              search-placeholder="Search..."
               label="name"
               track-by="external_id"
             >
@@ -186,7 +186,7 @@
         </div>
 
         <div class="form-group">
-            <label for="prize">Choose Prizes:</label>
+            <label for="prize">Choose Prize:</label>
             <multiselect
               v-model="newActivity.prize"
               :options="prizes"
@@ -291,7 +291,7 @@ const fetchAllByEvent = async () => {
       Weekday: new Date(eventDay.day).toLocaleDateString("en-US", { weekday: "long" }),
       NumberActivities: eventDay.n_real_activities,
       NumberJobFair: eventDay.n_job_fair,
-      Logo: "src/assets/wrizz.jpg",
+      Logo: "src/assets/JEEC2024.png",
     }))
     .sort((a, b) => {
       // Ordena as datas em ordem crescente
@@ -662,7 +662,7 @@ button:hover {
   align-items: center;
   padding: 3vh 2.5vw;
   height: 100%;
-  width: 380px;
+  width: 320px;
   margin-left: 20px;
   margin-right: 0px;
   margin-top: -1px;
@@ -890,6 +890,7 @@ form input, form select, form textarea {
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 18px;
 }
 
 .pop-up-add-btn {
@@ -908,6 +909,65 @@ form input, form select, form textarea {
   background-color: #4782c0;
 }
 
+.pop-up input[type="text"] {
+  font-size: 14px !important;
+  color: #333 !important;
+  padding: 8px 12px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  height: 40px !important;
+  min-height: 40px !important;
+  box-sizing: border-box !important;
+  line-height: 1.5 !important;
+}
+
+.pop-up input[type="time"] {
+  font-size: 14px !important;
+  color: #333 !important;
+  padding: 8px 12px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  height: 40px !important;
+  min-height: 40px !important;
+  box-sizing: border-box !important;
+  line-height: 1.5 !important;
+}
+
+.pop-up input:focus {
+  border-color: #5a9bd5 !important;
+  outline: 0 !important;
+  box-shadow: 0 0 0 0.2rem rgba(90, 155, 213, 0.25) !important;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+::v-deep(.multiselect__input) {
+  font-size: 14px !important;
+  color: #333 !important;
+  padding: 8px 0 !important;
+}
+
+::v-deep(.multiselect__tags) {
+  min-height: 40px !important;
+  padding: 8px 40px 0 12px !important;
+  border: 1px solid #ccc !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+::v-deep(.multiselect__single) {
+  font-size: 14px !important;
+  color: #333 !important;
+  margin-bottom: 8px !important;
+}
+
 @media (max-width: 768px) {
   .wrapper {
     padding: 2ch;
@@ -915,7 +975,6 @@ form input, form select, form textarea {
     overflow-x: hidden;
   }
 
-  /* Right Popup - Mantém dimensões mas centraliza */
   .right-popup.mobile-popup {
     position: fixed;
     top: 50%;
@@ -937,7 +996,7 @@ form input, form select, form textarea {
     padding-bottom: 5vh;
     overflow-y: auto;
   }
-  /* Formulário - Ajuste responsivo das colunas */
+
   .pop-up {
     width: 80%;
     max-width: 90%;
@@ -945,7 +1004,7 @@ form input, form select, form textarea {
   }
 
   form {
-    grid-template-columns: repeat(2, 1fr); /* 2 colunas em tablet */
+    grid-template-columns: repeat(2, 1fr);
     gap: 15px;
   }
 
@@ -954,19 +1013,10 @@ form input, form select, form textarea {
     min-width: 0;
   }
 
-  /* Campos que ocupam coluna completa */
   .title-group,
   .description-group,
   .form-actions {
     grid-column: 1 / -1;
-  }
-
-  /* Melhorias para inputs em mobile */
-  .pop-up input,
-  .pop-up select,
-  .pop-up textarea,
-  ::v-deep(.multiselect) {
-    font-size: 18px;
   }
 
   /* Telas muito pequenas - 1 coluna */
@@ -981,7 +1031,6 @@ form input, form select, form textarea {
     }
   }
 
-  /* Ajustes específicos para elementos do popup */
   .mobile-popup .JEEC-Logo {
     width: 100px;
   }
@@ -1000,7 +1049,6 @@ form input, form select, form textarea {
     font-size: 18px;
   }
 
-  /* Botões em coluna */
   .form-actions {
     flex-direction: column;
     gap: 10px;

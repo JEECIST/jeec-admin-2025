@@ -74,7 +74,7 @@
     <div class="pop-up-overlay" v-if="showModal"> 
       <div class="pop-up">
         <button @click="closePopUp" class="close-btn">×</button>
-      <form @submit.prevent="addNewActivity">
+      <form>
         <div class="form-group title-group">
           <h2>Edit Activity</h2>
         </div>
@@ -86,10 +86,18 @@
 
         <div class="form-group activity-type-group">
             <label for="activity-type">Activity Type:</label>
-            <select id="activity-type" name="activity-type" v-model="newActivity.type">
-              <option value="" selected disabled hidden>Select Activity</option>
-              <option v-for="type in activityTypesNames" :key="type.external_id" :value="type.external_id">{{ type.name }}</option>
-            </select>
+            <multiselect
+                v-model="newActivity.type"
+                :options="activityTypesNames"
+                :multiple="false"
+                :close-on-select="true"
+                :clearable="false"
+                placeholder="Select Activity"
+                search-placeholder="Search..."
+                label="name"
+                track-by="external_id"
+            >
+            </multiselect>
         </div>
 
         <div class="form-group description-group">
@@ -99,12 +107,18 @@
 
         <div class="form-group">
             <label for="day">Day:</label>
-            <select id="day" name="day" v-model="newActivity.day">
-              <option value="" selected disabled hidden>Select day</option>
-              <option v-for="day in EventDays" :key="day.Date" :value="day.Date">
-                {{ day.Date }}
-              </option>
-            </select>
+            <multiselect
+                v-model="newActivity.day"
+                :options="EventDays"
+                :multiple="false"
+                :close-on-select="true"
+                :clearable="false"
+                placeholder="Select day"
+                search-placeholder="Search..."
+                label="Date"
+                track-by="Date"
+            >
+            </multiselect>
         </div>
 
         <div class="form-group">
@@ -131,7 +145,7 @@
               :close-on-select="false"
               :clear-on-select="false"
               :preserve-search="true"
-              placeholder="Search..."
+              placeholder="Select companies"
               search-placeholder="Search..."
               label="name"
               track-by="external_id"
@@ -148,7 +162,8 @@
               :close-on-select="false"
               :clear-on-select="false"
               :preserve-search="true"
-              placeholder="Search..."
+              placeholder="Select volunteers"
+              search-placeholder="Search..."
               label="name"
               track-by="id"
             >
@@ -164,7 +179,8 @@
               :close-on-select="false"
               :clear-on-select="false"
               :preserve-search="true"
-              placeholder="Search..."
+              placeholder="Select speakers"
+              search-placeholder="Search..."
               label="name"
               track-by="external_id"
             >
@@ -172,7 +188,7 @@
         </div>
 
         <div class="form-group">
-            <label for="prize">Choose Prizes:</label>
+            <label for="prize">Choose Prize:</label>
             <multiselect
               v-model="newActivity.prize"
               :options="prizes"
@@ -187,7 +203,7 @@
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="pop-up-add-btn" @click="editRow">Edit</button>
+            <button type="button" class="pop-up-add-btn" @click="editRow">Edit</button>
         </div>
       </form>
       </div>
@@ -257,7 +273,7 @@ const fetchActivitiesByDay = async () => {
       Name: activity.name,
       Type: activity.activity_type.name,
       ActivityTypeExternalID: activity.activity_type.external_id,
-      Logo: "/src/assets/wrizz.jpg",
+      Logo: "/src/assets/JEEC2024.png",
       Subtitle: "Job Fair",
     }));
 
@@ -276,7 +292,7 @@ const fetchActivitiesByDay = async () => {
       Name: activity.name,
       Type: activity.activity_type.name,
       ActivityTypeExternalID: activity.activity_type.external_id,
-      Logo: "/src/assets/wrizz.jpg",
+      Logo: "/src/assets/JEEC2024.png",
       Subtitle: "Activity",
     }));
 
@@ -380,9 +396,9 @@ function openEditPopUp() {
 
   newActivity.value = {
     name: selectedRow.value.Name,
-    type: selectedActivityType ? selectedActivityType.external_id : '',
+    type: activityTypesNames.value.find(type => type.external_id === selectedRow.value.ActivityTypeExternalID),
     description: selectedRow.value.Description,
-    day: selectedRow.value.Day,
+    day: EventDays.value.find(d => d.Date === selectedRow.value.Day),
     originalDay: selectedRow.value.Day,
     startTime: selectedRow.value.StartTime_show,
     endTime: selectedRow.value.EndTime_show, 
@@ -421,7 +437,7 @@ const editRow = async () => {
   }
 
   // Converte o formato do dia de DD/MM/YYYY para o formato YYYY MM DD
-  const [dd, mm, yyyy] = newActivity.value.day.split('/');
+  const [dd, mm, yyyy] = newActivity.value.day.Date.split('/');
   const formattedDay = `${yyyy} ${mm} ${dd}`;
 
   const [originalDD, originalMM, originalYYYY] = newActivity.value.originalDay.split('/');
@@ -443,8 +459,8 @@ const editRow = async () => {
   const payload = {
     activity_external_id: selectedRow.value.ExternalID,
     name: newActivity.value.name,
-    activity_type_external_id_old: selectedActivityType.external_id,
-    activity_type_external_id_new: newActivity.value.type,
+    activity_type_external_id_old: selectedRow.value.ActivityTypeExternalID,
+    activity_type_external_id_new: newActivity.value.type.external_id,
     description: newActivity.value.description,
     day: formattedDay,
     original_day: originalFormattedDay,
@@ -589,7 +605,7 @@ const newActivity = ref({
   companies: [],
   speakers: [], 
   volunteers: '',
-  prize: [] });
+  prize: '' });
 
 const isMobile = ref(false);
 
@@ -609,22 +625,12 @@ onUnmounted(() => {
 
 function closeDashboard() {
   showDashboard.value = false;
+  closePopUp();
 }
 
 function closePopUp() {
   showModal.value = false;
   newActivity.value = { name: '', type: '', description: '' };
-}
-
-function addNewActivity() {
-  if (!newActivity.value.name || !newActivity.value.type || !newActivity.value.description ||
-      !newActivity.value.day || !newActivity.value.startTime || !newActivity.value.endTime || 
-      !newActivity.value.qrCode) 
-      {
-        alert('Please fill out all fields.');
-  } else {
-    closePopUp();
-  }
 }
 
 function handleRowSelect(row) {
@@ -711,7 +717,7 @@ button:hover {
   align-items: center;
   padding: 3vh 2.5vw;
   height: 100%;
-  width: 400px;
+  width: 320px;
   margin-left: 20px;
   margin-right: 0px;
   margin-top: -1px;
@@ -738,15 +744,15 @@ button:hover {
   right: 2%;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 25px;
   color: #333;
   cursor: pointer;
   font-weight: bold;
   z-index: 999;
   padding: 0em;
   border-radius: 50%;
-  width: 3vw;
-  height: 3vw;
+  width: 4vw;
+  height: 4vw;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -876,10 +882,6 @@ button:hover {
   z-index: 1000;
 }
 
-.pop-up .close-btn {
-  font-size: 2vw;
-}
-
 form {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -953,19 +955,82 @@ form input, form select, form textarea {
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 18px;
 }
 
 .pop-up-add-btn {
   background-color: #152259;
   color: white;
-  padding: 10px;
+  padding: 12px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .pop-up-add-btn:hover {
   background-color: #4782c0;
+}
+
+.pop-up input[type="text"] {
+  font-size: 14px !important;
+  color: #333 !important;
+  padding: 8px 12px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  height: 40px !important;
+  min-height: 40px !important;
+  box-sizing: border-box !important;
+  line-height: 1.5 !important;
+}
+
+.pop-up input[type="time"] {
+  font-size: 14px !important;
+  color: #333 !important;
+  padding: 8px 12px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  height: 40px !important;
+  min-height: 40px !important;
+  box-sizing: border-box !important;
+  line-height: 1.5 !important;
+}
+
+.pop-up input:focus {
+  border-color: #5a9bd5 !important;
+  outline: 0 !important;
+  box-shadow: 0 0 0 0.2rem rgba(90, 155, 213, 0.25) !important;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+::v-deep(.multiselect__input) {
+  font-size: 14px !important;
+  color: #333 !important;
+  padding: 8px 0 !important;
+}
+
+::v-deep(.multiselect__tags) {
+  min-height: 40px !important;
+  padding: 8px 40px 0 12px !important;
+  border: 1px solid #ccc !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+::v-deep(.multiselect__single) {
+  font-size: 14px !important;
+  color: #333 !important;
+  margin-bottom: 8px !important;
 }
 
 @media (max-width: 768px) {
@@ -975,7 +1040,6 @@ form input, form select, form textarea {
     overflow-x: hidden;
   }
 
-  /* Right Popup - Mantém dimensões mas centraliza */
   .right-popup.mobile-popup {
     position: fixed;
     top: 50%;
@@ -997,7 +1061,7 @@ form input, form select, form textarea {
     padding-bottom: 5vh;
     overflow-y: auto;
   }
-  /* Formulário - Ajuste responsivo das colunas */
+
   .pop-up {
     width: 80%;
     max-width: 90%;
@@ -1005,7 +1069,7 @@ form input, form select, form textarea {
   }
 
   form {
-    grid-template-columns: repeat(2, 1fr); /* 2 colunas em tablet */
+    grid-template-columns: repeat(2, 1fr);
     gap: 15px;
   }
 
@@ -1014,19 +1078,10 @@ form input, form select, form textarea {
     min-width: 0;
   }
 
-  /* Campos que ocupam coluna completa */
   .title-group,
   .description-group,
   .form-actions {
     grid-column: 1 / -1;
-  }
-
-  /* Melhorias para inputs em mobile */
-  .pop-up input,
-  .pop-up select,
-  .pop-up textarea,
-  ::v-deep(.multiselect) {
-    font-size: 16px;
   }
 
   /* Telas muito pequenas - 1 coluna */
@@ -1034,9 +1089,13 @@ form input, form select, form textarea {
     form {
       grid-template-columns: 1fr;
     }
+
+    .pop-up .close-btn {
+      height: 4vw;
+      width: 7vw;
+    }
   }
 
-  /* Ajustes específicos para elementos do popup */
   .mobile-popup .JEEC-Logo {
     width: 100px;
   }
