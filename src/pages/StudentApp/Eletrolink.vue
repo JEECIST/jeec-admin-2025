@@ -10,10 +10,9 @@
                 </div>
             </form>
             <TheTable
-            :data="datab"
+            :data="eletrolink_activities"
             :tableHeaders="tablePref"
             :searchInput="message"
-            :buttons="tableButtons"
             @onRowSelect="selectCallback"
             @notFound="handleNotFound"
             />
@@ -25,18 +24,23 @@
         <div v-if="selectedRow" class="right-popup-placeholder">
             <button class="close-popup" @click="closeCardInfo">&times;</button>
             <div class="header">
-            <p class="cardUsername">{{ selectedRow.role }}</p>
+            <p class="cardUsername">Eletrolink</p>
             </div>
             
             <img src="../../assets/JEEC.png" alt="Profile Image" class="pfp">
             <p class="cardUsername">{{ selectedRow.name }}</p>
-            <p class="cardUseless">Eletrolink</p>
+            <p class="cardUseless">{{ selectedRow.location }}</p>
             <div class="cardActions">
-                <button class="edit-button" @click="openEditUserPopup(selectedRow)"><img src="../../assets/pencil.svg"></button>
+                <!-- <button class="edit-button" @click="openEditUserPopup(selectedRow)"><img src="../../assets/pencil.svg"></button> -->
                 <button class="edit-button" @click="openListPopup(selectedRow)"><img src="../../assets/sheet.svg"></button>
-                <button class="delete-button" @click="deleteUser(selectedRow.external_id)"><img src="../../assets/trash.svg"></button>
+                <!-- <button class="delete-button" @click="deleteUser(selectedRow.external_id)"><img src="../../assets/trash.svg"></button> -->
             </div>
             <div class="cardInfo">
+                <div class = "cardInfoMember"> 
+                <p class="cardInfoLabel">Day</p>
+                <p class="cardInfoValue">{{ selectedRow.day }}</p>
+                </div>
+
                 <div class = "cardInfoMember"> 
                 <p class="cardInfoLabel">Time</p>
                 <p class="cardInfoValue">{{ selectedRow.time }}</p>
@@ -52,10 +56,10 @@
                 <p class="cardInfoValue">{{ selectedRow.company }}</p>
                 </div> 
 
-                <div class = "cardInfoMember"> 
+                <!-- <div class = "cardInfoMember"> 
                 <p class="cardInfoLabel">Registrations</p>
                 <p class="cardInfoValue">{{ selectedRow.registrations }}</p>
-                </div> 
+                </div>  -->
 
                 <div class = "cardInfoMember"> 
                 <p class="cardInfoLabel">Event</p>
@@ -75,23 +79,26 @@ import axios from 'axios';
 
 const selectedRow = ref(null);
 
-const datab = ref([
-  {
-    id: "1",
-    time: "11:00, Saturday",
-    end_time: "11:20, Saturday",
-    company: "Galp"
-  },
-  {
-    id: "2",
-    time: "12:00, Saturday",
-    end_time: "12:20, Saturday",
-    company: "Celfinet"
-  },
-]);
+// const datab = ref([
+//   {
+//     id: "1",
+//     time: "11:00, Saturday",
+//     end_time: "11:20, Saturday",
+//     company: "Galp"
+//   },
+//   {
+//     id: "2",
+//     time: "12:00, Saturday",
+//     end_time: "12:20, Saturday",
+//     company: "Celfinet"
+//   },
+// ]);
+
+const eletrolink_activities = ref([])
 
 const tablePref = {
   id: "ID",
+  day: "Day",
   time: "Time",
   end_time: "End Time",
   company: "Company"
@@ -110,6 +117,17 @@ function closeCardInfo(){
   selectedRow.value = null;
 }
 
+function fetchData(){
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/eletrolink_activities', {auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }}).then(response => {
+    console.log(response.data)
+    eletrolink_activities.value = response.data.activities
+  })
+}
+
+onMounted(fetchData)
 
 </script>
 
