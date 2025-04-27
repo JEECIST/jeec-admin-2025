@@ -1,5 +1,4 @@
-<!-- falta meter ellipsis no text- ver codigo da tabela -->
-
+<!-- FEITO -->
 
 <script setup>
 import { defineProps, defineEmits, ref } from "vue";
@@ -8,9 +7,23 @@ import ListSpeakerTypePopup from "./ListSpeakerTypePopup.vue";
 
 const props = defineProps({
     isOpen: Boolean,
+    stype: Object,
+    speakers: Object,
 });
 
-const emit = defineEmits(["modal-close"]);
+const emit = defineEmits(["modal-close", "delete-type", "update-type"]);
+
+/* update an existing speaker type */
+function updateSpeakerType(editedSpeakerType) {
+    emit("update-type", editedSpeakerType);
+    emit("modal-close");
+}
+
+/* delete an existing speaker type */
+function deleteSpeakerType(stype) {
+    emit("delete-type", stype);
+    emit("modal-close");
+}
 
 const isOtherModalOpened = ref(false);
 const isAnotherModalOpened = ref(false);
@@ -28,50 +41,46 @@ const closeAnotherModal = () => { isAnotherModalOpened.value = false; };
                 <button class="close" @click.stop="emit('modal-close')">X</button>
             </div>
             <div class="items">
-                <div class="speaker-photo">Insert Speaker Photo</div>
-                <h3 class="text1">Speaker Type</h3>
+                <div class="speaker-photo">
+                    <img src="../../assets/jeec25.png" alt="Insert Photo">
+                </div>
+                <h3 class="text1">{{ stype.name }}</h3>
                 <p class="text2 title">Speaker Type</p>
                 <div class="btns-row">
-                    <ListSpeakerTypePopup :isOpen="isAnotherModalOpened" @modal-close="closeAnotherModal"></ListSpeakerTypePopup>
+                    <ListSpeakerTypePopup :isOpen="isAnotherModalOpened" :stype="stype" @modal-close="closeAnotherModal"></ListSpeakerTypePopup>
                     <Transition name="fade" appear>
-                        <EditSpeakerTypePopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal">
+                        <EditSpeakerTypePopup :isOpen="isOtherModalOpened" :stype="stype" :speakers="speakers" @update-type="updateSpeakerType" @modal-close="closeOtherModal">
                         </EditSpeakerTypePopup>
                     </Transition>
-                    <button class="btn" @click="openOtherModal">
-                        <img src="../../assets/pencil.svg">
-                    </button>
-                    <button class="btn" @click="openAnotherModal">
-                        <img src="../../assets/mic.svg">
-                    </button>
-                    <button class="btn">
-                        <img src="../../assets/trash.svg">
-                    </button>
+                    <button class="btn" @click="openOtherModal"><img src="../../assets/pencil.svg"></button>
+                    <button class="btn" @click="openAnotherModal"><img src="../../assets/mic.svg"></button>
+                    <button class="btn" @click="deleteSpeakerType(stype)"><img src="../../assets/trash.svg"></button>
                 </div>
                 <div id="info">
                     <div class="row">
                         <div class="col item1">
-                            <p>Priority</p>
-                            <p class="text2">3</p>
+                        <p>Priority</p>
+                        <p class="text2">{{ stype.priority }}</p>
                         </div>
                         <div class="col item2">
-                            <p># Speakers</p>
-                            <p class="text2">9</p>
+                        <p># Speakers</p>
+                        <p class="text2">{{ stype.num_speakers }}</p>
                         </div>
                         <div class="col item3">
-                            <p>Show in Website</p>
-                            <p class="text2">Yes</p>
+                        <p>Show in Website</p>
+                        <p class="text2">{{ stype.show_in_website ? 'Yes' : 'No' }}</p>
                         </div>
                         <div class="col item4">
-                            <p>Social Media</p>
-                            <p class="text2">Yes</p>
+                        <p>Social Media</p>
+                        <p class="text2">{{ stype.social_media ? 'Yes' : 'No' }}</p>
                         </div>
                         <div class="col item5">
-                            <p>Exclusive Video</p>
-                            <p class="text2">No</p>
+                        <p>Exclusive Video</p>
+                        <p class="text2">{{ stype.exclusive_video ? 'Yes' : 'No' }}</p>
                         </div>
                         <div class="col item6">
-                            <p>Exclusive Posts</p>
-                            <p class="text2">No</p>
+                        <p>Exclusive Posts</p>
+                        <p class="text2">{{ stype.exclusive_posts ? 'Yes' : 'No' }}</p>
                         </div>
                     </div>
                 </div>
@@ -123,7 +132,13 @@ const closeAnotherModal = () => { isAnotherModalOpened.value = false; };
     align-items: center;
     text-align: center;
     color: white;
+}
 
+.speaker-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 100%;
 }
 
 .text1 {
@@ -157,7 +172,6 @@ const closeAnotherModal = () => { isAnotherModalOpened.value = false; };
 
 #info {
     margin-left: 0vw;
-    ;
     display: flex;
     flex-direction: column;
     gap: 12px;

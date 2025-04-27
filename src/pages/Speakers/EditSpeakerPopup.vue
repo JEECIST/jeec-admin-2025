@@ -1,215 +1,198 @@
 <script setup>
-import { defineProps, defineEmits, ref } from "vue";
+import { defineProps, defineEmits, ref, watch, onMounted, onUnmounted } from "vue";
 
+/* variables from 'Speakers' page */
 const props = defineProps({
   isOpen: Boolean,
+  speaker: Object,
+  events: Object,
+  types: Object,
+  responsibles: Object,
 });
 
-const emit = defineEmits(["modal-close"]);
+const emit = defineEmits(["modal-close", "update-speaker"]);
 
-function isMobile() {
-   if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-     return true;
-   }
-   else {
-    return false;
-   }
+const editedSpeaker = ref({});
+
+/* show unedited speaker details on the popup when opened */
+watch(() => props.speaker, (newSpeaker) => {
+  if (newSpeaker) {
+    editedSpeaker.value = { ...newSpeaker };
+  }
+}, { immediate: true });
+
+function saveChanges() {
+  if (!editedSpeaker.value.speaker_image && props.speaker.speaker_image) {
+    editedSpeaker.value.speaker_image = props.speaker.speaker_image;
+  }
+
+  if (!editedSpeaker.value.company_logo && props.speaker.company_logo) {
+    editedSpeaker.value.company_logo = props.speaker.company_logo;
+  }
+  emit("update-speaker", editedSpeaker.value);
+  emit("modal-close");
 }
 
+/* image and logo logic */
+const speakerImageInput = ref(null);
+const companyLogoInput = ref(null);
+const imgFileName = ref(null);
+const logoFileName = ref(null);
+
+const s_image = ref(null);
+const c_logo = ref(null);
+
+function triggerFileInput() {
+  speakerImageInput.value.click();
+}
+
+function triggerLogoInput() {
+  companyLogoInput.value.click();
+}
+
+function speakerImageUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    imgFileName.value = file.name;
+    editedSpeaker.value.speaker_image = file;
+    s_image.value = URL.createObjectURL(file);
+  }
+}
+
+function companyLogoUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    logoFileName.value = file.name;
+    editedSpeaker.value.company_logo = file;
+    c_logo.value = URL.createObjectURL(file);
+  }
+}
+
+/* mobile screen detection and adjustment */
+const isMobile = ref(window.innerWidth <= 800);
+function updateIsMobile() { isMobile.value = window.innerWidth <= 800; }
+onMounted(() => { 
+    updateIsMobile();
+    window.addEventListener('resize', updateIsMobile); console.log(editedSpeaker)});
+onUnmounted(() => { window.removeEventListener('resize', updateIsMobile); });
 </script>
 
 <template>
     <div v-if="isOpen" class="modal-mask">
-      <div class="desktop" v-if="!isMobile()">
-        <div class="wrapper-wrapper">
-        <div class="popup-wrapper" ref="target">
+      <div :class="{'desktop' : !isMobile, 'mobile' : isMobile}">
+        <div :class="{'wrapper' : !isMobile, 'mobile-wrapper-wrapper' : isMobile}">
+        <div :class="{'popup-wrapper' : !isMobile, 'mobile-popup-wrapper' : isMobile}" ref="target">
             <div class="header">
                 <h1>Edit Speaker</h1>
-                <button class="close" @click.stop="emit('modal-close')">X</button>
+                <button :class="{'close' : !isMobile, 'mobile-close' : isMobile}" @click.stop="emit('modal-close')">X</button>
             </div>
-            <div class="stuff-inside">
-            <div class="flex-1">
+            <div class="elements">
+            <div :class="{'flex-1' : !isMobile, 'mobile-flex-1' : isMobile}">
                 <div class="flex-1-row-1">
-                    <div class="labels" id="name">
+
+                    <!-- name -->
+                    <div :class="{'labels' : !isMobile, 'mobile-labels' : isMobile}" id="name">
                         <label for="name">Name</label>
-                        <input type="text" placeholder="" id="name">
+                        <input type="text" v-model="editedSpeaker.name" id="name">
                     </div>
-                    <div class="labels" id="event">
+
+                    <!-- event -->
+                    <div :class="{'labels' : !isMobile, 'mobile-labels' : isMobile}" id="event">
                         <label for="event">Event</label>
-                        <select placeholder="Choose Event" id="event">
+                        <select v-model="editedSpeaker.event_id" id="event">
                             <option value="null" disabled selected hidden></option>
-                            <option>event test</option>
+                            <option v-for="event in events" :key="event.id" :value="event.id">{{ event.name }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="flex-1-row-2">
-                    <div class="labels" id="linkedin">
+
+                    <!-- linkedin -->
+                    <div :class="{'labels' : !isMobile, 'mobile-labels' : isMobile}" id="linkedin">
                         <label for="linkedin">LinkedIn</label>
-                        <input type="text" placeholder="" id="linkedin">
+                        <input type="text" v-model="editedSpeaker.linkedin_url" id="linkedin">
                     </div>
-                    <div class="labels" id="type">
+
+                    <!-- type -->
+                    <div :class="{'labels' : !isMobile, 'mobile-labels' : isMobile}" id="type">
                         <label for="type">Type</label>
-                        <select placeholder="" id="type">
+                        <select v-model="editedSpeaker.type_id" id="type">
                             <option value="null" disabled selected hidden></option>
-                            <option>type test</option>
+                            <option v-for="type in types" :key="type.id" :value="type.id">{{ type.name }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="flex-1-row-3">
-                    <div class="labels" id="biography">
+
+                    <!-- biography -->
+                    <div :class="{'labels' : !isMobile, 'mobile-labels' : isMobile}" id="biography">
                         <label for="biography">Biography</label>
-                        <input type="text" placeholder="" id="biography">
+                        <input type="text" v-model="editedSpeaker.bio" id="biography">
                     </div>
                 </div>
                 <div class="flex-1-row-4">
-                    <div class="labels" id="company">
+
+                    <!-- company -->
+                    <div :class="{'labels' : !isMobile, 'mobile-labels' : isMobile}" id="company">
                         <label for="company">Company</label>
-                        <input type="text" placeholder="" id="company">
+                        <input type="text" v-model="editedSpeaker.company" id="company">
                     </div>
-                    <div class="labels" id="position">
+
+                    <!-- position -->
+                    <div :class="{'labels' : !isMobile, 'mobile-labels' : isMobile}" id="position">
                         <label for="position">Position</label>
-                        <input type="text" placeholder="" id="position">
+                        <input type="text" v-model="editedSpeaker.position" id="position">
                     </div>
                 </div>
                 <div class="flex-1-row-5">
-                    <div class="labels" id="website">
-                        <label for="website">Company Website</label>
-                        <input type="text" placeholder="" id="website">
-                    </div>
-                    <div class="labels" id="country">
-                        <label for="country">Country</label>
-                        <input type="text" placeholder="" id="country">
-                    </div>
-                </div>
-            </div>
-            <div class="flex-2">
-                <div class="labels" id="speakerdickpic">
-                    <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
-                    <p class="idk">
-                        No picture selected yet<!-- Size too small please insert larger dick 🥺 -->
-                    </p>
-                    <button id="coolbutton">Add <!--Dic-->Pic</button>
-                </div>
-                <div class="labels" id="companylogo">
-                    <label for="companylogo">Company Logo</label>
-                    <p class="idk">
-                        No logo selected yet
-                    </p>
-                    <button id="coolbutton">Add New Logo</button>
-                </div>
-                <div class="irresponsible">
-                    <div class="labels" id="responsible">
-                        <label for="responsible">JEEC Responsible</label>
-                        <select id="responsible">
-                            <option value="0" disabled selected hidden></option>
-                            <option value="1">LARA</option>
-                            <option value="2">ZE</option>
-                            <option value="3">EMO LARA</option>
-                            <option value="4">AFONSO VILELA</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="btns">
-            <button class="add" @click.stop="emit('modal-close')">Save</button>
-        </div>
-        </div>
-        </div>
-      </div>
 
-
-      <div class="mobile" v-else>
-        <div class="mobile-wrapper-wrapper">
-        <div class="popup-wrapper" ref="target">
-            <h1>Edit Speaker</h1>
-            <div class="stuff-inside">
-            <div class="mobile-flex-1">
-                <div class="flex-1-row-1">
-                    <div class="mobile-labels" id="name">
-                        <label for="name">Name</label>
-                        <input type="text" placeholder="" id="name">
-                    </div>
-                    <div class="mobile-labels" id="event">
-                        <label for="event">Event</label>
-                        <select placeholder="Choose Event" id="event">
-                            <option value="null" disabled selected hidden></option>
-                            <option>event test</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex-1-row-2">
-                    <div class="mobile-labels" id="linkedin">
-                        <label for="linkedin">LinkedIn</label>
-                        <input type="text" placeholder="" id="linkedin">
-                    </div>
-                    <div class="mobile-labels" id="type">
-                        <label for="type">Type</label>
-                        <select placeholder="" id="type">
-                            <option value="null" disabled selected hidden></option>
-                            <option>type test</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex-1-row-3">
-                    <div class="mobile-labels" id="biography">
-                        <label for="biography">Biography</label>
-                        <input type="text" placeholder="" id="biography">
-                    </div>
-                </div>
-                <div class="flex-1-row-4">
-                    <div class="mobile-labels" id="company">
-                        <label for="company">Company</label>
-                        <input type="text" placeholder="" id="company">
-                    </div>
-                    <div class="mobile-labels" id="position">
-                        <label for="position">Position</label>
-                        <input type="text" placeholder="" id="position">
-                    </div>
-                </div>
-                <div class="flex-1-row-5">
-                    <div class="mobile-labels" id="website">
+                    <!-- website -->
+                    <div :class="{'labels' : !isMobile, 'mobile-labels' : isMobile}" id="website">
                         <label for="website">Company Website</label>
-                        <input type="text" placeholder="" id="website">
+                        <input type="text" v-model="editedSpeaker.company_link" id="website">
                     </div>
-                    <div class="mobile-labels" id="country">
+
+                    <!-- country -->
+                    <div :class="{'labels' : !isMobile, 'mobile-labels' : isMobile}" id="country">
                         <label for="country">Country</label>
-                        <input type="text" placeholder="" id="country">
+                        <input type="text" v-model="editedSpeaker.country" id="country">
                     </div>
                 </div>
             </div>
-            <div class="mobile-flex-2">
-                <div class="labels" id="speakerdickpic">
-                    <label for="speakerdickpic">Speaker<!--Dick Pic --> Picture</label>
-                    <p class="idk">
-                        No picture selected yet<!-- Size too small please insert larger dick 🥺 -->
-                    </p>
-                    <button id="coolbutton">Add <!--Dic-->Pic</button>
+            <div :class="{'flex-2' : !isMobile, 'mobile-flex-2' : isMobile}">
+
+                <!-- speaker picture -->
+                <div :class="{'labels' : !isMobile, 'mobile-labels' : isMobile}" id="speakerpic">
+                    <label for="speakerpic">Speaker Picture</label>
+                    <img v-if="s_image" :src="s_image">
+                    <p v-else class="picplaceholder">No picture selected yet</p>
+                    <input type="file" ref="speakerImageInput" @change="speakerImageUpload" accept="image/*" hidden>
+                    <button id="coolbutton" @click="triggerFileInput">Add Speaker Pic</button>
                 </div>
-                <div class="labels" id="companylogo">
+
+                <!-- company logo -->
+                <div :class="{'labels' : !isMobile, 'mobile-labels' : isMobile}" id="companylogo">
                     <label for="companylogo">Company Logo</label>
-                    <p class="idk">
-                        No logo selected yet
-                    </p>
-                    <button id="coolbutton">Add New Logo</button>
+                    <img v-if="c_logo" :src="c_logo">
+                    <p v-else class="picplaceholder">No logo selected yet</p>
+                    <input type="file" ref="companyLogoInput" @change="companyLogoUpload" accept="image/*" hidden>
+                    <button id="coolbutton" @click="triggerLogoInput">Add New Logo</button>
                 </div>
+
+                <!-- responsible -->
                 <div class="irresponsible">
-                    <div class="labels" id="responsible">
+                    <div :class="{'labels' : !isMobile, 'mobile-labels' : isMobile}" id="responsible">
                         <label for="responsible">JEEC Responsible</label>
-                        <select id="responsible">
-                            <option value="0" disabled selected hidden></option>
-                            <option value="1">LARA</option>
-                            <option value="2">ZE</option>
-                            <option value="3">EMO LARA</option>
-                            <option value="4">AFONSO VILELA</option>
+                        <select v-model="editedSpeaker.responsible_id" id="responsible">
+                            <option value="null" disabled selected hidden></option>
+                            <option v-for="responsible in responsibles" :key="responsible.id" :value="responsible.id">{{ responsible.name }}</option>
                         </select>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="mobile-btns">
-            <button class="mobile-add" @click.stop="emit('modal-close')">Save</button>
-            <button class="mobile-add" @click.stop="emit('modal-close')">Cancel</button>
+        <div :class="{'btns' : !isMobile, 'mobile-btns' : isMobile}">
+            <button :class="{'add' : !isMobile, 'mobile-add' : isMobile}" @click.stop="saveChanges">Save</button>
         </div>
         </div>
         </div>
@@ -232,15 +215,23 @@ function isMobile() {
     display: flex;
     justify-content: center;
     background-color: white;
-    width: 90.5vw;
-    height: 100%;
+    width: 100%;
+    height: 80%;
     position: absolute;
     top: 50%;
     left: 50%;
     translate: -50% -50%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 15px;
 }
 
-.wrapper-wrapper {
+.mobile-popup-wrapper {
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.wrapper {
     display: flex;
     justify-content: center;
     background-color: white;
@@ -277,11 +268,35 @@ h1 {
     gap: 1.5vh;
 }
 
-.flex-1-row-1,
-.flex-1-row-2,
-.flex-1-row-3,
-.flex-1-row-4,
-.flex-1-row-5 {
+.flex-1 > .flex-1-row-5 {
+    display: flex;
+    flex-direction: row;
+    width: 48vw;
+    justify-content: space-between;
+}
+
+.flex-1 > .flex-1-row-4 {
+    display: flex;
+    flex-direction: row;
+    width: 48vw;
+    justify-content: space-between;
+}
+
+.flex-1 > .flex-1-row-3 {
+    display: flex;
+    flex-direction: row;
+    width: 48vw;
+    justify-content: space-between;
+}
+
+.flex-1 > .flex-1-row-2 {
+    display: flex;
+    flex-direction: row;
+    width: 48vw;
+    justify-content: space-between;
+}
+
+.flex-1 > .flex-1-row-1 {
     display: flex;
     flex-direction: row;
     width: 48vw;
@@ -291,34 +306,36 @@ h1 {
 .mobile-flex-1 > .flex-1-row-1 {
     display: flex;
     flex-direction: row;
-    width: 80vw;
+    width: 100%;
     justify-content: left;
     gap: 4vw;
 }
 
-.mobile-flex-1 > .flex-1-row-2,
-.flex-1-row-3,
-.flex-1-row-4,
-.flex-1-row-5 {
+.mobile-flex-1 > .flex-1-row-4 {
     display: flex;
     flex-direction: row;
-    width: 80vw;
+    width: 100%;
     justify-content: left;
-    gap: 20vw;
+    gap: 4vw;
 }
 
 .mobile-flex-1 > .flex-1-row-5 {
     display: flex;
     flex-direction: row;
-    width: 80vw;
+    width: 100%;
     justify-content: left;
-    gap: 20vw;
+    gap: 4vw;
 }
 
-.mobile-wrapper-wrapper > .flex-1-row-2, .flex-1-row-3, .flex-1-row-4, .flex-1-row-5 {
+.mobile-flex-1 > .flex-1-row-3 {
     display: flex;
-    flex-direction: row;
-    width: 80vw;
+    width: 100%;
+    justify-content: left;
+    gap: 4vw;
+}
+
+.mobile-flex-1 > .flex-1-row-2 {
+    width: 100%;
     justify-content: left;
     gap: 4vw;
 }
@@ -359,56 +376,67 @@ select {
 }
 
 .mobile-labels> #name {
-    width: 50.085vw;
+    width: 100%;
 }
 
 .mobile-labels > #event {
-    width: 26vw;
+    width: 100%;
 }
 
 .labels>#event {
     width: 13.32vw;
 }
 
-.mobile-flex-1 > .labels>#event {
-    width: 60vw;
-}
-
 .mobile-labels > #biography {
     height: 20vh;
-    width: 80vw;
+    width: 312px;
 }
 
-#biography {
+.labels > #biography {
     height: 20vh;
     width: 48vw;
 }
 
 .mobile-labels > #company {
-    width:  38vw;
+    width:  100%;
 }
 .mobile-labels > #position {
-    width: 38vw;
+    width: 100%;
 }
 .mobile-labels > #website {
-    width: 38vw;
+    width: 100%;
 }
 .mobile-labels > #country {
-    width: 38vw;
+    width: 100%;
 }
 .mobile-labels > #linkedin {
-    width: 38vw;
+    width: 100%;
 }
 .mobile-labels > #type {
-    width: 38vw;
+    width: 100%;
 }
 
-.labels> #company,
-#position,
-#website,
-#country,
-#linkedin,
-#type {
+.labels > #company {
+    width: 22vw;
+}
+
+.labels > #position {
+    width: 22vw;
+}
+
+.labels > #website {
+    width: 22vw;
+}
+
+.labels > #country {
+    width: 22vw;
+}
+
+.labels > #linkedin {
+    width: 22vw;
+}
+
+.labels > #type {
     width: 22vw;
 }
 
@@ -423,27 +451,42 @@ select {
 
 }
 
-.mobile-flex-2 > #speakerdickpic {
-    width: 20vw;
-    height: 20vh;
+.mobile-flex-2 {
+    width: 100%;
+    margin-left: 0%;
+    margin-right: 0%;
+    justify-content: left;
+    gap: 6%;
+}
+
+.mobile-flex-2 > #speakerpic {
+    width: 30%;
+    height: 22vh;
 }
 
 .mobile-flex-2 > #companylogo {
-    width: 20vw;
-    height: 20vh;
+    width: 30%;
+    height: 22vh;
 }
 
-#speakerdickpic,
-#companylogo {
+.flex-2 > #speakerpic,
+.flex-2 > #companylogo {
     width: 12.60vw;
     height: 22vh;
 }
 
-.mobile-flex-2 > .irresponsible {
+#speakerpic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.mobile-flex-2>.irresponsible {
     width: 15vw;
 }
 
-.irresponsible {
+.flex-2 > .irresponsible {
     width: 20.40vw;
 }
 
@@ -468,7 +511,7 @@ select {
     color: white;
     border: none;
     border-radius: 5px;
-    width: 8.4vw;
+    width: 100%;
     height: 3.5vh;
     margin-top: 1vh;
     font-size: smaller;
@@ -521,6 +564,17 @@ p {
     margin-right: 2%;
 }
 
+.mobile-close {
+    background-color: #152259;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    width: 10%;
+    height: 3.5vh;
+    margin-top: 4%;
+}
+
 .mobile-add {
     background-color: #152259;
     color: white;
@@ -547,9 +601,8 @@ p {
     gap: 0.1%;
 }
 .mobile-btns {
-    width: 80vw;
+    width: 100%;
     display: flex;
-    /* gap: 20px; */
     margin-top: 4vh;
     justify-content: right;
     gap: 10%;
