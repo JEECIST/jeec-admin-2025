@@ -363,7 +363,7 @@ export default {
       formData.append("description", this.newTeamDescription);
       formData.append("website_priority", this.newTeamPriority);
       formData.append("event_id", this.newTeamEvent);
-      formData.append("members", this.newTeamMembers);
+      // formData.append("members", this.newTeamMembers);
       if (this.selectedFile) {
         formData.append("team_image", this.selectedFile);
       }
