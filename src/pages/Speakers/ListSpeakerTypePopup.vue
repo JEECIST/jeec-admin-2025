@@ -1,91 +1,67 @@
+<!-- FEITO -->
+
 <script setup>
-import TheTable from '../../global-components/TheTable.vue';
-import { defineProps, defineEmits, ref } from "vue";
+import { defineProps, defineEmits, ref, onMounted, onUnmounted, watch} from "vue";
+import axios from 'axios';
 
 const props = defineProps({
   isOpen: Boolean,
+  stype: Object
 });
 
 const emit = defineEmits(["modal-close"]);
+const data = ref([]);
 
-function isMobile() {
-  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
+/* mobile screen detection and adjustment */
+const isMobile = ref();
+function updateIsMobile() { isMobile.value = window.innerWidth <= 800; }
+onMounted(() => { 
+  updateIsMobile();
+  window.addEventListener('resize', updateIsMobile); });
+onUnmounted(() => { window.removeEventListener('resize', updateIsMobile); });
 
-const message = ref();
-
-function selectCallback(row) {
-  console.log(row)
-  popupShow.value = true;
-}
-
-const datab = [
-  {
-    name: "Paulo Martins",
-    nameother: "André Gay"
-  },
-  {
-    name: "Paulo Martins",
-    nameother: "André Gay"
-  },
-  {
-    name: "Paulo Martins",
-    nameother: "André Gay"
-  },
-  {
-    name: "Paulo Martins",
-    nameother: "André Gay"
-  },
-  {
-    name: "Paulo Martins",
-    nameother: "André Gay"
-  },
-  {
-    name: "Paulo Martins",
-    nameother: "André Gay"
-  },
-
-];
-
-const tablePref = {
-  name: "",
-  nameother: "", 
+async function fetchData() {
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/stypes_list_vue', {
+    params: {
+      type_id: props.stype.id
+    },
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then((response) => {
+    data.value = response.data.speakers
+      .filter(speaker => speaker !== null)
+      .map(speaker => {
+        return speaker;
+      });
+    console.log(data.value);
+  }).catch((error) => {
+    console.log(error);
+  });
 };
 
+watch(() => props.stype, (newStype) => {
+  if (newStype && newStype.id) {
+    fetchData(newStype.id);
+  }
+}, { immediate: true });
 </script>
 
 <template>
   <div v-if="isOpen" class="modal-mask">
-    <div class="desktop" v-if="!isMobile()">
-      <div class="wrapper">
+    <div :class="{'desktop' : !isMobile, 'mobile' : isMobile}">
+      <div :class="{'wrapper' : !isMobile, 'mobile-wrapper' : isMobile}">
         <div class="popup-wrapper">
           <div class="header">
-            <h1>Alumni Speakers</h1>
-            <button class="close" @click.stop="emit('modal-close')">X</button>
+            <h1>{{ stype.name }} Speakers</h1>
+            <button :class="{'close' : !isMobile, 'mobile-close' : isMobile}" @click.stop="emit('modal-close')">X</button>
           </div>
-          <div class="table-wrapper">
-            <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
-            </TheTable>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="mobile" v-else>
-      <div class="mobile-wrapper">
-        <div class="popup-wrapper">
-          <div class="ihatedivs">
-            <h1>Alumni Speakers</h1>
-            <div class="mobile-table-wrapper">
-              <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
-              </TheTable>
-              <button class="mobile-add" @click.stop="emit('modal-close')">Close</button>
+          <div class="grid-wrapper">
+            <div class="table-wrapper">
+              <div v-for="(speaker, index) in data" :key="index" class="speaker">
+                <span> {{ speaker.name }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -106,18 +82,6 @@ const tablePref = {
 }
 
 
-.mobile-wrapper {
-  display: flex;
-  justify-content: center;
-  background-color: white;
-  width: 90.5vw;
-  height: 80%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  translate: -50% -50%;
-}
-
 .wrapper {
   display: flex;
   justify-content: center;
@@ -133,6 +97,22 @@ const tablePref = {
   overflow-x: hidden;
 }
 
+.mobile-wrapper {
+    display: flex;
+    justify-content: center;
+    background-color: white;
+    width: 100%;
+    height: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    border-radius: 15px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 15px;
+}
+
 .header {
   display: flex;
   flex-direction: row;
@@ -144,12 +124,13 @@ const tablePref = {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 h1 {
-  margin-bottom: 3%;
-  margin-top: 6%;
+  margin-top: 3%;
+  margin-bottom: 60px;
+  word-spacing: 7px;
   color: #515151;
 }
 
@@ -157,7 +138,6 @@ h1 {
 h1 {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   margin-left: 5%;
   margin-right: 15%;
   gap: 1.5vh;
@@ -172,31 +152,32 @@ h1 {
   margin-top: 4%;
 }
 
-.table-wrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  translate: -50% -50%;
-  width: 50vw;
-  padding-top: 5%;
+.grid-wrapper {
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
-.mobile-add {
-  background-color: #152259;
-  color: white;
-  border-radius: 5px;
-  border: none;
-  margin-right: -2vw;
-  margin-top: 15%;
-  margin-bottom: 2%;
+.table-wrapper {
+  width: 80%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  padding-bottom: 5%;
+}
+
+.speaker {
+  background-color: var(--c-accent);
   display: flex;
-  margin-left: auto;
-  width: 20vw;
-  height: 3.5vh;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: center;
-  gap: 10vh;
-  cursor: pointer;
+  padding: 10px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.speaker:nth-child(4n+1),
+.speaker:nth-child(4n+2) {
+  background-color: white;
 }
 
 .close {
@@ -211,4 +192,22 @@ h1 {
   margin-top: 2%;
   margin-right: 2%;
 }
+
+.mobile-close {
+    background-color: #152259;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    width: 9.5vw;
+    height: 3.5vh;
+    margin-top: 4%;
+    margin-right: 2%;
+}
+
+span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 </style>

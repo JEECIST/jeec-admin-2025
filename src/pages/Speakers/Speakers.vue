@@ -1,6 +1,3 @@
-<!-- falta meter parte "no speakers found" - ver codigo dos sponsors -->
-
-
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
 import { ref, onMounted, onUnmounted } from 'vue';
@@ -10,239 +7,287 @@ import EditSpeakerPopup from './EditSpeakerPopup.vue';
 import MobilePopup from './MobilePopup.vue';
 import axios from 'axios';
 
-const datab = ref([{
-  id: null,
-  name: null,
-  company: null,
-  country: null,
-}])
+/* backend - frontend variables and functions */
+const speaker = ref();
+const events = ref([]);
+const responsibles = ref([]);
+const types = ref([]);
+const datab = ref([]);
+const datab_filtered = ref([]);
+var speaker_image = ref(null);
 
-
+/* initialize all data */
 const fetchData = () => {
-    axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss',{auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-        }}).then((response)=>{
-          const data = response.data
-          datab.value = response.data.speakers[0]
-          console.log(datab.value)
-        })
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakerss', {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then((response) => {
+    events.value = response.data.events
+    responsibles.value = response.data.responsibles
+    types.value = response.data.stypes
+    datab.value = response.data.speakers[0] //meter id do evento
+    datab_filtered.value = response.data.speakers[0] 
+    console.log(types.value)
+  }).catch((error) => {
+    console.log(error)
+  })
 }
-
 onMounted(fetchData)
 
+/* fetch image to show on the popup when a speaker is selected */
+function fetchSpeakerImage(speaker) {
+  axios.post(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/getimagespeakerrrr`, {
+    external_id: speaker.external_id,
+  }, {
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+    }
+  }).then(response => {
+    if (!response.data.error) {
+      speaker_image.value = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.speaker_image;
+      console.log("here")
+      console.log(speaker_image)
+    } else {
+      console.log("Image error:", response.data.error);
+    }
+  }).catch(error => {
+    console.log("Fetch speaker image failed", error);
+  });
+}
+
+/* add a new speaker */
+function addSpeaker(newSpeaker) {
+  console.log(newSpeaker.speaker_image)
+  const formData = new FormData();
+  for (const [key, value] of Object.entries(newSpeaker)) { formData.append(key, value); }
+  console.log(formData);
+  axios.post(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/new-speaker-vue`, formData, {
+    auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+    },  headers: { 'Content-Type': 'multipart/form-data' }, 
+  }).then(() => {
+    fetchData();
+  }).catch((error) => {
+    console.log(error)
+  })
+}
+
+/* update an existing speaker */
+function updateSpeaker(editedSpeaker) {
+  const formData = new FormData();
+  console.log(editedSpeaker);
+  for (const [key, value] of Object.entries(editedSpeaker)) { formData.append(key, value); }
+  
+  axios.post( `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/edit-speaker-vue`, formData, {
+    auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+    },  headers: { 'Content-Type': 'multipart/form-data' }, 
+  }).then(() => {
+    fetchData();
+  }).catch((error) => {
+    console.log(error)
+  })
+}
+
+/* delete an existing speaker */
+function deleteSpeaker(speaker) {
+  const formData = new FormData();
+  for (const [key, value] of Object.entries(speaker)) { formData.append(key, value); }
+
+    axios.post(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/speaker/delete`, formData, {
+      auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY, 
+      },
+    }).then(() => {
+      fetchData();
+      closePopup(); })
+}
+
+/* table */
 const tablePref = {
   id: "ID",
   name: "Name",
-  type: "Type",
+  speaker_type: "Type",
   company: "Company",
   country: "Country",
   responsible: "JEEC Responsible",
 };
 
+/* select a row */
 function selectCallback(row) {
   console.log(row)
+  speaker.value = row;
+  fetchSpeakerImage(speaker.value);
   popupShow.value = true;
-  openMobileModal();
+  if (isMobile.value) { openMobileModal(); }
 }
 
-const isMobile = ref();
+/* filter table rows by event */
+function filterEvent() {
+  const selected = event_selecting.value;
+  if (selected == 'all') { datab_filtered.value =  datab.value } 
+  else { datab_filtered.value =  datab.value.filter(speaker => speaker.event_id === selected) }
+}
+
+/* mobile screen detection and adjustment */
+const isMobile = ref(window.innerWidth <= 800);
 function updateIsMobile() { isMobile.value = window.innerWidth <= 800; }
 onMounted(() => { window.addEventListener('resize', updateIsMobile); });
 onUnmounted(() => { window.removeEventListener('resize', updateIsMobile); });
 
+/* speaker types page link */
 const router = useRouter();
-
 function goToSpeakerTypes() {
   router.push("/speakers/types");
 }
 
+/* initialization of frontend variables and functions */
 const message = ref();
-
+const event_selecting = ref();
 const popupShow = ref(false);
 const descriptionShow = ref(false);
 const isModalOpened = ref(false);
 const isOtherModalOpened = ref(false);
 const isMobileModalOpened = ref(false);
+const noSpeakers = ref(false);
 
 const closePopup = () => { popupShow.value = false; };
-function showfunction() { descriptionShow.value = true; }
-function closeDescription() { descriptionShow.value = false; }
 const openModal = () => { isModalOpened.value = true; };
 const closeModal = () => { isModalOpened.value = false; };
 const openOtherModal = () => { isOtherModalOpened.value = true; };
 const closeOtherModal = () => { isOtherModalOpened.value = false; };
 const openMobileModal = () => { isMobileModalOpened.value = true; };
 const closeMobileModal = () => { isMobileModalOpened.value = false; };
+function showfunction() { descriptionShow.value = true; }
+function closeDescription() { descriptionShow.value = false; }
 
+/* go to linkedin */
+function openLinkedIn(event) {
+  event.preventDefault();
+  const url = speaker.value.linkedin_url;
+
+  if (typeof url !== "string" || !url.startsWith("https://www.linkedin.com/") && !url.startsWith("https://linkedin.com/")) {
+    console.log("Invalid LinkedIn Profile.");
+  } else {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
+/* handle no search results */
+function noSearchResults(isEmpty) { noSpeakers.value = isEmpty; };
+onMounted(noSearchResults)
 </script>
 
 <template>
-  <div class="desktop" v-if="!isMobile">
-    <div class="wrapper">
-      <div class="table">
-        <div class="topbar">
-          <form class="search-desktop">
-            <label>
-              <img src="../../assets/search.svg">
-            </label>
-            <input v-model="message" placeholder="Search for a speaker">
-          </form>
-          <div class="imsosickofdivs-desktop">
-            <label for="evento" class="eventselect">Event</label>
-            <select name="evento" placeholder="  " class="eventselect">
-              <option value="null" disabled selected hidden></option>
-              <option>hello</option>
-              <option>there</option>
-            </select>
-          </div>
-          <button class="topbtn" @click="openModal">Add Speaker</button>
-          <button @click="goToSpeakerTypes" class="topbtn">Speaker Types 〉</button>
-          <Transition name="fade" appear>
-            <AddSpeakerPopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerPopup>
-          </Transition>
-          <Transition name="fade" appear>
-            <EditSpeakerPopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerPopup>
-          </Transition>
-          <div class="popup-mask" v-show="descriptionShow">
-            <div class="description">
-              <p>
-                description of speaker Once upon a time there was a lovely
-                princess. But she had an enchantment
-                upon her of a fearful sort which could
-                only be broken by love's first kiss.
-                She was locked away in a castle guarded
-                by a terrible fire-breathing dragon.
-                Many brave knights had attempted to
-                free her from this dreadful prison,
-                but non prevailed. She waited in the
-                dragon's keep in the highest room of
-                the tallest tower for her true love
-                and true love's first kiss. (laughs)
-                Like that's ever gonna happen. What
-                a load of - (toilet flush)
+  <div :class="{'desktop' : !isMobile, 'mobile' : isMobile}">
+    <div :class="{'wrapper' : !isMobile, 'mobile-wrapper' : isMobile}">
+      
 
-                Allstar - by Smashmouth begins to play. Shrek goes about his
-                day. While in a nearby town, the villagers get together to go
-                after the ogre.
-              </p>
-              <button class="closedescription" @click="closeDescription">X</button>
-            </div>
-          </div>
-        </div>
-        <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
-        </TheTable>
-      </div>
-      <div class="right-popup-placeholder" v-show="popupShow">
-        <div class="close-wrapper">
-          <button class="close" @click="closePopup">X</button>
-        </div>
-        <div class="items">
-          <h1>SPEAKER TYPE</h1>
-          <div class="speaker-photo">Insert Speaker Photo</div>
-          <h3 class="text1">Speaker Name</h3>
-          <p class="text2 title">Speaker</p>
-          <div class="btns-row">
-            <button class="btn" @click="openOtherModal">
-              <img src="../../assets/pencil.svg">
-            </button>
-            <button class="btn" @click="showfunction">
-              <img src="../../assets/sheet.svg">
-            </button>
-            <button class="btn">
-              <img src="../../assets/linkedin.svg">
-            </button>
-            <button class="btn">
-              <img src="../../assets/trash.svg">
-            </button>
-          </div>
-          <div id="info">
-            <p>Company</p>
-            <p class="text2">Intel</p>
-            <p>Position</p>
-            <p class="text2">Global Team Technical Lead </p>
-            <div class="row">
-              <div class="col">
-                <p>Country</p>
-                <p class="text2">Germany</p>
-              </div>
-              <div class="col">
-                <p>Event</p>
-                <p class="text2">JEEC 24</p>
-              </div>
-            </div>
-            <p>JEEC Responsible</p>
-            <p class="text2">Francisco Rosa</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="mobile" v-else>
-    <div class="mobile-wrapper">
+      <!-- Table + Top Bar -->
       <div class="table">
-        <div class="mobile-topbar">
-          <div class="topbar-wrapper">
+        
+        <!-- Desktop Only Section -->
+        <div v-if="!isMobile" :class="{'navigation' : !isMobile, 'mobile-navigation' : isMobile}">
+            <form class="searchbar">
+              <label> <img src="../../assets/search.svg"> </label>
+              <input v-model="message" placeholder="Search for a Speaker">
+            </form>
+            <div class="event">
+              <label for="evento" class="eventselect">Event</label>
+              <select name="evento" placeholder="  " class="eventselect"  v-model="event_selecting" @change="filterEvent">
+                <option value="null" disabled selected hidden></option>
+                <option value="all">All</option>
+                <option v-for="event in events" :key="event.id" :value="event.id">{{ event.name }}</option>
+              </select>
+            </div>
+            <button class="topbtn" @click="openModal">Add Speaker</button>
+            <button @click="goToSpeakerTypes" class="topbtn">Speaker Types</button>
+        </div>
+
+        <!-- Mobile Only Section -->
+        <div v-else :class="{'navigation' : !isMobile, 'mobile-navigation' : isMobile}">
+          <div class="navigation-wrapper">
             <div class="topthings">
               <form class="search-mobile">
-                <label>
-                  <img src="../../assets/search.svg">
-                </label>
+                <label> <img src="../../assets/search.svg"> </label>
                 <input v-model="message" placeholder="Search">
               </form>
-              <div class="imsosickofdivs">
+              <div class="event-mobile">
                 <label for="evento" class="eventselect">Event</label>
-                <select name="evento" placeholder="  " class="eventselect">
+                <select name="evento" placeholder="  " class="eventselect"  v-model="event_selecting" @change="filterEvent">
                   <option value="null" disabled selected hidden></option>
-                  <option>hello</option>
-                  <option>there</option>
+                  <option value="all">All</option>
+                  <option v-for="event in events" :key="event.id" :value="event.id">{{ event.name }}</option>
                 </select>
               </div>
             </div>
             <div class="topbtns">
-              <button class="topbtn" @click="openModal">Add Speaker</button>
-              <button @click="goToSpeakerTypes" class="topbtn">Speaker Types 〉</button>
-            </div>
-          </div>
-          <Transition name="fade" appear>
-            <AddSpeakerPopup :isOpen="isModalOpened" @modal-close="closeModal"></AddSpeakerPopup>
-          </Transition>
-          <Transition name="fade" appear>
-            <EditSpeakerPopup :isOpen="isOtherModalOpened" @modal-close="closeOtherModal"></EditSpeakerPopup>
-          </Transition>
-          <Transition name="fade" appear>
-            <MobilePopup :isOpen="isMobileModalOpened" @modal-close="closeMobileModal"></MobilePopup>
-          </Transition>
-          <div class="popup-mask" v-show="descriptionShow">
-            <div class="description-mobile">
-              <p>
-                description of speaker Once upon a time there was a lovely
-                princess. But she had an enchantment
-                upon her of a fearful sort which could
-                only be broken by love's first kiss.
-                She was locked away in a castle guarded
-                by a terrible fire-breathing dragon.
-                Many brave knights had attempted to
-                free her from this dreadful prison,
-                but non prevailed. She waited in the
-                dragon's keep in the highest room of
-                the tallest tower for her true love
-                and true love's first kiss. (laughs)
-                Like that's ever gonna happen. What
-                a load of - (toilet flush)
-
-                Allstar - by Smashmouth begins to play. Shrek goes about his
-                day. While in a nearby town, the villagers get together to go
-                after the ogre.
-              </p>
-              <button class="mobile-closedescription" @click="closeDescription">X</button>
+              <button class="topbtn-mobile" @click="openModal">Add Speaker</button>
+              <button @click="goToSpeakerTypes" class="topbtn-mobile">Speaker Types</button>
             </div>
           </div>
         </div>
-        <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
-        </TheTable>
+
+        <!-- Common Section -->
+        <AddSpeakerPopup :isOpen="isModalOpened" :events="events" :types="types" :responsibles="responsibles" @add-speaker="addSpeaker" @modal-close="closeModal"></AddSpeakerPopup>
+        <EditSpeakerPopup :isOpen="isOtherModalOpened" :speaker="speaker" :events="events" :types="types" :responsibles="responsibles" @update-speaker="updateSpeaker" @modal-close="closeOtherModal"></EditSpeakerPopup>
+        <div class="popup-mask" v-show="descriptionShow">
+          <div :class="{'description' : !isMobile, 'description-mobile' : isMobile}" v-if="speaker">
+            <p> {{ speaker.bio }} </p>
+            <button :class="{'closedescription' : !isMobile, 'mobile-closedescription' : isMobile}" @click="closeDescription">X</button>
+          </div>
+        </div>
+        <TheTable :data="datab_filtered" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback" @notFound="noSearchResults"></TheTable>
+        <div class="no-speakers-wrap" v-if=noSpeakers>
+          <div class="no-speakers" v-if=noSpeakers>No Speakers Found</div>
+        </div>
       </div>
+      
+      <!-- Popup -->
+
+      <!-- Mobile Only - Modal Popup -->
+      <div v-if="isMobile">
+        <MobilePopup :isOpen="isMobileModalOpened" :speaker="speaker" :events="events" :types="types" :responsibles="responsibles" :speaker_image="speaker_image" @delete-speaker="deleteSpeaker" @update-speaker="updateSpeaker" @modal-close="closeMobileModal"></MobilePopup>
+      </div>
+
+      <!-- Desktop Only - Right Side Popup -->
+      <div v-else class="right-popup-placeholder" v-show="popupShow">
+        <div class="close-wrapper">
+          <button class="close" @click="closePopup">X</button>
+        </div>
+        <div class="items" v-if="speaker">
+          <h1>{{ speaker.speaker_type }}</h1>
+          <div class="speaker-photo">
+            <img v-if="speaker_image" :src="speaker_image" alt="Speaker Photo" />
+            <span v-else>Insert Speaker<br>Photo</span>
+          </div>
+          <h3 class="text1">{{ speaker.name }}</h3>
+          <p class="text2 title">Speaker</p>
+          <div class="btns-row">
+            <button class="btn" @click="openOtherModal"> <img src="../../assets/pencil.svg"> </button>
+            <button class="btn" @click="showfunction"> <img src="../../assets/sheet.svg"> </button>
+            <button class="btn" @click="openLinkedIn"> <img src="../../assets/linkedin.svg"> </button>
+            <button class="btn" @click="deleteSpeaker(speaker)"> <img src="../../assets/trash.svg"> </button>
+          </div>
+          <div id="info">
+            <p>Company</p> <p class="text2">{{ speaker.company }}</p>
+            <p>Position</p> <p class="text2">{{ speaker.position }}</p>
+            <div class="row"> 
+              <div class="col"> <p>Country</p> <p class="text2">{{ speaker.country }}</p> </div>
+              <div class="col"> <p>Event</p> <p class="text2">{{ speaker.event_name }}</p> </div> 
+            </div>
+            <p>JEEC Responsible</p> <p class="text2">{{ speaker.responsible }}</p>
+          </div>
+        </div>
+      </div>
+
+
     </div>
   </div>
 </template>
@@ -274,7 +319,7 @@ const closeMobileModal = () => { isMobileModalOpened.value = false; };
   gap: 3ch;
 }
 
-.mobile-topbar>form {
+.mobile-navigation>form {
   display: flex;
   width: 21%;
   background-color: var(--c-accent);
@@ -309,18 +354,7 @@ select {
   background-color: white;
 }
 
-/* form {
-  display: flex;
-  width: 70vw;
-  background-color: var(--c-accent);
-  line-height: 50px;
-  gap: 1ch;
-  padding-left: 1ch;
-  border-radius: 10px;
-  flex-grow: 0.7;
-} */
-
-.search-desktop {
+.searchbar {
   display: flex;
   width: 40vw;
   background-color: var(--c-accent);
@@ -441,8 +475,15 @@ form>input::placeholder {
   display: flex;
   align-items: center;
   text-align: center;
+  justify-content: center;
   color: white;
+}
 
+.speaker-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 100%;
 }
 
 .text1 {
@@ -451,6 +492,8 @@ form>input::placeholder {
 }
 
 .text2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--c-ft-semi-light);
 }
 
@@ -462,13 +505,14 @@ form>input::placeholder {
 .row {
   display: flex;
   flex-direction: row;
-  gap: 3.5vw;
+  gap: 4.5vw;
 }
 
 .col {
   display: flex;
   flex-direction: column;
   gap: 1vh;
+  max-width: 55%;
 }
 
 #info {
@@ -477,6 +521,7 @@ form>input::placeholder {
   flex-direction: column;
   gap: 12px;
   margin-top: 1.3vh;
+  width: 60%;
 }
 
 .btns-row {
@@ -509,18 +554,32 @@ form>input::placeholder {
   cursor: pointer;
 }
 
-.topbar,
-.mobile-topbar {
+.topbtn-mobile {
+  background-color: var(--c-select);
+  color: white;
+  border: none;
+  border-radius: 7px;
+  align-items: center;
+  height: 50px;
+  font-weight: 500;
+  font-size: small;
+  flex-grow: 1;
+  width: 10%;
+  cursor: pointer;
+}
+
+.navigation,
+.mobile-navigation {
   display: flex;
   flex-direction: row;
   gap: 15px;
 }
 
-.topbar-wrapper {
+.navigation-wrapper {
   width: 100vw;
 }
 
-.topbar-wrapper {
+.navigation-wrapper {
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -539,7 +598,7 @@ form>input::placeholder {
   gap: 15px;
 }
 
-.imsosickofdivs {
+.event-mobile {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -547,7 +606,7 @@ form>input::placeholder {
   width: 30vw;
 }
 
-.imsosickofdivs-desktop {
+.event {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -555,12 +614,12 @@ form>input::placeholder {
   width: 8vw;
 }
 
-.imsosickofdivs-desktop>label {
+.event>label {
   position: absolute;
   bottom: 100%;
 }
 
-.imsosickofdivs>label {
+.event-mobile>label {
   position: absolute;
   bottom: 100%;
 }
@@ -659,5 +718,28 @@ form>input::placeholder {
   gap: 10vh;
   cursor: pointer;
   padding: 0.5vw;
+}
+
+.no-speakers-wrap {
+  display: table;
+  position: sticky;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+  background-color: var(--c-accent);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 3%;
+  text-align: center;
+  vertical-align: 0%;
+  font-size: larger;
+  font-weight: 500;
+}
+
+.no-speakers {
+  display: table-cell;
+  vertical-align: middle;
 }
 </style>
