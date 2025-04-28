@@ -27,14 +27,44 @@ const fetchData = () => {
     events.value = response.data.events
     responsibles.value = response.data.responsibles
     types.value = response.data.stypes
-    datab.value = response.data.speakers[0] //meter id do evento
-    datab_filtered.value = response.data.speakers[0] 
-    console.log(types.value)
+    datab.value = response.data.speakers //meter id do evento
+    datab_filtered.value = response.data.speakers
+    event_selecting.value = response.data.event_default_id
+
+    if(datab.value.length == 0){
+      noSpeakers.value = true;
+    }
   }).catch((error) => {
     console.log(error)
   })
 }
 onMounted(fetchData)
+
+function change_event(){
+  let event_id = event_selecting.value;
+
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/speakers_by_event', {
+    event_id: event_id,
+  },{
+    auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  }).then((response) => {
+    events.value = response.data.events
+    responsibles.value = response.data.responsibles
+    types.value = response.data.stypes
+    datab.value = response.data.speakers //meter id do evento
+    datab_filtered.value = response.data.speakers
+    event_selecting.value = response.data.event_id
+
+    if(datab.value.length == 0){
+      noSpeakers.value = true;
+    }
+  }).catch((error) => {
+    console.log(error)
+  })
+}
 
 /* fetch image to show on the popup when a speaker is selected */
 function fetchSpeakerImage(speaker) {
@@ -48,8 +78,6 @@ function fetchSpeakerImage(speaker) {
   }).then(response => {
     if (!response.data.error) {
       speaker_image.value = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.speaker_image;
-      console.log("here")
-      console.log(speaker_image)
     } else {
       console.log("Image error:", response.data.error);
     }
@@ -60,10 +88,8 @@ function fetchSpeakerImage(speaker) {
 
 /* add a new speaker */
 function addSpeaker(newSpeaker) {
-  console.log(newSpeaker.speaker_image)
   const formData = new FormData();
   for (const [key, value] of Object.entries(newSpeaker)) { formData.append(key, value); }
-  console.log(formData);
   axios.post(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/new-speaker-vue`, formData, {
     auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
@@ -79,7 +105,6 @@ function addSpeaker(newSpeaker) {
 /* update an existing speaker */
 function updateSpeaker(editedSpeaker) {
   const formData = new FormData();
-  console.log(editedSpeaker);
   for (const [key, value] of Object.entries(editedSpeaker)) { formData.append(key, value); }
   
   axios.post( `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/edit-speaker-vue`, formData, {
@@ -121,19 +146,18 @@ const tablePref = {
 
 /* select a row */
 function selectCallback(row) {
-  console.log(row)
   speaker.value = row;
   fetchSpeakerImage(speaker.value);
   popupShow.value = true;
   if (isMobile.value) { openMobileModal(); }
 }
 
-/* filter table rows by event */
-function filterEvent() {
-  const selected = event_selecting.value;
-  if (selected == 'all') { datab_filtered.value =  datab.value } 
-  else { datab_filtered.value =  datab.value.filter(speaker => speaker.event_id === selected) }
-}
+// /* filter table rows by event */
+// function filterEvent() {
+//   const selected = event_selecting.value;
+//   if (selected == 'all') { datab_filtered.value =  datab.value } 
+//   else { datab_filtered.value =  datab.value.filter(speaker => speaker.event_id === selected) }
+// }
 
 /* mobile screen detection and adjustment */
 const isMobile = ref(window.innerWidth <= 800);
@@ -173,7 +197,7 @@ function openLinkedIn(event) {
   const url = speaker.value.linkedin_url;
 
   if (typeof url !== "string" || !url.startsWith("https://www.linkedin.com/") && !url.startsWith("https://linkedin.com/")) {
-    console.log("Invalid LinkedIn Profile.");
+    alert("Invalid LinkedIn Profile.");
   } else {
     window.open(url, "_blank", "noopener,noreferrer");
   }
@@ -200,9 +224,7 @@ onMounted(noSearchResults)
             </form>
             <div class="event">
               <label for="evento" class="eventselect">Event</label>
-              <select name="evento" placeholder="  " class="eventselect"  v-model="event_selecting" @change="filterEvent">
-                <option value="null" disabled selected hidden></option>
-                <option value="all">All</option>
+              <select name="evento" placeholder="" class="eventselect"  v-model="event_selecting" @change="change_event">
                 <option v-for="event in events" :key="event.id" :value="event.id">{{ event.name }}</option>
               </select>
             </div>
@@ -243,7 +265,7 @@ onMounted(noSearchResults)
             <button :class="{'closedescription' : !isMobile, 'mobile-closedescription' : isMobile}" @click="closeDescription">X</button>
           </div>
         </div>
-        <TheTable :data="datab_filtered" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback" @notFound="noSearchResults"></TheTable>
+        <TheTable :data="datab" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback" @notFound="noSearchResults"></TheTable>
         <div class="no-speakers-wrap" v-if=noSpeakers>
           <div class="no-speakers" v-if=noSpeakers>No Speakers Found</div>
         </div>
@@ -678,7 +700,8 @@ form>input::placeholder {
   vertical-align: center;
   justify-content: center;
   padding: 3.5vw;
-  font-weight: 350;
+  font-weight: 500;
+  font-size: large;
   color: (--c-ft-semi-light);
 }
 
