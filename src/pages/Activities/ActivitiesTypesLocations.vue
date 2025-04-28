@@ -68,7 +68,7 @@ const tableHeaders = {
 
 const fetchData = () => {
   axios
-    .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/types/locations', {
+    .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/types/add-infos', {
       auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,

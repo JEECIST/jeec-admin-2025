@@ -65,6 +65,8 @@
                 <div class="title">Username</div>
                 <div class="info">{{ selectedRow.username }}</div>
               </div>
+            </div>
+            <div class="line">
               <div class="box">
                 <div class="title">Password</div>
                 <div class="info">{{ selectedRow.password }}</div>
@@ -155,6 +157,10 @@
                   <label>Username</label>
                   <input type="text" required v-model="newCompany.username">
                 </div>
+                <div v-if="showEditCompanyModal" class="element" id="username">
+                  <label>Password</label>
+                  <input type="text" required v-model="newCompany.password">
+                </div>
               </div>
               <div class="line">
                 <div class="element" id="cv">
@@ -192,11 +198,6 @@
               <div v-if="jeec_responsible_flag" class="line">
                 <div class="element" id="days">
                   <label>Job Fair Days</label>
-                  <!-- <select class="sele" v-model="newCompany.days">
-                    <option v-for="day in days" :key="day.id" :value="day.day">
-                      {{ day.day }}
-                    </option>
-                  </select> -->
                   <multiselect
                     v-model="newCompany.days"
                     :options="days"
@@ -273,13 +274,10 @@ const fetchCompanies = () => {
     companies.value = data.companies;
     events.value = data.events;
     tiers.value = data.tiers;
-    // responsibles.value = data.responsibles;
 
     default_event_id.value = data.default_event_id;
 
     selectedEvent = default_event_id.value.id;
-
-    // filterByEvent();
   })
   .catch((error)=>{
     console.log(error);
@@ -302,11 +300,10 @@ function change_event(event) {
     companies.value = data.companies;
     events.value = data.events;
     tiers.value = data.tiers;
-    // responsibles.value = data.responsibles;
+
+    console.log(companies.value)
 
     default_event_id.value = data.default_event_id;
-
-    // filterByEvent();
   })
   .catch((error)=>{
     console.log(error);
@@ -351,6 +348,7 @@ const newCompany = ref({
   email: '',
   website: '',
   username: '',
+  password: '',
   cv: 'No',
   tier_id: '',
   responsible_id: '',
@@ -366,7 +364,6 @@ const tablePref = {
   id: "ID",
   name: "Name",
   tier: "Tier",
-  //username: "Username",
   responsible: "JEEC Responsible"
 };
 
@@ -374,9 +371,9 @@ function selectCallback(row) {
   if (selectedRow.value == row) {
     resetCallback();
   } else {
-    selectedRow.value = row;
+    selectedRow.value = {...row};
     fetchCompanyImage();
-    selectedRow.value.password = decryptPassword(selectedRow.value.password);
+    selectedRow.value.password = decryptPassword(row.password);
   }
 }
 
@@ -430,23 +427,19 @@ function openEdit() {
   newCompany.value.event_id = selectedRow.value.event_id;
   newCompany.value.email = selectedRow.value.email;
   newCompany.value.website = selectedRow.value.website;
-  newCompany.value.event_id = selectedRow.value.event_id;
-  newCompany.value.email = selectedRow.value.email;
-  newCompany.value.website = selectedRow.value.website;
   newCompany.value.username = selectedRow.value.username;
+  newCompany.value.password = selectedRow.value.password;
   newCompany.value.cv = selectedRow.value.cv;
-  newCompany.value.tier_id = selectedRow.value.tier_id;
-  newCompany.value.responsible_id = selectedRow.value.responsible_id;
   newCompany.value.tier_id = selectedRow.value.tier_id;
   newCompany.value.responsible_id = selectedRow.value.responsible_id;
   newCompany.value.days = selectedRow.value.days;
   newCompany.value.image = selectedRow.value.image;
   newCompany.value.external_id = selectedRow.value.external_id;
   newCompany.value.changeimg = 'No';
-  newCompany.value.image = selectedRow.value.image;
-  newCompany.value.external_id = selectedRow.value.external_id;
-  newCompany.value.changeimg = 'No';
   showEditCompanyModal.value = true;
+  jeec_responsible_flag.value = true;
+
+  get_colaborators_and_days();
 }
 
 function editCompany() {
@@ -460,10 +453,17 @@ function editCompany() {
   update_company.append('cv', newCompany.value.cv)
   update_company.append('tier_id', newCompany.value.tier_id)
   update_company.append('responsible_id', newCompany.value.responsible_id)
-  update_company.append('days', newCompany.value.days)
   update_company.append('external_id', newCompany.value.external_id)
   update_company.append('image', fileToUpload.value)
   update_company.append('changeimg', newCompany.value.changeimg)
+
+  if (Array.isArray(newCompany.value.days) && newCompany.value.days.length > 0) {
+    // payload.speaker_external_ids = newActivity.value.speakers.map((speaker) => speaker.external_id);
+    update_company.append('days', newCompany.value.days.map((day) => day.day))
+  }
+
+  let encryptedPassword = CryptoJS.DES.encrypt(newCompany.value.password, import.meta.env.VITE_APP_API_KEY).toString();
+  update_company.append('password', encryptedPassword)
 
   axios
   .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/update',update_company,{auth: {

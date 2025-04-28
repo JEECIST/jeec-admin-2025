@@ -258,7 +258,7 @@ const fetchAllFromEventsDefault = async () => {
     console.error("Error fetching all events:", error);
 
     if (error.response && error.response.data.error) {
-      alert(error.response.data.error);
+      // alert(error.response.data.error);
     } else {
       alert("Failed to fetch events.");
     }
@@ -333,7 +333,7 @@ const fetchAllByEvent = async () => {
     console.error("Error fetching days for event:", error);
 
     if (error.response && error.response.data.error) {
-      alert(error.response.data.error);
+      // alert(error.response.data.error);
     } else {
       alert("Failed to fetch event days.");
     }
