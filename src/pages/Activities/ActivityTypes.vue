@@ -84,6 +84,7 @@ const emit = defineEmits(['close'])
 
 const database_type = ref([{
   name: null,
+  event_id: null,
   priority: null,
   number_act: null,
   points: null,
@@ -107,6 +108,7 @@ const fetchData = () => {
       console.log(data)
       database_type.value = data.types.map((type) => ({
         name: type.name,
+        event_id: type.event_id,
         priority: type.priority,
         number_act: type.activities ? type.activities.length : 0, // Contar atividades
         points: type.points,
@@ -142,10 +144,7 @@ const tableHeaders = computed(() => {
 });
 
 const selectedType = ref();
-
-
 const searchQuery = ref('');
-//const selectedType = ref([null]);
 
 function selectType(row) {
   selectedType.value = row;

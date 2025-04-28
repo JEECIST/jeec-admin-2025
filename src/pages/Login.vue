@@ -10,7 +10,7 @@
                 <div class="login-inputs">
                     <input v-model="username" placeholder="Enter Username">
                     <input type="password" v-model="password" placeholder="Enter Password">
-                    <button @click="login()">
+                    <button @click="login()" style="cursor: pointer;">
                         <p>Login</p>
                     </button>
                 </div>
