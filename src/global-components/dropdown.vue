@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { computed, defineProps, defineEmits, ref, onMounted, onBeforeUnmount } from 'vue';
+import { computed, defineProps, defineEmits, ref, onMounted, onBeforeUnmount, watch } from 'vue';
 
 const dropDown = ref(null)
 
@@ -34,12 +34,20 @@ const props = defineProps({
   },
   modelValue: {
     default: null
+  },
+  onSelect: {
+    type: Function,
+    default: null
+  },
+  defaultValue: {
+    type: String,
+    default: "Please select some prize"
   }
 })
 
 const emit = defineEmits(['update:modelValue'])
 
-const selectedOption = ref(null)
+const selectedOption = ref(props.defaultValue)
 const isDropDownVisible = ref(false)
 
 const mappedSelectedOption = computed (() => {
@@ -51,11 +59,14 @@ const toggleOptionSelect = (option) => {
   selectedOption.value = option;
   emit('update:modelValue', option)
   isDropDownVisible.value = false
-  // Premio atribuido ig
+  if (props.onSelect && typeof props.onSelect === 'function') {
+    props.onSelect(option)
+  }
 }
 
-
-
+watch(() => props.defaultValue, (newVal) => {
+  selectedOption.value = newVal;
+});
 
 const closeDropDown = (element) => {
   if(!dropDown.value.contains(element.target)){

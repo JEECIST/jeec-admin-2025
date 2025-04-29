@@ -86,7 +86,7 @@ function getPrizesSpecial() {
           Individual: { count: 3, getDate: (i) => `${i + 1}` },
           CV: { count: 1, getDate: (i) => `${i + 1}` },
         };
-        console.log('rewardsList:', rewardsList, typeof rewardsList);
+        
         rewardsList.value.forEach(prize => {
             if (groupedPrizes[prize.type]) {
                 groupedPrizes[prize.type].push(prize);
@@ -106,18 +106,24 @@ function getPrizesSpecial() {
 
             const found = rewardsList.value.find(prize =>
               prize.type === type &&
-              prize.rowplace === date &&
-              prize.winner
+              prize.rowplace === date
             );
 
+            const isClaimed = found && found.claimed === true;
             rows.push({
               date,
               reward: found ? found.name : null,
               winner: found ? found.winner : null,
-              editable: !found
+              editable: !isClaimed
             });
 
-            selectedValues.value[type][i] = null;
+            // Default do dropwdown
+            if (found && !isClaimed) {
+              const matchingPrize = groupedPrizes[type].find(prize => prize.name === found.name);
+              selectedValues.value[type][i] = matchingPrize || null;
+            } else {
+              selectedValues.value[type][i] = null;
+            }
             warning.value[type][i] = false;
           }
 
@@ -152,17 +158,17 @@ const handleButtonClick = (type, index) => {
     const name = selectedValues.value[type][index].name;
 
     //Set claim prize aqui
-    setClaimedPrize(name, type, date)
-    getPrizesSpecial() // get again
+    setClaimedPrize(name, type, date, true);
+    getPrizesSpecial(); // get again
 };
 
-function setClaimedPrize(prizeName, type, date){
+function setClaimedPrize(prizeName, type, date, claimed=true){
   // axios para dar set a true
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/generate-winner', {
     prizeName: prizeName,
     type: type,
     rowplace: date,
-    claimed: true,
+    claimed: claimed,
   }, {
     auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
@@ -171,11 +177,10 @@ function setClaimedPrize(prizeName, type, date){
   }).then((response) => {
     if (!response.data.error) {
       console.log('prize details fetched', response.data);
-      selectedRow.value.logo = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image; // Update the logo in the selectedRow
-      console.log(selectedRow.value.logo);
     } else {
       console.log('Error fetching prize details', response.data.error);
     }
+    getPrizesSpecial();
   }).catch((error) => {
     console.log(error);
   });
@@ -202,6 +207,21 @@ function voadora(){
 
 }
 
+const handleDropdownSelect = (type, index, option) => {
+  console.log(`Selected ${option.name} for ${type} at index ${index}`);
+  
+  // Get the date value based on type and index
+  let date = "";
+  if(type == "Daily"){
+    date = `${5 + index}/05`;
+  } else {
+    date = `${1 + index}`;
+  }
+  
+  setClaimedPrize(option.name, type, date, false);
+
+};
+
 </script>
 
 <template>
@@ -226,7 +246,7 @@ function voadora(){
               <tr v-for="(reward, index) in getPrizeArray(type)" :key="index">
                 <td>{{ reward.date }}</td>
                 <td>
-                  <div v-if="getPrizeArray(type)[index].reward">
+                  <div v-if="getPrizeArray(type)[index].reward && !getPrizeArray(type)[index].editable">
                     {{ getPrizeArray(type)[index].reward }}
                   </div>
                   <div v-else>
@@ -234,6 +254,8 @@ function voadora(){
                       :options="filteredRewards(type)"
                       v-model="selectedValues[type][index]"
                       :disabled="!getPrizeArray(type)[index].editable"
+                      :onSelect="(option) => handleDropdownSelect(type, index, option)"
+                      :defaultValue="selectedValues[type][index]"
                     />
                   </div>
                 </td>
