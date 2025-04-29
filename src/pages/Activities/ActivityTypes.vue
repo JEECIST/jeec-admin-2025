@@ -27,7 +27,7 @@
         </svg>
       </button>
       <div class="items">
-        <img class="popup-logo" src="../../assets/wrizz.jpg" alt="Profile Image">
+        <img class="popup-logo" src="../../assets/jeec25.jpg" alt="Profile Image">
         <div class="popup-type">{{ selectedType.name }}</div>
         <div class="popup-title">Activity Type</div>
         <div class="popup-btns">
