@@ -49,7 +49,6 @@
                 <img src="./imagens/edit.svg"/>
               </button>
               <button class="web-button" @click="irParaSite(selectedRow.website)">
-              <button class="web-button" @click="irParaSite(selectedRow.website)">
                 <img src="./imagens/web.svg"/>
               </button>
               <button class="bill-button" @click="irParaBills()">
@@ -334,7 +333,7 @@ const selectedRow = ref(null);
 
 let noCompanies = ref();
 
-let logo_image = ref('')
+let logo_image = ref('');
 
 let fileSelected = ref(null);
 let fileToUpload = ref(null);
