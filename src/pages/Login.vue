@@ -10,7 +10,7 @@
                 <div class="login-inputs">
                     <input v-model="username" placeholder="Enter Username">
                     <input type="password" v-model="password" placeholder="Enter Password">
-                    <button @click="login()">
+                    <button @click="login()" style="cursor: pointer;">
                         <p>Login</p>
                     </button>
                 </div>
@@ -45,7 +45,7 @@ function automaticLogin(){
         router.push({path: "/dashboard"})
     }
     // console.log(CryptoJS.DES.decrypt('', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
-    console.log("Atualizou2")
+    console.log("Atualizou4")
 }
 
 onMounted(automaticLogin)

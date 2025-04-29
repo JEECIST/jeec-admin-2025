@@ -1,137 +1,134 @@
-<script setup>
-import { defineProps, defineEmits, ref, onMounted, onUnmounted } from "vue";
+<!-- FEITO -->
 
+<script setup>
+import { defineProps, defineEmits, ref, watch, onMounted, onUnmounted } from "vue";
+
+/* variables from 'SpeakerTypes' page */
 const props = defineProps({
     isOpen: Boolean,
+    stype: Object,
+    speakers: Array,
 });
 
-const emit = defineEmits(["modal-close"]);
+const emit = defineEmits(["modal-close", "update-type"]);
 
+const editedSpeakerType = ref({});
+
+/* show unedited speaker type details on the popup when opened */
+watch( () => props.stype, (newSpeakerType) => {
+    if (newSpeakerType) { editedSpeakerType.value = { ...newSpeakerType }; }},
+  { immediate: true });
+
+/* update - go to updateSpeakerType function on 'SpeakerTypes' page */
+function saveChanges() {
+  console.log("saving changes");
+  emit("update-type", editedSpeakerType.value);
+  emit("modal-close");
+}
+
+/* mobile screen detection and adjustment */
 const isMobile = ref();
 function updateIsMobile() { isMobile.value = window.innerWidth <= 800; }
-onMounted(() => { window.addEventListener('resize', updateIsMobile); });
+onMounted(() => { 
+    updateIsMobile();
+    window.addEventListener('resize', updateIsMobile); });
 onUnmounted(() => { window.removeEventListener('resize', updateIsMobile); });
-
 </script>
 
 <template>
     <div v-if="isOpen" class="modal-mask">
-        <div class="desktop" v-if="!isMobile">
-            <div class="wrapper">
+        <div :class="{'desktop' : !isMobile, 'mobile' : isMobile}">
+            <div :class="{'wrapper' : !isMobile, 'mobile-wrapper' : isMobile}">
                 <div class="popup-wrapper">
                     <div class="ihatedivs">
                         <div class="header">
-                            <h1 class="desktop-h1">Edit Speaker Type</h1>
-                            <button class="close" @click.stop="emit('modal-close')">X</button>
+                            <h1>Edit Speaker Type</h1>
+                            <button :class="{'close' : !isMobile, 'mobile-close' : isMobile}" @click.stop="emit('modal-close')">X</button>
                         </div>
                         <div class="flex-1">
-                            <div class="flex-1-row-1">
+                            <div :class="{'flex-1-row-1' : !isMobile, 'mobile-flex-1-row-1' : isMobile}">
+
+                                <!-- name -->
                                 <div class="labels" id="name">
                                     <label for="name">Name</label>
-                                    <input type="text" placeholder="" id="name">
+                                    <input type="text" v-model="editedSpeakerType.name" id="name">
                                 </div>
+
+                                <!-- priority -->
                                 <div class="labels" id="priority">
                                     <label for="priority">Priority</label>
-                                    <input type="text" placeholder="" id="priority">
+                                    <input type="text" v-model="editedSpeakerType.priority" id="priority">
                                 </div>
                             </div>
-                            <div class="flex-1-row-2">
+                            <div :class="{'flex-1-row-2' : !isMobile, 'mobile-flex-1-row-2' : isMobile}">
+
+                                <!-- show in website -->
                                 <div class="check" id="website">
                                     <label for="website">Show in Website</label>
                                     <div class="radios">
-                                        <input type="radio" name="perfectpuppy" id="website">Yes
-                                        <input type="radio" name="perfectpuppy" id="website">No
+                                        <input type="radio" name="perfectpuppy" id="website-yes" v-model="editedSpeakerType.show_in_website" :value="true">
+                                        <label for="website-yes">Yes</label>
+
+                                        <input type="radio" name="perfectpuppy" id="website-no" v-model="editedSpeakerType.show_in_website" :value="false">
+                                        <label for="website-no">No</label>
                                     </div>
                                 </div>
+
+                                <!-- social media -->
                                 <div class="check" id="socials">
                                     <label for="socials">Social Media</label>
                                     <div class="radios">
-                                        <input type="radio" name="bigbear" id="socials">Yes
-                                        <input type="radio" name="bigbear" id="socials">No
+                                        <input type="radio" name="bigbear" id="socials-yes" v-model="editedSpeakerType.social_media" :value="true">
+                                        <label for="socials-yes">Yes</label>
+
+                                        <input type="radio" name="bigbear" id="socials-no" v-model="editedSpeakerType.social_media" :value="false">
+                                        <label for="socials-no">No</label>
                                     </div>
                                 </div>
+
+                                <!-- exclusive video -->
                                 <div class="check" id="video">
                                     <label for="video">Exclusive Video</label>
                                     <div class="radios">
-                                        <input type="radio" name="dancingduck" id="video">Yes
-                                        <input type="radio" name="dancingduck" id="video">No
+                                        <input type="radio" name="dancingduck" id="video-yes" v-model="editedSpeakerType.exclusive_video" :value="true">
+                                        <label for="video-yes">Yes</label>
+
+                                        <input type="radio" name="dancingduck" id="video-no" v-model="editedSpeakerType.exclusive_video" :value="false">
+                                        <label for="video-no">No</label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex-1-row-3">
+                            <div :class="{'flex-1-row-3' : !isMobile, 'mobile-flex-1-row-3' : isMobile}">
+
+                                <!-- exclusive posts -->
                                 <div class="check" id="post">
                                     <label for="post">Exclusive Posts</label>
                                     <div class="radios">
-                                        <input type="radio" name="cutecat" id="post">Yes
-                                        <input type="radio" name="cutecat" id="post">No
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="btns">
-                        <button class="add" @click.stop="emit('modal-close')">Save</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                        <input type="radio" name="cutecat" id="post-yes" v-model="editedSpeakerType.exclusive_posts" :value="true">
+                                        <label for="post-yes">Yes</label>
 
+                                        <input type="radio" name="cutecat" id="post-no" v-model="editedSpeakerType.exclusive_posts" :value="false">
+                                        <label for="post-no">No</label>
+                                    </div>
+                                </div>
 
-        <div class="mobile" v-else>
-            <div class="mobile-wrapper">
-                <div class="popup-wrapper">
-                    <div class="ihatedivs">
-                        <div class="header">
-                            <h1 class="mobile-h1">Edit Speaker Type</h1>
-                            <button class="mobile-close" @click.stop="emit('modal-close')">X</button>
-                        </div>
-                        <div class="flex-1">
-                            <div class="mobile-flex-1-row-1">
-                                <div class="labels" id="name">
-                                    <label for="name">Name</label>
-                                    <input type="text" placeholder="" id="name">
-                                </div>
-                                <div class="labels" id="priority">
-                                    <label for="priority">Priority</label>
-                                    <input type="text" placeholder="" id="priority">
-                                </div>
-                            </div>
-                            <div class="mobile-flex-1-row-2">
-                                <div class="check" id="website">
-                                    <label for="website">Show in Website</label>
+                                <!-- included meal -->
+                                <div class="check" id="meal">
+                                    <label for="meal">Included Meal</label>
                                     <div class="radios">
-                                        <input type="radio" name="perfectpuppy" id="website">Yes
-                                        <input type="radio" name="perfectpuppy" id="website">No
+                                        <input type="radio" name="lazylion" id="meal-yes" v-model="editedSpeakerType.included_meal" :value="true">
+                                        <label for="meal-yes">Yes</label>
+
+                                        <input type="radio" name="lazylion" id="meal-no" v-model="editedSpeakerType.included_meal" :value="false">
+                                        <label for="meal-no">No</label>
                                     </div>
                                 </div>
-                                <div class="check" id="socials">
-                                    <label for="socials">Social Media</label>
-                                    <div class="radios">
-                                        <input type="radio" name="bigbear" id="socials">Yes
-                                        <input type="radio" name="bigbear" id="socials">No
-                                    </div>
-                                </div>
-                                <div class="check" id="video">
-                                    <label for="video">Exclusive Video</label>
-                                    <div class="radios">
-                                        <input type="radio" name="dancingduck" id="video">Yes
-                                        <input type="radio" name="dancingduck" id="video">No
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mobile-flex-1-row-3">
-                                <div class="check" id="post">
-                                    <label for="post">Exclusive Posts</label>
-                                    <div class="radios">
-                                        <input type="radio" name="cutecat" id="post">Yes
-                                        <input type="radio" name="cutecat" id="post">No
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
                     </div>
-                    <div class="mobile-btns">
-                        <button class="mobile-add" @click.stop="emit('modal-close')">Save</button>
+                    <div :class="{'btns' : !isMobile, 'mobile-btns' : isMobile}">
+                        <button :class="{'add' : !isMobile, 'mobile-add' : isMobile}" @click.stop="saveChanges">Save</button>
                     </div>
                 </div>
             </div>
@@ -160,7 +157,6 @@ onUnmounted(() => { window.removeEventListener('resize', updateIsMobile); });
     top: 50%;
     left: 50%;
     translate: -50% -50%;
-    border-radius: 15px;
     overflow-y: auto;
     overflow-x: hidden;
     border-radius: 15px;
@@ -170,13 +166,12 @@ onUnmounted(() => { window.removeEventListener('resize', updateIsMobile); });
     display: flex;
     justify-content: center;
     background-color: white;
-    width: 90.5vw;
-    height: 70%;
+    width: 100%;
+    height: 80%;
     position: absolute;
     top: 50%;
     left: 50%;
     translate: -50% -50%;
-    border-radius: 15px;
     overflow-y: auto;
     overflow-x: hidden;
     border-radius: 15px;
@@ -219,6 +214,7 @@ h1 {
 .flex-1-row-2,
 .flex-1-row-3 {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     justify-content: left;
     gap: 10vw;
@@ -228,7 +224,7 @@ h1 {
 .mobile-flex-1-row-1 {
     display: flex;
     flex-direction: row;
-    width: 84.5vw;
+    width: 84.5%;
     justify-content: space-between;
 }
 
@@ -260,7 +256,7 @@ input {
 
 .mobile-flex-1-row-1>.labels>#name,
 #priority {
-    width: 60vw;
+    width: 90%;
 }
 
 .labels>#name,
@@ -281,6 +277,7 @@ input {
     gap: 0.5vh;
     color: #515151;
     font-size: small;
+    min-width: 5px;
 }
 
 .add {
@@ -347,7 +344,7 @@ input {
 }
 
 .mobile-btns {
-    width: 80vw;
+    width: 80%;
     display: flex;
     justify-content: right;
     gap: 4%;
