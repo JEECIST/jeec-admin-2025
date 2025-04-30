@@ -42,7 +42,7 @@
                 <div class="fotobola">
                   <img :src="image" />
                 </div>
-                <h2 class="subtitulo">{{ selectedMember.name }}</h2>
+                <h2 class="subtitulo">{{ selectedMember.username }}</h2>
                 <p class="sub-subtitulo">{{ selectedMember.userRole }}</p>
                 <div class="display">
                   <button class="edit" @click="editButton">
