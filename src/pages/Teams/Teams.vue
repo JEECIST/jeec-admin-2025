@@ -15,7 +15,6 @@
               @input="closePopupOnSearch"
             />
           </div>
-
           <div class="evento">
             <label for="event" class="Add-event">
               <div class="nomes"></div>
@@ -29,7 +28,6 @@
           <button class="add-team" @click="openAddPopup">Add Team</button>
         </div>
       </div>
-
       <div class="content-wrapper">
         <div class="content-container">
           <div class="table-wrapper">
@@ -42,7 +40,6 @@
               ></TheTable>
             </div>
           </div>
-
           <div v-if="showPopup" class="right-popup-placeholder">
             <div class="right-popup">
               <h2 class="titulo">{{ selectedEvent }}</h2>
@@ -79,7 +76,6 @@
               </div>
             </div>
           </div>
-
           <div v-if="showAddPopup" class="overlay">
             <div class="edit-popup">
               <div class="edit-popup-content">
@@ -127,8 +123,6 @@
               </div>
             </div>
           </div>
-
-
           <div v-if="showEditPopup" class="overlay">
             <div class="edit-popup">
               <div class="edit-popup-content">
@@ -174,50 +168,9 @@
               </div>
             </div>
           </div>
-
-
-          <!-- <div v-if="showEditPopup" class="overlay">
-            <div class="edit-popup">
-              <div class="edit-popup-content">
-                <h2>Edit Team</h2>
-                <button key="closeX" class="closeX" @click="closeEditPopup">&times;</button>
-                <div class="pos">
-                  <form @submit.prevent="saveEdit(selectedTeam.external_id)">
-                    <label for="name" class="Add-name">
-                      <div class="nomes">Name:</div>
-                      <input type="text" v-model="editTeam.name" id="name" required />
-                    </label>
-                    <label for="event" class="Add-name">
-                      <div class="nomes">Event:</div>
-                      <input type="text" v-model="editTeam.event" id="event" required />
-                    </label>
-                    <label for="priority" class="Add-name">
-                      <div class="nomes">Priority:</div>
-                      <input type="text" v-model="editTeam.priority" id="priority" required />
-                    </label>
-                    <label for="members" class="Add-name">
-                      <div class="nomes">Members:</div>
-                      <input type="text" v-model="editTeam.members" id="members" required />
-                    </label>
-                    <label for="description" class="Add-name">
-                      <div class="nomes">Description:</div>
-                      <input type="text" v-model="editTeam.description" id="description" required />
-                    </label>
-                    <button class="add-team">Save</button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div> -->
-
         </div>
       </div>
     </div>
-
-    <!-- <div v-if="filteredTeams.length === 0" class="form">
-      <label class="no-teams">No teams found</label>
-    </div> -->
-
   </div>
 </template>
 
@@ -298,6 +251,7 @@ export default {
         }
       ).then(response => {
         this.image = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image;
+        console.log(this.image);
       });
     },
     selectTeam(row) {

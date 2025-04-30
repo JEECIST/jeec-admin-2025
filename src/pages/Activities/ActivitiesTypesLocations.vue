@@ -30,7 +30,7 @@
           </svg>
       </button>
       <div class="items">
-      <img  class="popup-logo" src="../../assets/wrizz.jpg" alt="Profile Image">
+      <img  class="popup-logo" src="../../assets/jeec25.png" alt="Profile Image">
       <div class="popup-loc">{{ selectedLoc.name }}</div>
       <div class="popup-title">Location</div>
       <div class="popup-btns">
