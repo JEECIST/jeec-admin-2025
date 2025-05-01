@@ -157,7 +157,7 @@
                   <label>Username</label>
                   <input type="text" required v-model="newCompany.username">
                 </div>
-                <div v-if="showEditCompanyModal" class="element" id="username">
+                <div v-if="showPasswordEdit()" class="element" id="username">
                   <label>Password</label>
                   <input type="text" required v-model="newCompany.password">
                 </div>
@@ -251,11 +251,25 @@ let fileToUpload = ref(null);
 
 const jeec_responsible_flag = ref(false)
 
+function showPasswordEdit(){
+  if(showEditCompanyModal.value && userStore.getRole == "admin"){
+    return true
+  }else{
+    return false
+  }
+}
+
+const oldPassword = ref('')
+
 function decryptPassword(encrypted_password){
-  if(userStore.getRole == "admin")
-    return CryptoJS.DES.decrypt(encrypted_password, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
+  oldPassword.value = CryptoJS.DES.decrypt(encrypted_password, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
+  if(userStore.getRole == "admin"){
+    return oldPassword.value;
+  }
   else
     return "****************"
+
+  
 }
 
 const fetchCompanies = () => {
@@ -422,6 +436,8 @@ function addCompany() {
   closeModal();
 }
 
+
+
 function openEdit() {
   newCompany.value.name = selectedRow.value.name;
   newCompany.value.event_id = selectedRow.value.event_id;
@@ -462,8 +478,16 @@ function editCompany() {
     update_company.append('days', newCompany.value.days.map((day) => day.day))
   }
 
-  let encryptedPassword = CryptoJS.DES.encrypt(newCompany.value.password, import.meta.env.VITE_APP_API_KEY).toString();
-  update_company.append('password', encryptedPassword)
+  let encryptedPassword;
+
+  if(userStore.getRole == "admin"){
+    encryptedPassword = CryptoJS.DES.encrypt(newCompany.value.password, import.meta.env.VITE_APP_API_KEY).toString();
+    update_company.append('password', encryptedPassword)
+  }else{
+    encryptedPassword = CryptoJS.DES.encrypt(oldPassword.value, import.meta.env.VITE_APP_API_KEY).toString();
+    update_company.append('password', encryptedPassword)
+  }
+
 
   axios
   .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/update',update_company,{auth: {
