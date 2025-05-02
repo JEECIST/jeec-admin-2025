@@ -105,8 +105,6 @@ function errorPopUp() {
 
 function onDecode(student_external_id) {
   console.log("QR Code Content:", student_external_id);
-  // console.log("Activity:", selectedRow.value.external_id);
-  // let debug = "28a0b7f0-bb3a-4b91-b230-adce4e729eb8"; 
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activitiesdashboard_vue/activity/activity_external_idistid', {
     student_external_id: student_external_id,  
     activity_external_id: selectedRow.value.external_id},

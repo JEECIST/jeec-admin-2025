@@ -159,7 +159,7 @@ const routes = [
     name: "studentapp",
     component: Dashboard,
     meta: {
-      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students", "studentapp-cvs"]
+      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students", "studentapp-cvs", "studentapp-eletrolink"]
     },
   },
   {
@@ -203,6 +203,12 @@ const routes = [
     name: "studentapp-cvs",
     meta: { title: "Student CVs" },
     component: () => import("../pages/StudentApp/StudentCVs.vue"),
+  },
+  {
+    path: "/student-app/eletrolink",
+    name: "studentapp-eletrolink",
+    meta: { title: "Eletrolink Registrations" },
+    component: () => import("../pages/StudentApp/Eletrolink.vue"),
   },
   {
     path: "/teams",
