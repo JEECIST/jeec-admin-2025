@@ -200,6 +200,11 @@
             </multiselect>
         </div>
 
+        <div class="form-group">
+            <label for="Registrations">Registrations:</label>
+            <input type="text" id="registration" name="registration" v-model="newActivity.registrations_limit">
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="pop-up-add-btn">Add</button>
         </div>
@@ -402,6 +407,16 @@ const addNewActivity = async () => {
     payload.prize_external_id = newActivity.value.prize.external_id;
   }
 
+  const limit = newActivity.value.registrations_limit;
+
+  if (limit === '' || (!isNaN(limit) && String(limit).trim() !== '')) {
+    payload.registrations_limit = limit === '' ? null : Number(limit);
+  } else {
+    alert("Limit is not a valid number");
+    return;
+  }
+
+
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/add_activity_vue`,
@@ -484,7 +499,8 @@ const newActivity = ref({
   companies: [],
   speakers: [], 
   volunteers: [],
-  prize: ''  });
+  prize: '',
+  registrations_limit: ''});
 
 const isMobile = ref(false);
 
