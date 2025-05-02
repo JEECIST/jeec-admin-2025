@@ -52,7 +52,7 @@ async function fetchData() {
                     <div class="grid-wrapper">
                         <div class="table-wrapper">
                             <div v-for="(student, index) in data" :key="index" class="student">
-                                <span> {{ student.name }}</span>
+                                <span>{{ index + 1 }} - {{ student.name }}</span>
                             </div>
                         </div>
                     </div>
