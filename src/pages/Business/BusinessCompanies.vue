@@ -263,7 +263,7 @@ const oldPassword = ref('')
 
 function decryptPassword(encrypted_password){
   oldPassword.value = CryptoJS.DES.decrypt(encrypted_password, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
-  if(userStore.getRole == "admin" || userStore.getRole == "team_leaders" || userStore.getRole == "coordination"){
+  if(userStore.getRole == "admin" || userStore.getRole == "team_leaders" || userStore.getRole == "coordination" || userStore.getRole == "business"){
     return oldPassword.value;
   }
   else
