@@ -170,17 +170,17 @@ const tablePref = {
           <EditPrizePopup v-if="isOtherModalOpened" :isOpen="isOtherModalOpened" :selectedRow="selectedRow" @modal-close="closeOtherModal"></EditPrizePopup>
       </Transition>
       </div>
-        <div v-if="!isPrizesEmpty()">
-            <TheTable
-            :data="prizes"
-            :tableHeaders="tablePref"
-            :searchInput="message"
-            @onRowSelect="selectCallback"
-            @notFound="handleEmptyPrizes"
-            ></TheTable>
-        </div>
-        <div class="noprizes" v-if=noPrizes>No Prizes Found</div>
-      </div>
+      
+      <TheTable
+        :data="prizes"
+        :tableHeaders="tablePref"
+        :searchInput="message"
+        @onRowSelect="selectCallback"
+        @notFound="handleEmptyPrizes"
+        ></TheTable>
+
+      <div class="noprizes" v-if=noPrizes>No Prizes Found</div>
+    </div>
       <div class="right-popup-placeholder" v-if="selectedRow">
           <div class="items">
             <h1>SHOP</h1>
