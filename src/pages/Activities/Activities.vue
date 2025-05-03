@@ -201,8 +201,12 @@
         </div>
 
         <div class="form-group">
-            <label for="Registrations">Registrations:</label>
-            <input type="text" id="registration" name="registration" v-model="newActivity.registrations_limit">
+            <label for="Registrations">Registrations Limit:</label>
+            <input type="number" id="registration" name="registration" v-model="newActivity.registrations_limit">
+        </div>
+        <div class="form-group">
+            <label for="Registrations">Company accepted Registrations:</label>
+            <input type="number" id="company-registration" name="company-registration" v-model="newActivity.company_registrations_limit">
         </div>
 
         <div class="form-actions">
@@ -388,6 +392,7 @@ const addNewActivity = async () => {
     activity_type_external_id: newActivity.value.type.external_id,
     event_id: eventselected.value,
     event_day_external_id: EventDay_External_ID,
+    company_registrations_limit: newActivity.value.company_registrations_limit
   };
 
   // Adiciona os campos opcionais apenas se estiverem preenchidos
@@ -500,7 +505,8 @@ const newActivity = ref({
   speakers: [], 
   volunteers: [],
   prize: '',
-  registrations_limit: ''});
+  registrations_limit: '',
+  company_registrations_limit: ''});
 
 const isMobile = ref(false);
 
