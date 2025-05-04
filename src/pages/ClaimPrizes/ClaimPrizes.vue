@@ -41,8 +41,8 @@ const datab = ref([
 ]);
 
 const tablePref = {
-  reward_name: "Prize",
-  student_id: "Student",
+  prize_name: "Prize",
+  username: "Student",
 };
 
 const tableButtons = [{
