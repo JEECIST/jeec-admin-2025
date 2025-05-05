@@ -35,6 +35,8 @@ import axios from 'axios';
 //   },
 // ]);
 
+const message = ref();
+
 const tablePref = {
   id: "ID",
   name: "Student Name",
