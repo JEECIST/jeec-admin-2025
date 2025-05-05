@@ -17,10 +17,16 @@
           v-model="searchQuery" 
         />
       </div>
-      <!-- Botão para abrir o popup de estudantes banidos -->
-      <button class="btn-banned" @click="toggleBannedPopup">
-        Banned Students
-      </button>
+      <div class="btn-students">
+        <!-- Botão para dar reset aos pontos e numero de premios -->
+        <button class="btn-banned" @click="resetStudentsPrizes()">
+          Reset Students/Prizes
+        </button>
+        <!-- Botão para abrir o popup de estudantes banidos -->
+        <button class="btn-banned" @click="toggleBannedPopup">
+          Banned Students
+        </button>
+      </div>
     </div>
 
     <!-- Popup de Adicionar/Remover Pontos -->
@@ -341,6 +347,22 @@ const fetchData = () => {
       console.error("Erro ao buscar dados dos estudantes:", error);
     });
 };
+
+
+function resetStudentsPrizes(){
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/reset_daily_fields", {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
+    })
+    .then((response) => {
+      console.log("Resposta obtida", response);
+    })
+    .catch((error) => {
+      console.error("Erro ao buscar dados dos estudantes:", error);
+    });
+}
 
 const studentToDelete = ref(null);
 const showDeletePopup = ref(false);
@@ -1061,6 +1083,12 @@ h3 {
 .unban-icon {
   width: 24px; /* Adjust the size of the icon as needed */
   height: 24px;
+}
+
+.btn-students{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 }
 
 </style>
