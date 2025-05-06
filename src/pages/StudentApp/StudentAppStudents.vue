@@ -19,7 +19,7 @@
       </div>
       <div class="btn-students">
         <!-- Botão para dar reset aos pontos e numero de premios -->
-        <button class="btn-banned" @click="resetStudentsPrizes()">
+        <button v-if="permissions()" class="btn-banned" @click="resetStudentsPrizes()">
           Reset Students/Prizes
         </button>
         <!-- Botão para abrir o popup de estudantes banidos -->
@@ -136,7 +136,7 @@
         <p class="role">Student</p>
         <!-- Botões de ações do estudante -->
         <div class="student-actions">
-          <div class="action-button" @click="openPointsPopup(selectedStudent)">
+          <div v-if="permissions()" class="action-button" @click="openPointsPopup(selectedStudent)">
             <img src="../../assets/StudentApp/students1.svg" alt="Ícone 1">
           </div>
           <div class="action-button" @click="openQrPopup(selectedStudent)">
@@ -191,6 +191,9 @@ import TheTable from '../../global-components/TheTable.vue'; // Importa o compon
 import examplePhoto from '../../assets/StudentApp/example_students_photo.svg'; // Importa uma imagem exemplo para perfis
 import axios from 'axios'; // Biblioteca para fazer chamadas HTTP
 import QrcodeVue from 'qrcode.vue'; // Importando biblioteca de QR Code
+import { useUserStore } from '../../stores/user';
+
+const userStore = useUserStore()
 
 const tableButtons = ref([]);
 
@@ -200,6 +203,14 @@ const qrCodeValue = ref("");
 const showPointsPopup = ref(false);
 const pointsAmount = ref(0);
 const studentToModify = ref(null);
+
+function permissions(){
+  if(userStore.getRole == "admin"){
+    return true
+  }else{
+    return false
+  }
+}
 
 const openQrPopup = (student) => {
   selectedStudent.value = student;
