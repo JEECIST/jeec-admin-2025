@@ -121,8 +121,23 @@ const routes = [
   {
     path: "/qr-codes",
     name: "qrcodes",
-    meta: { title: "QR Codes", children: false },
+    component: () => import("../global-components/TheDashboard.vue"),
+    meta: {
+      title: "QR Codes",
+      children: [ "qrcodes-eletrolink", "qrcodes-scan"],
+    },
+  },
+  {
+    path: "/qr-codes/scan",
+    name: "qrcodes-scan",
+    meta: { title: "QR Codes Scan"},
     component: () => import("../pages/QRCodes/QRCodes.vue"),
+  },
+  {
+    path: "/qr-codes/eletrolink",
+    name: "qrcodes-eletrolink",
+    meta: { title: "Eletrolink Registrations" },
+    component: () => import("../pages/QRCodes/Eletrolink.vue"),
   },
   {
     path: "/speakers",

@@ -10,7 +10,7 @@
         </div>
       </form>
       <TheTable :data="QR_Activities" :tableHeaders="tablePref" :searchInput="message" :buttons="tableButtons"
-        @QrRead="activateReader" @onRowSelect="selectCallback">
+        @QrRead="activateReader">
       </TheTable>
     </div>
     <div class="scanner" v-if="QR_enable">
@@ -84,8 +84,9 @@ function selectCallback(row) {
   selectedRow.value = row;  // Set the selected row
 }
 
-function activateReader() {
+function activateReader(activity) {
   console.log("Activating QR Reader");
+  selectedRow.value = activity;
   QR_enable.value = true;
 };
 
@@ -105,9 +106,9 @@ function errorPopUp() {
 
 function onDecode(student_external_id) {
   console.log("QR Code Content:", student_external_id);
-  // console.log("Activity:", selectedRow.value.external_id);
-  // let debug = "28a0b7f0-bb3a-4b91-b230-adce4e729eb8"; 
-  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activitiesdashboard_vue/activity/activity_external_idistid', {
+  console.log("merda")
+  console.log("Activity external id", selectedRow)
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activity_external_idistid', {
     student_external_id: student_external_id,  
     activity_external_id: selectedRow.value.external_id},
     {auth: {

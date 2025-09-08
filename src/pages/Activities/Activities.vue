@@ -200,6 +200,15 @@
             </multiselect>
         </div>
 
+        <div class="form-group">
+            <label for="Registrations">Registrations Limit:</label>
+            <input type="number" id="registration" name="registration" v-model="newActivity.registrations_limit">
+        </div>
+        <div class="form-group">
+            <label for="Registrations">Company accepted Registrations:</label>
+            <input type="number" id="company-registration" name="company-registration" v-model="newActivity.company_registrations_limit">
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="pop-up-add-btn">Add</button>
         </div>
@@ -258,7 +267,7 @@ const fetchAllFromEventsDefault = async () => {
     console.error("Error fetching all events:", error);
 
     if (error.response && error.response.data.error) {
-      alert(error.response.data.error);
+      // alert(error.response.data.error);
     } else {
       alert("Failed to fetch events.");
     }
@@ -333,7 +342,7 @@ const fetchAllByEvent = async () => {
     console.error("Error fetching days for event:", error);
 
     if (error.response && error.response.data.error) {
-      alert(error.response.data.error);
+      // alert(error.response.data.error);
     } else {
       alert("Failed to fetch event days.");
     }
@@ -383,6 +392,7 @@ const addNewActivity = async () => {
     activity_type_external_id: newActivity.value.type.external_id,
     event_id: eventselected.value,
     event_day_external_id: EventDay_External_ID,
+    company_registrations_limit: newActivity.value.company_registrations_limit
   };
 
   // Adiciona os campos opcionais apenas se estiverem preenchidos
@@ -401,6 +411,16 @@ const addNewActivity = async () => {
   if (newActivity.value.prize && newActivity.value.prize.external_id) {
     payload.prize_external_id = newActivity.value.prize.external_id;
   }
+
+  const limit = newActivity.value.registrations_limit;
+
+  if (limit === '' || (!isNaN(limit) && String(limit).trim() !== '')) {
+    payload.registrations_limit = limit === '' ? null : Number(limit);
+  } else {
+    alert("Limit is not a valid number");
+    return;
+  }
+
 
   try {
     const response = await axios.post(
@@ -484,7 +504,9 @@ const newActivity = ref({
   companies: [],
   speakers: [], 
   volunteers: [],
-  prize: ''  });
+  prize: '',
+  registrations_limit: '',
+  company_registrations_limit: ''});
 
 const isMobile = ref(false);
 

@@ -1,5 +1,4 @@
 <template>
-  <div class="wrapper">
     <div class="table">
       <form>
         <div class="search_style">
@@ -13,7 +12,6 @@
       @inspect_cv="get_cv" @approve_cv="accept_cv" @reject_cv="remove_cv">
       </TheTable>
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -36,6 +34,8 @@ import axios from 'axios';
 //     username: "Supimpa"
 //   },
 // ]);
+
+const message = ref();
 
 const tablePref = {
   id: "ID",

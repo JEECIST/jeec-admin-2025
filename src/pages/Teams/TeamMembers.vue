@@ -42,7 +42,7 @@
                 <div class="fotobola">
                   <img :src="image" />
                 </div>
-                <h2 class="subtitulo">{{ selectedMember.name }}</h2>
+                <h2 class="subtitulo">{{ selectedMember.username }}</h2>
                 <p class="sub-subtitulo">{{ selectedMember.userRole }}</p>
                 <div class="display">
                   <button class="edit" @click="editButton">
@@ -54,7 +54,7 @@
                     </a>
                   </button>
                   <button class="edit" @click="deleteMember(selectedMember.external_id)">
-                    <img src="/home/code/jeec-admin-2025/src/assets/trash.svg" alt="Delete" />
+                    <img src="../../assets/trash.svg" alt="Delete" />
                   </button>
                 </div>
                 <p class="descricao">Email:</p>
@@ -141,7 +141,7 @@
                     </div>
                     <div class="Add-priority">
                       <label for="username" class="">Username:</label>
-                      <select v-model="newMemberUsername" id="username">
+                      <select v-model="newMemberUserId" id="username">
                         <option v-for="user in user_list" :key="user.id" :value="user.id"> 
                           {{ user.username }}
                         </option>
@@ -208,7 +208,7 @@ export default {
       selectedMember: {},
       editMember: {},
       newMemberName: '',
-      newMemberUsername: '',
+      newMemberUserId: '',
       newMemberEmail: '',
       newMemberUserRole: '',
       newMemberShifts: '',
@@ -254,7 +254,7 @@ export default {
       const formData = new FormData();
       formData.append("name", this.newMemberName);
       formData.append("external_id", this.external_id);
-      formData.append("ist_id", this.newMemberIstId || "");
+      formData.append("user_id", this.newMemberUserId || "");
       formData.append("email", this.newMemberEmail);
       formData.append("linkedin_url", this.newMemberLinkedin || "");
       formData.append("background_bool", this.newMemberBackground ? "True" : "False");
@@ -395,7 +395,7 @@ export default {
     },
     resetNewMemberForm() {
       this.newMemberName = '';
-      this.newMemberUsername = '';
+      this.newMemberUserId = null;
       this.newMemberEmail = '';
       this.newMemberUserRole = '';
       this.newMemberShifts = '';

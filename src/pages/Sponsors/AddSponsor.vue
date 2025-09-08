@@ -167,7 +167,6 @@ function responsibleFinder(){
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }}).then(response => {
-          console.log("Response", response)
           let colaborators = response.data.colaborators
           if(colaborators.length > 0){
             colaborators_for_event.value = colaborators;
