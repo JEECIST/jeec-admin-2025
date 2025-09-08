@@ -23,7 +23,7 @@
 import { ref, onMounted } from "vue";
 import { useUserStore } from "../stores/user.js";
 import router from "../router/index.js";
-// import CryptoJS from "crypto-js";
+import CryptoJS from "crypto-js";
 
 const username = ref("");
 const password = ref("");
@@ -44,8 +44,8 @@ function automaticLogin(){
     if(userStore.isLoggedIn){
         router.push({path: "/dashboard"})
     }
-    // console.log(CryptoJS.DES.decrypt('', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
-    console.log("Atualizou2")
+    console.log(CryptoJS.DES.decrypt('U2FsdGVkX1+mvaJNcgFV2fkdqADxE31u', import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8))
+    console.log("Atualizou3")
 }
 
 onMounted(automaticLogin)
