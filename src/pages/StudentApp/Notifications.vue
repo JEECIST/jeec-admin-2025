@@ -39,7 +39,7 @@
             <p class="cardUsername">{{ selectedRow.username }}</p>
             <p class="cardUseless">Team User</p>
             <div class="cardActions">
-              <button class="edit-button" @click="openEditUserPopup(selectedRow)"><img src="../../assets/pencil.svg"></button>
+              <button class="edit-button" @click="openEditNotifPopup(selectedRow)"><img src="../../assets/pencil.svg"></button>
               <button class="delete-button" @click="deleteNotification(selectedRow.id)"><img src="../../assets/trash.svg"></button>
             </div>
             <div class="cardInfo">
@@ -91,6 +91,28 @@
             </form>
         </div>
     </div>
+        <!-- Edit Notification Modal -->
+    <div v-if="showEditNotifModal" class="modal-overlay">
+        <div class="modal">
+            <button class="close-popup" @click="closeEditNotifModal()">&times;</button>
+            <h2>Edit Notification</h2>
+            
+            <form class="popup_form" @submit.prevent="updateNotification">
+            <div class="formField">
+                <label for="edit_notif_message">Message</label>
+                <input v-model="editNotif.message" id="edit_notif_message" required />
+            </div>
+            <div class="formField">
+                <label for="edit_notif_time">Scheduled Time</label>
+                <input type="datetime-local" v-model="editNotif.scheduled_at" id="edit_notif_time" required />
+            </div>
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">Update</button>
+            </div>
+            </form>
+        </div>
+    </div>
+
 
   </template>
   
@@ -104,7 +126,8 @@
   const userStore = useUserStore();
   
   const message = ref('');
-  const showEditUserModal = ref(false);
+  const editNotif = ref({ id: null, message: '', scheduled_at: '' });
+  const showEditNotifModal = ref(false);
   const newUser = ref({ username: '', role_id: '' });
   const editUser = ref({ username: '', role_id: '', external_id: ''});
   const selectedRow = ref(null);
@@ -263,13 +286,47 @@
     });
   }
   
-  function openEditUserPopup(user){
-    editUser.value.username = user.username;
-    editUser.value.role_id = user.role_id;
-    editUser.value.external_id = user.external_id;
-    showEditUserModal.value = true;
-  }
+
   
+  function openEditNotifPopup(notif) {
+    editNotif.value = { 
+        id: notif.id,
+        message: notif.message,
+        scheduled_at: notif.scheduled_at
+    };
+    showEditNotifModal.value = true;
+    }
+
+    function updateNotification() {
+        axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/notifications/update',
+            { 
+            id: editNotif.value.id,
+            message: editNotif.value.message,
+            scheduled_at: editNotif.value.scheduled_at
+            }, 
+            { 
+            auth: { 
+                username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+                password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
+            }
+            }
+        )
+        .then(() => {
+            fetchData();
+            closeEditNotifModal();
+            closeCardInfo();
+        })
+        .catch(error => {
+            console.error("Failed to update notification:", error);
+        });
+    }
+
+function closeEditNotifModal() {
+  showEditNotifModal.value = false;
+}
+
+
+
   function updateUser() {
     axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss/update',
     { 
