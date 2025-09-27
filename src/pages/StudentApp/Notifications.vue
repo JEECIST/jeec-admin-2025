@@ -115,7 +115,7 @@
     selectedRow.value = {...row};
     selectedRow.value.password = decryptPassword(row.password);
   }
-  
+  //Teste
   function decryptPassword(encrypted_password){
     if(userStore.getRole == "admin")
       return CryptoJS.DES.decrypt(encrypted_password, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
