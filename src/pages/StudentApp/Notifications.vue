@@ -40,7 +40,7 @@
             <p class="cardUseless">Team User</p>
             <div class="cardActions">
               <button class="edit-button" @click="openEditUserPopup(selectedRow)"><img src="../../assets/pencil.svg"></button>
-              <button class="delete-button" @click="deleteUser(selectedRow.external_id)"><img src="../../assets/trash.svg"></button>
+              <button class="delete-button" @click="deleteNotification(selectedRow.id)"><img src="../../assets/trash.svg"></button>
             </div>
             <div class="cardInfo">
               <div class = "cardInfoMember"> 
@@ -115,7 +115,7 @@
     selectedRow.value = {...row};
     selectedRow.value.password = decryptPassword(row.password);
   }
-  //Teste
+  
   function decryptPassword(encrypted_password){
     if(userStore.getRole == "admin")
       return CryptoJS.DES.decrypt(encrypted_password, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
@@ -150,6 +150,25 @@
         console.error("Failed to add notification:", error);
     });
     }
+
+    function deleteNotification(id) {
+        axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/notifications/delete',
+            { id: id },
+            { 
+            auth: { 
+                username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+                password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
+            }
+            }
+        )
+        .then(() => {
+            fetchData();       // refresh table
+            closeCardInfo();   // close right popup
+        })
+        .catch(error => {
+            console.error("Failed to delete notification:", error);
+        });
+        }
 
   function closeEditModal() {
     showEditUserModal.value = false;
