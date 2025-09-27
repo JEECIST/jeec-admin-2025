@@ -174,7 +174,7 @@ const routes = [
     name: "studentapp",
     component: Dashboard,
     meta: {
-      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students", "studentapp-cvs"]
+      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students", "studentapp-cvs" , "studentapp-notifications"]
     },
   },
   {
@@ -218,6 +218,12 @@ const routes = [
     name: "studentapp-cvs",
     meta: { title: "Student CVs" },
     component: () => import("../pages/StudentApp/StudentCVs.vue"),
+  },
+  {
+    path: "/student-app/notifications",
+    name: "studentapp-notifications",
+    meta: { title: "Notifications" },
+    component: () => import("../pages/StudentApp/Notifications.vue"),
   },
   {
     path: "/teams",
