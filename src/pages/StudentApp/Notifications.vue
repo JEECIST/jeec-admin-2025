@@ -29,43 +29,42 @@
       
       <!-- Conditionally render the right popup placeholder -->
       <div v-if="selectedRow" class="popUpOverlay"></div>
-        <div v-if="selectedRow" class="right-popup-placeholder">
-          <button class="close-popup" @click="closeCardInfo">&times;</button>
-          <div class="header">
-            <p class="cardUsername">{{ selectedRow.role }}</p>
-          </div>
-          
-            <img src="../../assets/JEEC.png" alt="Profile Image" class="pfp">
-            <p class="cardUsername">{{ selectedRow.username }}</p>
-            <p class="cardUseless">Team User</p>
-            <div class="cardActions">
-              <button class="edit-button" @click="openEditNotifPopup(selectedRow)"><img src="../../assets/pencil.svg"></button>
-              <button class="delete-button" @click="deleteNotification(selectedRow.id)"><img src="../../assets/trash.svg"></button>
+      <div v-if="selectedRow" class="right-popup-placeholder">
+        <button class="close-popup" @click="closeCardInfo">&times;</button>
+        
+        <!-- Header: Scheduled Time -->
+        <div class="header">
+            <p class="cardUsername">{{formatWeekday(selectedRow.scheduled_at)}}</p>
+            <p class="cardInfoValue">{{ formatFullDateTime(selectedRow.scheduled_at) }}</p>
+        </div>
+        <div class="cardActions">
+            <button class="edit-button" @click="openEditNotifPopup(selectedRow)">
+            <img src="../../assets/pencil.svg" />
+            </button>
+            <button class="delete-button" @click="deleteNotification(selectedRow.id)">
+            <img src="../../assets/trash.svg" />
+            </button>
+        </div>
+        <!-- Message -->
+        <div class="cardInfo">
+            <div class="cardInfoMember">
+            <p class="cardInfoLabel">Message</p>
+            <p class="cardInfoValue">{{ selectedRow.message }}</p>
             </div>
-            <div class="cardInfo">
-              <div class = "cardInfoMember"> 
-                <p class="cardInfoLabel">Member</p>
-                <p class="cardInfoValue">{{ selectedRow.name }}</p>
-              </div>
-                
-              <div class = "cardInfoMember"> 
-                <p class="cardInfoLabel">Password</p>
-                <p class="cardInfoValue">{{ selectedRow.password }}</p>
-              </div>
-  
-                            
-              <div class = "cardInfoMember"> 
-                <p class="cardInfoLabel">#Shifts</p>
-                <p class="cardInfoValue">{{ selectedRow.n_shifts }}</p>
-              </div>
-  
-  
-  
-  
-              
+
+            <!-- Sent status -->
+            <div class="cardInfoMember">
+            <p class="cardInfoLabel"> Already Sent?</p>
+            <p class="cardInfoValue">
+                <span v-if="selectedRow.sent">Yes</span>
+                <span v-else> No</span>
+            </p>
             </div>
-          
-      </div>
+        </div>
+
+        <!-- Actions -->
+
+        </div>
   
     </div>
   
@@ -200,7 +199,32 @@
   function closeCardInfo(){
     selectedRow.value = null;
   }
-  
+  function formatWeekday(dateString) {
+    if (!dateString) return "—";
+    const clean = dateString.split(/[+-]\d{2}:\d{2}(:\d{2})?$/)[0];
+    const date = new Date(clean);
+    if (isNaN(date)) return dateString;
+
+    return date.toLocaleDateString("en-US", { weekday: "long" });
+    }
+
+    function formatFullDateTime(dateString) {
+        if (!dateString) return "—";
+        const clean = dateString.split(/[+-]\d{2}:\d{2}(:\d{2})?$/)[0];
+        const date = new Date(clean);
+        if (isNaN(date)) return dateString;
+
+        return date.toLocaleString("en-US", { 
+            month: "numeric", 
+            day: "numeric", 
+            year: "numeric",
+            hour: "numeric", 
+            minute: "2-digit", 
+            hour12: true 
+        });
+    }
+
+
   
   const datab = ref([{
     id: null,
@@ -222,7 +246,10 @@
         }
         })
         .then((response) => {
-        datab.value = response.data.notifications;
+            datab.value = response.data.notifications.map(n => ({
+      ...n,
+      scheduled_at: formatFullDateTime(n.scheduled_at)   
+    }));
         noResultsFound.value = datab.value.length === 0;
         })
         .catch(error => {
@@ -524,6 +551,8 @@ function closeEditNotifModal() {
   }
   
   .right-popup-placeholder .cardActions {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
     display: flex;
     gap: 10px;
     
