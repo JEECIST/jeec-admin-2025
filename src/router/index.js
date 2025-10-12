@@ -51,8 +51,14 @@ const routes = [
     component: () => import("../global-components/TheDashboard.vue"),
     meta: {
       title: "Admin",
-      children: ["admin-accounting", "admin-events", "admin-teamusers"],
+      children: ["admin-accounting", "admin-events", "admin-teamusers", "admin-inventory"],
     },
+  },
+  {
+    path: "/admin/inventory",
+    name: "admin-inventory",
+    meta: { title: "Inventory" },
+    component: () => import("../pages/Admin/AdminInventory.vue"),
   },
   {
     path: "/admin/accounting",
