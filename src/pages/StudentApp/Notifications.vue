@@ -149,28 +149,35 @@
     selectedRow.value = {...row};
   }
 
-
   async function sendNowAll(notif) {
-  if (!notif || !notif.message) {
-    alert("Sem mensagem para enviar.");
-    return;
-  }
-  sending.value = true;
-  
-    // 1) tenta o endpoint dedicado de notificações
-    await axios.post(
-      import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/notifications/send_notifications',
-      { id: notif.id },
-      {
-        auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    if (!notif || !notif.message) {
+      alert("Sem mensagem para enviar.");
+      return;
+    }
+    sending.value = true;
+    try {
+      await axios.post(
+        import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/notifications/send_notifications',
+        { id: notif.id },
+        {
+          auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+          }
         }
+      );
+      await fetchData();
+      if (selectedRow.value && selectedRow.value.id === notif.id) {
+        selectedRow.value.sent = true;
       }
-    );
-    alert('Notificação enviada para todos os subscritores.');
-  sending.value = false;
-}
+      alert('Notificação enviada para todos os subscritores.');
+    } catch (e) {
+      console.error('Falha no envio:', e);
+      alert('Falhou enviar a notificação.');
+    } finally {
+      sending.value = false;
+    }
+  }
 
 
 
