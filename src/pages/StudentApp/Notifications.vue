@@ -44,6 +44,18 @@
             <button class="delete-button" @click="deleteNotification(selectedRow.id)">
             <img src="../../assets/trash.svg" />
             </button>
+
+
+            <button
+            class="sendnow-button"
+            :disabled="sending"
+            @click="sendNowAll(selectedRow)"
+            title="Enviar agora para todos os subscritores"
+          >
+            {{ sending ? 'A enviar…' : 'Send now to all' }}
+          </button>
+
+
         </div>
         <!-- Message -->
         <div class="cardInfo">
@@ -123,7 +135,7 @@
   import { useUserStore } from "../../stores/user.js";
   
   const userStore = useUserStore();
-  
+  const sending = ref(false);
   const message = ref('');
   const editNotif = ref({ id: null, message: '', scheduled_at: '' });
   const showEditNotifModal = ref(false);
@@ -135,16 +147,32 @@
   
   function selectCallback(row) {
     selectedRow.value = {...row};
-    selectedRow.value.password = decryptPassword(row.password);
   }
-  
-  function decryptPassword(encrypted_password){
-    if(userStore.getRole == "admin")
-      return CryptoJS.DES.decrypt(encrypted_password, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
-    else
-      return "****************"
+
+
+  async function sendNowAll(notif) {
+  if (!notif || !notif.message) {
+    alert("Sem mensagem para enviar.");
+    return;
   }
+  sending.value = true;
   
+    // 1) tenta o endpoint dedicado de notificações
+    await axios.post(
+      import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/notifications/send_notifications',
+      { id: notif.id },
+      {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+      }
+    );
+    alert('Notificação enviada para todos os subscritores.');
+  sending.value = false;
+}
+
+
 
   
     function closeNotifModal() {
@@ -832,4 +860,18 @@ function closeEditNotifModal() {
   
   }
   
+  .right-popup-placeholder .sendnow-button {
+  background-color: #0e7a0d;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.right-popup-placeholder .sendnow-button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
   </style>
