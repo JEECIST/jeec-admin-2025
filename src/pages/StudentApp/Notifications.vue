@@ -60,17 +60,21 @@
         <!-- Message -->
         <div class="cardInfo">
             <div class="cardInfoMember">
-            <p class="cardInfoLabel">Message</p>
-            <p class="cardInfoValue">{{ selectedRow.message }}</p>
+              <p class="cardInfoLabel">Title</p>
+              <p class="cardInfoValue">{{ selectedRow.title || 'Aviso' }}</p>
+            </div>
+            <div class="cardInfoMember">
+              <p class="cardInfoLabel">Message</p>
+              <p class="cardInfoValue">{{ selectedRow.message }}</p>
             </div>
 
             <!-- Sent status -->
             <div class="cardInfoMember">
-            <p class="cardInfoLabel"> Already Sent?</p>
-            <p class="cardInfoValue">
-                <span v-if="selectedRow.sent">Yes</span>
-                <span v-else> No</span>
-            </p>
+              <p class="cardInfoLabel"> Already Sent?</p>
+              <p class="cardInfoValue">
+                  <span v-if="selectedRow.sent">Yes</span>
+                  <span v-else> No</span>
+              </p>
             </div>
         </div>
 
@@ -88,6 +92,11 @@
             <h2>Add Notification</h2>
             
             <form class="popup_form" @submit.prevent="addNotification">
+              <div class="formField">
+                <label for="notif_title">Title</label>
+                <input v-model="newNotif.title" id="notif_title" />
+              </div>
+
             <div class="formField">
                 <label for="notif_message">Message</label>
                 <input v-model="newNotif.message" id="notif_message" required />
@@ -109,6 +118,11 @@
             <h2>Edit Notification</h2>
             
             <form class="popup_form" @submit.prevent="updateNotification">
+            <div class="formField">
+              <label for="edit_notif_title">Title</label>
+              <input v-model="editNotif.title" id="edit_notif_title" />
+            </div>
+
             <div class="formField">
                 <label for="edit_notif_message">Message</label>
                 <input v-model="editNotif.message" id="edit_notif_message" required />
@@ -143,7 +157,7 @@
   const editUser = ref({ username: '', role_id: '', external_id: ''});
   const selectedRow = ref(null);
   const showAddNotifModal = ref(false);
-  const newNotif = ref({ message: '', scheduled_at: '' });
+  const newNotif = ref({title:'', message: '', scheduled_at: '' });
   
   function selectCallback(row) {
     selectedRow.value = {...row};
@@ -189,8 +203,9 @@
     function addNotification() {
     axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/notifications/add',
         { 
-        message: newNotif.value.message,
-        scheduled_at: newNotif.value.scheduled_at
+          title: newNotif.value.title,
+          message: newNotif.value.message,
+          scheduled_at: newNotif.value.scheduled_at
         }, 
         { 
         auth: { 
@@ -298,6 +313,7 @@
   onMounted(fetchData)
   const tablePref = {
     id: "ID",
+    title: "Title",
     message: "Message",
     scheduled_at: "Scheduled Time",
     sent: "Sent"
@@ -353,6 +369,7 @@
   function openEditNotifPopup(notif) {
     editNotif.value = { 
         id: notif.id,
+        title: notif.title || 'Aviso',
         message: notif.message,
         scheduled_at: notif.scheduled_at
     };
@@ -362,9 +379,10 @@
     function updateNotification() {
         axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/notifications/update',
             { 
-            id: editNotif.value.id,
-            message: editNotif.value.message,
-            scheduled_at: editNotif.value.scheduled_at
+              id: editNotif.value.id,
+              notification: editNotif.value.title,
+              message: editNotif.value.message,
+              scheduled_at: editNotif.value.scheduled_at
             }, 
             { 
             auth: { 
