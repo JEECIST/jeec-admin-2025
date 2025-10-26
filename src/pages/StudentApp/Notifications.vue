@@ -461,6 +461,41 @@ function closeEditNotifModal() {
     padding-left: 1ch;
     border-radius: 10px;
   }
+
+  .formField {
+    display: grid;
+    gap: 6px;
+  }
+
+  .formField label {
+    font-size: .86rem;
+    font-weight: 600;
+    color: #334155;
+  }
+
+  /* Inputs */
+  .formField input {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #0f172a;
+    transition: border-color 120ms, box-shadow 120ms, background 120ms;
+  }
+  .formField input:focus {
+    outline: none;
+    border-color: var(--c-select, #2563eb);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .15);
+  }
+  .formField input::placeholder { color: #94a3b8; }
+
+  /* Harmonizar datetime-local com os restantes */
+  input[type="datetime-local"] {
+    font-family: inherit;
+  }
+
   .cardUseless{
     color: gray;
     margin-bottom: 1rem;
@@ -651,56 +686,57 @@ function closeEditNotifModal() {
   
   /* Modal styles */
   .modal-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    position: fixed;           /* <- de absolute para fixed */
+    inset: 0;                  /* top/right/bottom/left: 0 */
+    display: grid;             /* centra o modal fácil */
+    place-items: center;
+    padding: 1.25rem;          /* respira nas margens em mobile */
     background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
     z-index: 100000;
+    animation: fadeIn 160ms ease-out;
   }
   
   .modal {
-    background: white;
-    padding: 2rem;
-    margin: 1rem;
-    max-width: 700px;
-    width: 100%;
-    /* min-height: 70%; */
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: column;
+    width: min(560px, 100%);
+    min-height: 80%;
+    max-height: 85vh;
+    overflow: auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow:
+      0 10px 25px rgba(0,0,0,.16),
+      0 1px 2px rgba(0,0,0,.06);
+    padding: 20px 22px 18px;
     position: relative;
-  }
-  
-  .popup_form {
-    
     display: flex;
-    height: 100%;
     flex-direction: column;
-    gap: 10px;
+    justify-content: flex-start;
+    animation: slideUp 200ms cubic-bezier(.2,.8,.2,1);
   }
-  
+  .popup_form {
+    display: grid;             /* <- de flex para grid */
+    gap: 14px;
+    margin-top: 8px;
+  }
+
   .modal-actions {
-    
     display: flex;
     justify-content: flex-end;
-    align-self: flex-end;
-    padding-top: 1rem;
-    gap: 20px;
+    gap: 10px;
+    margin-top: 6px;
     width: 100%;
   }
   
-  .modal h2 {
-    padding-left: 8px;
-    margin-top: 0;
-    margin-bottom: 2%;
-    font-size: 1.5rem;
-    font-weight: 600;
-  }
+ /* Título */
+.modal h2 {
+  margin: 0 0 12px 0;
+  padding-left: 4px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
   
   .formUsername {
     width: 100%;
@@ -755,18 +791,34 @@ function closeEditNotifModal() {
     background-color: #002855;
   }
   
+/* Botão fechar (X) */
   .close-popup {
-          display: block;
-          position: absolute;
-          top: 5px;
-          right: 25px;
-          background: none;
-          border: none;
-          font-size: 2.2rem;
-          cursor: pointer;
-          color: #333;
-      }
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: transparent;
+    border: 0;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    color: #64748b;
+    padding: 6px;
+    border-radius: 10px;
+    transition: background 120ms, color 120ms, transform 80ms;
+  }
+
+  .close-popup:hover { background: #f1f5f9; color: #0f172a; }
+  .close-popup:active { transform: scale(0.96); }
+
   
+  @keyframes fadeIn {
+    from { opacity: 0 } to { opacity: 1 }
+  }
+  @keyframes slideUp {
+    from { transform: translateY(8px); opacity: 0 }
+    to   { transform: translateY(0);   opacity: 1 }
+  }
+
   .tableBackground {
     background-color: var(--c-accent);
     border-radius: 6px;
