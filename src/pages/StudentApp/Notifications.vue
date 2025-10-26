@@ -29,43 +29,58 @@
       
       <!-- Conditionally render the right popup placeholder -->
       <div v-if="selectedRow" class="popUpOverlay"></div>
-        <div v-if="selectedRow" class="right-popup-placeholder">
-          <button class="close-popup" @click="closeCardInfo">&times;</button>
-          <div class="header">
-            <p class="cardUsername">{{ selectedRow.role }}</p>
-          </div>
-          
-            <img src="../../assets/JEEC.png" alt="Profile Image" class="pfp">
-            <p class="cardUsername">{{ selectedRow.username }}</p>
-            <p class="cardUseless">Team User</p>
-            <div class="cardActions">
-              <button class="edit-button" @click="openEditUserPopup(selectedRow)"><img src="../../assets/pencil.svg"></button>
-              <button class="delete-button" @click="deleteUser(selectedRow.external_id)"><img src="../../assets/trash.svg"></button>
+      <div v-if="selectedRow" class="right-popup-placeholder">
+        <button class="close-popup" @click="closeCardInfo">&times;</button>
+        
+        <!-- Header: Scheduled Time -->
+        <div class="header">
+            <p class="cardUsername">{{formatWeekday(selectedRow.scheduled_at)}}</p>
+            <p class="cardInfoValue">{{ formatFullDateTime(selectedRow.scheduled_at) }}</p>
+        </div>
+        <div class="cardActions">
+            <button class="edit-button" @click="openEditNotifPopup(selectedRow)">
+            <img src="../../assets/pencil.svg" />
+            </button>
+            <button class="delete-button" @click="deleteNotification(selectedRow.id)">
+            <img src="../../assets/trash.svg" />
+            </button>
+
+
+            <button
+            class="sendnow-button"
+            :disabled="sending"
+            @click="sendNowAll(selectedRow)"
+            title="Enviar agora para todos os subscritores"
+          >
+            {{ sending ? 'A enviar…' : 'Send now to all' }}
+          </button>
+
+
+        </div>
+        <!-- Message -->
+        <div class="cardInfo">
+            <div class="cardInfoMember">
+              <p class="cardInfoLabel">Title</p>
+              <p class="cardInfoValue">{{ selectedRow.title || 'Aviso' }}</p>
             </div>
-            <div class="cardInfo">
-              <div class = "cardInfoMember"> 
-                <p class="cardInfoLabel">Member</p>
-                <p class="cardInfoValue">{{ selectedRow.name }}</p>
-              </div>
-                
-              <div class = "cardInfoMember"> 
-                <p class="cardInfoLabel">Password</p>
-                <p class="cardInfoValue">{{ selectedRow.password }}</p>
-              </div>
-  
-                            
-              <div class = "cardInfoMember"> 
-                <p class="cardInfoLabel">#Shifts</p>
-                <p class="cardInfoValue">{{ selectedRow.n_shifts }}</p>
-              </div>
-  
-  
-  
-  
-              
+            <div class="cardInfoMember">
+              <p class="cardInfoLabel">Message</p>
+              <p class="cardInfoValue">{{ selectedRow.message }}</p>
             </div>
-          
-      </div>
+
+            <!-- Sent status -->
+            <div class="cardInfoMember">
+              <p class="cardInfoLabel"> Already Sent?</p>
+              <p class="cardInfoValue">
+                  <span v-if="selectedRow.sent">Yes</span>
+                  <span v-else> No</span>
+              </p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+
+        </div>
   
     </div>
   
@@ -77,6 +92,11 @@
             <h2>Add Notification</h2>
             
             <form class="popup_form" @submit.prevent="addNotification">
+              <div class="formField">
+                <label for="notif_title">Title</label>
+                <input v-model="newNotif.title" id="notif_title" />
+              </div>
+
             <div class="formField">
                 <label for="notif_message">Message</label>
                 <input v-model="newNotif.message" id="notif_message" required />
@@ -91,6 +111,33 @@
             </form>
         </div>
     </div>
+        <!-- Edit Notification Modal -->
+    <div v-if="showEditNotifModal" class="modal-overlay">
+        <div class="modal">
+            <button class="close-popup" @click="closeEditNotifModal()">&times;</button>
+            <h2>Edit Notification</h2>
+            
+            <form class="popup_form" @submit.prevent="updateNotification">
+            <div class="formField">
+              <label for="edit_notif_title">Title</label>
+              <input v-model="editNotif.title" id="edit_notif_title" />
+            </div>
+
+            <div class="formField">
+                <label for="edit_notif_message">Message</label>
+                <input v-model="editNotif.message" id="edit_notif_message" required />
+            </div>
+            <div class="formField">
+                <label for="edit_notif_time">Scheduled Time</label>
+                <input type="datetime-local" v-model="editNotif.scheduled_at" id="edit_notif_time" required />
+            </div>
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">Update</button>
+            </div>
+            </form>
+        </div>
+    </div>
+
 
   </template>
   
@@ -102,27 +149,51 @@
   import { useUserStore } from "../../stores/user.js";
   
   const userStore = useUserStore();
-  
+  const sending = ref(false);
   const message = ref('');
-  const showEditUserModal = ref(false);
+  const editNotif = ref({ id: null, message: '', scheduled_at: '' });
+  const showEditNotifModal = ref(false);
   const newUser = ref({ username: '', role_id: '' });
   const editUser = ref({ username: '', role_id: '', external_id: ''});
   const selectedRow = ref(null);
   const showAddNotifModal = ref(false);
-  const newNotif = ref({ message: '', scheduled_at: '' });
+  const newNotif = ref({title:'', message: '', scheduled_at: '' });
   
   function selectCallback(row) {
     selectedRow.value = {...row};
-    selectedRow.value.password = decryptPassword(row.password);
   }
-  
-  function decryptPassword(encrypted_password){
-    if(userStore.getRole == "admin")
-      return CryptoJS.DES.decrypt(encrypted_password, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
-    else
-      return "****************"
+
+  async function sendNowAll(notif) {
+    if (!notif || !notif.message) {
+      alert("Sem mensagem para enviar.");
+      return;
+    }
+    sending.value = true;
+    try {
+      await axios.post(
+        import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/notifications/send_notifications',
+        { id: notif.id },
+        {
+          auth: {
+            username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+            password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+          }
+        }
+      );
+      await fetchData();
+      if (selectedRow.value && selectedRow.value.id === notif.id) {
+        selectedRow.value.sent = true;
+      }
+      alert('Notificação enviada para todos os subscritores.');
+    } catch (e) {
+      console.error('Falha no envio:', e);
+      alert('Falhou enviar a notificação.');
+    } finally {
+      sending.value = false;
+    }
   }
-  
+
+
 
   
     function closeNotifModal() {
@@ -132,8 +203,9 @@
     function addNotification() {
     axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/notifications/add',
         { 
-        message: newNotif.value.message,
-        scheduled_at: newNotif.value.scheduled_at
+          title: newNotif.value.title,
+          message: newNotif.value.message,
+          scheduled_at: newNotif.value.scheduled_at
         }, 
         { 
         auth: { 
@@ -151,6 +223,25 @@
     });
     }
 
+    function deleteNotification(id) {
+        axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/notifications/delete',
+            { id: id },
+            { 
+            auth: { 
+                username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+                password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
+            }
+            }
+        )
+        .then(() => {
+            fetchData();       // refresh table
+            closeCardInfo();   // close right popup
+        })
+        .catch(error => {
+            console.error("Failed to delete notification:", error);
+        });
+        }
+
   function closeEditModal() {
     showEditUserModal.value = false;
   }
@@ -158,7 +249,32 @@
   function closeCardInfo(){
     selectedRow.value = null;
   }
-  
+  function formatWeekday(dateString) {
+    if (!dateString) return "—";
+    const clean = dateString.split(/[+-]\d{2}:\d{2}(:\d{2})?$/)[0];
+    const date = new Date(clean);
+    if (isNaN(date)) return dateString;
+
+    return date.toLocaleDateString("en-US", { weekday: "long" });
+    }
+
+    function formatFullDateTime(dateString) {
+        if (!dateString) return "—";
+        const clean = dateString.split(/[+-]\d{2}:\d{2}(:\d{2})?$/)[0];
+        const date = new Date(clean);
+        if (isNaN(date)) return dateString;
+
+        return date.toLocaleString("en-US", { 
+            month: "numeric", 
+            day: "numeric", 
+            year: "numeric",
+            hour: "numeric", 
+            minute: "2-digit", 
+            hour12: true 
+        });
+    }
+
+
   
   const datab = ref([{
     id: null,
@@ -180,7 +296,10 @@
         }
         })
         .then((response) => {
-        datab.value = response.data.notifications;
+            datab.value = response.data.notifications.map(n => ({
+      ...n,
+      scheduled_at: formatFullDateTime(n.scheduled_at)   
+    }));
         noResultsFound.value = datab.value.length === 0;
         })
         .catch(error => {
@@ -194,6 +313,7 @@
   onMounted(fetchData)
   const tablePref = {
     id: "ID",
+    title: "Title",
     message: "Message",
     scheduled_at: "Scheduled Time",
     sent: "Sent"
@@ -244,13 +364,49 @@
     });
   }
   
-  function openEditUserPopup(user){
-    editUser.value.username = user.username;
-    editUser.value.role_id = user.role_id;
-    editUser.value.external_id = user.external_id;
-    showEditUserModal.value = true;
-  }
+
   
+  function openEditNotifPopup(notif) {
+    editNotif.value = { 
+        id: notif.id,
+        title: notif.title || 'Aviso',
+        message: notif.message,
+        scheduled_at: notif.scheduled_at
+    };
+    showEditNotifModal.value = true;
+    }
+
+    function updateNotification() {
+        axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/notifications/update',
+            { 
+              id: editNotif.value.id,
+              notification: editNotif.value.title,
+              message: editNotif.value.message,
+              scheduled_at: editNotif.value.scheduled_at
+            }, 
+            { 
+            auth: { 
+                username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+                password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
+            }
+            }
+        )
+        .then(() => {
+            fetchData();
+            closeEditNotifModal();
+            closeCardInfo();
+        })
+        .catch(error => {
+            console.error("Failed to update notification:", error);
+        });
+    }
+
+function closeEditNotifModal() {
+  showEditNotifModal.value = false;
+}
+
+
+
   function updateUser() {
     axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss/update',
     { 
@@ -305,6 +461,41 @@
     padding-left: 1ch;
     border-radius: 10px;
   }
+
+  .formField {
+    display: grid;
+    gap: 6px;
+  }
+
+  .formField label {
+    font-size: .86rem;
+    font-weight: 600;
+    color: #334155;
+  }
+
+  /* Inputs */
+  .formField input {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #0f172a;
+    transition: border-color 120ms, box-shadow 120ms, background 120ms;
+  }
+  .formField input:focus {
+    outline: none;
+    border-color: var(--c-select, #2563eb);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .15);
+  }
+  .formField input::placeholder { color: #94a3b8; }
+
+  /* Harmonizar datetime-local com os restantes */
+  input[type="datetime-local"] {
+    font-family: inherit;
+  }
+
   .cardUseless{
     color: gray;
     margin-bottom: 1rem;
@@ -448,6 +639,8 @@
   }
   
   .right-popup-placeholder .cardActions {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
     display: flex;
     gap: 10px;
     
@@ -493,56 +686,57 @@
   
   /* Modal styles */
   .modal-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    position: fixed;           /* <- de absolute para fixed */
+    inset: 0;                  /* top/right/bottom/left: 0 */
+    display: grid;             /* centra o modal fácil */
+    place-items: center;
+    padding: 1.25rem;          /* respira nas margens em mobile */
     background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
     z-index: 100000;
+    animation: fadeIn 160ms ease-out;
   }
   
   .modal {
-    background: white;
-    padding: 2rem;
-    margin: 1rem;
-    max-width: 700px;
-    width: 100%;
-    /* min-height: 70%; */
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: column;
+    width: min(560px, 100%);
+    min-height: 80%;
+    max-height: 85vh;
+    overflow: auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow:
+      0 10px 25px rgba(0,0,0,.16),
+      0 1px 2px rgba(0,0,0,.06);
+    padding: 20px 22px 18px;
     position: relative;
-  }
-  
-  .popup_form {
-    
     display: flex;
-    height: 100%;
     flex-direction: column;
-    gap: 10px;
+    justify-content: flex-start;
+    animation: slideUp 200ms cubic-bezier(.2,.8,.2,1);
   }
-  
+  .popup_form {
+    display: grid;             /* <- de flex para grid */
+    gap: 14px;
+    margin-top: 8px;
+  }
+
   .modal-actions {
-    
     display: flex;
     justify-content: flex-end;
-    align-self: flex-end;
-    padding-top: 1rem;
-    gap: 20px;
+    gap: 10px;
+    margin-top: 6px;
     width: 100%;
   }
   
-  .modal h2 {
-    padding-left: 8px;
-    margin-top: 0;
-    margin-bottom: 2%;
-    font-size: 1.5rem;
-    font-weight: 600;
-  }
+ /* Título */
+.modal h2 {
+  margin: 0 0 12px 0;
+  padding-left: 4px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
   
   .formUsername {
     width: 100%;
@@ -597,18 +791,34 @@
     background-color: #002855;
   }
   
+/* Botão fechar (X) */
   .close-popup {
-          display: block;
-          position: absolute;
-          top: 5px;
-          right: 25px;
-          background: none;
-          border: none;
-          font-size: 2.2rem;
-          cursor: pointer;
-          color: #333;
-      }
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: transparent;
+    border: 0;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    color: #64748b;
+    padding: 6px;
+    border-radius: 10px;
+    transition: background 120ms, color 120ms, transform 80ms;
+  }
+
+  .close-popup:hover { background: #f1f5f9; color: #0f172a; }
+  .close-popup:active { transform: scale(0.96); }
+
   
+  @keyframes fadeIn {
+    from { opacity: 0 } to { opacity: 1 }
+  }
+  @keyframes slideUp {
+    from { transform: translateY(8px); opacity: 0 }
+    to   { transform: translateY(0);   opacity: 1 }
+  }
+
   .tableBackground {
     background-color: var(--c-accent);
     border-radius: 6px;
@@ -727,4 +937,18 @@
   
   }
   
+  .right-popup-placeholder .sendnow-button {
+  background-color: #0e7a0d;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.right-popup-placeholder .sendnow-button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
   </style>
