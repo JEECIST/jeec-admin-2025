@@ -20,6 +20,7 @@ self.addEventListener('push', (event) => {
     const title = sane(p.title, 'Notification');
     const options = {
       body: sane(p.body ?? p.message, 'You have a new message!'),
+      icon: 'push-icon/test.png'
     };
 
     console.log('[SW] push parsed payload:', p);
