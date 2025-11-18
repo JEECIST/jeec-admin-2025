@@ -180,7 +180,7 @@ const routes = [
     name: "studentapp",
     component: Dashboard,
     meta: {
-      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students", "studentapp-cvs" , "studentapp-notifications", "studentapp-testPush"]
+      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students", "studentapp-cvs" , "studentapp-notifications", "studentapp-wordle", "studentapp-testPush"]
     },
   },
   {
@@ -236,6 +236,10 @@ const routes = [
     name: "studentapp-testPush",
     meta: { title: "TestPush" },
     component: () => import("../pages/StudentApp/testPush.vue"),
+    path: "/student-app/wordle",
+    name: "studentapp-wordle",
+    meta: { title: "Wordle" },
+    component: () => import("../pages/StudentApp/StudentAppWordle.vue"),
   },
   {
     path: "/teams",
