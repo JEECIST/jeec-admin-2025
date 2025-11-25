@@ -7,7 +7,7 @@ const routes = [
   {
     path: "/",
     name: "login",
-    meta: { 
+    meta: {
       title: "JEEC Admin",
     },
     component: () => import("../pages/Login.vue"),
@@ -16,7 +16,7 @@ const routes = [
     path: "/dashboard",
     name: "dashboard",
     component: Dashboard,
-    meta: { 
+    meta: {
       title: "Dashboard",
       children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts"],
     },
@@ -42,7 +42,7 @@ const routes = [
   {
     path: "/activities/types/locations",
     name: "activity-types-locations",
-    meta: { title:"Locations" },
+    meta: { title: "Locations" },
     component: () => import("../pages/Activities/ActivitiesTypesLocations.vue"),
   },
   {
@@ -87,7 +87,10 @@ const routes = [
   {
     path: "/bills",
     name: "bills",
-    meta: { title: "Bills", children: false },
+    meta: {
+      title: "Bills",
+      children: false
+    },
     component: () => import("../pages/Bills/Bills.vue")
   },
   {
@@ -108,7 +111,7 @@ const routes = [
   {
     path: "/business/companies",
     name: "business-companies",
-    meta: {title: "Companies" },
+    meta: { title: "Companies" },
     component: () => import("../pages/Business/BusinessCompanies.vue"),
   },
   {
@@ -130,13 +133,13 @@ const routes = [
     component: () => import("../global-components/TheDashboard.vue"),
     meta: {
       title: "QR Codes",
-      children: [ "qrcodes-eletrolink", "qrcodes-scan"],
+      children: ["qrcodes-eletrolink", "qrcodes-scan"],
     },
   },
   {
     path: "/qr-codes/scan",
     name: "qrcodes-scan",
-    meta: { title: "QR Codes Scan"},
+    meta: { title: "QR Codes Scan" },
     component: () => import("../pages/QRCodes/QRCodes.vue"),
   },
   {
@@ -180,7 +183,7 @@ const routes = [
     name: "studentapp",
     component: Dashboard,
     meta: {
-      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students", "studentapp-cvs" , "studentapp-notifications", "studentapp-testPush"]
+      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students", "studentapp-cvs", "studentapp-notifications", "studentapp-testPush"]
     },
   },
   {
