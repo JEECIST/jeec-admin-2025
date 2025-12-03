@@ -17,7 +17,7 @@
             </select>
           </div>
           <div class="buttons-div">
-            <button type="button" @click="showAddCompanyModal = true">Add Company</button>
+            <button type="button" @click="openAdd">Add Company</button>
             <button type="button" @click="()=>$router.push('/business/companies/tiers')"> Company Tiers <span class = "chevron"> </span></button>
           </div>
         </form>
@@ -43,6 +43,9 @@
             <div class="butoes">
               <button class="edit-button" @click="openEdit()">
                 <img src="./imagens/edit.svg"/>
+              </button>
+              <button class="park-button" @click="openParking()">
+                <img src="./imagens/car.svg"/>
               </button>
               <button class="web-button" @click="irParaSite(selectedRow.website)">
                 <img src="./imagens/web.svg"/>
@@ -219,6 +222,43 @@
       </div>
     </form>
   </div>
+  <div v-if="showParkingModal" class="modal-overlay">
+    <form class="modal">
+      <div class="btn-cancel" @click="closeModal()"> X </div>
+      <div class="modal-aux">
+        <div class="header">
+          <h1>Edit Parking</h1>
+        </div>
+        <div class="body" id="park_body">
+          <div v-for="(car, index) in company_cars" :key="index" class="car-item">
+            <div class="car-card">
+              <h3>{{ car.day }}</h3>
+              <template v-if="car.plate">
+            <!-- Se já houver matrícula -->
+                <input
+                  type="text"
+                  v-model="new_plate[car.day]"
+                  class="car-input"
+                />
+                <button @click="editCar(car)" class="add-car-btn">Edit</button>
+              </template>
+
+              <template v-else>
+                <!-- Se ainda não houver matrícula -->
+                <input
+                  type="text"
+                  placeholder="XX-XX-XX"
+                  class="car-input"
+                  v-model="new_plate[car.day]"
+                />
+                <button @click="addCar(car)" class="add-car-btn">Add Car</button>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
 
 </template>
 
@@ -249,7 +289,7 @@ let logo_image = ref('');
 let fileSelected = ref(null);
 let fileToUpload = ref(null);
 
-const jeec_responsible_flag = ref(false)
+const jeec_responsible_flag = ref(true)
 
 function showPasswordEdit(){
   if(showEditCompanyModal.value && userStore.getRole == "admin"){
@@ -273,6 +313,7 @@ function decryptPassword(encrypted_password){
 }
 
 const fetchCompanies = () => {
+  console.log("Fetching companies for event:", selectedEvent.value);
   axios
   .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{
     event_id: selectedEvent.value
@@ -284,6 +325,8 @@ const fetchCompanies = () => {
   .then((response)=>{
 
     const data = response.data;
+
+    console.log("Response data on event change:", data);
 
     companies.value = data.companies;
     events.value = data.events;
@@ -356,6 +399,7 @@ onMounted(fetchCompanies);
 const message = ref('');
 const showAddCompanyModal = ref(false);
 const showEditCompanyModal = ref(false);
+const showParkingModal = ref(false);
 const newCompany = ref({
   name: '',
   event_id: '',
@@ -370,6 +414,7 @@ const newCompany = ref({
   image: '',
   changeimg: 'No',
   external_id: '',
+  id: '',
 });
 
 const days = ref([]);
@@ -436,6 +481,14 @@ function addCompany() {
   closeModal();
 }
 
+function openAdd() {
+  showAddCompanyModal.value = true;
+  jeec_responsible_flag.value = true;
+
+  newCompany.value.event_id = selectedEvent.value;
+
+  get_colaborators_and_days();
+}
 
 
 function openEdit() {
@@ -456,6 +509,134 @@ function openEdit() {
   jeec_responsible_flag.value = true;
 
   get_colaborators_and_days();
+}
+
+let company_cars = ref([]);
+const new_plate = ref([]);
+
+async function fetchParking() {
+
+  const company_id = selectedRow.value.id;
+
+  const response = await axios.get(
+    import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get_company_parking',
+    { 
+      params: { company_id: company_id },
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    }
+  );
+
+  company_cars.value = response.data.company_cars;
+
+  new_plate.value = [];
+
+  for (const car of company_cars.value) {
+    new_plate.value[car.day] = car.plate;
+  }
+
+  console.log("FetchParking:", company_cars);
+
+}
+
+const plateRegex = /^[A-Z0-9]{2}-[A-Z0-9]{2}-[A-Z0-9]{2}$/;
+
+function validatePlate(plate) {
+  console.log("Validating plate:", plate);
+
+  // força string, remove espaços à volta e normaliza para maiúsculas
+  const raw = (plate === null || plate === undefined) ? "" : String(plate);
+
+  // substituir quaisquer traços Unicode por hífen ASCII
+  const normalized = raw.trim()
+
+  if (!normalized || !plateRegex.test(normalized)) {
+    return false;
+  }
+
+  return true;
+}
+
+
+async function addCar(car) {
+
+  console.log("Adding car for day:", car.day, "with plate:", new_plate.value[car.day]);
+
+  var plate = new_plate.value[car.day];
+
+  if (!validatePlate(plate)) {
+    alert("Formato inválido! Use XX-XX-XX");
+    return;
+  }
+
+  const company_id = selectedRow.value.id;
+
+  try {
+    const response = await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add_car',
+      { company_id: company_id, plate: plate, day: car.day },
+      { auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+      }
+    );
+
+    if (response.data.error) {
+      alert("Erro: " + response.data.error);
+    } else {
+      new_plate[car.day] = '';
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao adicionar carro");
+  }
+
+  fetchParking();
+}
+
+async function editCar(car) {
+
+  console.log("Edit car!");
+
+  var plate = new_plate.value[car.day];
+
+  if (!validatePlate(plate)) {
+    alert("Formato inválido! Use XX-XX-XX");
+    return;
+  }
+
+  const company_id = selectedRow.value.id;
+
+  try {
+    const response = await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/edit_car',
+      { company_id: company_id, car_id: car.id, plate: plate, day: car.day },
+      { auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+      }
+    );
+
+    if (response.data.error) {
+      alert("Erro: " + response.data.error);
+    }
+
+  } catch (err) {
+    console.error(err);
+    console.log(err);
+    alert("Erro ao atualizar carro");
+  }
+
+  fetchParking();
+}
+
+function openParking() {
+  console.log("showParkingModal");
+  fetchParking();
+  showParkingModal.value = true;
 }
 
 function editCompany() {
@@ -592,6 +773,7 @@ function get_colaborators_and_days() {
 function closeModal() {
   showAddCompanyModal.value = false;
   showEditCompanyModal.value = false;
+  showParkingModal.value = false;
   newCompany.value = {
     name: '',
     event_id: '',
@@ -712,6 +894,64 @@ function closeModal() {
 
 #days {
   width: 60%;
+}
+
+#park_body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 250px);
+  gap: 50px; /* opcional */
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.park-button img {
+  width: 24px;
+  height: 24px;
+}
+
+.car-card {
+  width: 250px;
+  border: 3px solid black;   /* borda preta com 2px de espessura */
+  border-radius: 8px;        /* cantos arredondados */
+
+  display: flex;
+  flex-direction: column;    /* mantém os itens empilhados verticalmente */
+  align-items: center;       /* centraliza horizontalmente */
+  text-align: center;
+  gap: 15px;
+  padding-bottom: 15px;
+}
+
+.car-card input {
+  width: 70%;
+  padding: 10px 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  background: transparent;
+  border: 2px solid grey;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.car-card button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  background: transparent;
+  border: 2px solid grey;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.car-card button:hover {
+  background: #279EFF;
+  color: black;
+}
+
+.car-card button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 </style>
