@@ -98,7 +98,7 @@ async function addWord() {
     formData.append("category", c);
 
     const res = await axios.post(
-      import.meta.env.VITE_APP_JEEC_BRAINSTUDENT_URL + "/add-word",
+      import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/add-word-connections",
       formData,
       {
         auth: {

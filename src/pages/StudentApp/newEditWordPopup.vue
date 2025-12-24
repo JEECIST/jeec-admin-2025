@@ -64,7 +64,7 @@ function changeRowInfo(day, oldWord, newWord, newCategory) {
 }
 
 function getWords(){
-  axios.get(import.meta.env.VITE_APP_JEEC_BRAINSTUDENT_URL + '/get-connection-words', {
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get-connection-words', {
     auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
@@ -94,7 +94,7 @@ function updateWord() {
 
   axios
     .post(
-      import.meta.env.VITE_APP_JEEC_BRAINSTUDENT_URL + "/update-word",
+      import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/update-word-connections",
       formData,
       {
         auth: {

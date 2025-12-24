@@ -1,6 +1,6 @@
 <script setup>
 import TheTable from '../../global-components/TheTable.vue';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from "axios"
 import { useRouter } from 'vue-router';
 import AddWordPopup from './newWordPopup.vue';
@@ -12,6 +12,8 @@ const isModalOpened = ref(false);
 const noWords = ref(false);
 const isOtherModalOpened = ref(false);
 
+const selectedDay = ref("all");
+
 const openModal = () => {
   isModalOpened.value = true;
 };
@@ -20,6 +22,15 @@ const closeModal = () => {
   getPrizes();
 };
 
+const dayOptions = computed(() => {
+  const set = new Set(words.value.map(w => w.day).filter(v => v !== null && v !== undefined));
+  return ["all", ...Array.from(set)];
+});
+
+const filteredWords = computed(() => {
+  if (selectedDay.value === "all") return words.value;
+  return words.value.filter(w => String(w.day) === String(selectedDay.value));
+});
 
 
 const openOtherModal = () => {
@@ -44,7 +55,7 @@ const router = useRouter();
 
 function removeWord(row) {
   axios.post(
-    import.meta.env.VITE_APP_JEEC_BRAINSTUDENT_URL + '/delete-word',
+    import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/delete-word-connections',
     { day: row.day, word: row.word },
     {
       auth: {
@@ -82,7 +93,7 @@ const words = ref([])
 
 function CreateNewWords(){
   axios.post(
-    import.meta.env.VITE_APP_JEEC_BRAINSTUDENT_URL + '/new-set-words',
+    import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/new-set-words-connections',
     {}, // body
     {
       auth: {
@@ -96,7 +107,7 @@ function CreateNewWords(){
 }
 
 function getWords(){
-  axios.get(import.meta.env.VITE_APP_JEEC_BRAINSTUDENT_URL + '/get-connection-words', {
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get-connection-words', {
     auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
@@ -134,7 +145,7 @@ const tablePref = {
 
 function deleteAllWords(){
   axios.delete(
-    import.meta.env.VITE_APP_JEEC_BRAINSTUDENT_URL + "/delete-all-connection-words",
+    import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/delete-all-connection-words",
     {
       auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
@@ -161,7 +172,16 @@ function deleteAllWords(){
         </label>
         <input v-model="message" placeholder="Search for a word or category">
       </form>
-    
+    <div class="filter-box">
+      <label>
+        <img src="../../assets/search.svg" />
+      </label>
+      <select v-model="selectedDay">
+        <option v-for="d in dayOptions" :key="d" :value="d">
+          {{ d === "all" ? "All days" : `Day ${d}` }}
+        </option>
+      </select>
+    </div>
       <button class="topbtn" @click="openModal">Add Word</button>
       <Transition name="fade" appear>
           <AddWordPopup :isOpen="isModalOpened" @modal-close="closeModal"></AddWordPopup>
@@ -172,7 +192,7 @@ function deleteAllWords(){
       </div>
       
       <TheTable
-        :data="words"
+        :data="filteredWords"
         :tableHeaders="tablePref"
         :searchInput="message"
         @onRowSelect="selectCallback"
@@ -205,6 +225,36 @@ function deleteAllWords(){
 
 <style scoped>
 
+.filter-box {
+  display: flex;
+  width: 25%;
+  background-color: var(--c-accent);
+  height: 50px;
+  line-height: 50px;
+  align-items: center;
+  gap: 1ch;
+  padding-left: 1ch;
+  border-radius: 10px;
+}
+
+.filter-box > label > img {
+  width: 20px;
+  position: relative;
+  top: 4px;
+  left: 3px;
+}
+
+.filter-box > select {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  outline: none;
+  height: 100%;
+  width: 100%;
+  font-size: 1rem;
+  color: var(--c-ft-semi-light);
+  cursor: pointer;
+}
 
 .prize-logo {
     height: 165px;
