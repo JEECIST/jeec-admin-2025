@@ -18,7 +18,7 @@ const routes = [
     component: Dashboard,
     meta: { 
       title: "Dashboard",
-      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts"],
+      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts", "studentapp-connections"],
     },
   },
   {
@@ -200,6 +200,12 @@ const routes = [
     name: "studentapp-squads",
     meta: { title: "Squads" },
     component: () => import("../pages/StudentApp/StudentAppSquads.vue"),
+  },
+  {
+    path: "/student-app/connections",
+    name: "studentapp-connections",
+    meta: { title: "Connections" },
+    component: () => import("../pages/StudentApp/ConnectionsGame.vue"),
   },
   {
     path: "/student-app/prizes",
