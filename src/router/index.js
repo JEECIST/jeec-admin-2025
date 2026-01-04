@@ -51,7 +51,7 @@ const routes = [
     component: () => import("../global-components/TheDashboard.vue"),
     meta: {
       title: "Admin",
-      children: ["admin-accounting", "admin-events", "admin-teamusers", "admin-inventory"],
+      children: ["admin-accounting", "admin-events", "admin-teamusers", "admin-inventory", "admin-bills"],
     },
   },
   {
@@ -83,6 +83,12 @@ const routes = [
     name: "admin-teamusers-roles",
     meta: { title: "Team User Roles" },
     component: () => import("../pages/Admin/AdminTeamUsersRoles.vue"),
+  },
+  {
+    path: "/admin/bills",
+    name: "admin-bills",
+    meta: { title: "Bills Management" },
+    component: () => import("../pages/Admin/AdminBills.vue"),
   },
   {
     path: "/bills",
