@@ -231,15 +231,17 @@ const routes = [
     meta: { title: "Notifications" },
     component: () => import("../pages/StudentApp/Notifications.vue"),
   },
+  {    
+    path: "/student-app/wordle",
+    name: "studentapp-wordle",
+    meta: { title: "Wordle" },
+    component: () => import("../pages/StudentApp/StudentAppWordle.vue"),
+  },
   {
     path: "/student-app/testPush",
     name: "studentapp-testPush",
     meta: { title: "TestPush" },
     component: () => import("../pages/StudentApp/testPush.vue"),
-    path: "/student-app/wordle",
-    name: "studentapp-wordle",
-    meta: { title: "Wordle" },
-    component: () => import("../pages/StudentApp/StudentAppWordle.vue"),
   },
   {
     path: "/teams",
