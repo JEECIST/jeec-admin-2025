@@ -282,7 +282,7 @@ onMounted(() => {
         <div class="filter-container">
           <select v-model="statusFilter" class="filter-select">
             <option value="All">All Status</option>
-            <option value="Reviewing">Reviewing</option>
+            <option value="Pending">Pending</option>
             <option value="Approved">Approved</option>
             <option value="Rejected">Rejected</option>
             <option value="Paid">Paid</option>
