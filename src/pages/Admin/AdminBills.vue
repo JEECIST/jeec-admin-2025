@@ -1,92 +1,67 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import AddBillPopup from './AddBillPopup.vue';
-import * as HttpAdmin from "@utils/http-admin";
 import axios from 'axios';
-import { useUserStore } from "../../stores/user";
-const userStore = useUserStore();
 
 // Reactive state
 const query = ref('');
-const showAddModal = ref(false);
 const selectedBill = ref(null);
 const showBillDetail = ref(false);
 const loading = ref(false);
 const error = ref(null);
 
-// //Mockup bills data
-// const bills = ref([
-//   {
-//     id: 1,
-//     value: 1.50,
-//     date: '12-01-2024',
-//     shop: 'Pingo Doce',
-//     status: 'Approved',
-//     is_paid: 'Yes'
-//   },
-//   {
-//     id: 2,
-//     value: 15.00,
-//     date: '22-01-2024',
-//     shop: 'Social',
-//     status: 'Rejected',
-//     is_paid: 'No'
-//   },
-//   {
-//     id: 3,
-//     value: 4.00,
-//     date: '17-02-2024',
-//     shop: 'Pingo Doce',
-//     status: 'Approved',
-//     is_paid: 'No'
-//   },
-//   {
-//     id: 41,
-//     value: 1.00,
-//     date: '28-02-2024',
-//     shop: 'Continente',
-//     status: 'Reviewing',
-//     is_paid: 'No'
-//   }
-// ]);
+// Filter states
+const statusFilter = ref('All');
+const paidFilter = ref('All');
 
 // Bills data from API
 const bills = ref([]);
 
 // Computed properties
 const filteredBills = computed(() => {
-  if (!query.value.trim()) return bills.value;
-  return bills.value.filter(bill => 
-    bill.shop?.toLowerCase().includes(query.value.toLowerCase()) ||
-    bill.value?.toString().includes(query.value) ||
-    bill.status?.toLowerCase().includes(query.value.toLowerCase())
-  );
+  let filtered = bills.value;
+  
+  // Apply status filter
+  if (statusFilter.value !== 'All') {
+    filtered = filtered.filter(bill => bill.status === statusFilter.value);
+  }
+  
+  // Apply paid filter
+  if (paidFilter.value !== 'All') {
+    filtered = filtered.filter(bill => bill.is_paid === paidFilter.value);
+  }
+  
+  // Apply search query
+  if (query.value.trim()) {
+    filtered = filtered.filter(bill => 
+      bill.shop?.toLowerCase().includes(query.value.toLowerCase()) ||
+      bill.username?.toLowerCase().includes(query.value.toLowerCase()) ||
+      bill.name?.toLowerCase().includes(query.value.toLowerCase()) ||
+      bill.value?.toString().includes(query.value) ||
+      bill.status?.toLowerCase().includes(query.value.toLowerCase())
+    );
+  }
+  
+  return filtered;
 });
 
 // Methods
-function onAddBill() {
-  showAddModal.value = true;
-}
-
-function closeAddModal() {
-  showAddModal.value = false;
-}
-
-async function onBillSubmitted() {
-  // Refresh bills list after adding new bill
-  await fetchBills();
-}
-
 function fetchBills() {
-  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/bills', 
-  {username: userStore.username},
+  loading.value = true;
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/admin-bills/all', 
+  {},
   {auth: {
          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
   }}).then(response => {
     console.log(response.data)
     bills.value = response.data.bills
+    loading.value = false;
   })
+  .catch(err => {
+    console.error("Error fetching bills:", err);
+    error.value = "Failed to fetch bills";
+    loading.value = false;
+  });
 }
 
 function showBillDetails(bill) {
@@ -99,11 +74,29 @@ function closeBillDetail() {
   selectedBill.value = null;
 }
 
-function deleteBill() {
+function approveBill() {
   if (!selectedBill.value) return;
   
-  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/delete-bill', 
-    {id: selectedBill.value.id },
+  // Confirmation dialog
+  const confirmMessage = `CONFIRM ACTION\n\n` +
+    `You are about to APPROVE this bill:\n\n` +
+    `Bill ID: ${selectedBill.value.id}\n` +
+    `User: ${selectedBill.value.name} (${selectedBill.value.username})\n` +
+    `Shop: ${selectedBill.value.shop}\n` +
+    `Value: €${Number(selectedBill.value.value).toFixed(2)}\n` +
+    `Current Status: ${selectedBill.value.status}\n\n` +
+    `This action will be recorded in your name.\n\n` +
+    `Do you want to proceed?`;
+
+  if (!confirm(confirmMessage)) {
+    return; // User cancelled
+  }
+  
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/admin-bills/approve', 
+    {
+      id: selectedBill.value.id,
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME
+    },
     {auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
@@ -112,16 +105,104 @@ function deleteBill() {
   .then(response => {
     console.log(response.data);
     if (response.data.error == "") {
-      alert("Deleted Sucessfully")
+      alert("Bill Approved Successfully")
       fetchBills()
       closeBillDetail()
     }else{
-      alert("Error Deleting")
+      alert("Error Approving Bill")
     }
   })
   .catch(error => {
-    console.error("Error deleting bill:", error);
-    error_flag.value = true;
+    console.error("Error approving bill:", error);
+    alert("Error Approving Bill");
+  });
+}
+
+function rejectBill() {
+  if (!selectedBill.value) return;
+  
+  // Confirmation dialog
+  const confirmMessage = `CONFIRM ACTION\n\n` +
+    `You are about to REJECT this bill:\n\n` +
+    `Bill ID: ${selectedBill.value.id}\n` +
+    `User: ${selectedBill.value.name} (${selectedBill.value.username})\n` +
+    `Shop: ${selectedBill.value.shop}\n` +
+    `Value: €${Number(selectedBill.value.value).toFixed(2)}\n` +
+    `Current Status: ${selectedBill.value.status}\n\n` +
+    `This action will be recorded in your name.\n\n` +
+    `Do you want to proceed?`;
+
+  if (!confirm(confirmMessage)) {
+    return; // User cancelled
+  }
+  
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/admin-bills/reject', 
+    {
+      id: selectedBill.value.id,
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME
+    },
+    {auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  })
+  .then(response => {
+    console.log(response.data);
+    if (response.data.error == "") {
+      alert("Bill Rejected Successfully")
+      fetchBills()
+      closeBillDetail()
+    }else{
+      alert("Error Rejecting Bill")
+    }
+  })
+  .catch(error => {
+    console.error("Error rejecting bill:", error);
+    alert("Error Rejecting Bill");
+  });
+}
+
+function markPaidBill() {
+  if (!selectedBill.value) return;
+  
+  // Confirmation dialog
+  const confirmMessage = `CONFIRM ACTION\n\n` +
+    `You are about to MARK AS PAID this bill:\n\n` +
+    `Bill ID: ${selectedBill.value.id}\n` +
+    `User: ${selectedBill.value.name} (${selectedBill.value.username})\n` +
+    `Shop: ${selectedBill.value.shop}\n` +
+    `Value: €${Number(selectedBill.value.value).toFixed(2)}\n` +
+    `Current Status: ${selectedBill.value.status}\n\n` +
+    `This action will be recorded in your name.\n\n` +
+    `Do you want to proceed?`;
+
+  if (!confirm(confirmMessage)) {
+    return; // User cancelled
+  }
+  
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/admin-bills/mark-paid', 
+    {
+      id: selectedBill.value.id,
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME
+    },
+    {auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  })
+  .then(response => {
+    console.log(response.data);
+    if (response.data.error == "") {
+      alert("Bill Marked as Paid Successfully")
+      fetchBills()
+      closeBillDetail()
+    }else{
+      alert("Error Marking Bill as Paid")
+    }
+  })
+  .catch(error => {
+    console.error("Error marking bill as paid:", error);
+    alert("Error Marking Bill as Paid");
   });
 }
 
@@ -170,21 +251,6 @@ function viewBillReceipt() {
   });
 }
 
-function getStatusClass(status) {
-  switch (status.toLowerCase()) {
-    case 'approved':
-      return 'status-approved';
-    case 'rejected':
-      return 'status-rejected';
-    case 'reviewing':
-      return 'status-reviewing';
-    case 'pending':
-      return 'status-pending';
-    default:
-      return '';
-  }
-}
-
 // Fetch bills on component mount
 onMounted(() => {
   fetchBills();
@@ -196,7 +262,7 @@ onMounted(() => {
     <div class="page-content">
       <!-- Page Header -->
       <div class="page-header">
-        <h1>Bills</h1>
+        <h1>Bills Management</h1>
       </div>
       
       <!-- Toolbar -->
@@ -211,9 +277,23 @@ onMounted(() => {
             >
           </div>
         </div>
-        <button class="add-btn" @click="onAddBill">
-          Add Bill
-        </button>
+        
+        <!-- Filter Dropdowns -->
+        <div class="filter-container">
+          <select v-model="statusFilter" class="filter-select">
+            <option value="All">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Paid">Paid</option>
+          </select>
+          
+          <select v-model="paidFilter" class="filter-select">
+            <option value="All">All Paid</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
       </div>
       
       <!-- Main Content Card -->
@@ -237,7 +317,9 @@ onMounted(() => {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Value</th>
+                <th>Username</th>
+                <th>Member</th>
+                <th>Value Out</th>
                 <th>Date</th>
                 <th>Shop</th>
                 <th>Status</th>
@@ -245,8 +327,10 @@ onMounted(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="bill in filteredBills" :key="bill.id" :class="getStatusClass(bill.status)" @click="showBillDetails(bill)">
+              <tr v-for="bill in filteredBills" :key="bill.id" @click="showBillDetails(bill)">
                 <td>{{ bill.id }}</td>
+                <td>{{ bill.username }}</td>
+                <td>{{ bill.name }}</td>
                 <td>€{{ Number(bill.value).toFixed(2) }}</td>
                 <td>{{ bill.date }}</td>
                 <td>{{ bill.shop }}</td>
@@ -258,13 +342,6 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    
-    <!-- Add Bill Modal -->
-    <AddBillPopup
-      :isOpen="showAddModal"
-      @modal-close="closeAddModal"
-      @modal-submit="onBillSubmitted"
-    />
 
     <!-- Bill Detail Modal -->
     <div v-if="showBillDetail" class="modal-overlay" @click="closeBillDetail">
@@ -283,7 +360,7 @@ onMounted(() => {
         
         <!-- Bill Title -->
         <div class="bill-title">
-          Bill
+          Bill - {{ selectedBill?.name }}
         </div>
         
         <!-- Action Buttons -->
@@ -297,18 +374,32 @@ onMounted(() => {
               <polyline points="10,9 9,9 8,9"></polyline>
             </svg>
           </button>
-          <!-- <button class="action-btn delete-btn" @click="deleteBill" title="Delete Bill">
+          <button class="action-btn approve-btn" @click="approveBill" title="Approve Bill">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="3,6 5,6 21,6"></polyline>
-              <path d="m19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"></path>
-              <line x1="10" y1="11" x2="10" y2="17"></line>
-              <line x1="14" y1="11" x2="14" y2="17"></line>
+              <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
-          </button> -->
+          </button>
+          <button class="action-btn reject-btn" @click="rejectBill" title="Reject Bill">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          <button class="action-btn pay-btn" @click="markPaidBill" title="Mark as Paid">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+          </button>
         </div>
         
         <!-- Bill Details -->
         <div class="bill-details">
+          <div class="detail-row">
+            <div class="detail-label">Username</div>
+            <div class="detail-value">{{ selectedBill?.username }}</div>
+          </div>
+          
           <div class="detail-row">
             <div class="detail-label">Value</div>
             <div class="detail-value">€{{ Number(selectedBill?.value).toFixed(2) }}</div>
@@ -327,6 +418,15 @@ onMounted(() => {
             <div class="detail-column">
               <div class="detail-label">Paid</div>
               <div class="detail-value">{{ selectedBill?.is_paid }}</div>
+            </div>
+          </div>
+          
+          <!-- Admin Action Info -->
+          <div v-if="selectedBill?.last_action_by" class="detail-row admin-action-info">
+            <div class="detail-label">Last Action By</div>
+            <div class="detail-value">
+              {{ selectedBill.last_action_by }} ({{ selectedBill.last_action_username }})
+              <span class="action-date">{{ selectedBill.last_action_date }}</span>
             </div>
           </div>
         </div>
@@ -363,11 +463,44 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .search-container {
   flex: 1;
+  min-width: 300px;
   max-width: 2000px;
+}
+
+.filter-container {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filter-select {
+  appearance: none;
+  background-color: var(--c-accent);
+  border: none;
+  border-radius: 6px;
+  color: var(--c-ft-semi-light);
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.75rem 2rem 0.75rem 1rem;
+  cursor: pointer;
+  outline: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23828282' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  transition: background-color 0.2s ease;
+}
+
+.filter-select:hover {
+  background-color: #3a3a3a;
+}
+
+.filter-select option {
+  background-color: var(--c-bg-dark);
+  color: var(--c-ft-semi-light);
 }
 
 .search-input {
@@ -401,24 +534,6 @@ onMounted(() => {
 
 .search-input input::placeholder {
   color: var(--c-ft-light);
-}
-
-.add-btn {
-  font-size: 1rem;
-  font-weight: 600;
-  border: none;
-  background-color: var(--c-select);
-  border-radius: 10px;
-  color: var(--c-bg-light);
-  cursor: pointer;
-  padding: 0.8rem 2rem;
-  height: 50px;
-  white-space: nowrap;
-  transition: background-color 0.2s ease;
-}
-
-.add-btn:hover {
-  background-color: #4088c4;
 }
 
 .content-card {
@@ -516,8 +631,6 @@ onMounted(() => {
   color: white;
 }
 
-/* Remove status-based styling - no longer needed */
-
 /* Bill Detail Modal Styles */
 .modal-overlay {
   position: fixed;
@@ -586,7 +699,7 @@ onMounted(() => {
 .action-buttons {
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 
@@ -595,19 +708,49 @@ onMounted(() => {
   height: 60px;
   border: none;
   border-radius: 15px;
-  background-color: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #333;
+  color: white;
   transition: all 0.2s ease;
 }
 
 .action-btn:hover {
-  background-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.receipt-btn {
+  background-color: #9c27b0;
+}
+
+.receipt-btn:hover {
+  background-color: #7b1fa2;
+}
+
+.approve-btn {
+  background-color: #4caf50;
+}
+
+.approve-btn:hover {
+  background-color: #45a049;
+}
+
+.reject-btn {
+  background-color: #f44336;
+}
+
+.reject-btn:hover {
+  background-color: #da190b;
+}
+
+.pay-btn {
+  background-color: #2196F3;
+}
+
+.pay-btn:hover {
+  background-color: #0b7dda;
 }
 
 .bill-details {
@@ -644,6 +787,29 @@ onMounted(() => {
   color: #666;
 }
 
+.admin-action-info {
+  background-color: #f0f7ff;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #2196F3;
+}
+
+.admin-action-info .detail-label {
+  color: #1976D2;
+}
+
+.admin-action-info .detail-value {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.action-date {
+  font-size: 0.9rem;
+  color: #999;
+  font-style: italic;
+}
+
 /* Mobile responsiveness for modal */
 @media screen and (max-width: 600px) {
   .bill-detail-card {
@@ -663,6 +829,15 @@ onMounted(() => {
   .detail-row-double {
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .action-buttons {
+    gap: 0.5rem;
+  }
+
+  .action-btn {
+    width: 50px;
+    height: 50px;
   }
 }
 
@@ -685,10 +860,6 @@ onMounted(() => {
   
   .search-container {
     max-width: none;
-  }
-  
-  .add-btn {
-    width: 100%;
   }
   
   .content-card {

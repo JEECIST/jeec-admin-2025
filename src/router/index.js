@@ -7,7 +7,7 @@ const routes = [
   {
     path: "/",
     name: "login",
-    meta: { 
+    meta: {
       title: "JEEC Admin",
     },
     component: () => import("../pages/Login.vue"),
@@ -16,7 +16,7 @@ const routes = [
     path: "/dashboard",
     name: "dashboard",
     component: Dashboard,
-    meta: { 
+    meta: {
       title: "Dashboard",
       children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts", "studentapp-connections"],
     },
@@ -42,7 +42,7 @@ const routes = [
   {
     path: "/activities/types/locations",
     name: "activity-types-locations",
-    meta: { title:"Locations" },
+    meta: { title: "Locations" },
     component: () => import("../pages/Activities/ActivitiesTypesLocations.vue"),
   },
   {
@@ -51,7 +51,7 @@ const routes = [
     component: () => import("../global-components/TheDashboard.vue"),
     meta: {
       title: "Admin",
-      children: ["admin-accounting", "admin-events", "admin-teamusers", "admin-inventory"],
+      children: ["admin-accounting", "admin-events", "admin-teamusers", "admin-inventory", "admin-bills"],
     },
   },
   {
@@ -85,9 +85,18 @@ const routes = [
     component: () => import("../pages/Admin/AdminTeamUsersRoles.vue"),
   },
   {
+    path: "/admin/bills",
+    name: "admin-bills",
+    meta: { title: "Bills Management" },
+    component: () => import("../pages/Admin/AdminBills.vue"),
+  },
+  {
     path: "/bills",
     name: "bills",
-    meta: { title: "Bills", children: false },
+    meta: {
+      title: "Bills",
+      children: false
+    },
     component: () => import("../pages/Bills/Bills.vue")
   },
   {
@@ -108,7 +117,7 @@ const routes = [
   {
     path: "/business/companies",
     name: "business-companies",
-    meta: {title: "Companies" },
+    meta: { title: "Companies" },
     component: () => import("../pages/Business/BusinessCompanies.vue"),
   },
   {
@@ -130,13 +139,13 @@ const routes = [
     component: () => import("../global-components/TheDashboard.vue"),
     meta: {
       title: "QR Codes",
-      children: [ "qrcodes-eletrolink", "qrcodes-scan"],
+      children: ["qrcodes-eletrolink", "qrcodes-scan"],
     },
   },
   {
     path: "/qr-codes/scan",
     name: "qrcodes-scan",
-    meta: { title: "QR Codes Scan"},
+    meta: { title: "QR Codes Scan" },
     component: () => import("../pages/QRCodes/QRCodes.vue"),
   },
   {
