@@ -164,6 +164,11 @@ function rejectBill() {
 
 function markPaidBill() {
   if (!selectedBill.value) return;
+
+  if(selectedBill.value.status !== "Approved"){
+    alert("Can't pay a bill that is not approved!");
+    return;
+  }
   
   // Confirmation dialog
   const confirmMessage = `CONFIRM ACTION\n\n` +
