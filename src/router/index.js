@@ -18,7 +18,7 @@ const routes = [
     component: Dashboard,
     meta: { 
       title: "Dashboard",
-      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts"],
+      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts", "shiftcentral"],
     },
   },
   {
@@ -237,6 +237,12 @@ const routes = [
     name: "usershifts",
     meta: { title: "Team Shifts", children: false },
     component: () => import("../pages/UserShifts/UserShifts.vue"),
+  },
+  {
+    path: "/shift-central",
+    name: "shiftcentral",
+    meta: { title: "Shift Central", children: false },
+    component: () => import("../pages/UserShifts/ShiftCentral.vue"),
   },
   {
     path: "/:pathMatch(.*)*",

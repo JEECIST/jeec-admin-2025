@@ -27,6 +27,7 @@ export const useUserStore = defineStore("user", {
       studentapp: false,
       teams: false,
       usershifts: false,
+      shiftcentral: true,
     },
   }),
   getters: {
@@ -96,6 +97,7 @@ export const useUserStore = defineStore("user", {
         studentapp: role.student_app,
         teams: role.teams,
         usershifts: role.shifts,
+        shiftcentral: true,
       };
     },
     logoutUser(){
@@ -158,6 +160,7 @@ export const useUserStore = defineStore("user", {
           studentapp: access_list.student_app,
           teams: access_list.teams,
           usershifts: access_list.shifts,
+          shiftcentral: true,
         };
       })
 
