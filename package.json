@@ -18,6 +18,7 @@
     "vue": "^3.4.31",
     "vue-multiselect": "^3.2.0",
     "vue-router": "^4.4.5",
+    "vue3-fortune-wheel": "^2.1.2",
     "vue3-qrcode-reader": "^0.0.1"
   },
   "devDependencies": {
