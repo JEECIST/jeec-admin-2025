@@ -53,7 +53,6 @@ function fetchBills() {
          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
   }}).then(response => {
-    console.log(response.data)
     bills.value = response.data.bills
     loading.value = false;
   })
@@ -103,7 +102,6 @@ function approveBill() {
     }
   })
   .then(response => {
-    console.log(response.data);
     if (response.data.error == "") {
       alert("Bill Approved Successfully")
       fetchBills()
@@ -147,7 +145,6 @@ function rejectBill() {
     }
   })
   .then(response => {
-    console.log(response.data);
     if (response.data.error == "") {
       alert("Bill Rejected Successfully")
       fetchBills()
@@ -196,7 +193,6 @@ function markPaidBill() {
     }
   })
   .then(response => {
-    console.log(response.data);
     if (response.data.error == "") {
       alert("Bill Marked as Paid Successfully")
       fetchBills()

@@ -134,7 +134,6 @@
             }
         }
     ).then(response => {
-        console.log(response)
         if (response.data == "Success"){
             console.log("yeye");
         } else {
@@ -163,7 +162,6 @@
     fileSelected.value = event.target.files[0].name;
     fileToUpload.value = event.target.files[0];
     logo_image.value = URL.createObjectURL(event.target.files[0]);
-    console.log(fileSelected.value)
   }
   
   

@@ -37,8 +37,7 @@ export const useUserStore = defineStore("user", {
   },
   actions: {
     testUserStore(username,password){
-      console.log(username);
-      console.log(password);
+
     },
     async getAccess(username, password) {
       try {
@@ -60,11 +59,11 @@ export const useUserStore = defineStore("user", {
     
           if (password.normalize() === password_decrypted.normalize()) {
             this.loginUser(username, jwt_access, jwt_refresh, role_received);
-            console.log("Login success");
+
             return true;
           } else {
             this.logoutUser();
-            console.log("Login Failed");
+
             return false;
           }
         }

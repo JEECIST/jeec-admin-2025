@@ -41,7 +41,6 @@ export const POST = async (route, data = {}, headers = {}) => {
   }
 
   
-  console.log(data);
   
 
   try {

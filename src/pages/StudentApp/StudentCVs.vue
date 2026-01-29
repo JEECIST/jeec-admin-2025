@@ -66,7 +66,7 @@ function get_students_with_cv () {
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
   }).then(response => {
-    console.log(response.data)
+
     students_with_cv.value = response.data.students
   })
 }
@@ -117,7 +117,7 @@ function accept_cv (student){
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     },
   }).then(response => {
-    console.log(response.data)
+
     get_students_with_cv();
   })
 }
@@ -132,7 +132,7 @@ function remove_cv (student){
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     },
   }).then(response => {
-    console.log(response.data)
+
     get_students_with_cv();
   })
 }

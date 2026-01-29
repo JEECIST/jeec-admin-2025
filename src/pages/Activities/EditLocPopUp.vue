@@ -67,7 +67,6 @@ function editLoc() {
     priority: priority.value,
   };
 
-  console.log(locData)
 
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + `/activities/types/edit_loc`, locData, {
     auth: {
@@ -76,7 +75,7 @@ function editLoc() {
     },
   })
     .then(() => {
-      console.log("Location editada com sucesso!");
+
       emit("locEdited", locData)
       emit("close");
     })

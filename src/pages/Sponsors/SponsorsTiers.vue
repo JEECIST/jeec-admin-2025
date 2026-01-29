@@ -142,9 +142,9 @@ const fetchData = () => {
         }}).then((response)=>{
           const data = response.data
           tableData.value = response.data.tiers
-          console.log("Sponsor Tiers",tableData.value)
+
           events.value = response.data.events
-          console.log("Events",events.value)
+
         }).catch((error)=>{
           console.log(error)
         })
@@ -180,7 +180,7 @@ function handleRowSelect(row) {
 }
 
 function handleNosponsors(isEmpty){
-  console.log('No sponsors found', isEmpty);
+
   noSponsors.value = isEmpty;
 }
 
@@ -192,8 +192,7 @@ function unselectRow() {
 // Event handlers for button clicks
 function editRow(row) {
   iseditsponsortier.value= !iseditsponsortier.value
-  console.log(iseditsponsortier.value)
-  console.log('Edit button clicked for row:', row);
+
 }
 
 
@@ -201,14 +200,14 @@ function editRow(row) {
 function toogleadd()
 {
   isaddsponsortier.value= !isaddsponsortier.value
-  console.log(isaddsponsortier.value)
+
   fetchData()
 }
 
 function tooglelist()
 {
   listsponsors.value= !listsponsors.value
-  console.log(listsponsors.value)
+
 }
 
 function deleteRow(row) {
@@ -221,14 +220,14 @@ function deleteRow(row) {
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }
     }).then((response) => {
-      console.log('Sponsor tier deleted', response.data);
+
       unselectRow();
       fetchData();
     }).catch((error) => {
       console.log(error);
     });
   }
-  console.log('Delete button clicked for row:', row);
+
 }
 
 

@@ -187,7 +187,6 @@ const fetchData = () => {
         : null,
       dishes: event.dishes || []
     }));
-    console.log("Main Table Data:", datab.value);
   })
   .catch(err => console.error('Fetch error:', err));
 };
@@ -210,7 +209,7 @@ const fetchDishes = async (eventDayId) => {
         },
       }
     );
-    console.log("Fetched Dishes:", response.data);
+
     if (response.data.dishes && response.data.dishes.length) {
       selectedRow.value.dishes = response.data.dishes;
       error.value = "";
@@ -240,7 +239,6 @@ const fetchCompanyMeals = async () => {
         },
       }
     );
-    console.log("Fetched Company Meals:", response.data);
     if (Array.isArray(response.data)) {
       const pivot = {};
       const dishSet = new Set();
@@ -280,7 +278,6 @@ const fetchCompanyMeals = async () => {
       } else {
         error.value = "";
       }
-      console.log("Pivoted Meals Data:", companyMeals.value);
     } else {
       companyMeals.value = [];
       error.value = "No Data Found";
@@ -311,7 +308,6 @@ function selectCallback(row) {
     fetchDishes(row.event_id);
     fetchCompanyMeals();
   }
-  console.log("Selected Event ID:", selectedRow.value.event_id);
 }
 
 // Add a new dish input in the Edit Modal.

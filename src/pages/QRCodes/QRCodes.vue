@@ -85,13 +85,11 @@ function selectCallback(row) {
 }
 
 function activateReader(activity) {
-  console.log("Activating QR Reader");
   selectedRow.value = activity;
   QR_enable.value = true;
 };
 
 function deactivateReader() {
-  console.log("Deactivating QR Reader");
   QR_enable.value = false;
 }
 
@@ -105,9 +103,6 @@ function errorPopUp() {
 }
 
 function onDecode(student_external_id) {
-  console.log("QR Code Content:", student_external_id);
-  console.log("merda")
-  console.log("Activity external id", selectedRow)
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activity_external_idistid', {
     student_external_id: student_external_id,  
     activity_external_id: selectedRow.value.external_id},
@@ -117,7 +112,6 @@ function onDecode(student_external_id) {
     }
   })
   .then(response => {
-    console.log(response.data);
     if (response.data.errorQR == "") {
       scanned_flag.value = true;
       student_username.value = response.data.student_username;
@@ -143,14 +137,11 @@ function onError(error) {
 }
 
 onMounted(() => {
-  console.log("QR codes")
   axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/activities_vue_for_qr', {auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }}).then(response => {
-    console.log(response.data)
     QR_Activities.value = response.data.activities
-    console.log(QR_Activities)
   })
 });
 

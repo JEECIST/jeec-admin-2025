@@ -84,7 +84,7 @@ function selectCallback(row) {
   selectedRow.value = row
 
     
-  console.log(selectedRow)
+
 }
 
 

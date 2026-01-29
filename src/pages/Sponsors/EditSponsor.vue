@@ -105,7 +105,7 @@ function onLogoSelected(event){
   fileSelected.value = event.target.files[0].name;
   fileToUpload.value = event.target.files[0];
   props.sponsorData.logo = URL.createObjectURL(event.target.files[0]);
-  console.log(fileSelected.value)
+
 }
 
 const selectedEvent = ref(null);
@@ -122,7 +122,7 @@ const jeec_responsible_flag = ref(true)
 // Initialize selectedEvent with sponsorData
 watch(() => props.sponsorData, (newVal) => {
   if (newVal) {
-    console.log(newVal);
+
     selectedEvent.value = {
       id: newVal.event_id,
       name: newVal.event_name
@@ -142,7 +142,7 @@ watch(() => props.sponsorData, (newVal) => {
 
 function updateSponsor() {
   // Update sponsor logic here
-  console.log('Update sponsor');
+
   const fd = new FormData();
     if (fileToUpload.value) fd.append('logo_image', fileToUpload.value)
     fd.append('sponsor_id', props.sponsorData.id)
@@ -158,7 +158,6 @@ function updateSponsor() {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }}).then(response => {
-          console.log(response)
           const error_response = response.data.error
           if(error_response==''){
             closePopup()
@@ -171,12 +170,12 @@ function updateSponsor() {
 
 function responsibleFinder(){
   let event_id = selectedEvent.value.id;
-  console.log(event_id)
+
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/colaborators', {event_id: event_id} ,{auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }}).then(response => {
-          console.log("Response", response)
+
           let colaborators = response.data.colaborators
           if(colaborators.length > 0){
             colaborators_for_event.value = colaborators;

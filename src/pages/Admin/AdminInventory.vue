@@ -89,7 +89,6 @@ const fetchData = () => {
         })
         .then((response) => {
             const data = response.data;
-            console.log(data)
             database_inv.value = data.items.map((item) => ({
                 name: item.name,
                 quantity: item.quantity,
@@ -128,7 +127,6 @@ function edit_quantity(name, action) {
         },
     })
         .then(() => {
-            console.log("Item updated successfully!");
             fetchData();
             selectedItem.value = null;
             changed_quantity.value = 0;
@@ -150,7 +148,6 @@ function delete_item(name) {
         },
     })
         .then(() => {
-            console.log("Item deleted successfully!");
             fetchData();
             selectedItem.value = null;
         })

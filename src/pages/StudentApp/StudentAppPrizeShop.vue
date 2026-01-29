@@ -72,7 +72,7 @@ function fetchPrizebyName(){
     // Since the backend sends an array, we extract the first element
     selectedRow.value = response.data[0];
     selectedRow.value.logo = selectedRow.value.logo ? `data:image/*;base64,${selectedRow.value.logo}` : null
-    console.log(selectedRow.value.logo);
+
   }).catch((error) => {
     console.log(error);
   });

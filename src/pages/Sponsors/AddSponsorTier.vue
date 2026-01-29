@@ -145,7 +145,6 @@ const socialMedia = ref(null);
 const exclusiveVideo = ref(null);
 
 function addingSponsorTier(e) {
-  console.log('adding sponsor tier');
   e.preventDefault();
 
   const fd = new FormData();
@@ -166,20 +165,20 @@ function addingSponsorTier(e) {
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
   }).then(response => {
-    console.log('Response:', response);
+
     const error_response = response.data.error;
-    console.log('Error response:', error_response);
+
     if (error_response == '') {
       closePopup();
     } else {
-      console.log('Error on adding sponsor tier:', error_response);
+
       alert('Error on adding sponsor tier: ' + error_response);
-      console.log('Alert should have shown: Error on adding sponsor tier: ' + error_response);
+
     }
   }).catch(error => {
     console.error('Request failed:', error);
     alert('Request failed: ' + error.message);
-    console.log('Alert should have shown: Request failed: ' + error.message);
+
   });
 }
 </script>

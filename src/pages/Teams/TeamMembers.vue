@@ -313,7 +313,7 @@ export default {
       this.showPopup = false;
     },
     editButton() {
-      console.log(this.selectedMember);
+
       this.editMember = { ...this.selectedMember }; 
       this.showEditPopup = true;
     },

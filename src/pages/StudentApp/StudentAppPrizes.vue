@@ -79,8 +79,7 @@ function selectCallback(row) {
   selectedRow.value = row
   fetchPrizebyName();
     
-  console.log(selectedRow)
-}
+
 
 function isPrizesEmpty(){
     return prizes.length === 0;
@@ -88,8 +87,7 @@ function isPrizesEmpty(){
 
 function fetchPrizebyName(){
   const prizeName = selectedRow.value.name;
-  console.log("prizeName");
-  console.log(prizeName);
+
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get-prize-name', {
     prizeName: prizeName,
   }, {
@@ -101,7 +99,7 @@ function fetchPrizebyName(){
     // Since the backend sends an array, we extract the first element
     selectedRow.value = response.data[0];
     selectedRow.value.logo = selectedRow.value.logo ? `data:image/*;base64,${selectedRow.value.logo}` : null
-    console.log(selectedRow.value.logo);
+
   }).catch((error) => {
     console.log(error);
   });

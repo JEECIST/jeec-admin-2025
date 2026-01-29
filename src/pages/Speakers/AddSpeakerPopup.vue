@@ -57,7 +57,6 @@ function speakerImageUpload(event) {
         newSpeaker.value.speaker_image = event.target.files[0];
         s_image = URL.createObjectURL(file);
     }
-    console.log(imgFileName.value)
 }
 
 var c_logo = ref();
@@ -68,7 +67,6 @@ function companyLogoUpload(event) {
         newSpeaker.value.company_logo = event.target.files[0];
         c_logo = URL.createObjectURL(file);
     }
-    console.log(logoFileName.value)
 }
 
 /* mobile screen detection and adjustment */

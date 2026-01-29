@@ -57,7 +57,6 @@ onMounted(async () => {
         }
         return sponsor;
       });
-    console.log(data.value);
   }).catch((error) => {
     console.log(error);
   });

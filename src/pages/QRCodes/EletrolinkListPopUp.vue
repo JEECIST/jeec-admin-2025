@@ -21,7 +21,6 @@ onMounted(() => {
 onUnmounted(() => { window.removeEventListener('resize', updateIsMobile); });
 
 async function fetchData() {
-    console.log("ExtID", props.activity.external_id)
     await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get_eletrolink_registrations', {
         external_id: props.activity.external_id
     },
@@ -32,9 +31,7 @@ async function fetchData() {
             }
         })
         .then(response => {
-            console.log(response.data);
             data.value = response.data.students
-            console.log(data.value)
         })
 };
 </script>

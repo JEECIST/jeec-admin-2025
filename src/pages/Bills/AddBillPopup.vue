@@ -51,7 +51,6 @@ async function submitAddBill(e) {
         }
     })
     .then(response => {
-        console.log(response.data);
         if (response.data.error == "") {
             alert("Bill added sucessfully")
             // Reset form

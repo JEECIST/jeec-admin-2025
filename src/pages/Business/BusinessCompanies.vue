@@ -315,7 +315,6 @@ function change_event(event) {
     events.value = data.events;
     tiers.value = data.tiers;
 
-    console.log(companies.value)
 
     default_event_id.value = data.default_event_id;
   })
@@ -535,8 +534,6 @@ function onLogoSelected(event){
 
 function filterByEvent() {
   filteredCompanies.value = companies.value.filter(company => company.event_id == selectedEvent);
-  console.log(filteredCompanies)
-  console.log(companies)
 
   if (filteredCompanies.value.length === 0) {
     noCompanies = true; // Se o array estiver vazio, a flag é true

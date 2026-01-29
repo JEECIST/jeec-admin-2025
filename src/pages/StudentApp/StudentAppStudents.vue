@@ -244,7 +244,7 @@ const updateStudentPoints = (points) => {
     }
   )
   .then(response => {
-    console.log("Points updated successfully:", response.data);
+
 
     // Find the student in the students array and update reactively
     const index = students.value.findIndex(s => s.id === studentToModify.value.id);
@@ -290,7 +290,7 @@ const banStudent = () => {
     }
   )
   .then(() => {
-    console.log(`Student ${studentToBan.value.name} banned successfully.`);
+
 
     // Remove banned student from the main student list
     students.value = students.value.filter(s => s.id !== studentToBan.value.id);
@@ -314,7 +314,7 @@ const banStudent = () => {
 };
 
 const confirmBanStudent = (student) => {
-  console.log("Student selected for banning:", student);
+
   if (!student || (!student.externalId && !student.id)) {
     console.error("Invalid student selected for banning:", student);
     return;
@@ -333,7 +333,7 @@ const fetchData = () => {
       },
     })
     .then((response) => {
-      console.log("Dados recebidos da API:", response.data);
+
       if (response.data && Array.isArray(response.data.students)) {
         students.value = response.data.students.map(student => ({
           id: student.id,
@@ -401,7 +401,7 @@ const fetchBannedStudents = () => {
     },
   })
   .then((response) => {    
-    console.log("[DEBUG] Raw API Response for Banned Students:", response.data);
+
 
     if (response.data && Array.isArray(response.data.students)) {
       bannedStudents.value = response.data.students.map(student => ({
@@ -412,7 +412,7 @@ const fetchBannedStudents = () => {
         externalId: student.external_id
       }));
 
-      console.log("[DEBUG] Processed Banned Students:", bannedStudents.value);
+
 
     } else {
       console.error("[DEBUG] Unexpected API response:", response.data);
@@ -462,7 +462,7 @@ const unbanStudent = (student) => {
       }
     )
     .then(() => {
-      console.log(`Student ${student.name} unbanned successfully.`);
+
 
       // Remove student from the banned list
       bannedStudents.value = bannedStudents.value.filter(s => s.externalId !== student.externalId);
@@ -484,7 +484,7 @@ const unbanStudent = (student) => {
         degree: student.degree || "Not provided"
       });
 
-      console.log("Student moved to normal list:", students.value);
+
     })
     .catch((error) => {
       console.error("Error unbanning student:", error.response ? error.response.data : error);

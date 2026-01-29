@@ -251,7 +251,7 @@ export default {
         }
       ).then(response => {
         this.image = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image;
-        console.log(this.image);
+
       });
     },
     selectTeam(row) {
@@ -291,7 +291,7 @@ export default {
         }
       }).then((response) => {
         const updatedTeam = response.data;
-        console.log(updatedTeam);
+
         this.teams.push ({
           ...updatedTeam,
           website_priority: this.editTeam.priority,
@@ -332,7 +332,7 @@ export default {
         } 
       }).then(response => {
         const newTeam = response.data;
-        console.log(newTeam);
+
         this.teams.push({
           ...newTeam,
           priority: this.newTeamPriority,

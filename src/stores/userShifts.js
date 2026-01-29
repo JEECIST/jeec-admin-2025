@@ -42,7 +42,7 @@ export const useSlotStore = defineStore('slotStore', {
     },
     submitSlots() {
         let username = userStore.username;
-        console.log(this.slots)
+
         axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add_shifts_to_user', {
           username: username,  
           user_shifts: this.slots},
@@ -67,7 +67,7 @@ export const useSlotStore = defineStore('slotStore', {
     },
     getShifts() {
       let username = userStore.username;
-      console.log(username)
+
       axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get_user_shifts', {
         username: username},
         {auth: {
@@ -75,7 +75,7 @@ export const useSlotStore = defineStore('slotStore', {
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }
       }).then(response => {
-        console.log(response.data)
+
         this.slots = response.data.shifts;
       })
     }

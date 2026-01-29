@@ -105,7 +105,6 @@ const fetchData = () => {
     })
     .then((response) => {
       const data = response.data;
-      console.log(data)
       database_type.value = data.types.map((type) => ({
         name: type.name,
         event_id: type.event_id,
@@ -213,7 +212,6 @@ function delete_type(name){
         },
     })
     .then(() => {
-        console.log("Atividade removida com sucesso!");
         fetchData();
 
         if (selectedType.value && selectedType.value.name === name) {

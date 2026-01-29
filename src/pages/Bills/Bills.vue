@@ -84,7 +84,6 @@ function fetchBills() {
          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
   }}).then(response => {
-    console.log(response.data)
     bills.value = response.data.bills
   })
 }
@@ -110,7 +109,6 @@ function deleteBill() {
     }
   })
   .then(response => {
-    console.log(response.data);
     if (response.data.error == "") {
       alert("Deleted Sucessfully")
       fetchBills()

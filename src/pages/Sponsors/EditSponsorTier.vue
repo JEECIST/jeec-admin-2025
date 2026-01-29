@@ -136,7 +136,7 @@ const props = defineProps({
 
 function updateSponsorTier() {
   // Update sponsor tier logic here
-  console.log('Update sponsor tier');
+
   const fd = new FormData();
   fd.append('tier_id', props.sponsorData.id);
   fd.append('name', props.sponsorData.name);
@@ -156,7 +156,7 @@ function updateSponsorTier() {
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
   }).then(response => {
-    console.log(response);
+
     const error_response = response.data.error;
     if (error_response == '') {
       closePopup();

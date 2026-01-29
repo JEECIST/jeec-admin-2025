@@ -121,11 +121,9 @@ function onLogoSelected(event){
   fileSelected.value = event.target.files[0].name;
   fileToUpload.value = event.target.files[0];
   logo_image.value = URL.createObjectURL(event.target.files[0]);
-  console.log(fileSelected.value)
 }
 
 function addingSponsor(e) {
-      console.log('adding sponsor')
         e.preventDefault()
 
 
@@ -135,20 +133,15 @@ function addingSponsor(e) {
         fd.append('description', description.value)
         fd.append('event_id', eventselected.value.id)
         fd.append('event_name', eventselected.value.name)
-        console.log("Event id",eventselected.value)
         fd.append('show_in_website', show_in_website.value)
-        console.log("Show in website",show_in_website.value)
         fd.append('tier_id', tier.value)
-        console.log("Tier id",tier.value)
         fd.append('jeec_responsible_id', jeec_responsible.value.id)
         fd.append('jeec_responsible_name', jeec_responsible.value.name)
-        console.log("JEEC responsible",jeec_responsible.value.id)
 
         axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add-sponsor-vue',fd,{auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }}).then(response => {
-          console.log(response)
           error_response = response.data.error
           if(error_response==''){
             closePopup()
@@ -162,7 +155,6 @@ function addingSponsor(e) {
 
 function responsibleFinder(){
   let event_id = eventselected.value.id;
-  console.log(event_id)
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/colaborators', {event_id: event_id} ,{auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY

@@ -63,7 +63,7 @@ function addItem() {
     },
   })
     .then(() => {
-      console.log("Item added successfully!");
+
       emit("itemAdded")
       emit("close");
     })

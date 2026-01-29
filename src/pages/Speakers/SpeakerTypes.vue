@@ -26,8 +26,6 @@ const fetchData = () => {
     stypes.value = response.data.stypes
     datab.value = response.data.stypes
     speakers.value = response.data.speakers
-    console.log(datab.value)
-    console.log(speakers.value)
   }).catch((error) => {
     console.log(error)
   })
@@ -38,7 +36,6 @@ onMounted(fetchData)
 function addSpeakerType(newSpeakerType) {
   const formData = new FormData();
   for (const [key, value] of Object.entries(newSpeakerType)) { formData.append(key, value); }
-  console.log(formData);
   axios.post(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/new-speaker-type-vue`, formData, {
     auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
@@ -93,7 +90,6 @@ const tablePref = {
 
 /* select a row */
 function selectCallback (row) {
-  console.log(row)
   stype.value = row;
   popupShow.value = true;
   if (isMobile.value) { openMobileModal(); }

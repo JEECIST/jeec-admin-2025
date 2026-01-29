@@ -18,7 +18,7 @@
          <select v-if="option_selected === 'weekly' || option_selected === 'activities'" 
                 class="selection-box second-select" v-model="secondary_selected" @change="fetchAllByOption">
             <option
-              v-for="opt in secondaryOptions" :key="opt.id" :value="opt.id">
+              v-for="opt in secondaryOptions" :key="opt.id" :value="opt">
               {{ opt.name }}
             </option>
           </select>
@@ -27,7 +27,12 @@
       </div>
     </div>
 
-    
+    <div v-if="option_selected === 'activities'">
+      <h2>{{ secondary_selected.name }}</h2>
+      <h2>{{ secondary_selected.type }}</h2>
+      <h2>{{ secondary_selected.time }} - {{ secondary_selected.end_time }}</h2>
+    </div>
+
     <TheTable
       :data="tableData"
       :tableHeaders="headers"
@@ -57,17 +62,17 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import TheWheel from "../../global-components/TheWheel.vue";
 import TheTable from "../../global-components/TheTable.vue";
 
-// ========== STATE ==========
+const isMobile = ref(false);
+
 const searchQuery = ref("");
-const option_selected = ref("daily");
-const secondary_selected = ref("");
+const option_selected = ref("");
+const secondary_selected = ref({});
 const showWheel = ref(false);
 const loading = ref(false);
 const tableData = ref([]);
 const winner = ref(null);
 
 const actual_activities = ref([]);
-const selected_activity = ref("");
 
 const options = ref([
   { text: "Sorteio Diário", value: "daily" },
@@ -75,16 +80,6 @@ const options = ref([
   { text: "Prémio CV", value: "cv" },
   { text: "Prémio Atividades", value: "activities" },
 ]);
-
-const PRIZE_CONFIG = {
-  daily:              { prize_type: "student_daily",        prize_id: 1 },
-  weekly_individual:  { prize_type: "student_weekly",       prize_id: 2 },
-  weekly_squads:      { prize_type: "squad_weekly",         prize_id: 3 },
-  cv:                 { prize_type: "cv",                   prize_id: 4 },
-  activity_15_15:     { prize_type: "activity_15_15",       prize_id: 5 },
-  activity_inside:    { prize_type: "activity_inside_talks",prize_id: 6 },
-  activity_workshops: { prize_type: "activity_workshops",   prize_id: 7 },
-};
 
 const secondaryOptions = computed(() => {
   if (option_selected.value === "weekly") {
@@ -99,10 +94,12 @@ const secondaryOptions = computed(() => {
   return [];
 });
 
-// ========== FETCH FUNCTIONS ==========
+
 const onMainChange = () => {
+  secondary_selected.value = {};
+  tableData.value = [];
   if (option_selected.value === "weekly") {
-    secondary_selected.value = "individual";
+    secondary_selected.value.id = "individual";
   } else if (option_selected.value === "activities") {
     fetchActualActivities();
   } 
@@ -116,9 +113,9 @@ const fetchAllByOption = async () => {
   }
 
   if (option_selected.value === "weekly") {
-    if (secondary_selected.value === "individual") {
+    if (secondary_selected.value.id === "individual") {
       await fetchAllFromStudentsTotalPoints();
-    } else if (secondary_selected.value === "squads") {
+    } else if (secondary_selected.value.id === "squads") {
       await fetchAllFromSquadsTotalPoints(); 
     }
     return;
@@ -130,8 +127,7 @@ const fetchAllByOption = async () => {
   }
 
   if (option_selected.value === "activities") {
-    if (secondary_selected.value !== ""){
-      console.log("Selecteddddddd", secondary_selected.value)
+    if (secondary_selected.value.id !== ""){
       await fetchAllByActivity();
     }
     return;
@@ -152,14 +148,12 @@ const fetchActualActivities = async () => {
       }
     );
   actual_activities.value = response.data.activities;
-  console.log("Actual activities", actual_activities.value);
 }
 
 const fetchAllByActivity = async () => {
-    console.log("Selected", secondary_selected.value);
     const response = await axios.post(
       `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/get_activity_participants`, 
-      {activity_id: secondary_selected.value},
+      {activity_id: secondary_selected.value.id},
       {
         auth: {
           username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
@@ -283,239 +277,21 @@ const fetchAllFromApprovedCV = async () => {
   }
 };
 
-const fetchAllFromActivity15_15 = async () => {
-  try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/get_students_from_activity_15_15`,
-      {
-        auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
-        },
-      }
-    );
 
-    const students = response.data.students || [];
-    const n = students.length || 1;
-    const chance = (100 / n).toFixed(2) + " %";
-
-    tableData.value = students.map((s) => ({
-      ...s,
-      win_chance: chance,
-    }));
-  } catch (error) {
-    console.error("Error fetching 15/15 students:", error);
-    alert("Failed to fetch students from activity 15/15.");
-  }
-};
-
-const fetchAllFromActivityInsideTalks = async () => {
-  try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/get_students_from_activity_inside_talks`,
-      {
-        auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
-        },
-      }
-    );
-
-    const students = response.data.students || [];
-    const n = students.length || 1;
-    const chance = (100 / n).toFixed(2) + " %";
-
-    tableData.value = students.map((s) => ({
-      ...s,
-      win_chance: chance,
-    }));
-  } catch (error) {
-    console.error("Error fetching Inside Talks students:", error);
-    alert("Failed to fetch students from Inside Talks.");
-  }
-};
-
-const fetchAllFromActivityWorkshops = async () => {
-  try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/get_students_from_activity_workshops`,
-      {
-        auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
-        },
-      }
-    );
-
-    const students = response.data.students || [];
-    const n = students.length || 1;
-    const chance = (100 / n).toFixed(2) + " %";
-
-    tableData.value = students.map((s) => ({
-      ...s,
-      win_chance: chance,
-    }));
-  } catch (error) {
-    console.error("Error fetching Workshops students:", error);
-    alert("Failed to fetch students from Workshops.");
-  }
-};
-
-const getCurrentPrizeKey = () => {
-  if (option_selected.value === "daily") return "daily";
-
-  if (option_selected.value === "weekly") {
-    if (secondary_selected.value === "individual") return "weekly_individual";
-    if (secondary_selected.value === "squads") return "weekly_squads";
-  }
-
-  if (option_selected.value === "cv") return "cv";
-
-  if (option_selected.value === "activities") {
-    if (secondary_selected.value === "15/15") return "activity_15_15";
-    if (secondary_selected.value === "inside_talks") return "activity_inside";
-    if (secondary_selected.value === "workshops") return "activity_workshops";
-  }
-
-  return null;
-};
-
-const saveStudentWinner = async (winnerData) => {
-  const key = getCurrentPrizeKey();
-  if (!key || !PRIZE_CONFIG[key]) {
-    alert("Invalid prize configuration");
-    return;
-  }
-
-  const { prize_type, prize_id } = PRIZE_CONFIG[key];
-
-  const createdAt = new Date().toISOString().slice(0, 19).replace("T", " ");
-  const payload = {
-    winners: [
-      {
-        created_at: createdAt,
-        prize_id,
-        prize_type,
-        winner_username: winnerData.username,
-      },
-    ],
-  };
-
-  try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/save_winner`,
-      payload,
-      {
-        auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
-        },
-      }
-    );
-
-    if (response.data && response.data.error) {
-      if (response.data.error === "") {
-        alert("Winner saved!");
-      } else {
-        alert(response.data.error);
-      }
-    } else {
-      alert("Winner saved!");
-    }
-  } catch (error) {
-    console.error("Error saving winner:", error);
-    alert("Failed to save winner!");
-  }
-};
-
-
-const saveSquadWinners = async (winnerData) => {
-  const key = getCurrentPrizeKey();
-  if (!key || !PRIZE_CONFIG[key]) {
-    alert("Invalid prize configuration");
-    return;
-  }
-
-  const { prize_type, prize_id } = PRIZE_CONFIG[key];
-  const createdAt = new Date().toISOString().slice(0, 19).replace("T", " ");
-
-  try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/get_students_from_squad`,
-      {
-        params: { squad_external_id: winnerData.external_id },
-        auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
-        },
-      }
-    );
-
-    const studentsInSquad = response.data.students || [];
-
-    const winners = studentsInSquad.map((student) => ({
-      created_at: createdAt,
-      prize_id,
-      prize_type,
-      winner_username: student.username,
-    }));
-
-    const payload = { winners };
-
-    const saveResponse = await axios.post(
-      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/save_winner`,
-      payload,
-      {
-        auth: {
-          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
-        },
-      }
-    );
-
-    if (saveResponse.data && saveResponse.data.error) {
-      if (saveResponse.data.error === "") {
-        alert("Squad prize winners saved!");
-      } else {
-        alert(saveResponse.data.error);
-      }
-    } else {
-      alert("Squad prize winners saved!");
-    }
-  } catch (error) {
-    console.error("Error saving squad prize winners:", error);
-    alert("Failed to save squad prize winners!");
-  }
-};
-
-
-const saveWinnerToBackend = async (winnerData) => {
-  if (option_selected.value === "weekly" && secondary_selected.value === "squads") {
-    await saveSquadWinners(winnerData);
-  } else {
-    await saveStudentWinner(winnerData);
-  }
-};
-
-
-
-// ========== HEADERS ==========
-const isMobile = ref(false);
 const headers = computed(() => {
-  // Daily: sempre pontos + username (students)
   if (option_selected.value === "daily") {
     return isMobile.value
       ? { name: "Name", daily_points: "Daily Points", win_chance: "Win Chance" }
       : { name: "Name", username: "Username", daily_points: "Daily Points", win_chance: "Win Chance" };
   }
 
-  if (option_selected.value === "weekly" && secondary_selected.value === "individual") {
+  if (option_selected.value === "weekly" && secondary_selected.value.id === "individual") {
     return isMobile.value
       ? { name: "Name", total_points: "Total Points", win_chance: "Win Chance" }
       : { name: "Name", username: "Username", total_points: "Total Points", win_chance: "Win Chance" };
   }
 
-  if (option_selected.value === "weekly" && secondary_selected.value === "squads") {
+  if (option_selected.value === "weekly" && secondary_selected.value.id === "squads") {
     return {name: "Name", total_points: "Total Points", win_chance: "Win Chance"};
   }
 
@@ -532,13 +308,10 @@ const headers = computed(() => {
 });
 
 
-
-
 const updateIsMobile = () => {
   isMobile.value = window.matchMedia("(max-width: 768px)").matches;
 };
 
-// ========== WHEEL ==========
 function handleWinner(result) {
   console.log("Vencedor:", winner);
   winner.value = result;
@@ -546,9 +319,8 @@ function handleWinner(result) {
   //FZR depois - enviar o vencedor para o backend
 }
 
-// ========== LIFECYCLE ==========
 onMounted(() => {
-  fetchAllByOption();
+  // fetchAllByOption();
   updateIsMobile();
   window.addEventListener("resize", updateIsMobile);
 });

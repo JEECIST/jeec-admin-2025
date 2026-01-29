@@ -120,7 +120,7 @@
         fileSelected.value = event.target.files[0].name;
         fileToUpload.value = event.target.files[0];
         logoImage.value = URL.createObjectURL(event.target.files[0]);
-        console.log(fileSelected.value)
+
     }
   
   
@@ -193,7 +193,6 @@ function updatePrize(id, name, desc, cost, initialAmount, currentAmount, link, s
         }
     )
     .then(response => {
-        console.log(response);
         if (response.data == "Success") {
             changeRowInfo(
                 prizeData.value.id,
@@ -222,10 +221,8 @@ watch(
 async (newVal) => {
  if (newVal) {
    rowData.value = props.selectedRow || {};
-   console.log("Row Data Updated");
    await getPrizeByID(); // PARA TER ACESSO AOS VALORES DO PRIZE EDIT ASSIM QUE FOR POPULATED
    
-   console.log(prizeToEdit.value);
    
    prizeData.value = {
      id: prizeToEdit.value.id,

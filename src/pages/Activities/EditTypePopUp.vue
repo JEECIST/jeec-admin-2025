@@ -171,7 +171,7 @@ function editType(){
         exclusive_videos: exclusiveVideos.value,
     };
 
-    console.log(typeData)
+
 
     axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + `/activities/types/edit_type`, typeData, {
         auth: {
@@ -180,7 +180,6 @@ function editType(){
         },
     })
     .then(() => {
-        console.log("Atividade editada com sucesso!");
         emit("typeEdited", typeData)
         emit("close");
     })

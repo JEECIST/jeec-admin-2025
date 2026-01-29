@@ -58,7 +58,7 @@ function addLoc() {
         },
     })
         .then(() => {
-            console.log("Location adicionada com sucesso!");
+
             emit("locAdded")
             emit("close");
         })

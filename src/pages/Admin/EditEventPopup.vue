@@ -80,7 +80,6 @@ watchEffect(() => {
 
 function editEvent() {
     if (name.value && start_date.value && end_date.value && cv_submission_start.value && cv_submission_end.value && cv_access_start.value && cv_access_end.value && end_game.value) {
-        console.log(start_date)
         axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/update-event-vue', {
             external_id: external_id.value,
             name: name.value,

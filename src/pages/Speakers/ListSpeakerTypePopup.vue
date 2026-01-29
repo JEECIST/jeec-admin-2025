@@ -35,7 +35,6 @@ async function fetchData() {
       .map(speaker => {
         return speaker;
       });
-    console.log(data.value);
   }).catch((error) => {
     console.log(error);
   });

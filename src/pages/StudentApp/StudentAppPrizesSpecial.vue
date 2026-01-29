@@ -71,7 +71,7 @@ function getPrizesSpecial() {
         }
     }).then(response => {
         rewardsList.value = response.data; 
-        console.log(rewardsList);
+
         // Group prizes by type
         const groupedPrizes = {
             Daily: [],
@@ -137,7 +137,7 @@ function getPrizesSpecial() {
           }
         }
 
-        console.log("Updated Prizes Data:", dailyPrizes.value);
+
     }).catch(error => {
         console.error("Error fetching prizes:", error);
     });
@@ -208,7 +208,6 @@ function voadora(){
 }
 
 const handleDropdownSelect = (type, index, option) => {
-  console.log(`Selected ${option.name} for ${type} at index ${index}`);
   
   // Get the date value based on type and index
   let date = "";

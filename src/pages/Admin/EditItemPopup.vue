@@ -74,7 +74,6 @@ function editItem(){
         },
     })
     .then(() => {
-        console.log("Item edited successfully!");
         emit("itemEdited", itemData)
         emit("close");
     })

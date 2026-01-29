@@ -100,7 +100,6 @@ function deleteLoc(name)  {
         },
     })
     .then(() => {
-        console.log("Location removida com sucesso!");
         fetchData();
 
         if (selectedLoc.value && selectedLoc.value.name === name) {

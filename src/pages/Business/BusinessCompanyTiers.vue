@@ -319,7 +319,6 @@ function selectCallback(row) {
         selectedRow.value = null;
     } else {
         selectedRow.value = row;
-        console.log(selectedRow.value)
     }
 }
 

@@ -113,14 +113,14 @@ const fetchData = () => {
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }}).then((response)=>{
       events.value = response.data.events
-      console.log("Events",events.value)
+
 
       tiers.value = response.data.tiers
-      console.log("Tiers",tiers.value)
+
 
       originalTableData.value = response.data.sponsors
       tableData.value = response.data.sponsors
-      console.log("Sponsors",tableData.value)
+
 
       if (response.data.error == 'No sponsors found'){
         noSponsors.value = true
@@ -149,12 +149,12 @@ function filterByEvent() {
   } else {
     unselectRow();
     tableData.value =  originalTableData.value.filter(sponsor => sponsor.event_name === selectedEvent);
-    console.log("Filtered Sponsors", tableData.value);
+
   }
 }
 
 function fetchSponsorDetails(){
-  console.log('Fetching sponsor details')
+
   const sponsorName = selectedRow.value.name;
   const eventName = selectedRow.value.event_name;
 
@@ -168,9 +168,9 @@ function fetchSponsorDetails(){
     }
   }).then((response) => {
     if (!response.data.error) {
-      console.log('Sponsor details fetched', response.data);
+
       selectedRow.value.logo = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('/admin', '') + response.data.image; // Update the logo in the selectedRow
-      console.log(selectedRow.value.logo);
+
     } else {
       console.log('Error fetching sponsor details', response.data.error);
     }
@@ -201,7 +201,7 @@ function handleRowSelect(row) {
 }
 
 function handleNosponsors(isEmpty){
-  console.log('No sponsors found', isEmpty);
+
   noSponsors.value = isEmpty;
 }
 
@@ -221,7 +221,7 @@ function deleteRow(row) {
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }
     }).then((response) => {
-      console.log('Sponsor deleted', response.data);
+
       unselectRow();
       fetchData();
       filterByEvent();
@@ -229,7 +229,6 @@ function deleteRow(row) {
       console.log(error);
     });
   }
-  console.log('Delete button clicked for row:', row);
 }
 
 

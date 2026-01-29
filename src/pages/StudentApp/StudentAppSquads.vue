@@ -179,10 +179,10 @@ const fetchSquads = () => {
     .then((response) => {
 
       if (response.data && Array.isArray(response.data.squads)) {
-        console.log("[DEBUG] Squads array received:", response.data.squads);
+
 
         squads.value = response.data.squads.map(squad => {
-          console.log(`[DEBUG] Processing squad: ${squad.name}`, squad);
+
           return {
             id: squad.id,
             name: squad.name,
@@ -197,7 +197,7 @@ const fetchSquads = () => {
           };
         });
 
-        console.log("[DEBUG] Squads successfully stored:", squads.value);
+
       } else {
         console.error("[DEBUG] Unexpected API response structure:", response.data);
       }
@@ -244,7 +244,7 @@ const closeSquadDetail = () => {
 
 // Open the "Delete Squad and Ban Students?" confirmation popup
 const confirmDeleteAndBanSquad = (squad) => {
-  console.log("Confirming deletion and banning for squad:", squad);
+
   if (!squad) {
     console.error("No squad provided to delete and ban.");
     return;
@@ -271,7 +271,7 @@ const deleteAndBanSquad = async () => {
     );
 
     if (response.status === 204) {
-      console.log(`Squad with ID ${squadToDeleteAndBan.value.id} deleted and students banned successfully.`);
+
 
       // Remove the squad from the local state
       squads.value = squads.value.filter((s) => s.id !== squadToDeleteAndBan.value.id);
@@ -289,7 +289,7 @@ const deleteAndBanSquad = async () => {
 
 
 const confirmDeleteSquad = (squad) => {
-  console.log("Confirming deletion for squad:", squad);
+
   if (!squad) {
     console.error("No squad provided to delete.");
     return;
@@ -315,7 +315,7 @@ const deleteSquad = async () => {
     );
 
     if (response.status === 204) {
-      console.log(`Squad with ID ${squadToDelete.value.id} deleted successfully.`);
+
 
       // Remove the squad from the local state
       squads.value = squads.value.filter((s) => s.id !== squadToDelete.value.id);

@@ -63,7 +63,6 @@ function claim_prize(prize) {
 }
 
 function search_student(student){
-  console.log(student)
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/student_rewards', 
     {search: student},
     {auth: {

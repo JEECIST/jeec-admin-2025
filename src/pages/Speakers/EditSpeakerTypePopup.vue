@@ -21,7 +21,6 @@ watch( () => props.stype, (newSpeakerType) => {
 
 /* update - go to updateSpeakerType function on 'SpeakerTypes' page */
 function saveChanges() {
-  console.log("saving changes");
   emit("update-type", editedSpeakerType.value);
   emit("modal-close");
 }
