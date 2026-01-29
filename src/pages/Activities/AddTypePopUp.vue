@@ -15,6 +15,12 @@
                     <div class="col">
                         <label for="name">Name</label>
                         <input id="name" type="text" v-model="name" />
+                        <label for="event">Event</label>
+                        <select id="Event" name="options" v-model="selectedEvent">
+                            <option v-for="event in event_list" :key="event.id" :value="event.id">
+                                {{ event.name }}
+                            </option>
+                        </select>
                         <label for="points">Points</label>
                         <input id="points" type="text" v-model="points" />
                     </div>
@@ -109,6 +115,7 @@ const emit = defineEmits(['close', 'typeAdded'])
 
 // Inputs do formulário
 const name = ref("");
+const selectedEvent = ref();
 const priority = ref();
 const points = ref();
 const selectedLoc = ref("");
@@ -119,10 +126,11 @@ const exclusivePosts = ref();
 
 
 const locArray = ref([]);
+const event_list = ref([]);
 
 const fetchData = () => {
     axios
-        .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/types/locations', {
+        .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/types/add-infos', {
             auth: {
                 username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
                 password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
@@ -133,7 +141,7 @@ const fetchData = () => {
             locArray.value = data.locations.map((location) => ({
                 name: location.name,
             }));
-            console.log(locArray.value)
+            event_list.value = data.event_list
         })
         .catch((error) => {
             console.error('Erro ao buscar os dados:', error);
@@ -151,6 +159,7 @@ function addType() {
     const typeData = {
         event_id: '',
         name: name.value,
+        event_id: selectedEvent.value,
         points: points.value,
         location: selectedLoc.value,
         priority: priority.value,
@@ -167,7 +176,6 @@ function addType() {
         },
     })
         .then(() => {
-            console.log("Atividade adicionada com sucesso!");
             emit("typeAdded")
             emit("close");
         })

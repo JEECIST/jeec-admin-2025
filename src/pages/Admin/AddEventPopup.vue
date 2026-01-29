@@ -1,5 +1,6 @@
 <script setup>
 import { defineProps, defineEmits, ref } from "vue";
+import axios from "axios";
 
 const props = defineProps({
     isOpen: Boolean,
@@ -16,6 +17,51 @@ function isMobile() {
     }
 }
 
+
+const name = ref('');
+const start_date = ref('');
+const end_date = ref('');
+const email = ref('');
+const location = ref('');
+const cv_submission_start = ref('');
+const cv_submission_end = ref('');
+const cv_access_start = ref('');
+const cv_access_end = ref('');
+const end_game = ref('');
+const cvs_purged = ref(null);
+const default_event = ref(null);
+const facebook = ref('');
+
+
+function AddEvent() {
+    if (name.value && start_date.value && end_date.value && cv_submission_start.value && cv_submission_end.value && cv_access_start.value && cv_access_end.value && end_game.value) {
+        
+        console.log(start_date)
+        axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/new-event-vue', {
+            name: name.value,
+            start_date: start_date.value,
+            end_date: end_date.value,
+            email: email.value,
+            location: location.value,
+            cvs_submission_start: cv_submission_start.value,
+            cvs_submission_end: cv_submission_end.value,
+            cvs_access_start: cv_access_start.value,
+            cvs_access_end: cv_access_end.value,
+            end_game: end_game.value,
+            cvs_purged: cvs_purged.value,
+            default_event: default_event.value,
+            facebook: facebook.value },
+            {auth: {
+                username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+                password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+            }
+        }).then(response => {
+            console.log(response.data)
+        })
+        emit('modal-close')
+    }
+}
+
 </script>
 
 <template>
@@ -29,94 +75,101 @@ function isMobile() {
                             <div class="flex-1-row-1">
                                 <div class="labels" id="name">
                                     <label for="name">Name</label>
-                                    <input type="text" placeholder="" id="name">
+                                    <input v-model="name" type="text" placeholder="" id="name" required>
                                 </div>
                                 <div class="labels" id="startdate">
                                     <label for="startdate">Start date</label>
-                                    <select placeholder="Choose Event" id="startdate">
+                                    <!-- <select placeholder="Choose Event" id="startdate">
                                         <option value="null" disabled selected hidden></option>
                                         <option>event test</option>
-                                    </select>
+                                    </select> -->
+                                    <input v-model="start_date" type="date" required />
                                 </div>
                                 <div class="labels" id="enddate">
                                     <label for="enddate">End date</label>
-                                    <select placeholder="Choose Event" id="enddate">
+                                    <!-- <select placeholder="Choose Event" id="enddate">
                                         <option value="null" disabled selected hidden></option>
                                         <option>event test</option>
-                                    </select>
+                                    </select> -->
+                                    <input v-model="end_date" type="date" required />
                                 </div>
                             </div>
                             <div class="flex-1-row-2">
                                 <div class="labels" id="email">
                                     <label for="email">Email</label>
-                                    <input type="text" placeholder="" id="email">
+                                    <input v-model="email" type="text" placeholder="" id="email">
                                 </div>
                                 <div class="labels" id="location">
                                     <label for="location">Location</label>
-                                    <input type="text" placeholder="" id="location">
+                                    <input v-model="location" type="text" placeholder="" id="location">
                                 </div>
                             </div>
                             <div class="flex-1-row-3">
                                 <div class="labels" id="cvsubstart">
                                     <label for="cvsubstart">CV's submission start</label>
-                                    <select placeholder="Choose Event" id="cvsubstart">
+                                    <!-- <select placeholder="Choose Event" id="cvsubstart">
                                         <option value="null" disabled selected hidden></option>
                                         <option>event test</option>
-                                    </select>
+                                    </select> -->
+                                    <input v-model="cv_submission_start" type="date" required />
                                 </div>
                                 <div class="labels" id="cvsubend">
                                     <label for="cvsubend">CV's submission end</label>
-                                    <select placeholder="Choose Event" id="cvsubend">
+                                    <!-- <select placeholder="Choose Event" id="cvsubend">
                                         <option value="null" disabled selected hidden></option>
                                         <option>event test</option>
-                                    </select>
+                                    </select> -->
+                                    <input v-model="cv_submission_end" type="date" required />
                                 </div>
                                 <div class="labels" id="cvaccstart">
                                     <label for="cvaccstart">CV's access start</label>
-                                    <select placeholder="Choose Event" id="cvaccstart">
+                                    <!-- <select placeholder="Choose Event" id="cvaccstart">
                                         <option value="null" disabled selected hidden></option>
                                         <option>event test</option>
-                                    </select>
+                                    </select> -->
+                                    <input v-model="cv_access_start" type="date" required />
                                 </div>
                                 <div class="labels" id="cvaccend">
                                     <label for="cvaccend">CV's access end</label>
-                                    <select placeholder="Choose Event" id="cvaccend">
+                                    <!-- <select placeholder="Choose Event" id="cvaccend">
                                         <option value="null" disabled selected hidden></option>
                                         <option>event test</option>
-                                    </select>
+                                    </select> -->
+                                    <input v-model="cv_access_end" type="date" required />
                                 </div>
                                 <div class="labels" id="endgame">
                                     <label for="endgame">End game date</label>
-                                    <select placeholder="Choose Event" id="endgame">
+                                    <!-- <select placeholder="Choose Event" id="endgame">
                                         <option value="null" disabled selected hidden></option>
                                         <option>event test</option>
-                                    </select>
+                                    </select> -->
+                                    <input v-model="end_game" type="date" required />
                                 </div>
                             </div>
                             <div class="flex-1-row-4">
                                 <div class="check" id="purged">
                                     <label for="purged">CV's purged</label>
                                     <div class="radios">
-                                        <input type="radio" name="perfectpuppy" id="purged">Yes
-                                        <input type="radio" name="perfectpuppy" id="purged">No
+                                        <input v-model="cvs_purged" type="radio" name="puppy" :value="true"> Yes
+                                        <input v-model="cvs_purged" type="radio" name="puppy" :value="false"> No
                                     </div>
                                 </div>
                                 <div class="labels" id="facebook">
                                     <label for="facebook">Facebook event</label>
-                                    <input type="text" placeholder="" id="facebook">
+                                    <input v-model="facebook" type="text" placeholder="" id="facebook">
                                 </div>
                                 <div class="check" id="default">
                                     <label for="default">Default event</label>
                                     <div class="radios">
-                                        <input type="radio" name="bigbear" id="default">Yes
-                                        <input type="radio" name="bigbear" id="default">No
+                                        <input v-model="default_event" type="radio" name="bigbear" :value="true"> Yes
+                                        <input v-model="default_event" type="radio" name="bigbear" :value="false"> No
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="btns">
-                        <button class="add" @click.stop="emit('modal-close')">Add</button>
+                        <button class="add" @click="AddEvent">Add</button>
                         <button class="add" @click.stop="emit('modal-close')">Cancel</button>
                     </div>
                 </div>

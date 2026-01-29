@@ -10,7 +10,7 @@
               </label>
               <input v-model="message" placeholder="Search for a company" />
             </div>
-            <select class="select" v-model="selectedEvent" @change="filterByEvent">
+            <select class="select" v-model="selectedEvent" @change="change_event($event.target.value)">
               <option v-for="event in events" :key="event.id" :value="event.id">
                 {{ event.name }}
               </option>
@@ -22,7 +22,7 @@
           </div>
         </form>
         <TheTable
-          :data="filteredCompanies"
+          :data="companies"
           :tableHeaders="tablePref"
           :searchInput="message"
           
@@ -65,6 +65,8 @@
                 <div class="title">Username</div>
                 <div class="info">{{ selectedRow.username }}</div>
               </div>
+            </div>
+            <div class="line">
               <div class="box">
                 <div class="title">Password</div>
                 <div class="info">{{ selectedRow.password }}</div>
@@ -101,8 +103,8 @@
       <div class="btn-cancel" @click="closeModal()"> X </div>
       <button v-if="showAddCompanyModal" class="btn-primary" @click="addCompany()">Add</button>
       <button v-if="showEditCompanyModal" class="btn-primary" @click="editCompany()">Edit</button>
-
       <div class="modal-aux">
+        <!-- <div class="btn-cancel" @click="resetCallback()"> X </div> -->
         <div class="header">
           <h1 v-if="showAddCompanyModal">Add Company</h1>
           <h1 v-if="showEditCompanyModal">Edit Company</h1>
@@ -115,7 +117,7 @@
             </div>
             <div class="element" id="event">
               <label>Event</label>
-              <select class="sele" v-model="newCompany.event_id" required>
+              <select @change="get_colaborators_and_days" class="sele" v-model="newCompany.event_id" required>
                 <option v-for="event in events" :key="event.id" :value="event.id">
                   {{ event.name }}
                 </option>
@@ -155,6 +157,10 @@
                   <label>Username</label>
                   <input type="text" required v-model="newCompany.username">
                 </div>
+                <div v-if="showPasswordEdit()" class="element" id="username">
+                  <label>Password</label>
+                  <input type="text" required v-model="newCompany.password">
+                </div>
               </div>
               <div class="line">
                 <div class="element" id="cv">
@@ -179,7 +185,7 @@
                   </select>
                 </div>
               </div>
-              <div class="line">
+              <div v-if="jeec_responsible_flag" class="line">
                 <div class="element" id="jeec">
                   <label>JEEC Responsible</label>
                   <select class="sele" v-model="newCompany.responsible_id" required>
@@ -189,14 +195,22 @@
                   </select>
                 </div>
               </div>
-              <div class="line">
+              <div v-if="jeec_responsible_flag" class="line">
                 <div class="element" id="days">
                   <label>Job Fair Days</label>
-                  <select class="sele" v-model="newCompany.days">
-                    <option v-for="day in days">
-                      {{ day }}
-                    </option>
-                  </select>
+                  <multiselect
+                    v-model="newCompany.days"
+                    :options="days"
+                    :multiple="true"
+                    :close-on-select="false"
+                    :clear-on-select="false"
+                    :preserve-search="true"
+                    placeholder="Select days"
+                    search-placeholder="Search..."
+                    label="day"
+                    track-by="id"
+                    >
+                  </multiselect>
                 </div>
               </div>
             </div>
@@ -212,6 +226,12 @@
 import axios from 'axios';
 import TheTable from '../../global-components/TheTable.vue';
 import { ref, onMounted } from 'vue';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
+import CryptoJS from "crypto-js";
+import { useUserStore } from "../../stores/user.js";
+
+const userStore = useUserStore();
 
 let companies = ref([]);
 let filteredCompanies = ref([]);
@@ -219,20 +239,44 @@ const events = ref([]);
 const tiers = ref([]);
 const responsibles = ref([]);
 const default_event_id = ref();
-let selectedEvent = ref();
+let selectedEvent = ref(null);
 const selectedRow = ref(null);
 
 let noCompanies = ref();
 
-let logo_image = ref('')
+let logo_image = ref('');
 
 let fileSelected = ref(null);
 let fileToUpload = ref(null);
 
-const fetchCompanies = async () => {
-  console.log("Teste")
+const jeec_responsible_flag = ref(false)
+
+function showPasswordEdit(){
+  if(showEditCompanyModal.value && userStore.getRole == "admin"){
+    return true
+  }else{
+    return false
+  }
+}
+
+const oldPassword = ref('')
+
+function decryptPassword(encrypted_password){
+  oldPassword.value = CryptoJS.DES.decrypt(encrypted_password, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
+  if(userStore.getRole == "admin" || userStore.getRole == "team_leaders" || userStore.getRole == "coordination" || userStore.getRole == "business" || userStore.getRole == "webdev"){
+    return oldPassword.value;
+  }
+  else
+    return "****************"
+
+  
+}
+
+const fetchCompanies = () => {
   axios
-  .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{auth: {
+  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{
+    event_id: selectedEvent.value
+  },{auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
@@ -244,30 +288,44 @@ const fetchCompanies = async () => {
     companies.value = data.companies;
     events.value = data.events;
     tiers.value = data.tiers;
-    responsibles.value = data.responsibles;
 
     default_event_id.value = data.default_event_id;
 
-    console.log("Company:", companies.value);
-    console.log("Events:", events.value);
-    console.log("Tiers:", tiers.value);
-    console.log("Responsibles:", responsibles.value);
-    console.log("Default Event:", default_event_id.value);
-
     selectedEvent = default_event_id.value.id;
-
-    filterByEvent();
   })
   .catch((error)=>{
     console.log(error);
   })
 };
 
+function change_event(event) {
+  axios
+  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{
+    event_id: event
+  },{auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    }
+  })
+  .then((response)=>{
+
+    const data = response.data;
+
+    companies.value = data.companies;
+    events.value = data.events;
+    tiers.value = data.tiers;
+
+    console.log(companies.value)
+
+    default_event_id.value = data.default_event_id;
+  })
+  .catch((error)=>{
+    console.log(error);
+  })
+}
+
 function fetchCompanyImage() {
   const f = new FormData();
-
-  console.log("fetchCompaniesImage: ", selectedRow.value.external_id);
-
   f.append('external_id', selectedRow.value.external_id)
 
   axios
@@ -282,7 +340,6 @@ function fetchCompanyImage() {
       // Cria uma URL de objeto a partir do Blob e armazena em 'logo_image'
       fileToUpload.value = response.data;
       logo_image.value = URL.createObjectURL(response.data);
-      console.log("Logo_image: ", logo_image.value);
     } else {
       console.error('Imagem não encontrada');
     }
@@ -305,6 +362,7 @@ const newCompany = ref({
   email: '',
   website: '',
   username: '',
+  password: '',
   cv: 'No',
   tier_id: '',
   responsible_id: '',
@@ -314,23 +372,22 @@ const newCompany = ref({
   external_id: '',
 });
 
-const days = ["2025-08-15", "2025-08-16", "2025-08-17", "2025-08-18", "2025-08-19", "2025-08-20"];
+const days = ref([]);
 
 const tablePref = {
   id: "ID",
   name: "Name",
   tier: "Tier",
-  //username: "Username",
   responsible: "JEEC Responsible"
 };
 
 function selectCallback(row) {
   if (selectedRow.value == row) {
-    console.log("reset");
     resetCallback();
   } else {
-    selectedRow.value = row;
+    selectedRow.value = {...row};
     fetchCompanyImage();
+    selectedRow.value.password = decryptPassword(row.password);
   }
 }
 
@@ -341,6 +398,8 @@ function resetCallback() {
 }
 
 function addCompany() {
+  let password = Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2)
+  let encryptedPassword = CryptoJS.DES.encrypt(password, import.meta.env.VITE_APP_API_KEY).toString();
   
   const new_company = new FormData();
 
@@ -352,7 +411,14 @@ function addCompany() {
   new_company.append('cv', newCompany.value.cv)
   new_company.append('tier_id', newCompany.value.tier_id)
   new_company.append('responsible_id', newCompany.value.responsible_id)
-  new_company.append('days', newCompany.value.days)
+  new_company.append('password', encryptedPassword)
+
+  if (Array.isArray(newCompany.value.days) && newCompany.value.days.length > 0) {
+    // payload.speaker_external_ids = newActivity.value.speakers.map((speaker) => speaker.external_id);
+    new_company.append('days', newCompany.value.days.map((day) => day.day))
+  }
+
+  // new_company.append('days', newCompany.value.days)
   if (fileToUpload.value) new_company.append('image', fileToUpload.value)
 
   axios
@@ -365,10 +431,12 @@ function addCompany() {
           this.error = response.data
       })
 
-  setTimeout(fetchCompanies, 100);
+  setTimeout(fetchCompanies, 10);
 
   closeModal();
 }
+
+
 
 function openEdit() {
   newCompany.value.name = selectedRow.value.name;
@@ -376,6 +444,7 @@ function openEdit() {
   newCompany.value.email = selectedRow.value.email;
   newCompany.value.website = selectedRow.value.website;
   newCompany.value.username = selectedRow.value.username;
+  newCompany.value.password = selectedRow.value.password;
   newCompany.value.cv = selectedRow.value.cv;
   newCompany.value.tier_id = selectedRow.value.tier_id;
   newCompany.value.responsible_id = selectedRow.value.responsible_id;
@@ -384,6 +453,9 @@ function openEdit() {
   newCompany.value.external_id = selectedRow.value.external_id;
   newCompany.value.changeimg = 'No';
   showEditCompanyModal.value = true;
+  jeec_responsible_flag.value = true;
+
+  get_colaborators_and_days();
 }
 
 function editCompany() {
@@ -397,12 +469,25 @@ function editCompany() {
   update_company.append('cv', newCompany.value.cv)
   update_company.append('tier_id', newCompany.value.tier_id)
   update_company.append('responsible_id', newCompany.value.responsible_id)
-  update_company.append('days', newCompany.value.days)
   update_company.append('external_id', newCompany.value.external_id)
   update_company.append('image', fileToUpload.value)
   update_company.append('changeimg', newCompany.value.changeimg)
 
-  console.log("Edit: ", newCompany.value.changeimg);
+  if (Array.isArray(newCompany.value.days) && newCompany.value.days.length > 0) {
+    // payload.speaker_external_ids = newActivity.value.speakers.map((speaker) => speaker.external_id);
+    update_company.append('days', newCompany.value.days.map((day) => day.day))
+  }
+
+  let encryptedPassword;
+
+  if(userStore.getRole == "admin"){
+    encryptedPassword = CryptoJS.DES.encrypt(newCompany.value.password, import.meta.env.VITE_APP_API_KEY).toString();
+    update_company.append('password', encryptedPassword)
+  }else{
+    encryptedPassword = CryptoJS.DES.encrypt(oldPassword.value, import.meta.env.VITE_APP_API_KEY).toString();
+    update_company.append('password', encryptedPassword)
+  }
+
 
   axios
   .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/update',update_company,{auth: {
@@ -441,23 +526,23 @@ function removeCompany(row) {
 
 };
 
+function onLogoSelected(event){
+  fileSelected.value = event.target.files[0].name;
+  fileToUpload.value = event.target.files[0];
+  logo_image.value = URL.createObjectURL(event.target.files[0]);
+  newCompany.value.changeimg = 'Yes';
+}
+
 function filterByEvent() {
   filteredCompanies.value = companies.value.filter(company => company.event_id == selectedEvent);
+  console.log(filteredCompanies)
+  console.log(companies)
 
   if (filteredCompanies.value.length === 0) {
     noCompanies = true; // Se o array estiver vazio, a flag é true
   } else {
     noCompanies = false; // Caso contrário, a flag é false
   }
-  console.log(filteredCompanies.value.length);
-}
-
-function onLogoSelected(event){
-  fileSelected.value = event.target.files[0].name;
-  fileToUpload.value = event.target.files[0];
-  logo_image.value = URL.createObjectURL(event.target.files[0]);
-  newCompany.value.changeimg = 'Yes';
-  console.log(fileSelected.value);
 }
 
 function irParaSite(site) {
@@ -468,9 +553,60 @@ function irParaBills() {
   
 }
 
+
+function get_colaborators_and_days() {
+  let event_id = newCompany.value.event_id;
+  axios
+  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/colaborators', {event_id: event_id},{auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+  })
+  .then(response => {
+    let colaborators = response.data.colaborators
+      if(colaborators.length > 0){
+        responsibles.value = colaborators;
+        // jeec_responsible_flag.value = true;
+      }
+  })
+
+  axios
+  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/event_days', {event_id: event_id},{auth: {
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+  })
+  .then(response => {
+    let event_days = response.data.days
+      if(event_days.length > 0){
+          days.value = event_days.map((day) => ({
+          day: day.day,
+          id: day.id,
+        }));
+        // days.value = event_days;
+        jeec_responsible_flag.value = true;
+      }
+  })
+}
+
 function closeModal() {
   showAddCompanyModal.value = false;
   showEditCompanyModal.value = false;
+  newCompany.value = {
+    name: '',
+    event_id: '',
+    email: '',
+    website: '',
+    username: '',
+    cv: 'No',
+    tier_id: '',
+    responsible_id: '',
+    days: '',
+    image: '',
+    changeimg: 'No',
+  };
+
+  resetCallback();
   newCompany.value = {
     name: '',
     event_id: '',
@@ -493,6 +629,48 @@ function closeModal() {
 <style scoped>
 
 @import './companies.css';
+
+#name {
+  width: 70%;
+  margin-right: 20px;
+}
+
+#event {
+  width: 30%;
+  margin-left: 20px;
+}
+
+#email {
+  width: 50%;
+  margin-right: 20px;
+}
+
+#website {
+  width: 50%;
+  margin-left: 20px;
+}
+
+#username {
+  width: 100%;
+}
+
+#cv {
+  width: 50%;
+  margin-right: 20px;
+}
+
+#tier {
+  width: 100%;
+  margin-left: 20px;
+}
+
+#jeec {
+  width: 100%;
+}
+
+#days {
+  width: 60%;
+}
 
 #name {
   width: 70%;

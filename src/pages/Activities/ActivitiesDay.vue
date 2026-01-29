@@ -201,6 +201,14 @@
             >
             </multiselect>
         </div>
+        <div class="form-group">
+            <label for="Registrations">Registrations Limit:</label>
+            <input type="number" id="registration" name="registration" v-model="newActivity.registrations_limit">
+        </div>
+        <div class="form-group">
+            <label for="Registrations">Company accepted Registrations:</label>
+            <input type="number" id="company-registration" name="company-registration" v-model="newActivity.company_registrations_limit">
+        </div>
 
         <div class="form-actions">
             <button type="button" class="pop-up-add-btn" @click="editRow">Edit</button>
@@ -406,7 +414,9 @@ function openEditPopUp() {
     companies: [],
     speakers: [],
     volunteers: [],
-    prize: ''
+    prize: '',
+    registrations_limit: '',
+    company_registrations_limit: ''
   };
 
   showModal.value = true;
@@ -467,7 +477,9 @@ const editRow = async () => {
     time: startTimeFormatted,
     end_time: endTimeFormatted,
     qr_code: endTimeQRFormatted,
-    event_day_external_id: event_day_external_id
+    event_day_external_id: event_day_external_id,
+    registrations_limit: newActivity.value.registrations_limit,
+    company_registrations: newActivity.value.company_registrations_limit 
   };
 
   // Adiciona os campos opcionais apenas se estiverem preenchidos
@@ -605,7 +617,9 @@ const newActivity = ref({
   companies: [],
   speakers: [], 
   volunteers: '',
-  prize: '' });
+  prize: '',
+  registrations_limit: '',
+  company_registrations_limit: ''  });
 
 const isMobile = ref(false);
 

@@ -2,18 +2,27 @@
 import TheTable from '../../global-components/TheTable.vue';
 import { ref } from 'vue';
 import AddEventPopup from './AddEventPopup.vue';
+import EditEventPopup from './EditEventPopup.vue';
 import { onMounted } from 'vue';
 import axios from 'axios';
 
 const popupShow = ref(false);
 
 const isModalOpened = ref(false);
+const isOtherModalOpened = ref(false);
 
 const openModal = () => {
   isModalOpened.value = true;
 };
+
+const openOtherModal = () => {
+  isOtherModalOpened.value = true;
+};
+
 const closeModal = () => {
   isModalOpened.value = false;
+  isOtherModalOpened.value = false;
+  getEvents()
 };
 
 function isMobile() {
@@ -150,20 +159,38 @@ const selectedRow = ref([]);
 
 function selectCallback(row) {
   selectedRow.value = row;
-  console.log(selectedRow);
   popupShow.value = true;
 }
 
-onMounted(() => {
+function deleteEvent() {
+
+  if (confirm('Are you sure you want to delete this event?')) {
+    axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/delete-event-vue', {
+      external_id: selectedRow.value.external_id},
+      {auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    }).then(response => {
+      getEvents()
+    })
+  }
+}
+
+function getEvents() {
   axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/events/vue', {
     auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
     }
   }).then(response => {
-    console.log(response.data)
     events.value = response.data.events
+    console.log(events)
   })
+}
+
+onMounted(() => {
+  getEvents();
 });
 
 
@@ -184,6 +211,9 @@ onMounted(() => {
           <Transition name="fade" appear>
             <AddEventPopup :isOpen="isModalOpened" @modal-close="closeModal"></AddEventPopup>
           </Transition>
+          <Transition name="fade" appear>
+            <EditEventPopup :isOpen="isOtherModalOpened" :selectedRow="selectedRow" @modal-close="closeModal"></EditEventPopup>
+          </Transition>
         </div>
         <TheTable :data="events" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
         </TheTable>
@@ -197,13 +227,13 @@ onMounted(() => {
             <button class="btn" @click="openOtherModal">
               <img src="../../assets/pencil.svg">
             </button>
-            <button class="btn">
+            <button @click="deleteEvent" class="btn">
               <img src="../../assets/trash.svg">
             </button>
           </div>
           <div id="info">
             <div class="row">
-              
+
               <!-- <div class="col item2">
             <p># Speakers</p>
             <p class="text2">9</p>

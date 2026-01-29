@@ -5,17 +5,20 @@ import Dashboard from "../global-components/TheDashboard.vue";
 
 const routes = [
   {
-    path: "/login",
+    path: "/",
     name: "login",
+    meta: {
+      title: "JEEC Admin",
+    },
     component: () => import("../pages/Login.vue"),
   },
   {
     path: "/dashboard",
     name: "dashboard",
     component: Dashboard,
-    meta: { 
+    meta: {
       title: "Dashboard",
-      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts"],
+      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts", "studentapp-connections"],
     },
   },
   {
@@ -39,7 +42,7 @@ const routes = [
   {
     path: "/activities/types/locations",
     name: "activity-types-locations",
-    meta: { title:"Locations" },
+    meta: { title: "Locations" },
     component: () => import("../pages/Activities/ActivitiesTypesLocations.vue"),
   },
   {
@@ -48,8 +51,14 @@ const routes = [
     component: () => import("../global-components/TheDashboard.vue"),
     meta: {
       title: "Admin",
-      children: ["admin-accounting", "admin-events", "admin-teamusers", "admin-chances"],
+      children: ["admin-accounting", "admin-events", "admin-teamusers", "admin-inventory", "admin-bills", "admin-chances"],
     },
+  },
+  {
+    path: "/admin/inventory",
+    name: "admin-inventory",
+    meta: { title: "Inventory" },
+    component: () => import("../pages/Admin/AdminInventory.vue"),
   },
   {
     path: "/admin/accounting",
@@ -76,6 +85,12 @@ const routes = [
     component: () => import("../pages/Admin/AdminTeamUsersRoles.vue"),
   },
   {
+    path: "/admin/bills",
+    name: "admin-bills",
+    meta: { title: "Bills Management" },
+    component: () => import("../pages/Admin/AdminBills.vue"),
+  },
+  {
   path: "/admin/chances",
   name: "admin-chances",
   meta: { title: "Chances" },
@@ -84,7 +99,10 @@ const routes = [
   {
     path: "/bills",
     name: "bills",
-    meta: { title: "Bills", children: false },
+    meta: {
+      title: "Bills",
+      children: false
+    },
     component: () => import("../pages/Bills/Bills.vue")
   },
   {
@@ -105,7 +123,7 @@ const routes = [
   {
     path: "/business/companies",
     name: "business-companies",
-    meta: {title: "Companies" },
+    meta: { title: "Companies" },
     component: () => import("../pages/Business/BusinessCompanies.vue"),
   },
   {
@@ -124,8 +142,23 @@ const routes = [
   {
     path: "/qr-codes",
     name: "qrcodes",
-    meta: { title: "QR Codes", children: false },
+    component: () => import("../global-components/TheDashboard.vue"),
+    meta: {
+      title: "QR Codes",
+      children: ["qrcodes-eletrolink", "qrcodes-scan"],
+    },
+  },
+  {
+    path: "/qr-codes/scan",
+    name: "qrcodes-scan",
+    meta: { title: "QR Codes Scan" },
     component: () => import("../pages/QRCodes/QRCodes.vue"),
+  },
+  {
+    path: "/qr-codes/eletrolink",
+    name: "qrcodes-eletrolink",
+    meta: { title: "Eletrolink Registrations" },
+    component: () => import("../pages/QRCodes/Eletrolink.vue"),
   },
   {
     path: "/speakers",
@@ -158,17 +191,11 @@ const routes = [
     component: () => import("../pages/Sponsors/SponsorsTiers.vue"),
   },
   {
-    path: "/sponsors/bills/:externalid",
-    name: "sponsors-bills",
-    meta: { title: "Sponsor Bills" },
-    component: () => import("../pages/Sponsors/SponsorBills.vue")
-  },
-  {
     path: "/student-app",
     name: "studentapp",
     component: Dashboard,
     meta: {
-      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students"]
+      title: "Student App", children: ["studentapp-prizes", "studentapp-squads", "studentapp-students", "studentapp-cvs" , "studentapp-notifications", "studentapp-wordle", "studentapp-testPush"]
     },
   },
   {
@@ -190,6 +217,12 @@ const routes = [
     component: () => import("../pages/StudentApp/StudentAppSquads.vue"),
   },
   {
+    path: "/student-app/connections",
+    name: "studentapp-connections",
+    meta: { title: "Connections" },
+    component: () => import("../pages/StudentApp/ConnectionsGame.vue"),
+  },
+  {
     path: "/student-app/prizes",
     name: "studentapp-prizes",
     meta: { title: "Prizes" },
@@ -205,7 +238,31 @@ const routes = [
     path: "/student-app/prizes/shop",
     name: "studentapp-prizes-shop",
     meta: { title: "Shop" },
-    component: () => import("../pages/StudentApp/StudentAppPrizesShop.vue"),
+    component: () => import("../pages/StudentApp/StudentAppPrizeShop.vue"),
+  },
+  {
+    path: "/student-app/cvs",
+    name: "studentapp-cvs",
+    meta: { title: "Student CVs" },
+    component: () => import("../pages/StudentApp/StudentCVs.vue"),
+  },
+  {
+    path: "/student-app/notifications",
+    name: "studentapp-notifications",
+    meta: { title: "Notifications" },
+    component: () => import("../pages/StudentApp/Notifications.vue"),
+  },
+  {    
+    path: "/student-app/wordle",
+    name: "studentapp-wordle",
+    meta: { title: "Wordle" },
+    component: () => import("../pages/StudentApp/StudentAppWordle.vue"),
+  },
+  {
+    path: "/student-app/testPush",
+    name: "studentapp-testPush",
+    meta: { title: "TestPush" },
+    component: () => import("../pages/StudentApp/testPush.vue"),
   },
   {
     path: "/teams",
@@ -214,8 +271,9 @@ const routes = [
     component: () => import("../pages/Teams/Teams.vue"),
   },
   {
-    path: "/teams/members/:externalid",
+    path: "/teams/members/:external_id",
     name: "teams-members",
+    props: true,
     meta: { title: "Team Members" },
     component: () => import("../pages/Teams/TeamMembers.vue"),
   },
@@ -243,20 +301,46 @@ const router = createRouter({
   },
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach(async (to, from) => {
   const userStore = useUserStore();
+  let expired = false;
 
   document.title = to.meta.title;
 
-  if (!userStore.loggedIn && to.name !== "login")
-    return { name: "login" };
-  
-  if (userStore.loggedIn && to.name !== "login") {
-    const routeName = router.getRoutes().find(rte => rte.path === ('/' + to.path.split('/')[1])).name;
-    if (!userStore.accessList[routeName])
-      return { name: "dashboard" }
+  // If navigating to login, don’t run auth logic
+  if (to.name === "login") {
+    return true;
   }
-  
+
+  // Check for token expiration and try refreshing
+  if (userStore.loggedIn && userStore.isTokenExpired()) {
+    try {
+      await userStore.refreshJWT();
+      expired = userStore.isTokenExpired();
+    } catch {
+      expired = true;
+    }
+  }
+
+  if (!userStore.loggedIn || expired) {
+    userStore.logoutUser();
+    return { name: "login" };
+  }
+
+  // Permissions
+  await userStore.verifyPermission();
+
+  const routeName = router.getRoutes().find(
+    rte => rte.path === '/' + to.path.split('/')[1]
+  )?.name;
+
+  if (routeName && !userStore.accessList[routeName]) {
+    return { name: "dashboard" };
+  }
+
+  return true;
 });
+
+
 
 export default router;

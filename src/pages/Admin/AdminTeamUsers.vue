@@ -10,8 +10,8 @@
         </div>
         
         <button type="button" @click="showAddUserModal = true">Add User</button>
-        
-        <button type="button">User Roles <span class = "chevron"> </span></button>
+        <button @click="extractShifts" type="button">Extract Shifts</button>
+        <router-link to="/admin/team-users/roles" class="router-link">User Roles<span class="chevron"></span></router-link>
       </form>
       <TheTable
         :data="datab"
@@ -37,12 +37,12 @@
           <p class="cardUsername">{{ selectedRow.role }}</p>
         </div>
         
-          <img src="../../assets/wrizz.jpg" alt="Profile Image" class="pfp">
+          <img src="../../assets/JEEC.png" alt="Profile Image" class="pfp">
           <p class="cardUsername">{{ selectedRow.username }}</p>
           <p class="cardUseless">Team User</p>
           <div class="cardActions">
-            <button class="edit-button"><img src="../../assets/pencil.svg"></button>
-            <button class="delete-button"><img src="../../assets/trash.svg"></button>
+            <button class="edit-button" @click="openEditUserPopup(selectedRow)"><img src="../../assets/pencil.svg"></button>
+            <button class="delete-button" @click="deleteUser(selectedRow.external_id)"><img src="../../assets/trash.svg"></button>
           </div>
           <div class="cardInfo">
             <div class = "cardInfoMember"> 
@@ -52,8 +52,17 @@
               
             <div class = "cardInfoMember"> 
               <p class="cardInfoLabel">Password</p>
-              <p> ****************</p>
+              <p class="cardInfoValue">{{ selectedRow.password }}</p>
             </div>
+
+                          
+            <div class = "cardInfoMember"> 
+              <p class="cardInfoLabel">#Shifts</p>
+              <p class="cardInfoValue">{{ selectedRow.n_shifts }}</p>
+            </div>
+
+
+
 
             
           </div>
@@ -75,16 +84,31 @@
         </div>
         <div class="formRole">
           <label for="role">Role</label>
-          <select v-model="newUser.role" id="role" required>
-            
-            <option value="Webdev">Webdev</option>
-            <option value="Business">Business</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Coordination">Coordination</option>
-            <option value="Partnership">Partnership</option>
-            <option value="Admin">Admin</option>
-            <option value="Team">Team</option>
+          <select v-model="newUser.role_id" id="role_id" required>
+            <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
+  <div v-if="showEditUserModal" class="modal-overlay">
+    <div class="modal">
+      <button class="close-popup" @click="closeEditModal()">&times;</button>
+      <h2>Edit Team User</h2>
+      
+      <form class="popup_form" @submit.prevent="updateUser">
+        <div class="formUsername">
+          <label for="username">Username</label>
+          <input v-model="editUser.username" id="username" required />
+        </div>
+        <div class="formRole">
+          <label for="role">Role</label>
+          <select v-model="editUser.role_id" id="role_id" required>
+            <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
           </select>
         </div>
         <div class="modal-actions">
@@ -100,22 +124,48 @@ import axios from 'axios';
 import CryptoJS from "crypto-js";
 import TheTable from '../../global-components/TheTable.vue';
 import { ref, onMounted } from 'vue';
+import { useUserStore } from "../../stores/user.js";
+import { useSlotStore } from "../../stores/userShifts";
+
+const userStore = useUserStore();
 
 const message = ref('');
 const showAddUserModal = ref(false);
-const newUser = ref({ username: '', role: '' });
-const selectedRow = ref(null);  
+const showEditUserModal = ref(false);
+const newUser = ref({ username: '', role_id: '' });
+const editUser = ref({ username: '', role_id: '', external_id: ''});
+const selectedRow = ref(null);
+const roles = ref(null);
+const slotStore = useSlotStore();
 
 function selectCallback(row) {
-  selectedRow.value = row;  
+  selectedRow.value = {...row};
+  selectedRow.value.password = decryptPassword(row.password);
+}
+
+function decryptPassword(encrypted_password){
+  if(userStore.getRole == "admin")
+    return CryptoJS.DES.decrypt(encrypted_password, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
+  else
+    return "****************"
 }
 
 function closeModal() {
   showAddUserModal.value = false;
 }
+
+function closeEditModal() {
+  showEditUserModal.value = false;
+}
+
 function closeCardInfo(){
   selectedRow.value = null;
 }
+
+function extractShifts() {
+  slotStore.extractShifts()
+}
+
 const datab = ref([{
   user: null,
   name: null,
@@ -133,7 +183,7 @@ const fetchData = () => {
           password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
         }}).then((response)=>{
           datab.value = response.data.users
-          console.log(datab.value)
+          roles.value = response.data.roles
         })
         .catch(error => console.error('Fetch error:', error)); 
 }
@@ -148,23 +198,17 @@ const tablePref = {
   
 }
 
-function generateSecurePassword(length = 16) {
-  const array = new Uint8Array(length);
-  window.crypto.getRandomValues(array);
-  return btoa(String.fromCharCode(...array)).slice(0, length);
-}
-
 function addUser() {
 
-  let password = generateSecurePassword(16);
-  let encryptedPassword = CryptoJS.AES.encrypt(password, import.meta.env.VITE_APP_API_KEY).toString();
+  let password = Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2)
+  let encryptedPassword = CryptoJS.DES.encrypt(password, import.meta.env.VITE_APP_API_KEY).toString();
 
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/user/addteamuser',
   { 
     user: { 
-      name: "nome",
+      name: "Not attributed yet",
       username: newUser.value.username, 
-      role: newUser.value.role,
+      role_id: newUser.value.role_id,
       password: encryptedPassword
     }
   }, 
@@ -183,8 +227,51 @@ function addUser() {
   });
 }
 
+function deleteUser(external_id) {
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss/delete', {external_id: external_id},{ 
+    auth: { 
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
+    }
+  })
+  .then(() => {
+    fetchData();
+    closeCardInfo();
+  })
+  .catch(error => {
+    console.error("Failed to delete user");
+  });
+}
 
+function openEditUserPopup(user){
+  editUser.value.username = user.username;
+  editUser.value.role_id = user.role_id;
+  editUser.value.external_id = user.external_id;
+  showEditUserModal.value = true;
+}
 
+function updateUser() {
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/userss/update',
+  { 
+    new_username: editUser.value.username, 
+    new_role: editUser.value.role_id,
+    external_id: editUser.value.external_id,
+  }, 
+  { 
+    auth: { 
+      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY 
+    }
+  })
+  .then(() => {
+    fetchData();
+    closeEditModal();
+    closeCardInfo();
+  })
+  .catch(error => {
+    console.error("Failed to add user :<");
+  });
+}
 
 </script>
 
@@ -280,6 +367,20 @@ form > button {
   padding: 0px 15px;
   height: 100%;
   width: 25%;
+}
+
+.router-link {
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  background-color: var(--c-select);
+  border-radius: 6px;
+  color: var(--c-bg-light);
+  cursor: pointer;
+  padding: 0px 15px;
+  height: 100%;
+  width: 25%;
+  text-decoration: none; /* Remove underline */
 }
 
 
@@ -595,6 +696,20 @@ form > button {
     cursor: pointer;
     width: 6rem;
     padding-right: 1rem;
+    
+  }
+
+  .router-link {
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    background-color: var(--c-select);
+    border-radius: 6px;
+    color: var(--c-bg-light);
+    cursor: pointer;
+    width: 6rem;
+    padding-right: 1rem;
+    text-decoration: none; /* Remove underline */
     
   }
 

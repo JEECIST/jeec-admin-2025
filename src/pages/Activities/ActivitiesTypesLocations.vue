@@ -30,7 +30,7 @@
           </svg>
       </button>
       <div class="items">
-      <img  class="popup-logo" src="../../assets/wrizz.jpg" alt="Profile Image">
+      <img  class="popup-logo" src="../../assets/jeec25.png" alt="Profile Image">
       <div class="popup-loc">{{ selectedLoc.name }}</div>
       <div class="popup-title">Location</div>
       <div class="popup-btns">
@@ -68,7 +68,7 @@ const tableHeaders = {
 
 const fetchData = () => {
   axios
-    .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/types/locations', {
+    .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activities/types/add-infos', {
       auth: {
         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,

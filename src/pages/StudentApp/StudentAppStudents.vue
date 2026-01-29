@@ -17,10 +17,16 @@
           v-model="searchQuery" 
         />
       </div>
-      <!-- Botão para abrir o popup de estudantes banidos -->
-      <button class="btn-banned" @click="toggleBannedPopup">
-        Banned Students
-      </button>
+      <div class="btn-students">
+        <!-- Botão para dar reset aos pontos e numero de premios -->
+        <button v-if="permissions()" class="btn-banned" @click="resetStudentsPrizes()">
+          Reset Students/Prizes
+        </button>
+        <!-- Botão para abrir o popup de estudantes banidos -->
+        <button class="btn-banned" @click="toggleBannedPopup">
+          Banned Students
+        </button>
+      </div>
     </div>
 
     <!-- Popup de Adicionar/Remover Pontos -->
@@ -130,7 +136,7 @@
         <p class="role">Student</p>
         <!-- Botões de ações do estudante -->
         <div class="student-actions">
-          <div class="action-button" @click="openPointsPopup(selectedStudent)">
+          <div v-if="permissions()" class="action-button" @click="openPointsPopup(selectedStudent)">
             <img src="../../assets/StudentApp/students1.svg" alt="Ícone 1">
           </div>
           <div class="action-button" @click="openQrPopup(selectedStudent)">
@@ -185,6 +191,9 @@ import TheTable from '../../global-components/TheTable.vue'; // Importa o compon
 import examplePhoto from '../../assets/StudentApp/example_students_photo.svg'; // Importa uma imagem exemplo para perfis
 import axios from 'axios'; // Biblioteca para fazer chamadas HTTP
 import QrcodeVue from 'qrcode.vue'; // Importando biblioteca de QR Code
+import { useUserStore } from '../../stores/user';
+
+const userStore = useUserStore()
 
 const tableButtons = ref([]);
 
@@ -194,6 +203,14 @@ const qrCodeValue = ref("");
 const showPointsPopup = ref(false);
 const pointsAmount = ref(0);
 const studentToModify = ref(null);
+
+function permissions(){
+  if(userStore.getRole == "admin"){
+    return true
+  }else{
+    return false
+  }
+}
 
 const openQrPopup = (student) => {
   selectedStudent.value = student;
@@ -341,6 +358,22 @@ const fetchData = () => {
       console.error("Erro ao buscar dados dos estudantes:", error);
     });
 };
+
+
+function resetStudentsPrizes(){
+  axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/reset_daily_fields", {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+      },
+    })
+    .then((response) => {
+      console.log("Resposta obtida", response);
+    })
+    .catch((error) => {
+      console.error("Erro ao buscar dados dos estudantes:", error);
+    });
+}
 
 const studentToDelete = ref(null);
 const showDeletePopup = ref(false);
@@ -1061,6 +1094,12 @@ h3 {
 .unban-icon {
   width: 24px; /* Adjust the size of the icon as needed */
   height: 24px;
+}
+
+.btn-students{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 }
 
 </style>
