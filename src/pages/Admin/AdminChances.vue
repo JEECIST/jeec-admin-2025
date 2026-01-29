@@ -27,13 +27,13 @@
       </div>
     </div>
 
-    <div class="table"  v-if="!loading">
-      <TheTable
-        :data="tableData"
-        :tableHeaders="headers"
-        :searchInput="searchQuery"
-      />
-    </div>
+    
+    <TheTable
+      :data="tableData"
+      :tableHeaders="headers"
+      :searchInput="searchQuery"
+    />
+   
 
     <transition name="fade">
     <div v-if="showWheel" class="modal-overlay">
@@ -65,6 +65,9 @@ const showWheel = ref(false);
 const loading = ref(false);
 const tableData = ref([]);
 const winner = ref(null);
+
+const actual_activities = ref([]);
+const selected_activity = ref("");
 
 const options = ref([
   { text: "Sorteio Diário", value: "daily" },
@@ -133,18 +136,27 @@ const fetchAllByOption = async () => {
   }
 
   if (option_selected.value === "activities") {
-    if (secondary_selected.value === "15/15") {
-      await fetchAllFromActivity15_15();
-    } else if (secondary_selected.value === "inside_talks") {
-      await fetchAllFromActivityInsideTalks();
-    } else if (secondary_selected.value === "workshops") {
-      await fetchAllFromActivityWorkshops();
-    }
+    await fetchActualActivities();
     return;
   }
 
   tableData.value = [];
 };
+
+
+const fetchActualActivities = async () => {
+  const response = await axios.get(
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/activities_vue_for_qr`, //ignore the name of endpoint, it does the same for getting actual activities
+      {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+      }
+    );
+  actual_activities.value = response.data.activities;
+  console.log("Actual activities", actual_activities.value);
+}
 
 
 const fetchAllFromStudentsDailyPoints = async () => {
