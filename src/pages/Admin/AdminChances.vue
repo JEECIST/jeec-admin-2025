@@ -18,8 +18,8 @@
          <select v-if="option_selected === 'weekly' || option_selected === 'activities'" 
                 class="selection-box second-select" v-model="secondary_selected" @change="fetchAllByOption">
             <option
-              v-for="opt in secondaryOptions" :key="opt.value" :value="opt.value">
-              {{ opt.text }}
+              v-for="opt in secondaryOptions" :key="opt.id" :value="opt.id">
+              {{ opt.name }}
             </option>
           </select>
 
@@ -89,16 +89,12 @@ const PRIZE_CONFIG = {
 const secondaryOptions = computed(() => {
   if (option_selected.value === "weekly") {
     return [
-      { text: "Individual", value: "individual" },
-      { text: "Squads", value: "squads" },
+      { name: "Individual", id: "individual" },
+      { name: "Squads", id: "squads" },
     ];
   }
   if (option_selected.value === "activities") {
-    return [
-      { text: "15/15", value: "15/15" },
-      { text: "Inside Talks", value: "inside_talks" },
-      { text: "Workshops", value: "workshops" },
-    ];
+    return actual_activities.value;
   }
   return [];
 });
@@ -108,10 +104,8 @@ const onMainChange = () => {
   if (option_selected.value === "weekly") {
     secondary_selected.value = "individual";
   } else if (option_selected.value === "activities") {
-    secondary_selected.value = "15/15";
-  } else {
-    secondary_selected.value = "";
-  }
+    fetchActualActivities();
+  } 
   fetchAllByOption();
 };
 
@@ -136,7 +130,10 @@ const fetchAllByOption = async () => {
   }
 
   if (option_selected.value === "activities") {
-    await fetchActualActivities();
+    if (secondary_selected.value !== ""){
+      console.log("Selecteddddddd", secondary_selected.value)
+      await fetchAllByActivity();
+    }
     return;
   }
 
@@ -156,6 +153,28 @@ const fetchActualActivities = async () => {
     );
   actual_activities.value = response.data.activities;
   console.log("Actual activities", actual_activities.value);
+}
+
+const fetchAllByActivity = async () => {
+    console.log("Selected", secondary_selected.value);
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/get_activity_participants`, 
+      {activity_id: secondary_selected.value},
+      {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY,
+        },
+      }
+    );
+
+    const participants = response.data.participants || [];
+    const n = participants.length || 1;
+
+    tableData.value = participants.map((s) => ({
+      ...s,
+      win_chance: (100 / n).toFixed(2) + " %",
+    }));
 }
 
 
