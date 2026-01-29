@@ -78,7 +78,7 @@ function selectCallback(row) {
   popupShow.value = true;
   selectedRow.value = row
   fetchPrizebyName();
-    
+}   
 
 
 function isPrizesEmpty(){
