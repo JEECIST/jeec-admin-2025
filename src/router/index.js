@@ -51,7 +51,7 @@ const routes = [
     component: () => import("../global-components/TheDashboard.vue"),
     meta: {
       title: "Admin",
-      children: ["admin-accounting", "admin-events", "admin-teamusers", "admin-inventory", "admin-bills", "admin-chances"],
+      children: ["admin-accounting", "admin-events", "admin-teamusers", "admin-inventory", "admin-bills", "admin-chances", "shiftcentral"],
     },
   },
   {
@@ -95,6 +95,12 @@ const routes = [
   name: "admin-chances",
   meta: { title: "Chances" },
   component: () => import("../pages/Admin/AdminChances.vue"),
+  },
+  {
+    path: "/admin/shift-central",
+    name: "shiftcentral",
+    meta: { title: "Shift Central" },
+    component: () => import("../pages/Admin/ShiftCentral.vue"),
   },
   {
     path: "/bills",

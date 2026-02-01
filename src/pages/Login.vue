@@ -23,7 +23,7 @@
 import { ref, onMounted } from "vue";
 import { useUserStore } from "../stores/user.js";
 import router from "../router/index.js";
-// import CryptoJS from "crypto-js";
+import CryptoJS from "crypto-js";
 
 const username = ref("");
 const password = ref("");
