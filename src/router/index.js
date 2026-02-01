@@ -18,7 +18,7 @@ const routes = [
     component: Dashboard,
     meta: { 
       title: "Dashboard",
-      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts", "shiftcentral"],
+      children: ["activities", "admin", "bills", "business", "claimprizes", "qrcodes", "speakers", "sponsors", "studentapp", "teams", "usershifts"],
     },
   },
   {
@@ -51,7 +51,7 @@ const routes = [
     component: () => import("../global-components/TheDashboard.vue"),
     meta: {
       title: "Admin",
-      children: ["admin-accounting", "admin-events", "admin-teamusers"],
+      children: ["admin-accounting", "admin-events", "admin-teamusers", "shiftcentral"],
     },
   },
   {
@@ -77,6 +77,12 @@ const routes = [
     name: "admin-teamusers-roles",
     meta: { title: "Team User Roles" },
     component: () => import("../pages/Admin/AdminTeamUsersRoles.vue"),
+  },
+    {
+    path: "/admin/shift-central",
+    name: "shiftcentral",
+    meta: { title: "Shift Central" },
+    component: () => import("../pages/Admin/ShiftCentral.vue"),
   },
   {
     path: "/bills",
@@ -237,12 +243,6 @@ const routes = [
     name: "usershifts",
     meta: { title: "Team Shifts", children: false },
     component: () => import("../pages/UserShifts/UserShifts.vue"),
-  },
-  {
-    path: "/shift-central",
-    name: "shiftcentral",
-    meta: { title: "Shift Central", children: false },
-    component: () => import("../pages/UserShifts/ShiftCentral.vue"),
   },
   {
     path: "/:pathMatch(.*)*",
