@@ -1,7 +1,7 @@
 <template>
     <div class="week" v-if="!submit">
         <div class="wrap">
-            <DayShifts v-for="day in days" :key="day" class="day" :day="day" :weekDay="weekDays[day - 3]" />
+            <DayShifts v-for="(day, index) in days" :key="day" class="day" :day="day" :weekDay="weekDays[index]" />
         </div>
         <button @click="submitShifts" class="submit-button">Submit</button>
     </div>
@@ -17,8 +17,9 @@ import { useSlotStore } from "../../stores/userShifts"; // Adjust the path if ne
 import { onMounted, ref } from "vue";
 
 const submit = ref(false)
-const days = ["3", "4", "5", "6", "7", "8", "9", "10", "11"];
-const weekDays = ["Saturday 1", "Sunday 1", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday 2", "Sunday 2"];
+const days = ["1", "2", "3", "4"];
+const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday"];
+
 
 const slotStore = useSlotStore();
 
