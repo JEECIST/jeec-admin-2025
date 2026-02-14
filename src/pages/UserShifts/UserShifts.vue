@@ -1,14 +1,14 @@
 <template>
-    <div class="week" v-if="!submit">
+    <div class="week">
         <div class="wrap">
             <DayShifts v-for="(day, index) in days" :key="day" class="day" :day="day" :weekDay="weekDays[index]" />
         </div>
         <button @click="submitShifts" class="submit-button">Submit</button>
     </div>
-    <div class="week" v-if="submit">
+    <!-- <div class="week" v-if="submit">
         meter aqui os shifts 
         <button @click="alterShifts" class="alter-button">Change Shifts</button>
-    </div>
+    </div> -->
 </template>
 
 <script setup>
