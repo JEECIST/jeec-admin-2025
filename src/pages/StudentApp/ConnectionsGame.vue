@@ -12,14 +12,24 @@ const isModalOpened = ref(false);
 const noWords = ref(false);
 const isOtherModalOpened = ref(false);
 
+const words = ref([])
+
 const selectedDay = ref("all");
+
+const tablePref = {
+  day: "Day",
+  category: "Category",
+  word: "Word"
+};
+
+const message = ref();
 
 const openModal = () => {
   isModalOpened.value = true;
 };
 const closeModal = () => {
   isModalOpened.value = false;
-  getPrizes();
+  getWords();
 };
 
 const dayOptions = computed(() => {
@@ -39,8 +49,12 @@ const openOtherModal = () => {
 
 const closeOtherModal = () => {
   isOtherModalOpened.value = false;
-  getPrizes();
+  getWords();
 };
+
+function handleEmptyWords(isEmpty){
+  noWords.value = isEmpty;
+}
 
 function isMobile() {
    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -50,8 +64,6 @@ function isMobile() {
     return false;
    }
 }
-
-const router = useRouter();
 
 function removeWord(row) {
   axios.post(
@@ -68,43 +80,11 @@ function removeWord(row) {
   })
 }
 
-function goToPrizeShop() {
-  router.push("/student-app/prizes/shop");
-}
-
-function goToPrizeSpecial() {
-  router.push("/student-app/prizes/special");
-}
-
-const message = ref();
-
-
 function selectCallback(row) {
   popupShow.value = true;
   selectedRow.value = row
-
-    
-
 }
 
-
-const words = ref([])
-
-
-function CreateNewWords(){
-  axios.post(
-    import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/new-set-words-connections',
-    {}, // body
-    {
-      auth: {
-        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      }
-    }
-  ).then(() => {
-    getWords(); // refresh table after creating
-  })
-}
 
 function getWords(){
   axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get-connection-words', {
@@ -126,43 +106,14 @@ function getWords(){
   })
 }
 
-
 onMounted(() => {
   getWords();
 });
- 
-
-function handleEmptyPrizes(isEmpty){
-  noWords.value = isEmpty;
-}
-
-
-const tablePref = {
-  day: "Day",
-  category: "Category",
-  word: "Word"
-};
-
-function deleteAllWords(){
-  axios.delete(
-    import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/delete-all-connection-words",
-    {
-      auth: {
-        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
-        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      }
-    }
-  ).then((res) => {
-    console.log("Deleted:", res.data.deleted)
-  })
-}
 
 </script>
 
 <template>
 <div class="desktop" v-if="!isMobile()">
-  <button @click="CreateNewWords">VOU CRIAR PALAVRAS</button>
-  <button @click="deleteAllWords">VOU ELIMINAR PALAVRAS</button>
   <div class="wrapper">
     <div class="table">
       <div class="topbar">
@@ -196,7 +147,7 @@ function deleteAllWords(){
         :tableHeaders="tablePref"
         :searchInput="message"
         @onRowSelect="selectCallback"
-        @notFound="handleEmptyPrizes"
+        @notFound="handleEmptyWords"
         ></TheTable>
 
       <div class="nowords" v-if="noWords">No Words Found</div>

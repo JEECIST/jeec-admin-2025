@@ -21,8 +21,11 @@
 
         <div class="form-line">
           <div class="inputname">
-            <label>Word</label>
-            <input type="text" v-model="word" />
+            <label>Words</label>
+            <input type="text" v-model="word1" />
+            <input type="text" v-model="word2" />
+            <input type="text" v-model="word3" />
+            <input type="text" v-model="word4" />
           </div>
         </div>
 
@@ -54,7 +57,10 @@ const props = defineProps({
 const emit = defineEmits(["modal-close", "created"]);
 
 const day = ref("");       // "YYYY-MM-DD"
-const word = ref("");
+const word1 = ref("");
+const word2 = ref("");
+const word3 = ref("");
+const word4 = ref("");
 const category = ref("");
 
 const isSubmitting = ref(false);
@@ -80,10 +86,15 @@ function closeModal() {
 
 async function addWord() {
   const d = day.value;
-  const w = word.value.trim();
+
+  const w1 = word1.value.trim();
+  const w2 = word2.value.trim();
+  const w3 = word3.value.trim();
+  const w4 = word4.value.trim();
+
   const c = category.value.trim();
 
-  if (!d || !w || !c) {
+  if (!d || (!w1 && !w2 && !w3 && !w4) || !c) {
     errorMessage.value = "Please fill Day, Word, and Category.";
     return;
   }
@@ -94,7 +105,10 @@ async function addWord() {
   try {
     const formData = new FormData();
     formData.append("day", d);
-    formData.append("word", w);
+    formData.append("word1", w1);
+    formData.append("word2", w2);
+    formData.append("word3", w3);
+    formData.append("word4", w4);    
     formData.append("category", c);
 
     const res = await axios.post(
@@ -115,7 +129,10 @@ async function addWord() {
 
       // reset after success
       day.value = "";
-      word.value = "";
+      word1.value = "";
+      word2.value = "";
+      word3.value = "";
+      word4.value = "";
       category.value = "";
     } else {
       errorMessage.value = "Failed to add word.";
