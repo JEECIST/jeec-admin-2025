@@ -315,7 +315,6 @@ function change_event(event) {
     events.value = data.events;
     tiers.value = data.tiers;
 
-
     default_event_id.value = data.default_event_id;
   })
   .catch((error)=>{
@@ -396,8 +395,36 @@ function resetCallback() {
   fileToUpload.value = '';
 }
 
+// function resetPasswords(companies){
+//   // console.log(companies)
+
+//   companies.forEach(comp => {
+//     console.log(comp.name);
+
+//     let password = Math.random().toString(36).substring(2, 8); // 6 chars password generation
+
+//     let encryptedPassword = CryptoJS.DES.encrypt(password, import.meta.env.VITE_APP_API_KEY).toString();
+
+//     const update_company = new FormData();
+
+//     update_company.append('external_id', comp.external_id)
+//     update_company.append('new_password', encryptedPassword)
+
+//     axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/reset_password',update_company,{auth: {
+//         username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
+//         password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+//         }
+//       })
+//   });
+//   console.log("done");
+
+// }
+
+
 function addCompany() {
-  let password = Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2)
+  // let password = Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2); // 20 chars password generation
+  let password = Math.random().toString(36).substring(2, 8); // 6 chars password generation
+
   let encryptedPassword = CryptoJS.DES.encrypt(password, import.meta.env.VITE_APP_API_KEY).toString();
   
   const new_company = new FormData();
