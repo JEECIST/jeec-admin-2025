@@ -28,6 +28,7 @@ export const useUserStore = defineStore("user", {
       teams: false,
       usershifts: false,
       shiftcentral: true,
+      myshifts: true,
     },
   }),
   getters: {
@@ -159,7 +160,7 @@ export const useUserStore = defineStore("user", {
           studentapp: access_list.student_app,
           teams: access_list.teams,
           usershifts: access_list.shifts,
-          shiftcentral: true,
+          myshifts: true,
         };
       })
 

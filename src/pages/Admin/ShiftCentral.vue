@@ -653,8 +653,8 @@ const message = ref();
 .wrap {
   display: flex;
   flex: 1;
-  /* overflow-x: auto;
-  overflow-y: hidden; */
+  overflow-x: auto;
+  overflow-y: hidden;
   white-space: nowrap;
   padding: 1rem;
   scroll-snap-type: x mandatory;
