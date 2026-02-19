@@ -80,9 +80,6 @@ async function fetchParking() {
         days.value = response.data.days;
         cars.value = response.data.cars;
 
-        console.log("days:", days)
-        console.log("cars:", cars)
-
     } catch (err) {
         console.error("Erro ao buscar carros:", err);
     }
@@ -111,6 +108,7 @@ function setDay(){
 
   if (match) {
     selectedDay.value = match.str;
+    change_day(match.str);
   }
 }
 
@@ -121,14 +119,14 @@ onMounted(async () => {
 });
 
 function change_day(day) {
-  noDay = false
+  noDay.value = false
 
   day_cars.value = cars.value.filter(car => car.day === day);
 
   if (day_cars.value.length === 0) {
-    noCompanies = true; // Se o array estiver vazio, a flag é true
+    noCompanies.value = true; // Se o array estiver vazio, a flag é true
   } else {
-    noCompanies = false; // Caso contrário, a flag é false
+    noCompanies.value = false; // Caso contrário, a flag é false
   }
 
 }
