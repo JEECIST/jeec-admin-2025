@@ -18,6 +18,7 @@
           </div>
           <div class="buttons-div">
             <button type="button" @click="openAdd()">Add Company</button>
+            <button v-if="userStore.role == 'admin'" type="button" @click="addJobFairToAll()">Add Job Fair Companies</button>
             <button type="button" @click="() => $router.push('/business/companies/tiers')"> Company Tiers <span
                 class="chevron"> </span></button>
           </div>
@@ -290,6 +291,30 @@ function decryptPassword(encrypted_password) {
     return "****************"
 
 
+}
+
+async function addJobFairToAll() {
+  try {
+    const response = await axios.get(
+      import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add_jobfair_to_all_companies',
+      {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+      }
+    );
+
+    // Verifica exatamente se o status HTTP é 200
+    if (response.status === 200) {
+      alert("Job Fair activities added with success!");
+    }
+    
+  } catch (error) {
+    // Apanha qualquer erro (ex: 401 Unauthorized, 500 Internal Server Error)
+    console.error("Erro ao adicionar atividades:", error);
+    alert("Ocorreu um erro ao adicionar as atividades da Job Fair.");
+  }
 }
 
 const fetchCompanies = () => {
