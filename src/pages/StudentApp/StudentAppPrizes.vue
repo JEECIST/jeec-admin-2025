@@ -12,6 +12,7 @@ const prizeToEdit = ref(null);
 const isModalOpened = ref(false);
 const noPrizes = ref(false);
 const isOtherModalOpened = ref(false);
+const eventDays = ref([]);
 
 const openModal = () => {
   isModalOpened.value = true;
@@ -127,21 +128,41 @@ function getPrizes(){
     })
 }
 
+function fetchEventDays() {
+  axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/event_days', {},
+    {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      },
+    }
+  ).then(response => {
+    eventDays.value = response.data.days
+  }).catch(error => {
+    console.error("Error:", error);
+  });
+}
+
 onMounted(() => {
   getPrizes();
+  fetchEventDays();
 }); 
 
 function handleEmptyPrizes(isEmpty){
   noPrizes.value = isEmpty;
 }
 
+function getEventDayById(eventDayId) {
+  let eventDayObj = eventDays.value.find(day => day.id === eventDayId)
+  return eventDayObj.day || null
+}
 
 const tablePref = {
   id: "ID",
   name: "Name",
   Type: "Type",
   initialAmount: "Initial Amount",
-  currentAmount: "Current Amount"
+  currentAmount: "Current Amount",
 };
 
 </script>
@@ -159,13 +180,13 @@ const tablePref = {
       </form>
     
       <button class="topbtn" @click="openModal">Add Prize</button>
-      <button class="topbtn" @click="goToPrizeSpecial">Special 〉</button>
+      <!-- <button class="topbtn" @click="goToPrizeSpecial">Special 〉</button> -->
       <button @click="goToPrizeShop" class="topbtn">Shop 〉</button>
       <Transition name="fade" appear>
-          <AddPrizePopup :isOpen="isModalOpened" @modal-close="closeModal"></AddPrizePopup>
+          <AddPrizePopup :isOpen="isModalOpened" :eventDays="eventDays" @modal-close="closeModal"></AddPrizePopup>
       </Transition>
       <Transition name="fade" appear>
-          <EditPrizePopup v-if="isOtherModalOpened" :isOpen="isOtherModalOpened" :selectedRow="selectedRow" @modal-close="closeOtherModal"></EditPrizePopup>
+          <EditPrizePopup v-if="isOtherModalOpened" :isOpen="isOtherModalOpened" :selectedRow="selectedRow" :eventDays="eventDays" @modal-close="closeOtherModal"></EditPrizePopup>
       </Transition>
       </div>
       
@@ -181,7 +202,7 @@ const tablePref = {
     </div>
       <div class="right-popup-placeholder" v-if="selectedRow">
           <div class="items">
-            <h1>SHOP</h1>
+            <h1>{{ selectedRow.Type }}</h1>
             <img v-if="selectedRow.logo" class='prize-logo' :src="selectedRow.logo" alt="prize logo" />
             <div v-else class='prize-no-logo'>No logo</div>
             <h3 class="text1">{{ selectedRow.name }}</h3>
@@ -208,6 +229,16 @@ const tablePref = {
                 <div class="col">
                   <p>Current Amount</p>
                   <p class="text2">{{ selectedRow.currentAmount }}</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col" v-if="selectedRow.place">
+                  <p>Place</p>
+                  <p class="text2">{{ selectedRow.place }}</p>
+                </div>
+                <div class="col" v-if="selectedRow.eventDay">
+                  <p>Event Day</p>
+                  <p class="text2">{{ getEventDayById(selectedRow.eventDay) }}</p>
                 </div>
               </div>
             </div>

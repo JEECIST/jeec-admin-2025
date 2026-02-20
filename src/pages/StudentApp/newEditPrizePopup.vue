@@ -16,11 +16,28 @@
               <label for="name">Name</label>
               <input type="text" placeholder="" v-model="selectedRow.name"/>
             </div>
-            <div class="event-filter">
-              <label for="event">Type</label>
-              <select class="selection-box" v-model="selectedRow.Type">
-                <option v-for="type in types">{{ type }}</option>
-              </select>  
+            <div class="type-place">
+              <div class="event-filter">
+                <label for="event">Type</label>
+                <select class="selection-box" v-model="selectedRow.Type" @change="resetModel()">
+                  <option v-for="type in types">{{ type }}</option>
+                </select>
+              </div>
+              <div class="event-filter" v-if="selectedRow.Type == 'Daily' && selectedRow.Type != ''">
+                <label for="event">Day</label>
+                <select class="selection-box" v-model="selectedRow.eventDay">
+                  <option v-for="eventDay in eventDays" :key="eventDay.id" :value="eventDay.id">{{ eventDay.day }}
+                  </option>
+                </select>
+              </div>
+              <div class="event-filter" v-if="selectedRow.Type != 'Daily' && selectedRow.Type != 'Shop' && selectedRow.Type != ''">
+                <label for="event">Place</label>
+                <select class="selection-box" v-model="selectedRow.place">
+                  <option :value=1>1</option>
+                  <option :value=2>2</option>
+                  <option :value=3>3</option>
+                </select>
+              </div>
             </div>
           </div>
           <div class="form-line">
@@ -86,7 +103,7 @@
               
           </div>
         </form>
-        <button class="button-update-prize" @click="updatePrize(selectedRow.id, selectedRow.name, selectedRow.description, selectedRow.cost, selectedRow.initialAmount, selectedRow.currentAmount, selectedRow.link, selectedRow.Type, selectedRow.amountPerDay, selectedRow.lastUnits)" @click.stop="emit('modal-close')">Update</button>
+        <button class="button-update-prize" @click="updatePrize()">Update</button>
       </div>
     </div>
     
@@ -98,14 +115,14 @@
   
   var fileSelected = ref(null);
   var fileToUpload = ref(null);
-  const logoImage = ref('')
+  const logoImage = ref('');
 
   const types = ["Daily", "CV", "Individual", "Squad", "Shop"];
- 
-  
+
   const props = defineProps({
     isOpen: Boolean,
-    selectedRow: Object
+    selectedRow: Object,
+    eventDays: Object,
   });
 
     const emit = defineEmits(["modal-close", "updateSelectedRow"]);
@@ -122,7 +139,12 @@
         logoImage.value = URL.createObjectURL(event.target.files[0]);
 
     }
-  
+
+  function resetModel(){
+    props.selectedRow.eventDay = null;
+    props.selectedRow.place = "";
+  }
+    
   
   async function getPrizeByID(){ // PARA TER ACESSO AOS VALORES DO PRIZE EDIT ASSIM QUE FOR POPULATED
  
@@ -161,19 +183,21 @@ const changeRowInfo = (id, name, desc, cost, initialAmount, currentAmount, link,
  emit('updateSelectedRow', rowInfo);
 }
 
-function updatePrize(id, name, desc, cost, initialAmount, currentAmount, link, selectedType, amountPerDay, lastUnits) {
+function updatePrize() {
     const formData = new FormData();
 
-    formData.append("id", id);
-    formData.append("name", name);
-    formData.append("Type", selectedType);
-    formData.append("description", desc);
-    formData.append("cost", cost);
-    formData.append("link", link);
-    formData.append("initialAmount", initialAmount);
-    formData.append("currentAmount", currentAmount);
-    formData.append("amountPerDay", amountPerDay);
-    formData.append("lastUnit", lastUnits);
+    formData.append("id", props.selectedRow.id);
+    formData.append("name", props.selectedRow.name);
+    formData.append("Type", props.selectedRow.Type);
+    formData.append("place", props.selectedRow.place);
+    formData.append("eventDayId", props.selectedRow.eventDay);
+    formData.append("description", props.selectedRow.description);
+    formData.append("cost", props.selectedRow.cost);
+    formData.append("link", props.selectedRow.link);
+    formData.append("initialAmount", props.selectedRow.initialAmount);
+    formData.append("currentAmount", props.selectedRow.currentAmount);
+    formData.append("amountPerDay", props.selectedRow.amountPerDay);
+    formData.append("lastUnit", props.selectedRow.lastUnits);
 
     if (fileToUpload.value) {
         formData.append("img", fileToUpload.value);
@@ -208,6 +232,7 @@ function updatePrize(id, name, desc, cost, initialAmount, currentAmount, link, s
                 prizeData.value.logo
             );
         }
+        emit('modal-close')
     })
     .catch(error => {
         console.error("Error updating prize:", error);
@@ -525,6 +550,12 @@ async (newVal) => {
     height: 30px;
     line-height: 2.67vh;
     flex-grow: 3;
+  }
+
+  .type-place {
+    display: flex;
+    flex-direction: row;
+    gap: 1vw;
   }
   
   .event-filter{
