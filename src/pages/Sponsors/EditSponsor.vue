@@ -16,6 +16,10 @@
             <label for="name">Name</label>
             <input type="text" v-model="sponsorData.name"/>
           </div>
+          <div class="inputname">
+            <label for="website">Website</label>
+            <input type="text" v-model="sponsorData.website"/>
+          </div>
           <div @change="responsibleFinder" class="event-filter">
             <label for="event">Event</label>
             <select class="selection-box" v-model="selectedEvent">
@@ -148,6 +152,7 @@ function updateSponsor() {
     fd.append('sponsor_id', props.sponsorData.id)
     fd.append('name', props.sponsorData.name)
     fd.append('description', props.sponsorData.description)
+    fd.append('website', props.sponsorData.website)
     fd.append('event_id', selectedEvent.value.id)
     fd.append('event_name', selectedEvent.value.name)
     fd.append('show_in_website', props.sponsorData.show_in_website)

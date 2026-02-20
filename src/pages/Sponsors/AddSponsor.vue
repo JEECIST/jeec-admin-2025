@@ -16,6 +16,10 @@
             <label for="name">Name</label>
             <input type="text" v-model="name"/>
           </div>
+          <div class="inputname">
+            <label for="website">Website</label>
+            <input type="text" v-model="website"/>
+          </div>
           <div class="event-filter">
             <label for="event">Event</label>
             <select @change="responsibleFinder" class="selection-box" v-model="eventselected">
@@ -100,7 +104,7 @@ const props = defineProps({
 })
 
 
-
+const website = ref('')
 const name = ref('')
 const description = ref('')
 const eventselected = ref(null)
@@ -131,6 +135,7 @@ function addingSponsor(e) {
         if (fileToUpload.value) fd.append('logo_image', fileToUpload.value)
         fd.append('name', name.value)
         fd.append('description', description.value)
+        fd.append('website', website.value)
         fd.append('event_id', eventselected.value.id)
         fd.append('event_name', eventselected.value.name)
         fd.append('show_in_website', show_in_website.value)

@@ -17,17 +17,14 @@
             </select>
           </div>
           <div class="buttons-div">
-            <button type="button" @click="showAddCompanyModal = true">Add Company</button>
-            <button type="button" @click="()=>$router.push('/business/companies/tiers')"> Company Tiers <span class = "chevron"> </span></button>
+            <button type="button" @click="openAdd()">Add Company</button>
+            <button v-if="userStore.role == 'admin'" type="button" @click="addJobFairToAll()">Add Job Fair Companies</button>
+            <button type="button" @click="() => $router.push('/business/companies/tiers')"> Company Tiers <span
+                class="chevron"> </span></button>
           </div>
         </form>
-        <TheTable
-          :data="companies"
-          :tableHeaders="tablePref"
-          :searchInput="message"
-          
-          @onRowSelect="selectCallback"
-        ></TheTable>
+        <TheTable :data="companies" :tableHeaders="tablePref" :searchInput="message" @onRowSelect="selectCallback">
+        </TheTable>
         <div class="nocompanies" v-if=noCompanies>No Companies Found</div>
       </div>
       <!-- Conditionally render the right popup placeholder -->
@@ -42,16 +39,19 @@
             <p>Company</p>
             <div class="butoes">
               <button class="edit-button" @click="openEdit()">
-                <img src="./imagens/edit.svg"/>
+                <img src="./imagens/edit.svg" />
+              </button>
+              <button class="park-button" @click="openParking()">
+                <img src="./imagens/car.svg" />
               </button>
               <button class="web-button" @click="irParaSite(selectedRow.website)">
-                <img src="./imagens/web.svg"/>
+                <img src="./imagens/web.svg" />
               </button>
               <button class="bill-button" @click="irParaBills()">
-                <img src="./imagens/bills.svg"/>
+                <img src="./imagens/bills.svg" />
               </button>
               <button class="delete-button" @click="removeCompany(selectedRow)">
-                <img src="./imagens/delete.svg"/>
+                <img src="./imagens/delete.svg" />
               </button>
             </div>
             <div class="line">
@@ -148,7 +148,8 @@
                 </div>
                 <!-- Hidden file input -->
                 <label for="logo-upload" class="custom-logo-label">Add new Logo</label>
-                <input id="logo-upload" name ="fileSelected" type="file" @change="onLogoSelected" class="button-add-logo" accept="image/*" />
+                <input id="logo-upload" name="fileSelected" type="file" @change="onLogoSelected" class="button-add-logo"
+                  accept="image/*" />
               </div>
             </div>
             <div class="esquerda">
@@ -167,11 +168,12 @@
                   <label>CV acess</label>
                   <div class="line" style="width: 100%; margin-left: 10px; height: 40px;">
                     <label style="width: 50%;">
-                      <input class="with-gap" name="cvs_access" type="radio" value="True" v-model="newCompany.cv"/>
+                      <input class="with-gap" name="cvs_access" type="radio" value="True" v-model="newCompany.cv" />
                       <span style="margin-left: 5px;">Yes</span>
                     </label>
                     <label style="width: 50%;">
-                      <input class="with-gap" name="cvs_access" type="radio" value="False" checked v-model="newCompany.cv"/>
+                      <input class="with-gap" name="cvs_access" type="radio" value="False" checked
+                        v-model="newCompany.cv" />
                       <span style="margin-left: 5px;">No</span>
                     </label>
                   </div>
@@ -198,21 +200,40 @@
               <div v-if="jeec_responsible_flag" class="line">
                 <div class="element" id="days">
                   <label>Job Fair Days</label>
-                  <multiselect
-                    v-model="newCompany.days"
-                    :options="days"
-                    :multiple="true"
-                    :close-on-select="false"
-                    :clear-on-select="false"
-                    :preserve-search="true"
-                    placeholder="Select days"
-                    search-placeholder="Search..."
-                    label="day"
-                    track-by="id"
-                    >
+                  <multiselect v-model="newCompany.days" :options="days" :multiple="true" :close-on-select="false"
+                    :clear-on-select="false" :preserve-search="true" placeholder="Select days"
+                    search-placeholder="Search..." label="day" track-by="id">
                   </multiselect>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div v-if="showParkingModal" class="modal-overlay">
+    <form class="modal">
+      <div class="btn-cancel" @click="closeModal()"> X </div>
+      <div class="modal-aux">
+        <div class="header">
+          <h1>Edit Parking</h1>
+        </div>
+        <div class="body" id="park_body">
+          <div v-for="(car, index) in company_cars" :key="index" class="car-item">
+            <div class="car-card">
+              <h3>{{ car.day }}</h3>
+              <template v-if="car.plate">
+                <!-- Se já houver matrícula -->
+                <input type="text" v-model="new_plate[car.day]" class="car-input" />
+                <button @click="editCar(car)" class="add-car-btn">Edit</button>
+              </template>
+
+              <template v-else>
+                <!-- Se ainda não houver matrícula -->
+                <input type="text" placeholder="XX-XX-XX" class="car-input" v-model="new_plate[car.day]" />
+                <button @click="addCar(car)" class="add-car-btn">Add Car</button>
+              </template>
             </div>
           </div>
         </div>
@@ -249,77 +270,104 @@ let logo_image = ref('');
 let fileSelected = ref(null);
 let fileToUpload = ref(null);
 
-const jeec_responsible_flag = ref(false)
+const jeec_responsible_flag = ref(true)
 
-function showPasswordEdit(){
-  if(showEditCompanyModal.value && userStore.getRole == "admin"){
+function showPasswordEdit() {
+  if (showEditCompanyModal.value && userStore.getRole == "admin") {
     return true
-  }else{
+  } else {
     return false
   }
 }
 
 const oldPassword = ref('')
 
-function decryptPassword(encrypted_password){
+function decryptPassword(encrypted_password) {
   oldPassword.value = CryptoJS.DES.decrypt(encrypted_password, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
-  if(userStore.getRole == "admin" || userStore.getRole == "team_leaders" || userStore.getRole == "coordination" || userStore.getRole == "business" || userStore.getRole == "webdev"){
+  if (userStore.getRole == "admin" || userStore.getRole == "team_leaders" || userStore.getRole == "coordination" || userStore.getRole == "business" || userStore.getRole == "webdev") {
     return oldPassword.value;
   }
   else
     return "****************"
 
-  
+
+}
+
+async function addJobFairToAll() {
+  try {
+    const response = await axios.get(
+      import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add_jobfair_to_all_companies',
+      {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+      }
+    );
+
+    // Verifica exatamente se o status HTTP é 200
+    if (response.status === 200) {
+      alert("Job Fair activities added with success!");
+    }
+    
+  } catch (error) {
+    // Apanha qualquer erro (ex: 401 Unauthorized, 500 Internal Server Error)
+    console.error("Erro ao adicionar atividades:", error);
+    alert("Ocorreu um erro ao adicionar as atividades da Job Fair.");
+  }
 }
 
 const fetchCompanies = () => {
   axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{
-    event_id: selectedEvent.value
-  },{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-    }
-  })
-  .then((response)=>{
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue', {
+      event_id: selectedEvent.value
+    }, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    })
+    .then((response) => {
 
-    const data = response.data;
+      const data = response.data;
 
-    companies.value = data.companies;
-    events.value = data.events;
-    tiers.value = data.tiers;
 
-    default_event_id.value = data.default_event_id;
+      companies.value = data.companies;
+      events.value = data.events;
+      tiers.value = data.tiers;
 
-    selectedEvent = default_event_id.value.id;
-  })
-  .catch((error)=>{
-    console.log(error);
-  })
+      default_event_id.value = data.default_event_id;
+
+      selectedEvent = default_event_id.value.id;
+    })
+    .catch((error) => {
+      console.log(error);
+    })
 };
 
 function change_event(event) {
   axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue',{
-    event_id: event
-  },{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-    }
-  })
-  .then((response)=>{
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/companies_vue', {
+      event_id: event
+    }, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    })
+    .then((response) => {
 
-    const data = response.data;
+      const data = response.data;
 
     companies.value = data.companies;
     events.value = data.events;
     tiers.value = data.tiers;
 
-    default_event_id.value = data.default_event_id;
-  })
-  .catch((error)=>{
-    console.log(error);
-  })
+      default_event_id.value = data.default_event_id;
+    })
+    .catch((error) => {
+      console.log(error);
+    })
 }
 
 function fetchCompanyImage() {
@@ -327,25 +375,26 @@ function fetchCompanyImage() {
   f.append('external_id', selectedRow.value.external_id)
 
   axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/image',f,{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
-      },responseType: 'blob'
-  })
-  .then((response) => {
-    // Verifica se a resposta contém dados
-    if (response.data) {
-      // Cria uma URL de objeto a partir do Blob e armazena em 'logo_image'
-      fileToUpload.value = response.data;
-      logo_image.value = URL.createObjectURL(response.data);
-    } else {
-      console.error('Imagem não encontrada');
-    }
-  })
-  .catch((error) => {
-    // Lida com erros, por exemplo, se a requisição falhar
-    console.error('Erro ao carregar imagem:', error);
-  });
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/company/image', f, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }, responseType: 'blob'
+    })
+    .then((response) => {
+      // Verifica se a resposta contém dados
+      if (response.data) {
+        // Cria uma URL de objeto a partir do Blob e armazena em 'logo_image'
+        fileToUpload.value = response.data;
+        logo_image.value = URL.createObjectURL(response.data);
+      } else {
+        console.error('Imagem não encontrada');
+      }
+    })
+    .catch((error) => {
+      // Lida com erros, por exemplo, se a requisição falhar
+      console.error('Erro ao carregar imagem:', error);
+    });
 }
 
 // Chamando a função assim que o componente for montado
@@ -354,6 +403,7 @@ onMounted(fetchCompanies);
 const message = ref('');
 const showAddCompanyModal = ref(false);
 const showEditCompanyModal = ref(false);
+const showParkingModal = ref(false);
 const newCompany = ref({
   name: '',
   event_id: '',
@@ -368,6 +418,7 @@ const newCompany = ref({
   image: '',
   changeimg: 'No',
   external_id: '',
+  id: '',
 });
 
 const days = ref([]);
@@ -383,7 +434,7 @@ function selectCallback(row) {
   if (selectedRow.value == row) {
     resetCallback();
   } else {
-    selectedRow.value = {...row};
+    selectedRow.value = { ...row };
     fetchCompanyImage();
     selectedRow.value.password = decryptPassword(row.password);
   }
@@ -426,7 +477,7 @@ function addCompany() {
   let password = Math.random().toString(36).substring(2, 8); // 6 chars password generation
 
   let encryptedPassword = CryptoJS.DES.encrypt(password, import.meta.env.VITE_APP_API_KEY).toString();
-  
+
   const new_company = new FormData();
 
   new_company.append('name', newCompany.value.name)
@@ -448,20 +499,29 @@ function addCompany() {
   if (fileToUpload.value) new_company.append('image', fileToUpload.value)
 
   axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/create',new_company,{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/company/create', new_company, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }
-  })
-  .then(response => {
-          this.error = response.data
-      })
+    })
+    .then(response => {
+      this.error = response.data
+    })
 
   setTimeout(fetchCompanies, 10);
 
   closeModal();
 }
 
+function openAdd() {
+  showAddCompanyModal.value = true;
+  jeec_responsible_flag.value = true;
+
+  newCompany.value.event_id = selectedEvent.value;
+
+  get_colaborators_and_days();
+}
 
 
 function openEdit() {
@@ -482,6 +542,132 @@ function openEdit() {
   jeec_responsible_flag.value = true;
 
   get_colaborators_and_days();
+}
+
+let company_cars = ref([]);
+const new_plate = ref([]);
+
+async function fetchParking() {
+
+  const company_id = selectedRow.value.id;
+
+  const response = await axios.get(
+    import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/get_company_parking',
+    {
+      params: { company_id: company_id },
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+      }
+    }
+  );
+
+  company_cars.value = response.data.company_cars;
+
+  new_plate.value = [];
+
+  for (const car of company_cars.value) {
+    new_plate.value[car.day] = car.plate;
+  }
+
+
+}
+
+const plateRegex = /^[A-Z0-9]{2}-[A-Z0-9]{2}-[A-Z0-9]{2}$/;
+
+function validatePlate(plate) {
+
+  // força string, remove espaços à volta e normaliza para maiúsculas
+  const raw = (plate === null || plate === undefined) ? "" : String(plate);
+
+  // substituir quaisquer traços Unicode por hífen ASCII
+  const normalized = raw.trim()
+
+  if (!normalized || !plateRegex.test(normalized)) {
+    return false;
+  }
+
+  return true;
+}
+
+
+async function addCar(car) {
+
+
+  var plate = new_plate.value[car.day];
+
+  if (!validatePlate(plate)) {
+    alert("Formato inválido! Use XX-XX-XX");
+    return;
+  }
+
+  const company_id = selectedRow.value.id;
+
+  try {
+    const response = await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/add_car',
+      { company_id: company_id, plate: plate, day: car.day },
+      {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+      }
+    );
+
+    if (response.data.error) {
+      alert("Erro: " + response.data.error);
+    } else {
+      new_plate[car.day] = '';
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao adicionar carro");
+  }
+
+  fetchParking();
+}
+
+async function editCar(car) {
+
+
+  var plate = new_plate.value[car.day];
+
+  if (plate !== "") {
+    if (!validatePlate(plate)) {
+      alert("Formato inválido! Use XX-XX-XX");
+      return;
+    }
+  }
+
+  const company_id = selectedRow.value.id;
+
+  try {
+    const response = await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/edit_car',
+      { company_id: company_id, car_id: car.id, plate: plate, day: car.day },
+      {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+      }
+    );
+
+    if (response.data.error) {
+      alert("Erro: " + response.data.error);
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao atualizar carro");
+  }
+
+  fetchParking();
+}
+
+function openParking() {
+  fetchParking();
+  showParkingModal.value = true;
 }
 
 function editCompany() {
@@ -506,24 +692,25 @@ function editCompany() {
 
   let encryptedPassword;
 
-  if(userStore.getRole == "admin"){
+  if (userStore.getRole == "admin") {
     encryptedPassword = CryptoJS.DES.encrypt(newCompany.value.password, import.meta.env.VITE_APP_API_KEY).toString();
     update_company.append('password', encryptedPassword)
-  }else{
+  } else {
     encryptedPassword = CryptoJS.DES.encrypt(oldPassword.value, import.meta.env.VITE_APP_API_KEY).toString();
     update_company.append('password', encryptedPassword)
   }
 
 
   axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/update',update_company,{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/company/update', update_company, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }
-  })
-  .then(response => {
-          this.error = response.data
-      })
+    })
+    .then(response => {
+      this.error = response.data
+    })
 
   setTimeout(fetchCompanies, 100);
 
@@ -537,14 +724,15 @@ function removeCompany(row) {
   delete_company.append('external_id', selectedRow.value.external_id)
 
   axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/company/delete',delete_company,{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/company/delete', delete_company, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }
-  })
-  .then(response => {
-          this.error = response.data
-      })
+    })
+    .then(response => {
+      this.error = response.data
+    })
 
   resetCallback();
 
@@ -552,7 +740,7 @@ function removeCompany(row) {
 
 };
 
-function onLogoSelected(event){
+function onLogoSelected(event) {
   fileSelected.value = event.target.files[0].name;
   fileToUpload.value = event.target.files[0];
   logo_image.value = URL.createObjectURL(event.target.files[0]);
@@ -574,48 +762,51 @@ function irParaSite(site) {
 }
 
 function irParaBills() {
-  
+
 }
 
 
 function get_colaborators_and_days() {
   let event_id = newCompany.value.event_id;
   axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/colaborators', {event_id: event_id},{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/colaborators', { event_id: event_id }, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }
-  })
-  .then(response => {
-    let colaborators = response.data.colaborators
-      if(colaborators.length > 0){
+    })
+    .then(response => {
+      let colaborators = response.data.colaborators
+      if (colaborators.length > 0) {
         responsibles.value = colaborators;
         // jeec_responsible_flag.value = true;
       }
-  })
+    })
 
   axios
-  .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL+'/event_days', {event_id: event_id},{auth: {
-      username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME, 
-      password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/event_days', { event_id: event_id }, {
+      auth: {
+        username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+        password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
       }
-  })
-  .then(response => {
-    let event_days = response.data.days
-      if(event_days.length > 0){
-          days.value = event_days.map((day) => ({
+    })
+    .then(response => {
+      let event_days = response.data.days
+      if (event_days.length > 0) {
+        days.value = event_days.map((day) => ({
           day: day.day,
           id: day.id,
         }));
         // days.value = event_days;
         jeec_responsible_flag.value = true;
       }
-  })
+    })
 }
 
 function closeModal() {
   showAddCompanyModal.value = false;
   showEditCompanyModal.value = false;
+  showParkingModal.value = false;
   newCompany.value = {
     name: '',
     event_id: '',
@@ -651,7 +842,6 @@ function closeModal() {
 </script>
 
 <style scoped>
-
 @import './companies.css';
 
 #name {
@@ -738,4 +928,66 @@ function closeModal() {
   width: 60%;
 }
 
+#park_body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 250px);
+  gap: 50px;
+  /* opcional */
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.park-button img {
+  width: 24px;
+  height: 24px;
+}
+
+.car-card {
+  width: 250px;
+  border: 3px solid black;
+  /* borda preta com 2px de espessura */
+  border-radius: 8px;
+  /* cantos arredondados */
+
+  display: flex;
+  flex-direction: column;
+  /* mantém os itens empilhados verticalmente */
+  align-items: center;
+  /* centraliza horizontalmente */
+  text-align: center;
+  gap: 15px;
+  padding-bottom: 15px;
+}
+
+.car-card input {
+  width: 70%;
+  padding: 10px 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  background: transparent;
+  border: 2px solid grey;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.car-card button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  background: transparent;
+  border: 2px solid grey;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.car-card button:hover {
+  background: #279EFF;
+  color: black;
+}
+
+.car-card button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 </style>

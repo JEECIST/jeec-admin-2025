@@ -73,6 +73,10 @@
           <p>{{ selectedRow.jeec_responsible }}</p>
         </div>
         <div class="card-paragraph">
+          <h1>Website</h1>
+          <p>{{ selectedRow.website }}</p>
+        </div>
+        <div class="card-paragraph">
           <h1>Description</h1>
           <p>{{ selectedRow.description }}</p>
         </div>

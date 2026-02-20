@@ -117,7 +117,7 @@ const routes = [
     component: () => import("../global-components/TheDashboard.vue"),
     meta: {
       title: "Business",
-      children: ["business-meals", "business-companies"],
+      children: ["business-meals", "business-companies", "business-parking"],
     },
   },
   {
@@ -131,6 +131,12 @@ const routes = [
     name: "business-companies",
     meta: { title: "Companies" },
     component: () => import("../pages/Business/BusinessCompanies.vue"),
+  },
+  {
+    path: "/business/parking",
+    name: "business-parking",
+    meta: {title: "Parking" },
+    component: () => import("../pages/Business/BusinessParking.vue"),
   },
   {
     path: "/business/companies/tiers",
