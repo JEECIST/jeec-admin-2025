@@ -189,6 +189,8 @@ const removeRolePopupShow = ref(false);
 const rolePopupShow = ref(false);
 const descriptionShow = ref(false);
 const newRoleName = ref("");
+const description = ref("");
+const name = ref("");
 const newRoleDescription = ref("");
 const addChoice = ref("thisShift");
 const removeChoice = ref("thisShift");
@@ -207,8 +209,8 @@ function openRemoveRolePopup(role){
 
 function openDescription(role) {
   descriptionShow.value = true;
-  selectedRole.value = role;
-  description.value = selectedRole.description
+  name.value = role.name;
+  description.value = role.description;
 }
 
 function closeDescription() { descriptionShow.value = false; }
@@ -560,9 +562,12 @@ const message = ref();
 
         <!-- show role description popup -->
         <div class="popup-mask" v-if="descriptionShow">
-          <div class="description">
-            <p> {{ description }} </p>
+          <div class="description-wrap">
             <button class="close-popup" @click="closeDescription">X</button>
+            <h1 class="description-name"> {{ name }}</h1>
+            <div class="description">
+              <p> {{ description }} </p>
+            </div>
           </div>
         </div>
 
@@ -958,9 +963,9 @@ button:hover {
   background-color: #509CDB;
 }
 
-.description {
+.description-wrap {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   background-color: white;
   width: 60vw;
   height: 50%;
@@ -971,17 +976,38 @@ button:hover {
   border-radius: 15px;
   overflow-y: auto;
   overflow-x: hidden;
+
+}
+.description {
+  display: flex;
+  justify-content:left;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .description>p {
   display: flex;
   align-items: center;
   vertical-align: center;
-  justify-content: center;
-  padding: 3.5vw;
   font-weight: 500;
   font-size: large;
+  margin-left: 3vw;
+  margin-right: 3vw;
   color: (--c-ft-semi-light);
+  text-wrap: wrap;
+}
+
+.description-name {
+  display: flex;
+  align-items: center;
+  vertical-align: center;
+  font-weight: 1000;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  font-size: large;
+  color: (--c-ft);
+  text-wrap: wrap;
+  font-size: 30px;
 }
 
 .close-btn {
