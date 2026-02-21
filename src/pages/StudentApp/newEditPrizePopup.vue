@@ -117,7 +117,7 @@
   var fileToUpload = ref(null);
   const logoImage = ref('');
 
-  const types = ["Daily", "CV", "Individual", "Squad", "Shop"];
+  const types = ["Daily", "CV", "Individual", "Squad", "Shop", "Activity"];
 
   const props = defineProps({
     isOpen: Boolean,

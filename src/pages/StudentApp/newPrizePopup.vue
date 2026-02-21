@@ -173,7 +173,7 @@ const props = defineProps({
   eventDays: Object,
 });
 
-const types = ["Daily", "CV", "Individual", "Squad", "Shop"];
+const types = ["Daily", "CV", "Individual", "Squad", "Shop", "Activity"];
 
 
 const eventselected = ref(null)
