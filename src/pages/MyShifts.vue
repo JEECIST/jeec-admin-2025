@@ -18,6 +18,17 @@ const userStore = useUserStore();
 const timeSlots = ref([])
 const days = ref([])
 const index = ref(0)
+const description = ref("");
+const descriptionShow = ref(false);
+const name = ref("");
+
+function openDescription(role) {
+  descriptionShow.value = true;
+  name.value = role.name;
+  description.value = role.description;
+}
+
+function closeDescription() { descriptionShow.value = false; }
 
 
 /* fetch backend data */ 
@@ -48,6 +59,17 @@ const prevDay = () => { if (index.value > 0) index.value-- }
 </script>
 
 <template>
+    <!-- show role description popup -->
+    <div class="popup-mask" v-if="descriptionShow">
+        <div class="description-wrap">
+        <button class="close-popup" @click="closeDescription">X</button>
+        <h1 class="description-name"> {{ name }}</h1>
+        <div class="description">
+            <p> {{ description }} </p>
+        </div>
+        </div>
+    </div>
+
     <div class="table-wrap">
 
         <!-- top bar: title and carousel controls  -->
@@ -67,7 +89,7 @@ const prevDay = () => { if (index.value > 0) index.value-- }
 
             <tr v-for="time in timeSlots" :key="time">
                 <td class="hours">{{ time }}</td>
-                <td> {{ currentDay.shifts[time] || '' }} </td>
+                <td @click="openDescription(currentDay.shifts[time])"> {{ currentDay.shifts[time]?.name || '' }} </td>
             </tr>
             </table>
         </transition>
@@ -179,6 +201,96 @@ button:disabled {
     padding-left: 2vw;
     padding-right: 2vw;
     
+}
+
+.description-btn {
+  height: 50px;
+  width: 50px;
+  align-items: center;
+  vertical-align: middle;
+  background-color: var(--c-accent);
+  border-radius: 10px;
+  border: none;
+}
+
+.description-btn:hover {
+  background-color: #509CDB;
+}
+
+.description-wrap {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  width: 80vw;
+  height: 60%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  border-radius: 15px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+}
+.description {
+  display: flex;
+  justify-content:left;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.description>p {
+  display: flex;
+  align-items: center;
+  vertical-align: center;
+  font-weight: 500;
+  font-size: medium;
+  margin-left: 5vw;
+  margin-right: 5vw;
+  margin-top: 5vw;
+  color: (--c-ft-semi-light);
+  text-wrap: wrap;
+}
+
+.description-name {
+  display: flex;
+  align-items: center;
+  vertical-align: center;
+  font-weight: 700;
+  margin-left: 5vw;
+  margin-right: 5vw;
+  font-size: large;
+  color: (--c-ft);
+  text-wrap: wrap;
+  font-size: 30px;
+}
+
+.close-popup {
+  background-color: var(--c-accent);
+  border-radius: 5px;
+  border: none;
+  margin-right: 2%;
+  margin-top: 2%;
+  margin-bottom: 2%;
+  display: flex;
+  margin-left: auto;
+  width: 8.0vw;
+  height: 3.5vh;
+  align-items: center;
+  justify-content: center;
+  gap: 10vh;
+  cursor: pointer;
+  padding: 0.5vw;
+}
+
+.popup-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.425);
 }
 
 </style>
