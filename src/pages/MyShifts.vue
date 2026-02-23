@@ -86,10 +86,11 @@ const prevDay = () => { if (index.value > 0) index.value-- }
                 <th>Time</th>
                 <th>Shift</th>
             </tr>
-
             <tr v-for="time in timeSlots" :key="time">
                 <td class="hours">{{ time }}</td>
-                <td @click="openDescription(currentDay.shifts[time])"> {{ currentDay.shifts[time]?.name || '' }} </td>
+                <td :class="{ disabled: !currentDay.shifts[time] }" @click="currentDay.shifts[time] && openDescription(currentDay.shifts[time])">
+                  {{ currentDay.shifts[time]?.name || '' }}
+                </td>
             </tr>
             </table>
         </transition>
@@ -291,6 +292,13 @@ button:disabled {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.425);
+}
+
+.disabled {
+  background-color: #509CDB;
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 </style>
