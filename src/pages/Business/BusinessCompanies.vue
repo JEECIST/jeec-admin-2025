@@ -18,7 +18,10 @@
           </div>
           <div class="buttons-div">
             <button type="button" @click="openAdd()">Add Company</button>
-            <button v-if="userStore.role == 'admin'" type="button" @click="addJobFairToAll()">Add Job Fair Companies</button>
+            <button v-if="userStore.role == 'admin'" type="button" @click="addJobFairToAll()">Add Job Fair
+              Companies</button>
+            <button v-if="userStore.role == 'admin'" type="button" @click="dowloadCredentials()">Download
+              Credentials</button>
             <button type="button" @click="() => $router.push('/business/companies/tiers')"> Company Tiers <span
                 class="chevron"> </span></button>
           </div>
@@ -309,11 +312,86 @@ async function addJobFairToAll() {
     if (response.status === 200) {
       alert("Job Fair activities added with success!");
     }
-    
+
   } catch (error) {
     // Apanha qualquer erro (ex: 401 Unauthorized, 500 Internal Server Error)
-    console.error("Erro ao adicionar atividades:", error);
     alert("Ocorreu um erro ao adicionar as atividades da Job Fair.");
+  }
+}
+
+function createCSV(array, filename = 'credentials.csv') {
+
+  if (!array || !array.length) {
+    alert("O array está vazio. Não há nada para exportar.");
+    return;
+  }
+
+  const headers = Object.keys(array[0]);
+  const csvRows = [];
+
+  csvRows.push(headers.join(','));
+
+  for (const row of array) {
+    const values = headers.map(header => {
+
+      let val = row[header] === null || row[header] === undefined ? '' : row[header];
+
+      // Se a coluna for a password e não estiver vazia, desencripta
+      if (header === 'password' && val !== '') {
+        try {
+          val = CryptoJS.DES.decrypt(val, import.meta.env.VITE_APP_API_KEY).toString(CryptoJS.enc.Utf8);
+        } catch (error) {
+          console.error("Erro a desencriptar a password para o utilizador:", row, error);
+          val = 'ERRO_NA_DESENCRIPTAÇÃO'; // Assim sabes logo no Excel que algo falhou aqui
+        }
+      }
+
+      const stringVal = String(val);
+      
+      if (stringVal.includes(',') || stringVal.includes('"') || stringVal.includes('\n')) {
+        return `"${stringVal.replace(/"/g, '""')}"`;
+      }
+      return stringVal;
+    });
+    
+    csvRows.push(values.join(','));
+  }
+
+  const csvContent = csvRows.join('\n');
+
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden'; 
+  
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+async function dowloadCredentials() {
+  try {
+    const response = await axios.get(
+      import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/download-credentials',
+      {
+        auth: {
+          username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
+          password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
+        }
+      }
+    );
+
+    if(response.data){
+      const array = response.data.credentials
+      createCSV(array)
+    }
+  } catch (error) {
+    // Apanha qualquer erro (ex: 401 Unauthorized, 500 Internal Server Error)
+    alert("Couldnt download companies credentials");
   }
 }
 
@@ -359,9 +437,9 @@ function change_event(event) {
 
       const data = response.data;
 
-    companies.value = data.companies;
-    events.value = data.events;
-    tiers.value = data.tiers;
+      companies.value = data.companies;
+      events.value = data.events;
+      tiers.value = data.tiers;
 
       default_event_id.value = data.default_event_id;
     })
