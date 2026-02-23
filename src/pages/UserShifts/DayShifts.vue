@@ -2,7 +2,7 @@
 <template>
     <div class="day">
         <div class="weekday">
-            <p>{{ day }} - May</p>
+            <p>{{ day }} - March</p>
             <p>{{ weekDay }}</p>
         </div>
         <SlotShift v-for="slot in shifts" :key="slot" class="slot" :time="slot" :weekDay="weekDay" />
