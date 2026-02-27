@@ -187,13 +187,18 @@ function deleteAll() {
 /* popups */
 const removeRolePopupShow = ref(false);
 const rolePopupShow = ref(false);
+const descriptionShow = ref(false);
 const newRoleName = ref("");
+const description = ref("");
+const name = ref("");
+const newRoleDescription = ref("");
 const addChoice = ref("thisShift");
 const removeChoice = ref("thisShift");
 
 function openRolePopup(shift) {
   selectedShift.value = shift;
   newRoleName.value = "";
+  newRoleDescription.value = "";
   rolePopupShow.value = true;
 }
 
@@ -202,10 +207,19 @@ function openRemoveRolePopup(role){
   removeRolePopupShow.value = true;
 }
 
+function openDescription(role) {
+  descriptionShow.value = true;
+  name.value = role.name;
+  description.value = role.description;
+}
+
+function closeDescription() { descriptionShow.value = false; }
+
 function closeRolePopup() {
   rolePopupShow.value = false;
   removeRolePopupShow.value = false;
   newRoleName.value = "";
+  newRoleDescription.value = "";
   addChoice.value = "";
   removeChoice.value = "";
   selectedRoleForRemove.value = null;
@@ -214,10 +228,11 @@ function closeRolePopup() {
 }
 
 /* add new shift role */
-function addNewRole(newRoleName, selectedShift, addChoice) {
+function addNewRole(newRoleName, newRoleDescription, selectedShift, addChoice) {
   const formData = new FormData();
   formData.append("shift_id", selectedShift.id);
   formData.append("name", newRoleName);
+  formData.append("description", newRoleDescription);
   formData.append("add_choice", addChoice);
   axios.post(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/new-shift-role`, formData, {
     auth: {
@@ -474,6 +489,8 @@ const message = ref();
             <button class="close-popup" @click="closeRolePopup">X</button>
             <input v-model="newRoleName" placeholder="Enter New Role Name" class="search-input"
               @keyup.enter="addNewRole" />
+            <input v-model="newRoleDescription" placeholder="Enter New Role Description" class="search-input"
+              @keyup.enter="addNewRole" />
 
             <!-- role options -->
             <div class="check roleopt">
@@ -499,7 +516,7 @@ const message = ref();
             </div>
 
             <div class="btns">
-              <button class="add" @click="addNewRole(newRoleName, selectedShift, addChoice)">Add</button>
+              <button class="add" @click="addNewRole(newRoleName, newRoleDescription, selectedShift, addChoice)">Add</button>
             </div>
           </div>
         </div>
@@ -543,6 +560,17 @@ const message = ref();
           </div>
         </div>
 
+        <!-- show role description popup -->
+        <div class="popup-mask" v-if="descriptionShow">
+          <div class="description-wrap">
+            <button class="close-popup" @click="closeDescription">X</button>
+            <h1 class="description-name"> {{ name }}</h1>
+            <div class="description">
+              <p> {{ description }} </p>
+            </div>
+          </div>
+        </div>
+
         <!-- main page -->
         <div class="editor-wrap">
 
@@ -568,16 +596,14 @@ const message = ref();
 
             <div class="top">
               <h1>{{ selectedDay.name }}</h1>
-              <form class="searchbar">
-                <label> <img src="../../assets/search.svg"> </label>
-                <input v-model="message" placeholder="Search for Roles or Users">
-              </form>
             </div>
 
             <!-- role -->
             <div v-for="role in selectedShift.roles" :key="role.id" class="role">
               <div class="shift-role-name">
                 <button class="delete-btn" @click="openRemoveRolePopup(role)"> <img src="../../assets/trash.svg">
+                </button>
+                <button class="description-btn" @click="openDescription(role)"> <img src="../../assets/sheet.svg">
                 </button>
                 <h2>{{ role.name }}</h2>
               </div>
@@ -653,8 +679,8 @@ const message = ref();
 .wrap {
   display: flex;
   flex: 1;
-  /* overflow-x: auto;
-  overflow-y: hidden; */
+  overflow-x: auto;
+  overflow-y: hidden;
   white-space: nowrap;
   padding: 1rem;
   scroll-snap-type: x mandatory;
@@ -807,6 +833,11 @@ form>input::placeholder {
   height: 40px;
 }
 
+.shift-role-name>.description-btn {
+  width: 40px;
+  height: 40px;
+}
+
 .collaborators-wrap {
   display: flex;
   flex-wrap: wrap;
@@ -916,6 +947,67 @@ button:hover {
 
 .delete-btn:hover {
   background-color: #509CDB;
+}
+
+.description-btn {
+  height: 50px;
+  width: 50px;
+  align-items: center;
+  vertical-align: middle;
+  background-color: var(--c-accent);
+  border-radius: 10px;
+  border: none;
+}
+
+.description-btn:hover {
+  background-color: #509CDB;
+}
+
+.description-wrap {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  width: 60vw;
+  height: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  border-radius: 15px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+}
+.description {
+  display: flex;
+  justify-content:left;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.description>p {
+  display: flex;
+  align-items: center;
+  vertical-align: center;
+  font-weight: 500;
+  font-size: large;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  color: (--c-ft-semi-light);
+  text-wrap: wrap;
+}
+
+.description-name {
+  display: flex;
+  align-items: center;
+  vertical-align: center;
+  font-weight: 1000;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  font-size: large;
+  color: (--c-ft);
+  text-wrap: wrap;
+  font-size: 30px;
 }
 
 .close-btn {
