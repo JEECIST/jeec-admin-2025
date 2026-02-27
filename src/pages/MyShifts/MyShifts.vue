@@ -2,7 +2,7 @@
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css';
-import { useUserStore } from "../stores/user.js";
+import { useUserStore } from "../../stores/user.js";
 import axios from "axios";
 
 // BACKEND STRUCTURE:
@@ -31,11 +31,11 @@ function openDescription(role) {
 function closeDescription() { descriptionShow.value = false; }
 
 
-/* fetch backend data */ 
+/* fetch backend data */
 const fetchData = () => {
   let username = userStore.getUsername
   console.log(username);
-  axios.post( `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/shifts/user-schedule`, {username: username}, {
+  axios.post(`${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/shifts/user-schedule`, { username: username }, {
     auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
@@ -59,92 +59,98 @@ const prevDay = () => { if (index.value > 0) index.value-- }
 </script>
 
 <template>
-    <!-- show role description popup -->
-    <div class="popup-mask" v-if="descriptionShow">
-        <div class="description-wrap">
-        <button class="close-popup" @click="closeDescription">X</button>
-        <h1 class="description-name"> {{ name }}</h1>
-        <div class="description">
-            <p> {{ description }} </p>
-        </div>
-        </div>
+  <!-- show role description popup -->
+  <div class="popup-mask" v-if="descriptionShow">
+    <div class="description-wrap">
+      <button class="close-popup" @click="closeDescription">X</button>
+      <h1 class="description-name"> {{ name }}</h1>
+      <div class="description">
+        <p> {{ description }} </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+
+    <!-- top bar: title and carousel controls  -->
+    <div class="carousel">
+      <button @click="prevDay" :disabled="index === 0"> &lt; </button>
+      <h2>{{ currentDay.name }}</h2>
+      <button @click="nextDay" :disabled="index === days.length - 1"> &gt; </button>
     </div>
 
-    <div class="table-wrap">
+    <!-- daily schedule table -->
+    <transition name="slide" mode="out-in">
+      <table :key="currentDay.name">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Shift</th>
+          </tr>
+        </thead>
 
-        <!-- top bar: title and carousel controls  -->
-        <div class="carousel">
-            <button @click="prevDay" :disabled="index === 0"> &lt; </button>
-            <h2>{{ currentDay.name }}</h2>
-            <button @click="nextDay" :disabled="index === days.length - 1"> &gt; </button> 
-        </div>
+        <tbody>
+          <tr v-for="time in timeSlots" :key="time">
+            <td class="hours">{{ time }}</td>
+            <td :class="{ disabled: !currentDay.shifts[time] }"
+              @click="currentDay.shifts[time] && openDescription(currentDay.shifts[time])">
+              {{ currentDay.shifts[time]?.name || '' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </transition>
 
-        <!-- daily schedule table -->
-        <transition name="slide" mode="out-in">
-            <table :key="currentDay.name">
-            <tr>
-                <th>Time</th>
-                <th>Shift</th>
-            </tr>
-            <tr v-for="time in timeSlots" :key="time">
-                <td class="hours">{{ time }}</td>
-                <td :class="{ disabled: !currentDay.shifts[time] }" @click="currentDay.shifts[time] && openDescription(currentDay.shifts[time])">
-                  {{ currentDay.shifts[time]?.name || '' }}
-                </td>
-            </tr>
-            </table>
-        </transition>
-
-    </div>
+  </div>
 </template>
 
 <style scoped>
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
 }
 
 h1 {
-    text-align: center;
-    margin-top: 10px;
-    color: var(--c-ft)
+  text-align: center;
+  margin-top: 10px;
+  color: var(--c-ft)
 }
 
 table {
-    border-collapse: collapse;
-    margin: 20px auto;
-    background-color: #fff;
-    /* border: 2px solid #dee2e6; */
-    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
-    width: 90vw;
-    /* height: 90vh; */
-    border-bottom: 1px solid var(--c-select);
+  border-collapse: collapse;
+  margin: 20px auto;
+  background-color: #fff;
+  /* border: 2px solid #dee2e6; */
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  width: 90vw;
+  /* height: 90vh; */
+  border-bottom: 1px solid var(--c-select);
 }
 
 
 th,
 td {
-    border-left: 1px solid var(--c-select);
-    border-right: 1px solid var(--c-select);
-    padding: 10px;
-    text-align: center;
+  border-left: 1px solid var(--c-select);
+  border-right: 1px solid var(--c-select);
+  padding: 10px;
+  text-align: center;
 }
 
 th {
-    background-color: var(--c-accent);
-    color: #343a40;
-    border: 1px solid var(--c-select);
-    margin-bottom: 3%;
+  background-color: var(--c-accent);
+  color: #343a40;
+  border: 1px solid var(--c-select);
+  margin-bottom: 3%;
 }
 
 tr {
-    border: none;
+  border: none;
 }
 
 tr:nth-child(odd) {
-    background-color: var(--c-accent);
+  background-color: var(--c-accent);
 }
 
 button {
@@ -168,40 +174,40 @@ button:hover {
 }
 
 button:disabled {
-    background-color: var(--c-ft-light);
-    opacity: 0.3;
-    color: white;
+  background-color: var(--c-ft-light);
+  opacity: 0.3;
+  color: white;
 }
 
 .highlight {
-    background-color: #f8f9fa;
+  background-color: #f8f9fa;
 }
 
 .special {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 .hours {
-    width: 30vw;
+  width: 30vw;
 }
 
 .carousel {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    text-align: center;
-    align-items: center;
-    gap: 6vw;
-    margin-top: 30px;
-    color: var(--c-ft);
-    /* background-color: var(--c-accent); */
-    margin-left: 20vw;
-    margin-right: 20vw;
-    border-radius: 10px;
-    height: 4vh;
-    padding-left: 2vw;
-    padding-right: 2vw;
-    
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  text-align: center;
+  align-items: center;
+  gap: 6vw;
+  margin-top: 30px;
+  color: var(--c-ft);
+  /* background-color: var(--c-accent); */
+  margin-left: 20vw;
+  margin-right: 20vw;
+  border-radius: 10px;
+  height: 4vh;
+  padding-left: 2vw;
+  padding-right: 2vw;
+
 }
 
 .description-btn {
@@ -233,9 +239,10 @@ button:disabled {
   overflow-x: hidden;
 
 }
+
 .description {
   display: flex;
-  justify-content:left;
+  justify-content: left;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -300,5 +307,4 @@ button:disabled {
   cursor: not-allowed;
   pointer-events: none;
 }
-
 </style>

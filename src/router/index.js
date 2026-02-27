@@ -292,14 +292,14 @@ const routes = [
   {
     path: "/user-shifts",
     name: "usershifts",
-    meta: { title: "Team Shifts", children: false },
+    meta: { title: "Availability", children: false },
     component: () => import("../pages/UserShifts/UserShifts.vue"),
   },
   {
     path: "/my-shifts",
     name: "myshifts",
-    meta: { title: "My JEEC Schedule" },
-    component: () => import("../pages/MyShifts.vue"),
+    meta: { title: "My JEEC Schedule", children: false },
+    component: () => import("../pages/MyShifts/MyShifts.vue"),
   },
   {
     path: "/:pathMatch(.*)*",
