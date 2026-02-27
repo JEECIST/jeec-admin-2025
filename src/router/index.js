@@ -298,7 +298,7 @@ const routes = [
   {
     path: "/my-shifts",
     name: "myshifts",
-    meta: { title: "My JEEC Schedule", children: false },
+    meta: { title: "My JEEC Tasks", children: false },
     component: () => import("../pages/MyShifts/MyShifts.vue"),
   },
   {
