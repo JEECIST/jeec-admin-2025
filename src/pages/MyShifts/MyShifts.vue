@@ -289,6 +289,7 @@ button:disabled {
   gap: 10vh;
   cursor: pointer;
   padding: 0.5vw;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .popup-mask {
