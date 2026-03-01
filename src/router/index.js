@@ -51,7 +51,7 @@ const routes = [
     component: () => import("../global-components/TheDashboard.vue"),
     meta: {
       title: "Admin",
-      children: ["admin-accounting", "admin-events", "admin-teamusers", "admin-inventory", "admin-bills", "admin-chances", "shiftcentral"],
+      children: ["admin-accounting", "admin-events", "admin-teamusers", "admin-inventory", "admin-bills", "admin-chances", "shiftcentral", "shiftscounter"],
     },
   },
   {
@@ -101,6 +101,12 @@ const routes = [
     name: "shiftcentral",
     meta: { title: "Shift Central" },
     component: () => import("../pages/Admin/ShiftCentral.vue"),
+  },
+  {
+    path: "/admin/shifts-counter",
+    name: "shiftscounter",
+    meta: { title: "Shifts Counter" },
+    component: () => import("../pages/Admin/ShiftsCounter.vue"),
   },
   {
     path: "/bills",
