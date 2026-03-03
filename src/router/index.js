@@ -51,7 +51,7 @@ const routes = [
     component: () => import("../global-components/TheDashboard.vue"),
     meta: {
       title: "Admin",
-      children: ["admin-accounting", "admin-events", "admin-teamusers", "admin-inventory", "admin-bills", "admin-chances", "shiftcentral", "shiftscounter"],
+      children: ["admin-accounting", "admin-events", "admin-teamusers", "admin-inventory", "admin-bills", "admin-chances", "shiftcentral", "shiftscounter", "admin-qr-actions"],
     },
   },
   {
@@ -107,6 +107,12 @@ const routes = [
     name: "shiftscounter",
     meta: { title: "Shifts Counter" },
     component: () => import("../pages/Admin/ShiftsCounter.vue"),
+  },
+  {
+    path: "/admin/qr-actions",
+    name: "admin-qr-actions",
+    meta: { title: "QR Actions" },
+    component: () => import("../pages/Admin/AdminQRActions.vue"),
   },
   {
     path: "/bills",

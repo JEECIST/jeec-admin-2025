@@ -41,6 +41,10 @@ import qrImage from '../../assets/pages/qrcodes.svg';
 import axios from 'axios';
 import { QrcodeStream } from 'vue3-qrcode-reader';
 
+import { useUserStore } from '../../stores/user';
+
+const userStore = useUserStore();
+
 const QR_Activities = ref([]);
 
 const QR_enable = ref(false);
@@ -105,7 +109,9 @@ function errorPopUp() {
 function onDecode(student_external_id) {
   axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/activity_external_idistid', {
     student_external_id: student_external_id,  
-    activity_external_id: selectedRow.value.external_id},
+    activity_external_id: selectedRow.value.external_id,
+    jeec_username: userStore.getUsername
+  },
     {auth: {
       username: import.meta.env.VITE_APP_JEEC_WEBSITE_USERNAME,
       password: import.meta.env.VITE_APP_JEEC_WEBSITE_KEY
