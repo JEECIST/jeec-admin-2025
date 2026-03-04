@@ -233,7 +233,8 @@ const updateStudentPoints = (points) => {
     import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/add_points",
     {
       student_id: studentToModify.value.id,
-      xp: parseInt(points, 10)
+      xp: parseInt(points, 10),
+      jeec_user: userStore.getUsername
     },
     {
       headers: { "Content-Type": "application/json" },
