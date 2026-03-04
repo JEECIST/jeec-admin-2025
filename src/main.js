@@ -9,6 +9,8 @@ import router from './router'
 const pinia = createPinia();
 pinia.use(piniaPersistedState);
 
+localStorage.removeItem('user');
+
 createApp(App)
   .use(pinia)
   .use(router)

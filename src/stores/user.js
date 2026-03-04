@@ -165,13 +165,13 @@ export const useUserStore = defineStore("user", {
       return permission;
     }
   },
-  persist: {
-    enabled: true,
-    strategies: [
-      {
-        key: "user",
-        storage: localStorage,
-      },
-    ],
-  },
+  // persist: {
+  //   enabled: true,
+  //   strategies: [
+  //     {
+  //       key: "user",
+  //       storage: localStorage,
+  //     },
+  //   ],
+  // },
 });
